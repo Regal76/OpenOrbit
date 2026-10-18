@@ -1,0 +1,15 @@
+
+<root>
+    <position id="content1" x="20" y="125" width="260" height="195"/>
+    <position id="footer" x="30" y="330" width="260" height="30"/>
+    <position id="center" x="60" y="300" width="200" height="30"/>
+    <position id="half_headline_inline" x="20" y="145" width="260" height="20"/>    
+    <position id="default_button" x="30" y="330" width="260" height="30"/>
+    <position id="higher_button" x="30" y="306" width="260" height="30"/>
+    <position id="default_footer" x="15" y="334" width="273" height="24"/>
+    <position id="half_headline" x="15" y="185" width="273" height="20"/>
+    <position id="half_maintext_with_footer" x="15" y="185" width="273" height="110"/>
+    <position id="half_maintext" x="15" y="165" width="273" height="160"/>
+    <position id="half_maintext_with_headline" x="15" y="205" width="273" height="90"/>
+    <position id="full_size" x="0" y="0" width="303" height="361"/>
+</root>

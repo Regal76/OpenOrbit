@@ -1,0 +1,139 @@
+"""Ödeme düğmeleri -> oyundaki mağaza (kullanıcı 2026-10-18).
+
+İstemcinin "Buy now" / "Şimdi al" düğmeleri (Battle Pass, Voyagers' Ascent ve Trinity Trials VIP, Season Pass, Monthly Deluxe, Vortex
+of Greed Vanguard, Stellar Pathfinder …) oyun sunucusuna değil web ödeme API'sine gidiyor: JavascriptHelper.OpenWebUrl("PAY_TYPE",
+<tür>) -> PostUrl: Settings.PaymentUrl (giriş verisinin host'u + /unityApi/payment.php) "https://"ye çevrilip POST ediliyor. Hangi
+düğme olduğu şifreli istekte; istemci yamalanmaz (her sürümde yeniden gerekirdi, CANLI_TEST N23). Ama istek 127.0.0.1:443'e bağlanıyor:
+sunucu orayı dinler, bağlantıyı kapatır (istemci "Cannot connect" yazar, başka bir şey yapmaz) ve tıklamayı oyunda karşılar: mağaza
+Extras sekmesinde açılır ve ürünün adı ile fiyatı ekranda yazılır. Ürün, oyuncunun son açtığı pencereden (UIButtonTriggerRequest,
+UIWindowUpdateRequest maximized) bulunur; mağazayı açmak zararsız olduğu için tahmin yanlış olsa da bir şey kaybolmaz.
+Mağazayı açan komut ExpeditionBuyTicketCommand {result False}: istemcinin işleyicisi mağazayı Extras'ta açıyor ("extras,
+resource_key_access-dse"; Echoes biletine uridyum yetmeyince de bu). Mağazanın ürün listesinde ödemeli ürünler uridyumla (magaza.py).
+Sunucu MileageMarketBuyCommand, VIPMerchantExchangeBuyCommand, ReturneeLoginBundleBuyCommand, UridiumBankClaimCommand göndermediği için
+(istemci bunlarla da ödeme isteği açıyor) 443'e gelen her bağlantı oyuncunun bir ödeme düğmesine basmasıdır.
+"""
+import socket, threading, time
+
+PORT = 443
+ARALIK_SN = 2.0              # aynı tıklamanın yeniden denemeleri (TLS) bir sayılır
+PENCERE_SN = 600             # son açılan pencere bu kadar eskiyse ürün tahmin edilmez
+
+# pencere (menü öğesi) -> (ürün adı, mağazadaki lootId'ler: fiyatı ilk satılanın)
+URUNLER = {
+    'battle_pass': ('Battle Pass', ['resource_battle-pass']),
+    'quests': ('Battle Pass', ['resource_battle-pass']),
+    'voyagers': ("Voyagers' Ascent VIP Badge", ['resource_voyagers-vip-badge']),
+    'trinityTrials': ('Trinity Trials VIP', ['package_event-deal-trinity-vip-discount']),
+    'seasonPass': ('Gold Pass (Season Pass)', ['package_event-deal-goldpass-premium', 'resource_gold-pass']),
+    'monthly_deluxe': ('Monthly Deluxe', ['package_event-deal-month-deluxe']),
+    'strikeAndExit': ('Vanguard (Vortex of Greed)', ['package_event-deal-vog-vanguard']),
+    'stellar_pathfinder': ('Stellar Pathfinder packages', ['package_event-deal-stellar2022-1']),
+    'mileageMarket': ('Mileage Packs', []),
+    'vipMerchantExchange': ('VIP Merchant Packs', []),
+    'returnee_login': ('Returnee Bundles', []),
+}
+GENEL = 'Payment pages are offline: packages are sold in the Shop > Extras for uridium.'
+
+
+def open_shop():
+    """Mağazayı Extras sekmesinde açtıran komut (istemci: ExpeditionBuyTicketCommandHandler, result False)."""
+    return ('ExpeditionBuyTicketCommand', dict(result=False, stack={'_': 'BaseStackCommand', 'type': 0, 'enumBaseKey': 0,
+                                                                    'stringBasekey': '', 'argsList': []}))
+
+
+def money(cur, n):
+    return '{:,} {}'.format(int(round(n)), 'U' if cur == 'uridium' else 'C')
+
+
+def product(item, magaza):
+    """Pencerenin şimdi satılan ürünü -> (lootId, (para, fiyat)) ya da None."""
+    for loot in (URUNLER.get(item) or ('', []))[1]:
+        pr = magaza.buy_price(loot) if magaza else None
+        if pr and magaza.contents(loot, 1) is not None and magaza.gate_ok(loot):
+            return loot, pr
+    return None
+
+
+def text(item, magaza):
+    """Ekran metni: ürünün adı ve mağazadaki fiyatı; ürünü şimdi satılmıyorsa (etkinlik dışı) söyler; pencere bilinmiyorsa genel."""
+    row = URUNLER.get(item)
+    if not row:
+        return GENEL
+    name, loots = row
+    got = product(item, magaza)
+    if got:
+        return '%s: Shop > Extras, %s.' % (name, money(*got[1]))
+    if loots:
+        return '%s: not on sale right now.' % name
+    return '%s: Shop > Extras (uridium).' % name
+
+
+class Pencereler:
+    """Oyuncunun son açtığı pencereler (ürün tahmini için)."""
+
+    def __init__(self):
+        self.son = {}                # menü öğesi -> açılış zamanı
+
+    def opened(self, item, now=None):
+        if item:
+            self.son[item] = time.time() if now is None else now
+
+    def guess(self, now=None):
+        """Son açılan, ürünü bilinen pencere (PENCERE_SN içinde) ya da None."""
+        now = time.time() if now is None else now
+        rows = [(t, i) for i, t in self.son.items() if i in URUNLER and now - t <= PENCERE_SN]
+        return max(rows)[1] if rows else None
+
+
+def redirect(magaza, item):
+    """Ödeme düğmesine basıldı -> mağazayı açan komut + ekran metni. Mağaza açılınca istemci Extras listesini istiyor: ürün listenin
+    başına alınır, istemci onu seçili açar."""
+    import kapi as KAPI
+    got = product(item, magaza)
+    if magaza and hasattr(magaza, 'feature'):
+        magaza.feature('extras', got[0] if got else None)
+    return [open_shop(), KAPI.screen(text(item, magaza))]
+
+
+class Dinleyici:
+    """127.0.0.1:443: istemcinin ödeme isteği (TLS) bağlanınca kapatılır, on_click çağrılır (aynı tıklamanın denemeleri bir)."""
+
+    def __init__(self, on_click, log=print, port=PORT):
+        self.on_click, self.log, self.port = on_click, log, port
+        self.last = 0.0
+        self.sock = None
+
+    def start(self):
+        try:
+            s = socket.socket()
+            s.bind(('127.0.0.1', self.port))
+            s.listen(5)
+        except OSError as e:
+            self.log('   ödeme düğmeleri: %d dinlenemedi (%s); düğmeler mağazayı açmaz' % (self.port, e))
+            return None
+        self.sock = s
+        threading.Thread(target=self.serve, daemon=True).start()
+        return self
+
+    def serve(self):
+        while True:
+            try:
+                c, addr = self.sock.accept()
+            except OSError:
+                return
+            try:
+                c.close()
+            except OSError:
+                pass
+            now = time.time()
+            if now - self.last < ARALIK_SN:
+                continue
+            self.last = now
+            try:
+                self.on_click()
+            except Exception as e:                      # noqa: BLE001 (dinleyici düşmesin)
+                self.log('   ödeme düğmesi hatası: %s' % e)
+
+    def stop(self):
+        if self.sock:
+            self.sock.close()

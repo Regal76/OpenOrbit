@@ -1,0 +1,1410 @@
+<?xml version="1.0" ?>
+<spacemap>
+    <!--
+    Map definitions:
+
+            Id   Name
+            1	1-1
+            2	1-2
+            3	1-3
+            4	1-4
+            5	2-1
+            6	2-2
+            7	2-3
+            8	2-4
+            9	3-1
+            10	3-2
+            11	3-3
+            12	3-4
+            13	4-1
+            14	4-2
+            15	4-3
+            16	4-4
+            17	1-5
+            18	1-6
+            19	1-7
+            20	1-8
+            21	2-5
+            22	2-6
+            23	2-7
+            24	2-8
+            25	3-5
+            26	3-6
+            27	3-7
+            28	3-8
+            29  4-5
+
+            306  BL-1
+            307  BL-2
+            308  BL-3
+
+            91	5-1
+            92	5-2
+            93	5-3
+
+    Tooltip jump gates.
+ 
+         jumpgate - gate parent
+             ref - the map id where the gate is
+             key - unique id of the gate
+ 
+         position - gate position on the tooltip
+             y - vertical gate position  (max 210) - except for maps 4-5,5-1,5-3 and 4-4 (which are double size)
+             x - horizontal gate position (max 315)  - except for maps 4-5,5-1,5-3 and 4-4 (which are double size)
+ 
+         faction - faction that gate belongs to
+             possible options: mmo, eic, vru, all.
+ 
+         visibleOwnFaction - based on the faction owner gate will be shown/hidden.
+             possible options: mmo, eic, vru, all.
+ 
+         leadsToMap - id of the map that gate leads to
+ 
+         labelPosition - position of the label around the gate icon
+             possible options: left, right, top, bottom-->
+    <jumpgates>
+        <!-- 1-1 to 1-2 -->
+        <jumpgate key="1" ref="1">
+            <position x="293" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>2</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-2 to 1-1 -->
+        <jumpgate key="2" ref="2">
+            <position x="31" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>1</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-2 to 1-3 -->
+        <jumpgate key="3" ref="2">
+            <position x="293" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>3</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-2 to 1-4 -->
+        <jumpgate key="5" ref="2">
+            <position x="293" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>4</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-3 to 1-2 -->
+        <jumpgate key="4" ref="3">
+            <position x="31" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>2</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-3 to 1-4 -->
+        <jumpgate key="27" ref="3">
+            <position x="293" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>4</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-3 to 2-3 -->
+        <jumpgate key="7" ref="3">
+            <position x="293" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>7</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-4 to 1-2 -->
+        <jumpgate key="6" ref="4">
+            <position x="31" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>2</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-4 to 1-3 -->
+        <jumpgate key="28" ref="4">
+            <position x="293" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>3</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-4 to 3-4 -->
+        <jumpgate key="11" ref="4">
+            <position x="293" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>12</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-4 to 4-1 -->
+        <jumpgate key="31" ref="4">
+            <position x="301" y="92"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>13</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-1 to 2-2 -->
+        <jumpgate key="16" ref="5">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>6</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-2 to 2-1 -->
+        <jumpgate key="15" ref="6">
+            <position x="293" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>5</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-2 to 2-3 -->
+        <jumpgate key="10" ref="6">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>7</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-2 to 2-4 -->
+        <jumpgate key="17" ref="6">
+            <position x="293" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>8</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-3 to 1-3 -->
+        <jumpgate key="8" ref="7">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>3</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-3 to 2-2 -->
+        <jumpgate key="9" ref="7">
+            <position x="293" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>6</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-3 to 2-4 -->
+        <jumpgate key="25" ref="7">
+            <position x="293" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>8</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-4 to 2-2 -->
+        <jumpgate key="18" ref="8">
+            <position x="31" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>6</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-4 to 2-3 -->
+        <jumpgate key="26" ref="8">
+            <position x="293" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>7</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-4 to 3-3 -->
+        <jumpgate key="19" ref="8">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>11</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-4 to 4-2 -->
+        <jumpgate key="33" ref="8">
+            <position x="158" y="184"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>14</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-1 to 3-2 -->
+        <jumpgate key="24" ref="9">
+            <position x="31" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>10</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-2 to 3-1 -->
+        <jumpgate key="23" ref="10">
+            <position x="293" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>9</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-2 to 3-3 -->
+        <jumpgate key="22" ref="10">
+            <position x="293" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>11</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-2 to 3-4 -->
+        <jumpgate key="14" ref="10">
+            <position x="31" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>12</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-3 to 2-4 -->
+        <jumpgate key="20" ref="11">
+            <position x="31" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>8</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-3 to 3-2 -->
+        <jumpgate key="21" ref="11">
+            <position x="293" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>10</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-3 to 3-4 -->
+        <jumpgate key="30" ref="11">
+            <position x="31" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>12</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-4 to 1-4 -->
+        <jumpgate key="12" ref="12">
+            <position x="31" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>4</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-4 to 3-2 -->
+        <jumpgate key="13" ref="12">
+            <position x="293" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>10</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-4 to 3-3 -->
+        <jumpgate key="29" ref="12">
+            <position x="293" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>11</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-4 to 4-3 -->
+        <jumpgate key="35" ref="12">
+            <position x="158" y="23"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>15</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-1 to 1-4 -->
+        <jumpgate key="32" ref="13">
+            <position x="23" y="92"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>4</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 4-1 to 4-2 -->
+        <jumpgate key="37" ref="13">
+            <position x="293" y="30"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>14</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-1 to 4-3 -->
+        <jumpgate key="42" ref="13">
+            <position x="293" y="177"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>15</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-1 to 4-4 -->
+        <jumpgate key="43" ref="13">
+            <position x="166" y="104"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>bottom</labelPosition>
+        </jumpgate>
+        <!-- 4-2 to 2-4 -->
+        <jumpgate key="34" ref="14">
+            <position x="158" y="23"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>8</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-2 to 4-1 -->
+        <jumpgate key="38" ref="14">
+            <position x="31" y="177"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>13</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 4-2 to 4-3 -->
+        <jumpgate key="39" ref="14">
+            <position x="293" y="177"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>15</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-2 to 4-4 -->
+        <jumpgate key="45" ref="14">
+            <position x="166" y="104"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-3 to 3-4 -->
+        <jumpgate key="36" ref="15">
+            <position x="301" y="92"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>12</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-3 to 4-1 -->
+        <jumpgate key="41" ref="15">
+            <position x="31" y="177"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>13</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 4-3 to 4-2 -->
+        <jumpgate key="40" ref="15">
+            <position x="31" y="30"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>14</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 4-3 to 4-4 -->
+        <jumpgate key="47" ref="15">
+            <position x="166" y="104"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 4-4 to 4-1 -->
+        <jumpgate key="44" ref="16">
+            <position x="152" y="104"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>13</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-4 to 4-2 -->
+        <jumpgate key="46" ref="16">
+            <position x="173" y="91"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>14</leadsToMap>
+            <labelPosition>top</labelPosition>
+        </jumpgate>
+        <!-- 4-4 to 4-3 -->
+        <jumpgate key="48" ref="16">
+            <position x="173" y="112"/>
+            <faction>all</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>15</leadsToMap>
+            <labelPosition>bottom</labelPosition>
+        </jumpgate>
+        <!-- 4-4 to 1-5 -->
+        <jumpgate key="49" ref="16">
+            <position x="55" y="104"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>17</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-4 to 2-5 -->
+        <jumpgate key="59" ref="16">
+            <position x="222" y="10"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>21</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-4 to 3-5 -->
+        <jumpgate key="69" ref="16">
+            <position x="222" y="193"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>25</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-5 to 4-4 -->
+        <jumpgate key="50" ref="17">
+            <position x="301" y="92"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-5 to 1-6 -->
+        <jumpgate key="51" ref="17">
+            <position x="31" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>18</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-5 to 1-7 -->
+        <jumpgate key="53" ref="17">
+            <position x="31" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>19</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-5 to 4-5 -->
+        <jumpgate key="79" ref="17">
+            <position x="158" y="184"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>29</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-6 to 1-5 -->
+        <jumpgate key="52" ref="18">
+            <position x="293" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>17</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-6 to 1-8 -->
+        <jumpgate key="55" ref="18">
+            <position x="31" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>20</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-7 to 1-5 -->
+        <jumpgate key="54" ref="19">
+            <position x="293" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>17</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-7 to 1-8 -->
+        <jumpgate key="57" ref="19">
+            <position x="31" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>20</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-8 to 1-6 -->
+        <jumpgate key="56" ref="20">
+            <position x="293" y="30"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>18</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-8 to 1-7 -->
+        <jumpgate key="58" ref="20">
+            <position x="293" y="177"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>19</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-8 to 1-BL -->
+        <jumpgate key="70000" ref="20">
+            <position x="175" y="170"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>306</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-5 to 4-4 -->
+        <jumpgate key="60" ref="21">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-5 to 2-6 -->
+        <jumpgate key="61" ref="21">
+            <position x="31" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>22</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-5 to 2-7 -->
+        <jumpgate key="63" ref="21">
+            <position x="293" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>23</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-5 to 4-5 -->
+        <jumpgate key="81" ref="21">
+            <position x="293" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>29</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-6 to 2-5 -->
+        <jumpgate key="62" ref="22">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>21</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-6 to 2-8 -->
+        <jumpgate key="65" ref="22">
+            <position x="293" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>24</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-7 to 2-5 -->
+        <jumpgate key="64" ref="23">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>21</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-7 to 2-8 -->
+        <jumpgate key="67" ref="23">
+            <position x="293" y="30"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>24</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-8 to 2-6 -->
+        <jumpgate key="66" ref="24">
+            <position x="31" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>22</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-8 to 2-7 -->
+        <jumpgate key="68" ref="24">
+            <position x="293" y="177"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>23</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-8 to 2-BL -->
+        <jumpgate key="70004" ref="24">
+            <position x="175" y="170"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>307</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-5 to 4-4 -->
+        <jumpgate key="70" ref="25">
+            <position x="31" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-5 to 3-6 -->
+        <jumpgate key="71" ref="25">
+            <position x="31" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>26</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-5 to 3-7 -->
+        <jumpgate key="73" ref="25">
+            <position x="293" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>27</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-5 to 4-5 -->
+        <jumpgate key="83" ref="25">
+            <position x="261" y="23"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>29</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-6 to 3-5 -->
+        <jumpgate key="72" ref="26">
+            <position x="31" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>25</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-6 to 3-8 -->
+        <jumpgate key="75" ref="26">
+            <position x="293" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>28</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-7 to 3-5 -->
+        <jumpgate key="74" ref="27">
+            <position x="31" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>25</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-7 to 3-8 -->
+        <jumpgate key="77" ref="27">
+            <position x="293" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>28</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-8 to 3-6 -->
+        <jumpgate key="76" ref="28">
+            <position x="31" y="177"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>26</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-8 to 3-7 -->
+        <jumpgate key="78" ref="28">
+            <position x="31" y="30"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>27</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-8 to 3-BL -->
+        <jumpgate key="70008" ref="28">
+            <position x="175" y="170"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>308</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-5 to 1-5 -->
+        <jumpgate key="80" ref="29">
+            <position x="55" y="104"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>17</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-5 to 2-5 -->
+        <jumpgate key="82" ref="29">
+            <position x="222" y="10"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>21</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-5 to 3-5 -->
+        <jumpgate key="84" ref="29">
+            <position x="222" y="197"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>25</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-5 to 5-1 -->
+        <jumpgate key="29911" ref="29">
+            <position x="96" y="102"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>91</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-5 to 5-1 -->
+        <jumpgate key="29912" ref="29">
+            <position x="198" y="48"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>91</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 4-5 to 5-1 -->
+        <jumpgate key="29913" ref="29">
+            <position x="198" y="159"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>91</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 5-1 to 5-2 -->
+        <jumpgate key="91921" ref="91">
+            <position x="41" y="158"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>92</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-1 to 5-2 -->
+        <jumpgate key="91922" ref="91">
+            <position x="22" y="104"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>92</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-1 to 5-2 -->
+        <jumpgate key="91923" ref="91">
+            <position x="41" y="52"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>92</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-2 to 5-3 -->
+        <jumpgate key="92931" ref="92">
+            <position x="44" y="167"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>93</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-2 to 5-3 -->
+        <jumpgate key="92932" ref="92">
+            <position x="20" y="104"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>93</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-2 to 5-3 -->
+        <jumpgate key="92933" ref="92">
+            <position x="44" y="55"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>93</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-3 to 4-4 -->
+        <jumpgate key="920038" ref="93">
+            <position x="15" y="73"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-3 to 4-4 -->
+        <jumpgate key="920040" ref="93">
+            <position x="15" y="104"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 5-3 to 4-4 -->
+        <jumpgate key="920042" ref="93">
+            <position x="15" y="134"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>true</visibleOwnFaction>
+            <leadsToMap>16</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-BL to 1-8 -->
+        <jumpgate key="70001" ref="306">
+            <position x="12" y="176"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>20</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 1-BL to 2-BL -->
+        <jumpgate key="70002" ref="306">
+            <position x="120" y="22"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>307</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 1-BL to 3-BL -->
+        <jumpgate key="70003" ref="306">
+            <position x="318" y="180"/>
+            <faction>mmo</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>308</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-BL to 2-8 -->
+        <jumpgate key="70005" ref="307">
+            <position x="9" y="90"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>24</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 2-BL to 1-BL -->
+        <jumpgate key="70006" ref="307">
+            <position x="156" y="13"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>306</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 2-BL to 3-BL -->
+        <jumpgate key="70007" ref="307">
+            <position x="323" y="123"/>
+            <faction>eic</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>308</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-BL to 3-8 -->
+        <jumpgate key="70009" ref="308">
+            <position x="222" y="49"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>28</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+        <!-- 3-BL to 1-BL -->
+        <jumpgate key="70010" ref="308">
+            <position x="24" y="188"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>306</leadsToMap>
+            <labelPosition>right</labelPosition>
+        </jumpgate>
+        <!-- 3-BL to 2-BL -->
+        <jumpgate key="70011" ref="308">
+            <position x="307" y="182"/>
+            <faction>vru</faction>
+            <visibleOwnFaction>false</visibleOwnFaction>
+            <leadsToMap>307</leadsToMap>
+            <labelPosition>left</labelPosition>
+        </jumpgate>
+    </jumpgates>
+    <!--
+         NPC space map tooltip definitions
+ 
+         map - map where npc is present at
+             ref - id of the map
+ 
+             npc - npc definition
+                 id - npc id-->
+    <npcs>
+        <!-- 1-1 -->
+        <map ref="1">
+            <!-- -=[ Streuner ]=- -->
+            <npc id="1"/>
+            <!-- -=[ Recruit Streuner ]=- -->
+            <npc id="152"/>
+            <!-- -=[ Aider Streuner ]=- -->
+            <npc id="153"/>
+        </map>
+        <!-- 1-2 -->
+        <map ref="2">
+            <!-- -=[ Streuner ]=- -->
+            <npc id="1"/>
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- ..::{ Boss Streuner }::.. -->
+            <npc id="14"/>
+            <!-- ..::{ Boss Lordakia }::.. -->
+            <npc id="15"/>
+            <!-- -=[ Recruit Streuner ]=- -->
+            <npc id="152"/>
+            <!-- -=[ Aider Streuner ]=- -->
+            <npc id="153"/>
+        </map>
+        <!-- 1-3 -->
+        <map ref="3">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Devolarium ]=- -->
+            <npc id="3"/>
+            <!-- -=[ Mordon ]=- -->
+            <npc id="4"/>
+            <!-- -=[ Saimon ]=- -->
+            <npc id="6"/>
+            <!-- ..::{ Boss Mordon }::.. -->
+            <npc id="16"/>
+            <!-- ..::{ Boss Saimon }::.. -->
+            <npc id="17"/>
+            <!-- ..::{ Boss Devolarium }::.. -->
+            <npc id="18"/>
+        </map>
+        <!-- 1-4 -->
+        <map ref="4">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Mordon ]=- -->
+            <npc id="4"/>
+            <!-- -=[ Sibelon ]=- -->
+            <npc id="5"/>
+            <!-- -=[ Saimon ]=- -->
+            <npc id="6"/>
+            <!-- ..::{ Boss Saimon }::.. -->
+            <npc id="17"/>
+            <!-- ..::{ Boss Sibelon }::.. -->
+            <npc id="20"/>
+        </map>
+        <!-- 2-1 -->
+        <map ref="5">
+            <!-- -=[ Streuner ]=- -->
+            <npc id="1"/>
+            <!-- -=[ Recruit Streuner ]=- -->
+            <npc id="152"/>
+            <!-- -=[ Aider Streuner ]=- -->
+            <npc id="153"/>
+        </map>
+        <!-- 2-2 -->
+        <map ref="6">
+            <!-- -=[ Streuner ]=- -->
+            <npc id="1"/>
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- ..::{ Boss Streuner }::.. -->
+            <npc id="14"/>
+            <!-- ..::{ Boss Lordakia }::.. -->
+            <npc id="15"/>
+            <!-- -=[ Recruit Streuner ]=- -->
+            <npc id="152"/>
+            <!-- -=[ Aider Streuner ]=- -->
+            <npc id="153"/>
+        </map>
+        <!-- 2-3 -->
+        <map ref="7">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Devolarium ]=- -->
+            <npc id="3"/>
+            <!-- -=[ Mordon ]=- -->
+            <npc id="4"/>
+            <!-- -=[ Saimon ]=- -->
+            <npc id="6"/>
+            <!-- ..::{ Boss Mordon }::.. -->
+            <npc id="16"/>
+            <!-- ..::{ Boss Saimon }::.. -->
+            <npc id="17"/>
+            <!-- ..::{ Boss Devolarium }::.. -->
+            <npc id="18"/>
+        </map>
+        <!-- 2-4 -->
+        <map ref="8">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Mordon ]=- -->
+            <npc id="4"/>
+            <!-- -=[ Sibelon ]=- -->
+            <npc id="5"/>
+            <!-- -=[ Saimon ]=- -->
+            <npc id="6"/>
+            <!-- ..::{ Boss Saimon }::.. -->
+            <npc id="17"/>
+            <!-- ..::{ Boss Sibelon }::.. -->
+            <npc id="20"/>
+        </map>
+        <!-- 3-1 -->
+        <map ref="9">
+            <!-- -=[ Streuner ]=- -->
+            <npc id="1"/>
+            <!-- -=[ Recruit Streuner ]=- -->
+            <npc id="152"/>
+            <!-- -=[ Aider Streuner ]=- -->
+            <npc id="153"/>
+        </map>
+        <!-- 3-2 -->
+        <map ref="10">
+            <!-- -=[ Streuner ]=- -->
+            <npc id="1"/>
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- ..::{ Boss Streuner }::.. -->
+            <npc id="14"/>
+            <!-- ..::{ Boss Lordakia }::.. -->
+            <npc id="15"/>
+            <!-- -=[ Recruit Streuner ]=- -->
+            <npc id="152"/>
+            <!-- -=[ Aider Streuner ]=- -->
+            <npc id="153"/>
+        </map>
+        <!-- 3-3 -->
+        <map ref="11">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Devolarium ]=- -->
+            <npc id="3"/>
+            <!-- -=[ Mordon ]=- -->
+            <npc id="4"/>
+            <!-- -=[ Saimon ]=- -->
+            <npc id="6"/>
+            <!-- ..::{ Boss Mordon }::.. -->
+            <npc id="16"/>
+            <!-- ..::{ Boss Saimon }::.. -->
+            <npc id="17"/>
+            <!-- ..::{ Boss Devolarium }::.. -->
+            <npc id="18"/>
+        </map>
+        <!-- 3-4 -->
+        <map ref="12">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Mordon ]=- -->
+            <npc id="4"/>
+            <!-- -=[ Sibelon ]=- -->
+            <npc id="5"/>
+            <!-- -=[ Saimon ]=- -->
+            <npc id="6"/>
+            <!-- ..::{ Boss Saimon }::.. -->
+            <npc id="17"/>
+            <!-- ..::{ Boss Sibelon }::.. -->
+            <npc id="20"/>
+        </map>
+        <!-- 4-1 -->
+        <map ref="13">
+            <!-- -=[ Deadly Battleray ]=- -->
+            <npc id="121"/>
+        </map>
+        <!-- 4-2 -->
+        <map ref="14">
+            <!-- -=[ Deadly Battleray ]=- -->
+            <npc id="121"/>
+        </map>
+        <!-- 4-3 -->
+        <map ref="15">
+            <!-- -=[ Deadly Battleray ]=- -->
+            <npc id="121"/>
+        </map>
+        <!-- 4-4 -->
+        <map ref="16">
+            <!-- -=[ Deadly Battleray ]=- -->
+            <npc id="121"/>
+        </map>
+        <!-- 1-5 -->
+        <map ref="17">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Sibelonit ]=- -->
+            <npc id="7"/>
+            <!-- -=[ Lordakium ]=- -->
+            <npc id="8"/>
+            <!-- ..::{ Boss Sibelonit }::.. -->
+            <npc id="19"/>
+            <!-- ..::{ Boss Lordakium }::... -->
+            <npc id="21"/>
+        </map>
+        <!-- 1-6 -->
+        <map ref="18">
+            <!-- -=[ Kristallin ]=- -->
+            <npc id="9"/>
+            <!-- -=[ Kristallon ]=- -->
+            <npc id="10"/>
+            <!-- -=[ Cubikon ]=- -->
+            <npc id="13"/>
+            <!-- ..::{ Boss Kristallin }::.. -->
+            <npc id="22"/>
+            <!-- -=[ Plagued Kristallin ]=- -->
+            <npc id="161"/>
+        </map>
+        <!-- 1-7 -->
+        <map ref="19">
+            <!-- -=[ Kristallin ]=- -->
+            <npc id="9"/>
+            <!-- -=[ Kristallon ]=- -->
+            <npc id="10"/>
+            <!-- ..::{ Boss Kristallin }::.. -->
+            <npc id="22"/>
+            <!-- ..::{ Boss Kristallon }::.. -->
+            <npc id="23"/>
+        </map>
+        <!-- 1-8 -->
+        <map ref="20">
+            <!-- -=[ StreuneR ]=- -->
+            <npc id="11"/>
+            <!-- ..::{ Boss StreuneR }::.. -->
+            <npc id="24"/>
+            <!-- \\ Purpose XXI // -->
+            <npc id="174"/>
+        </map>
+        <!-- 2-5 -->
+        <map ref="21">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Sibelonit ]=- -->
+            <npc id="7"/>
+            <!-- -=[ Lordakium ]=- -->
+            <npc id="8"/>
+            <!-- ..::{ Boss Sibelonit }::.. -->
+            <npc id="19"/>
+            <!-- ..::{ Boss Lordakium }::... -->
+            <npc id="21"/>
+        </map>
+        <!-- 2-6 -->
+        <map ref="22">
+            <!-- -=[ Kristallin ]=- -->
+            <npc id="9"/>
+            <!-- -=[ Kristallon ]=- -->
+            <npc id="10"/>
+            <!-- -=[ Cubikon ]=- -->
+            <npc id="13"/>
+            <!-- ..::{ Boss Kristallin }::.. -->
+            <npc id="22"/>
+            <!-- -=[ Plagued Kristallin ]=- -->
+            <npc id="161"/>
+        </map>
+        <!-- 2-7 -->
+        <map ref="23">
+            <!-- -=[ Kristallin ]=- -->
+            <npc id="9"/>
+            <!-- -=[ Kristallon ]=- -->
+            <npc id="10"/>
+            <!-- ..::{ Boss Kristallin }::.. -->
+            <npc id="22"/>
+            <!-- ..::{ Boss Kristallon }::.. -->
+            <npc id="23"/>
+        </map>
+        <!-- 2-8 -->
+        <map ref="24">
+            <!-- -=[ StreuneR ]=- -->
+            <npc id="11"/>
+            <!-- ..::{ Boss StreuneR }::.. -->
+            <npc id="24"/>
+            <!-- \\ Purpose XXI // -->
+            <npc id="174"/>
+        </map>
+        <!-- 3-5 -->
+        <map ref="25">
+            <!-- -=[ Lordakia ]=- -->
+            <npc id="2"/>
+            <!-- -=[ Sibelonit ]=- -->
+            <npc id="7"/>
+            <!-- -=[ Lordakium ]=- -->
+            <npc id="8"/>
+            <!-- ..::{ Boss Sibelonit }::.. -->
+            <npc id="19"/>
+            <!-- ..::{ Boss Lordakium }::... -->
+            <npc id="21"/>
+        </map>
+        <!-- 3-6 -->
+        <map ref="26">
+            <!-- -=[ Kristallin ]=- -->
+            <npc id="9"/>
+            <!-- -=[ Kristallon ]=- -->
+            <npc id="10"/>
+            <!-- -=[ Cubikon ]=- -->
+            <npc id="13"/>
+            <!-- ..::{ Boss Kristallin }::.. -->
+            <npc id="22"/>
+            <!-- -=[ Plagued Kristallin ]=- -->
+            <npc id="161"/>
+        </map>
+        <!-- 3-7 -->
+        <map ref="27">
+            <!-- -=[ Kristallin ]=- -->
+            <npc id="9"/>
+            <!-- -=[ Kristallon ]=- -->
+            <npc id="10"/>
+            <!-- ..::{ Boss Kristallin }::.. -->
+            <npc id="22"/>
+            <!-- ..::{ Boss Kristallon }::.. -->
+            <npc id="23"/>
+        </map>
+        <!-- 3-8 -->
+        <map ref="28">
+            <!-- -=[ StreuneR ]=- -->
+            <npc id="11"/>
+            <!-- ..::{ Boss StreuneR }::.. -->
+            <npc id="24"/>
+            <!-- \\ Purpose XXI // -->
+            <npc id="174"/>
+        </map>
+        <!-- 4-5 -->
+        <map ref="29">
+            <!-- ..::{ Boss Streuner }::.. -->
+            <npc id="14"/>
+            <!-- ..::{ Boss Lordakia }::.. -->
+            <npc id="15"/>
+            <!-- ..::{ Boss Mordon }::.. -->
+            <npc id="16"/>
+            <!-- ..::{ Boss Saimon }::.. -->
+            <npc id="17"/>
+            <!-- ..::{ Boss Devolarium }::.. -->
+            <npc id="18"/>
+            <!-- ..::{ Boss Sibelonit }::.. -->
+            <npc id="19"/>
+            <!-- ..::{ Boss Sibelon }::.. -->
+            <npc id="20"/>
+            <!-- ..::{ Boss Lordakium }::... -->
+            <npc id="21"/>
+            <!-- ..::{ Boss Kristallin }::.. -->
+            <npc id="22"/>
+            <!-- ..::{ Boss Kristallon }::.. -->
+            <npc id="23"/>
+            <!-- ..::{ Boss StreuneR }::.. -->
+            <npc id="24"/>
+            <!-- ( UberStreuner ) -->
+            <npc id="28"/>
+            <!-- ( UberLordakia ) -->
+            <npc id="29"/>
+            <!-- ( UberMordon ) -->
+            <npc id="30"/>
+            <!-- ( UberSaimon ) -->
+            <npc id="31"/>
+            <!-- ( UberDevolarium ) -->
+            <npc id="32"/>
+            <!-- ( UberSibelonit ) -->
+            <npc id="33"/>
+            <!-- ( UberSibelon ) -->
+            <npc id="34"/>
+            <!-- ( UberLordakium ) -->
+            <npc id="35"/>
+            <!-- ( UberKristallin ) -->
+            <npc id="36"/>
+            <!-- ( UberKristallon ) -->
+            <npc id="37"/>
+            <!-- ( UberStreuneR ) -->
+            <npc id="38"/>
+            <!-- -=[ Deadly Battleray ]=- -->
+            <npc id="121"/>
+            <!-- ( Uber Interceptor ) -->
+            <npc id="163"/>
+            <!-- ( Uber Barracuda ) -->
+            <npc id="164"/>
+            <!-- ( Uber Saboteur ) -->
+            <npc id="165"/>
+            <!-- ( Uber Annihilator ) -->
+            <npc id="166"/>
+            <!-- ( Uber Battleray ) -->
+            <npc id="167"/>
+        </map>
+        <!-- 5-1 -->
+        <map ref="91">
+            <!-- -=[ Interceptor ]=- -->
+            <npc id="58"/>
+            <!-- -=[ Barracuda ]=- -->
+            <npc id="59"/>
+            <!-- -=[ Saboteur ]=- -->
+            <npc id="60"/>
+            <!-- -=[ Annihilator ]=- -->
+            <npc id="61"/>
+            <!-- ( Uber Interceptor ) -->
+            <npc id="163"/>
+            <!-- ( Uber Barracuda ) -->
+            <npc id="164"/>
+        </map>
+        <!-- 5-2 -->
+        <map ref="92">
+            <!-- -=[ Interceptor ]=- -->
+            <npc id="58"/>
+            <!-- -=[ Barracuda ]=- -->
+            <npc id="59"/>
+            <!-- -=[ Saboteur ]=- -->
+            <npc id="60"/>
+            <!-- -=[ Annihilator ]=- -->
+            <npc id="61"/>
+            <!-- ( Uber Interceptor ) -->
+            <npc id="163"/>
+            <!-- ( Uber Barracuda ) -->
+            <npc id="164"/>
+            <!-- ( Uber Saboteur ) -->
+            <npc id="165"/>
+            <!-- ( Uber Annihilator ) -->
+            <npc id="166"/>
+        </map>
+        <!-- 5-3 -->
+        <map ref="93">
+            <!-- -=[ Interceptor ]=- -->
+            <npc id="58"/>
+            <!-- -=[ Barracuda ]=- -->
+            <npc id="59"/>
+            <!-- -=[ Saboteur ]=- -->
+            <npc id="60"/>
+            <!-- -=[ Annihilator ]=- -->
+            <npc id="61"/>
+            <!-- -=[ Battleray ]=- -->
+            <npc id="62"/>
+            <!-- ( Uber Interceptor ) -->
+            <npc id="163"/>
+            <!-- ( Uber Barracuda ) -->
+            <npc id="164"/>
+        </map>
+        <!-- 1-BL -->
+        <map ref="306">
+            <!-- \\ Impulse II // -->
+            <npc id="175"/>
+            <!-- \\ Attend IX // -->
+            <npc id="176"/>
+            <!-- \\ Invoke XVI // -->
+            <npc id="177"/>
+            <!-- \\ Mindfire Behemoth // -->
+            <npc id="178"/>
+        </map>
+        <!-- 2-BL -->
+        <map ref="307">
+            <!-- \\ Impulse II // -->
+            <npc id="175"/>
+            <!-- \\ Attend IX // -->
+            <npc id="176"/>
+            <!-- \\ Invoke XVI // -->
+            <npc id="177"/>
+            <!-- \\ Mindfire Behemoth // -->
+            <npc id="178"/>
+        </map>
+        <!-- 3-BL -->
+        <map ref="308">
+            <!-- \\ Impulse II // -->
+            <npc id="175"/>
+            <!-- \\ Attend IX // -->
+            <npc id="176"/>
+            <!-- \\ Invoke XVI // -->
+            <npc id="177"/>
+            <!-- \\ Mindfire Behemoth // -->
+            <npc id="178"/>
+        </map>
+    </npcs>
+</spacemap>

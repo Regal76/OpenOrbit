@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<boxes>
+    <rate rateId="1">
+        <rewardLoot lootId="equipment_core_ax-40" />
+        <rewardLoot lootId="equipment_core_df-40" />
+    </rate>
+    <rate rateId="2">
+        <rewardLoot lootId="equipment_core_ax-30"  />
+        <rewardLoot lootId="equipment_core_df-30"  />
+    </rate>
+    <rate rateId="3">
+        <rewardLoot lootId="equipment_core_ax-20"  />
+        <rewardLoot lootId="equipment_core_df-20"  />
+        <rewardLoot lootId="equipment_core_ax-10"  />
+        <rewardLoot lootId="equipment_core_df-10"  />
+    </rate>
+ </boxes>

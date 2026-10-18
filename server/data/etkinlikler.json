@@ -1,0 +1,2791 @@
+{
+ "_aciklama": "Etkinlik takvimi (yol haritası Aşama 7; takvim.py). Her etkinlik: ad, tarih aralıkları (yıllık 'donemler' AA-GG, ya da haftalık 'gunler' 0=pazartesi ve 'saatler'), istemciye EventUpdateCommand'da bildirilen etkinlik türleri ('turler': kayıttaki EventModule.type adları), başarım grupları ('basarim': data/basarimlar.json grup ya da etkinlik adı). Tarihler wiki'den (belgeler/arastirma/pve_icerik.md, darkorbitwiki events) yuvarlanarak; tek oyunculuda etkinlik uzaylıları dönem boyunca bütün gün (wiki'nin saat pencereleri '_wiki_saatler'de). Oyuncu bir etkinliği tarihinden bağımsız açabilir: Baslat.bat --etkinlik halloween,agatus (hepsi: --etkinlik hepsi; mevsimlikleri kapatmak: --etkinlik yok).",
+ "surekli": {
+  "_aciklama": "Kayıtta süresiz görünen (210.030 saat) özellik bayrakları; sunucunun karşılığı olanlar ya da istemcinin davranışını değiştirenler aynen gönderilir.",
+  "turler": [
+   "UridiumBank",
+   "BE_uridiumBank",
+   "QuarantinZone",
+   "NanoAurusEvent",
+   "Blacklight_TreasureNpc_Meta",
+   "SpecialCollectDistance",
+   "PixelatedRenderingSetting",
+   "AllGatesSchism",
+   "PlagueAlert2017SpawnPhase2",
+   "PlagueAlert2017SpawnPhase3",
+   "HideStartButton",
+   "NoDroneDamage",
+   "MonthlyDeluxePack",
+   "BE_monthlyDeluxePack102020",
+   "UnityClientReward",
+   "SeasonPass",
+   "PirateBootyRedAndBlue"
+  ]
+ },
+ "etkinlikler": {
+  "yukseltme_saati": {
+   "ad": "Upgrade Hour",
+   "gunler": [
+    5,
+    6
+   ],
+   "saatler": [
+    [
+     20,
+     21
+    ]
+   ],
+   "turler": [],
+   "_kaynak": "istemcinin metni bn_upgradeBounsHour_content (%25 uridyum indirimi); takvim uyarlama"
+  },
+  "dispatch_gunu": {
+   "ad": "Dispatch Day",
+   "gunler": [
+    0,
+    4
+   ],
+   "turler": [],
+   "_kaynak": "wiki: pazartesi ve cuma (dispatch.py)"
+  },
+  "kapi_hafta_sonu": {
+   "ad": "Galaksi Kapısı enerjisi hafta sonu indirimi",
+   "gunler": [
+    5,
+    6
+   ],
+   "turler": [],
+   "_kaynak": "wiki galaxy_gates: hafta sonu enerji -%15 (kapi.py)"
+  },
+  "kronos_gunu": {
+   "ad": "Kronos parçası iki kat",
+   "gunler": [
+    5
+   ],
+   "turler": [],
+   "_kaynak": "wiki: cumartesi Kronos parçası 2 (kapi.py)"
+  },
+  "altin_kutu": {
+   "ad": "Altın Booty Box",
+   "gunler": [
+    4
+   ],
+   "cift_hafta": true,
+   "turler": [],
+   "_kaynak": "wiki: iki haftada bir cuma (ganimet.py)"
+  },
+  "halloween": {
+   "ad": "Trial of Terrors (Halloween)",
+   "donemler": [
+    [
+     "10-01",
+     "10-31"
+    ]
+   ],
+   "turler": [
+    "GhostBosses",
+    "CandyCargo",
+    "PumpkinBoxes",
+    "NpcEvent",
+    "VortexOfTerrorEvent",
+    "BattlePass",
+    "BattlePassKeyExchange",
+    "MiniClientReward",
+    "BE_halloweenoct2026",
+    "BE_battlePass"
+   ],
+   "basarim": [
+    "EVENT_HALLOWEEN",
+    "GhostBosses",
+    "CandyCargo"
+   ],
+   "_wiki_saatler": "Curcubitor: hafta içi 01:00-04:30 ve 19-23, hafta sonu ayrıca 11-15",
+   "_kaynak": "wiki events/trial-of-terrors (Ekim 2024-2026); kayıt 2026-10-15'teki etkin liste",
+   "harita": {
+    "bilgi": {
+     "komut": "NpcEventInfoCommand",
+     "metin": "curcubitor",
+     "npc": 109
+    },
+    "haritalar": [
+     "X-2",
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_curcubitor_{x}",
+      "adet": 12
+     }
+    ],
+    "kota": {
+     "X-2": 40,
+     "X-3": 40,
+     "X-4": 40,
+     "X-5": 30,
+     "X-6": 30,
+     "X-7": 30,
+     "X-8": 20
+    },
+    "patron": {
+     "turler": [
+      "etk_boss_curcubitor_{x}"
+     ],
+     "adet": 5,
+     "sure_sn": 1800
+    },
+    "dusme": {},
+    "hile": {
+     "etk_curcubitor": 0.3
+    },
+    "_kaynak": "wiki trial-of-terrors: harita başına kota (X-2..X-4 40, X-5..X-7 30, X-8 20), 5 Boss Curcubitor 30 dk; ölen Curcubitor Trick (2 sn sonra canın %20si) ya da Treat (Candy Corn kutusu). Uyarlama: nüfus 12, Treat yerine doğrudan Candy Corn, Trick olasılığı %30, adetler."
+   },
+   "para": [
+    "resource_collectable_candy-corn",
+    "resource_collectable_golden-candy-corn"
+   ],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "kutular": [
+      {
+       "tur": "MINI_PUMPKIN",
+       "adet": 6,
+       "mod": "biri",
+       "icerik": [
+        [
+         "currency_uridium",
+         [
+          50,
+          200
+         ],
+         0.25
+        ],
+        [
+         "currency_credits",
+         [
+          5000,
+          20000
+         ],
+         15
+        ],
+        [
+         "resource_collectable_candy-corn",
+         [
+          20,
+          60
+         ],
+         14.75
+        ],
+        [
+         "ammunition_rocket_plt-2026",
+         [
+          20,
+          60
+         ],
+         9
+        ],
+        [
+         "ammunition_rocket_r-310",
+         [
+          30,
+          90
+         ],
+         9
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          10,
+          30
+         ],
+         7
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          10,
+          30
+         ],
+         6
+        ],
+        [
+         "ammunition_mine_slm-01",
+         1,
+         5
+        ],
+        [
+         "ammunition_firework_fwx-l",
+         1,
+         5
+        ],
+        [
+         "resource_ore_xenomit",
+         [
+          20,
+          60
+         ],
+         5
+        ],
+        [
+         "resource_extra-energy",
+         [
+          1,
+          3
+         ],
+         5
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          50,
+          150
+         ],
+         5
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         5
+        ],
+        [
+         "ammunition_specialammo_ghostifier",
+         1,
+         3
+        ]
+       ],
+       "yeniden_sn": [
+        180,
+        420
+       ]
+      },
+      {
+       "tur": "GIANT_PUMPKIN",
+       "adet": 1,
+       "mod": "biri",
+       "icerik": [
+        [
+         "currency_uridium",
+         [
+          250,
+          1000
+         ],
+         0.25
+        ],
+        [
+         "currency_credits",
+         [
+          25000,
+          100000
+         ],
+         15
+        ],
+        [
+         "resource_collectable_candy-corn",
+         [
+          100,
+          300
+         ],
+         14.75
+        ],
+        [
+         "ammunition_rocket_plt-2026",
+         [
+          100,
+          300
+         ],
+         9
+        ],
+        [
+         "ammunition_rocket_r-310",
+         [
+          150,
+          450
+         ],
+         9
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          50,
+          150
+         ],
+         7
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          50,
+          150
+         ],
+         6
+        ],
+        [
+         "ammunition_mine_slm-01",
+         1,
+         5
+        ],
+        [
+         "ammunition_firework_fwx-l",
+         1,
+         5
+        ],
+        [
+         "resource_ore_xenomit",
+         [
+          100,
+          300
+         ],
+         5
+        ],
+        [
+         "resource_extra-energy",
+         [
+          5,
+          15
+         ],
+         5
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          250,
+          750
+         ],
+         5
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         5
+        ],
+        [
+         "ammunition_specialammo_ghostifier",
+         1,
+         3
+        ]
+       ],
+       "yeniden_sn": [
+        900,
+        1800
+       ]
+      }
+     ],
+     "kutu_dusme": {
+      "etk_curcubitor": {
+       "tur": "CURCUBITOR_BOX",
+       "olasilik": 0.5,
+       "omur_sn": 300,
+       "mod": "biri",
+       "kesin": [
+        [
+         "resource_collectable_candy-corn",
+         [
+          20,
+          60
+         ]
+        ]
+       ],
+       "icerik": [
+        [
+         "ammunition_rocket_r-310",
+         [
+          30,
+          90
+         ],
+         14
+        ],
+        [
+         "ammunition_rocket_plt-2026",
+         [
+          20,
+          60
+         ],
+         10
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          10,
+          30
+         ],
+         10
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          10,
+          30
+         ],
+         10
+        ],
+        [
+         "ammunition_rocketlauncher_eco-10",
+         [
+          10,
+          30
+         ],
+         9
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         [
+          100,
+          300
+         ],
+         15
+        ],
+        [
+         "ammunition_laser_job-100",
+         [
+          100,
+          300
+         ],
+         15
+        ],
+        [
+         "resource_ore_xenomit",
+         [
+          20,
+          60
+         ],
+         10
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          50,
+          150
+         ],
+         5
+        ],
+        [
+         "resource_extra-energy",
+         [
+          1,
+          3
+         ],
+         2
+        ]
+       ]
+      },
+      "etk_boss_curcubitor": {
+       "tur": "CURCUBITOR_BOSS_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 600,
+       "mod": "biri",
+       "kesin": [
+        [
+         "resource_collectable_candy-corn",
+         [
+          400,
+          800
+         ]
+        ]
+       ],
+       "icerik": [
+        [
+         "currency_uridium",
+         [
+          500,
+          2000
+         ],
+         15
+        ],
+        [
+         "ammunition_laser_ucb-100",
+         [
+          500,
+          1500
+         ],
+         10
+        ],
+        [
+         "ammunition_rocket_plt-2021",
+         [
+          200,
+          600
+         ],
+         20
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          100,
+          300
+         ],
+         15
+        ],
+        [
+         "ammunition_specialammo_dcr-250",
+         [
+          10,
+          30
+         ],
+         14.5
+        ],
+        [
+         "ammunition_specialammo_sr-5",
+         [
+          20,
+          60
+         ],
+         14
+        ],
+        [
+         "resource_extra-energy",
+         [
+          5,
+          15
+         ],
+         6
+        ],
+        [
+         "resource_logfile",
+         [
+          1,
+          3
+         ],
+         4.5
+        ],
+        [
+         "resource_collectable_golden-candy-corn",
+         [
+          1,
+          3
+         ],
+         1
+        ]
+       ]
+      }
+     },
+     "_kaynak": "wiki: Pumpkin Box X-2..X-8 (olasılıklar), Curcubitor Treat ve Boss Curcubitor kutuları (olasılıklar); adetler, kutu sayısı, Giant Pumpkin (fandom: büyük adetli sarı kutu) x5 uyarlama",
+     "_arac": "tools/etkinlik_kutulari.py"
+    }
+   ]
+  },
+  "agatus": {
+   "ad": "Agatus Breach",
+   "donemler": [
+    [
+     "09-01",
+     "09-21"
+    ]
+   ],
+   "turler": [
+    "NpcEvent"
+   ],
+   "basarim": [],
+   "_wiki_saatler": "08-16 ve 18-24",
+   "_kaynak": "wiki events/agatus-breach (Eylül 2026)",
+   "harita": {
+    "bilgi": {
+     "komut": "AgatusEventInfoCommand",
+     "metin": "agatusbreach",
+     "npc": 260
+    },
+    "haritalar": [
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_spinel_{x}",
+      "adet": 10
+     }
+    ],
+    "kota": {
+     "X-3": 30,
+     "X-4": 30,
+     "X-5": 25,
+     "X-6": 20,
+     "X-7": 20,
+     "X-8": 15
+    },
+    "patron": {
+     "turler": [
+      "etk_agatus_{x}"
+     ],
+     "adet": 1,
+     "sure_sn": 1800,
+     "cagir": {
+      "tur": "etk_spinel_{x}",
+      "adet": 3,
+      "aralik_sn": 20,
+      "en_cok": 9
+     }
+    },
+    "dusme": {
+     "etk_spinel": {
+      "resource_collectable_agate-splinter": [
+       1,
+       3
+      ]
+     },
+     "etk_agatus": {
+      "resource_collectable_agate-splinter": [
+       150,
+       300
+      ]
+     }
+    },
+    "_kaynak": "wiki agatus-breach: kota (X-3 30, X-4 30, X-5 25, X-6 20, X-7 20, X-8 15), Agatus vurulunca Spinel çağırır; ilk 3 hasar vereni Agate Splinter kutusu. Uyarlama: nüfus 10, çağırma 20 sn de bir 3 (en çok 9), splinter adetleri."
+   },
+   "para": [
+    "resource_collectable_agate-splinter"
+   ]
+  },
+  "hitac": {
+   "ad": "Hitac Assault",
+   "donemler": [
+    [
+     "08-01",
+     "08-31"
+    ]
+   ],
+   "turler": [
+    "NpcEvent"
+   ],
+   "basarim": [],
+   "_kaynak": "wiki events/hitac-assault (Ağustos 2024-2026) | Ö3: 1-31 Ağustos (Pursuit of Prestige setleri 12-20, 22-30)",
+   "harita": {
+    "haritalar": [
+     "X-2",
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_hitac_underling_{x}",
+      "adet": 15
+     }
+    ],
+    "kota": {
+     "X-2": 200,
+     "X-3": 140,
+     "X-4": 110,
+     "X-5": 70,
+     "X-6": 55,
+     "X-7": 45,
+     "X-8": 35
+    },
+    "patron": {
+     "turler": [
+      "etk_hitac_underboss_{x}"
+     ],
+     "adet": 1,
+     "sure_sn": 1800
+    },
+    "_kaynak": "wiki hitac-assault: Underling kotası (X-2 200 … X-8 35) Underboss çağırır. Ana gemiler (harita harita dolaşan) ve Pursuit of Prestige yok. Uyarlama: nüfus 15. İstemcide Hitac için etkinlik göstergesi metni yok: gösterge gönderilmez."
+   },
+   "gezgin": {
+    "tur": "etk_hitac_mothership",
+    "rota": [
+     "1-3",
+     "1-4",
+     "3-4",
+     "3-3",
+     "2-4",
+     "2-3"
+    ],
+    "sure_sn": 600,
+    "bekleme_sn": 1800,
+    "_kaynak": "wiki rota; harita başına 10 dk, öldükten sonra 30 dk (uyarlama)"
+   }
+  },
+  "immortal_union": {
+   "ad": "Immortal Union",
+   "donemler": [
+    [
+     "02-07",
+     "02-21"
+    ]
+   ],
+   "turler": [
+    "NpcEvent"
+   ],
+   "basarim": [
+    "EVENT_VALENTINE"
+   ],
+   "_wiki_saatler": "07-09, 10-16, 18-24",
+   "_kaynak": "wiki events/immortal-union (Şubat 2024-2026)",
+   "harita": {
+    "bilgi": {
+     "komut": "NpcEventInfoCommand",
+     "metin": "npc_valentine",
+     "npc": 231
+    },
+    "haritalar": [
+     "X-2",
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_lanatum_{x}",
+      "adet": 15
+     }
+    ],
+    "kota": {
+     "X-2": 150,
+     "X-3": 120,
+     "X-4": 120,
+     "X-5": 100,
+     "X-6": 100,
+     "X-7": 90,
+     "X-8": 75
+    },
+    "patron": {
+     "turler": [
+      "etk_styxus_{x}",
+      "etk_charopos_{x}"
+     ],
+     "adet": 1,
+     "sure_sn": 1800,
+     "sirayla": true
+    },
+    "dusme": {
+     "etk_lanatum": {
+      "resource_collectable_styxus-shard": [
+       0,
+       2
+      ],
+      "resource_collectable_charopos-shard": [
+       0,
+       2
+      ]
+     },
+     "etk_styxus": {
+      "resource_collectable_styxus-shard": [
+       150,
+       300
+      ]
+     },
+     "etk_charopos": {
+      "resource_collectable_charopos-shard": [
+       150,
+       300
+      ]
+     }
+    },
+    "_kaynak": "wiki immortal-union: harita başına 75-150 Lanatum -> Styxus ya da Charopos (30 dk); shard ile tarifler. Uyarlama: kotalar haritaya göre, sırayla Styxus/Charopos, adetler."
+   },
+   "para": [
+    "resource_collectable_styxus-shard",
+    "resource_collectable_charopos-shard"
+   ]
+  },
+  "protegit": {
+   "ad": "Protegit Pandemonium",
+   "donemler": [
+    [
+     "05-08",
+     "05-21"
+    ]
+   ],
+   "turler": [
+    "NpcEvent"
+   ],
+   "basarim": [],
+   "_wiki_saatler": "07-09, 10-16, 18-02",
+   "_kaynak": "wiki events/protegit-pandemonium (Mayıs 2024-2026)",
+   "harita": {
+    "haritalar": [
+     "X-2",
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_chaos_protegit_{x}",
+      "adet": 12
+     }
+    ],
+    "dusme": {
+     "etk_chaos_protegit": {
+      "resource_collectable_chaos-fragment": [
+       1,
+       30
+      ]
+     }
+    },
+    "_kaynak": "wiki protegit-pandemonium: Chaos Protegit 1-30 Chaos Fragment düşürür; fragmanlarla Chaos Alien CPU (kişisel uzaylı). Uyarlama: nüfus 12; CPU tarifleri Assembly'de (tarifler.json).",
+    "bilgi": {
+     "komut": "NpcEventInfoCommand",
+     "metin": "npc_chaos-protegit",
+     "npc": 229
+    }
+   },
+   "para": [
+    "resource_collectable_chaos-fragment"
+   ]
+  },
+  "kis": {
+   "ad": "Doğum günü ve kış (Ice Meteoroids, Santa)",
+   "donemler": [
+    [
+     "12-01",
+     "12-31"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_SEASON_WINTER",
+    "EVENT_WINTER_2011",
+    "EVENT_WINTER_2012",
+    "EVENT_WINTER_2013",
+    "EVENT_WINTER_2014",
+    "IceMeteroids",
+    "WinterEvent2011_IceMeteroids",
+    "CrazySanta",
+    "WinterEvent2011_CrazySanta"
+   ],
+   "_kaynak": "wiki events/birthday-event, ice-meteoroids (Aralık)",
+   "harita": {
+    "haritalar": [
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_ice_meteoroid",
+      "adet": 1
+     }
+    ],
+    "cagir": {
+     "etk_ice_meteoroid": {
+      "tur": "etk_icy",
+      "adet": 2,
+      "aralik_sn": 30,
+      "en_cok": 8
+     }
+    },
+    "_kaynak": "wiki ice-meteoroids: Ice Meteoroid X-3..X-8 (ateş etmez, Icy çağırır). Super Ice Meteoroid 4-4/4-5. Uyarlama: harita başına 1, 30 sn de bir 2 Icy (en çok 8)."
+   },
+   "harita_ek": [
+    {
+     "haritalar": [
+      "4-4",
+      "4-5"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_super_ice_meteoroid",
+       "adet": 1
+      }
+     ],
+     "cagir": {
+      "etk_super_ice_meteoroid": {
+       "tur": "etk_icy",
+       "adet": 3,
+       "aralik_sn": 30,
+       "en_cok": 9
+      }
+     }
+    },
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "kutular": [
+      {
+       "tur": "GIFT_BOXES",
+       "adet": 4,
+       "mod": "biri",
+       "icerik": [
+        [
+         "ammunition_laser_lcb-10",
+         [
+          10,
+          50
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_mcb-25",
+         [
+          5,
+          35
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         [
+          5,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_sab-50",
+         [
+          5,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          5,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_eco-10",
+         [
+          6,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          6,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_wiz-x",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-m",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-s",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-l",
+         1,
+         1
+        ],
+        [
+         "resource_jumpvoucher",
+         [
+          2,
+          3
+         ],
+         1
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         1
+        ],
+        [
+         "resource_extra-energy",
+         [
+          18,
+          28
+         ],
+         1
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          35,
+          49
+         ],
+         1
+        ],
+        [
+         "currency_credits",
+         [
+          224,
+          640
+         ],
+         1
+        ],
+        [
+         "currency_uridium",
+         [
+          20,
+          132
+         ],
+         1
+        ]
+       ],
+       "yeniden_sn": [
+        300,
+        720
+       ]
+      }
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_santa_{x}",
+       "adet": 1
+      }
+     ],
+     "_arac": "tools/etkinlik_kutulari.py",
+     "_kaynak": "hediye kutusu içeriği kaynakta yok: Thanksgiving kutusununki (uyarlama); Santa-1100101 wiki"
+    },
+    {
+     "haritalar": [
+      "4-5"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_santa_4_5",
+       "adet": 1
+      }
+     ],
+     "_arac": "tools/etkinlik_kutulari.py"
+    }
+   ]
+  },
+  "thanksgiving": {
+   "ad": "Thanksgiving (Ice Meteoroids)",
+   "donemler": [
+    [
+     "11-20",
+     "11-30"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_THANKSGIVING"
+   ],
+   "_kaynak": "wiki events/thanksgiving, ice-meteoroids",
+   "harita": {
+    "haritalar": [
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_ice_meteoroid",
+      "adet": 1
+     }
+    ],
+    "cagir": {
+     "etk_ice_meteoroid": {
+      "tur": "etk_icy",
+      "adet": 2,
+      "aralik_sn": 30,
+      "en_cok": 8
+     }
+    },
+    "_kaynak": "wiki ice-meteoroids: Ice Meteoroid X-3..X-8 (ateş etmez, Icy çağırır). Super Ice Meteoroid 4-4/4-5. Uyarlama: harita başına 1, 30 sn de bir 2 Icy (en çok 8)."
+   },
+   "harita_ek": [
+    {
+     "haritalar": [
+      "4-4",
+      "4-5"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_super_ice_meteoroid",
+       "adet": 1
+      }
+     ],
+     "cagir": {
+      "etk_super_ice_meteoroid": {
+       "tur": "etk_icy",
+       "adet": 3,
+       "aralik_sn": 30,
+       "en_cok": 9
+      }
+     }
+    },
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "kutular": [
+      {
+       "tur": "SOLAR_CLASH",
+       "adet": 4,
+       "mod": "biri",
+       "icerik": [
+        [
+         "ammunition_laser_lcb-10",
+         [
+          10,
+          50
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_mcb-25",
+         [
+          5,
+          35
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         [
+          5,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_sab-50",
+         [
+          5,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          5,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_eco-10",
+         [
+          6,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          6,
+          12
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_wiz-x",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-m",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-s",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-l",
+         1,
+         1
+        ],
+        [
+         "resource_jumpvoucher",
+         [
+          2,
+          3
+         ],
+         1
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         1
+        ],
+        [
+         "resource_extra-energy",
+         [
+          18,
+          28
+         ],
+         1
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          35,
+          49
+         ],
+         1
+        ],
+        [
+         "currency_credits",
+         [
+          224,
+          640
+         ],
+         1
+        ],
+        [
+         "currency_uridium",
+         [
+          20,
+          132
+         ],
+         1
+        ]
+       ],
+       "yeniden_sn": [
+        300,
+        720
+       ]
+      }
+     ],
+     "_kaynak": "wiki: Thanksgiving Box X-2..X-8 (wiki görseli güneş kutusu; olasılık yok: eşit)",
+     "_arac": "tools/etkinlik_kutulari.py"
+    }
+   ]
+  },
+  "plutus": {
+   "ad": "Gauntlet of Plutus",
+   "donemler": [
+    [
+     "07-01",
+     "07-14"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_GAUNTLETOFPLUTUS"
+   ],
+   "_kaynak": "wiki events/gauntlet-of-plutus (tarih vermiyor: dönem uyarlama); kapılar etkinlik_kapi.py"
+  },
+  "labirent": {
+   "ad": "Frozen Labyrinth",
+   "donemler": [
+    [
+     "12-18",
+     "01-06"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_FROZENLABYRINTH"
+   ],
+   "_kaynak": "wiki/forum: 18 Aralık - 1 Ocak (2019), 22 Aralık - 6 Ocak (2022); labirent.py"
+  },
+  "dogum_gunu": {
+   "ad": "DarkOrbit Birthday",
+   "donemler": [
+    [
+     "12-11",
+     "12-11"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "_kaynak": "fandom/JP wiki: Birthday Gate 11 Aralık (oyunun doğum günü)"
+  },
+  "empyrian": {
+   "ad": "Empyrian March",
+   "donemler": [
+    [
+     "03-01",
+     "03-14"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_EMPYRIAN"
+   ],
+   "para": [
+    "resource_collectable_luminium"
+   ],
+   "_kaynak": "wiki events/empyrian-march (dönem uyarlama)",
+   "kapi_odulu": [
+    {
+     "kapilar": [
+      "alpha",
+      "beta",
+      "gamma"
+     ],
+     "esyalar": [
+      [
+       "resource_booty-key-empyrian",
+       2,
+       1.0
+      ]
+     ]
+    }
+   ],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8",
+      "4-1",
+      "4-2",
+      "4-3",
+      "4-4",
+      "4-5"
+     ],
+     "kutu_dusme": {
+      "84": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "153": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "152": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "24": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "23": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "71": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "31": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "25": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "72": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "73": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "75": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "74": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "27": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "77": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "76": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "29": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "78": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "81": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "79": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "34": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "85": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "26": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "36": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "37": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "43": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "38": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "40": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "44": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "257": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "42": {
+       "tur": "LUMINIUM",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "46": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "28": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "35": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "39": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "47": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "258": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "255": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "80": {
+       "tur": "LUMINIUM_2",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          20,
+          50
+         ]
+        ]
+       ]
+      },
+      "41": {
+       "tur": "LUMINIUM_3",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          50,
+          80
+         ]
+        ]
+       ]
+      },
+      "45": {
+       "tur": "LUMINIUM_3",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          50,
+          80
+         ]
+        ]
+       ]
+      },
+      "254": {
+       "tur": "LUMINIUM_3",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          50,
+          80
+         ]
+        ]
+       ]
+      },
+      "256": {
+       "tur": "LUMINIUM_3",
+       "olasilik": 0.35,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_collectable_luminium",
+         [
+          50,
+          80
+         ]
+        ]
+       ]
+      }
+     },
+     "_kaynak": "wiki: Luminium kutusu uzaylı aşamasına göre (I 5-15 … V 100-150); düşme olasılığı %35 uyarlama",
+     "_arac": "tools/etkinlik_kutulari.py"
+    }
+   ]
+  },
+  "prosperous": {
+   "ad": "Prosperous",
+   "donemler": [
+    [
+     "01-20",
+     "02-03"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_PROSPEROUS"
+   ],
+   "_kaynak": "wiki events/prosperous (dönem uyarlama, Ay yeni yılı çevresi)",
+   "kapi_odulu": [
+    {
+     "kapilar": [
+      "alpha",
+      "beta",
+      "gamma"
+     ],
+     "esyalar": [
+      [
+       "resource_booty-key-prosperous",
+       2,
+       1.0
+      ]
+     ]
+    },
+    {
+     "kapilar": [
+      "alpha",
+      "beta",
+      "gamma"
+     ],
+     "esyalar": [
+      [
+       "currency_credits",
+       88888,
+       1.0
+      ]
+     ],
+     "paket": "package_event_reward-prosperous-alphabetagamma-sub",
+     "_kaynak": "istemcinin başarım metni (achievement_event_prosperous-gg): Prosperous'ta Alpha/Beta/Gamma'dan 88.888 kredi; her tamamlamada (uyarlama)"
+    }
+   ]
+  },
+  "bahar": {
+   "ad": "Spring Sabotage",
+   "donemler": [
+    [
+     "04-01",
+     "04-14"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "_kaynak": "wiki events/spring-sabotage (dönem uyarlama)",
+   "kapi_odulu": [
+    {
+     "kapilar": [
+      "delta",
+      "epsilon",
+      "zeta",
+      "kappa"
+     ],
+     "esyalar": [
+      [
+       "resource_booty-key-lucent",
+       1,
+       0.2
+      ]
+     ]
+    }
+   ],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "kutular": [
+      {
+       "tur": "ALIEN_EGG",
+       "adet": 6,
+       "mod": "biri",
+       "icerik": [
+        [
+         "ammunition_laser_mcb-25",
+         [
+          5,
+          35
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         [
+          5,
+          35
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_sab-50",
+         [
+          5,
+          35
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_sp-100x",
+         1,
+         1
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          6,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocket_plt-2026",
+         [
+          6,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocket_r-310",
+         [
+          4,
+          28
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          6,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_eco-10",
+         [
+          6,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_mine_slm-01",
+         1,
+         1
+        ],
+        [
+         "ammunition_mine_acm-01",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-m",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-s",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-l",
+         1,
+         1
+        ],
+        [
+         "resource_ore_xenomit",
+         [
+          11,
+          69
+         ],
+         1
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         1
+        ],
+        [
+         "resource_extra-energy",
+         1,
+         1
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          118,
+          135
+         ],
+         1
+        ],
+        [
+         "currency_credits",
+         [
+          228,
+          1390
+         ],
+         1
+        ],
+        [
+         "currency_uridium",
+         [
+          24,
+          128
+         ],
+         1
+        ],
+        [
+         "resource_booty-key-lucent",
+         [
+          1,
+          2
+         ],
+         1
+        ]
+       ],
+       "yeniden_sn": [
+        240,
+        600
+       ]
+      }
+     ],
+     "_kaynak": "wiki: Alien Egg X-2..X-8 anahtarsız, 1-2 Lucent Key; olasılık yok (eşit), kutu sayısı uyarlama",
+     "_arac": "tools/etkinlik_kutulari.py"
+    }
+   ]
+  },
+  "chaos_omen": {
+   "ad": "Chaos Omen",
+   "donemler": [
+    [
+     "04-24",
+     "05-07"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "_kaynak": "wiki events/chaos-omen: Protegit Pandemonium'un öncesi (dönem uyarlama)",
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8",
+      "4-1",
+      "4-2",
+      "4-3",
+      "4-4",
+      "4-5",
+      "5-1",
+      "5-2",
+      "5-3"
+     ],
+     "kutular": [
+      {
+       "tur": "SOLAR_CLASH",
+       "adet": 5,
+       "mod": "biri",
+       "icerik": [
+        [
+         "ammunition_laser_lcb-10",
+         [
+          12,
+          63
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_mcb-25",
+         [
+          5,
+          34
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         [
+          5,
+          30
+         ],
+         1
+        ],
+        [
+         "ammunition_laser_sab-50",
+         [
+          5,
+          28
+         ],
+         1
+        ],
+        [
+         "ammunition_rocket_r-310",
+         [
+          3,
+          27
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          6,
+          13
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_eco-10",
+         [
+          8,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          5,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_ubr-100",
+         [
+          5,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_wiz-x",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-m",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-s",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-l",
+         1,
+         1
+        ],
+        [
+         "resource_jumpvoucher",
+         [
+          2,
+          3
+         ],
+         1
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         1
+        ],
+        [
+         "resource_booty-key",
+         1,
+         1
+        ],
+        [
+         "resource_logfile",
+         1,
+         1
+        ],
+        [
+         "resource_extra-energy",
+         5,
+         1
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          37,
+          49
+         ],
+         1
+        ],
+        [
+         "currency_credits",
+         [
+          200,
+          1398
+         ],
+         1
+        ],
+        [
+         "currency_uridium",
+         [
+          20,
+          132
+         ],
+         1
+        ]
+       ],
+       "yeniden_sn": [
+        240,
+        600
+       ]
+      }
+     ],
+     "_kaynak": "wiki: Sun Box X-2..X-8, 4-X, 5-X (adet aralıkları; olasılık yok: eşit). Görünüm istemcinin \"bonusBoxSun\"ı (SOLAR_CLASH kutusu)",
+     "_arac": "tools/etkinlik_kutulari.py"
+    }
+   ]
+  },
+  "chromin": {
+   "ad": "Chromin Rush",
+   "donemler": [
+    [
+     "01-01",
+     "01-07"
+    ],
+    [
+     "02-03",
+     "02-09"
+    ],
+    [
+     "03-02",
+     "03-08"
+    ],
+    [
+     "04-01",
+     "04-07"
+    ],
+    [
+     "05-01",
+     "05-07"
+    ],
+    [
+     "06-01",
+     "06-07"
+    ],
+    [
+     "07-01",
+     "07-07"
+    ],
+    [
+     "08-04",
+     "08-10"
+    ],
+    [
+     "09-02",
+     "09-08"
+    ],
+    [
+     "10-01",
+     "10-07"
+    ],
+    [
+     "11-04",
+     "11-10"
+    ],
+    [
+     "12-03",
+     "12-09"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "para": [
+    "resource_collectable_chromin"
+   ],
+   "_kaynak": "hitac_chromin.json chromin.schedule_board: 2025-2026 aylık koşular (gün 10:00 - 6 gün sonra 23:59); tools/ek_etkinlikler.py"
+  },
+  "unvan_avi": {
+   "ad": "Pursuit of Prestige",
+   "donemler": [
+    [
+     "08-12",
+     "08-20"
+    ],
+    [
+     "08-22",
+     "08-30"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "_kaynak": "hitac_chromin.json title_frenzy.sets 2026; Hitac Assault'un parçası; tools/ek_etkinlikler.py"
+  },
+  "fever": {
+   "ad": "Fever (gemi güçlenmesi)",
+   "gunler": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "turler": [],
+   "basarim": [],
+   "_kaynak": "diger_etkinlikler.json fever (saatler fever.py'de); tools/ek_etkinlikler.py"
+  },
+  "galaxy_trek": {
+   "ad": "Galaxy Trek",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "01-01",
+     "01-07"
+    ],
+    [
+     "02-16",
+     "02-22"
+    ],
+    [
+     "03-11",
+     "03-17"
+    ],
+    [
+     "04-08",
+     "04-14"
+    ],
+    [
+     "05-06",
+     "05-12"
+    ],
+    [
+     "06-03",
+     "06-09"
+    ],
+    [
+     "07-02",
+     "07-08"
+    ],
+    [
+     "08-19",
+     "08-25"
+    ],
+    [
+     "09-09",
+     "09-15"
+    ],
+    [
+     "10-07",
+     "10-13"
+    ]
+   ],
+   "_kaynak": "galaxy_trek.json tarihler: 2026 koşuları (6-7 gün); tools/ek_etkinlikler.py"
+  },
+  "fiesta": {
+   "ad": "Fiesta Gate",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "01-07",
+     "01-25"
+    ],
+    [
+     "08-05",
+     "08-19"
+    ]
+   ],
+   "_kaynak": "fiesta_gate.json tarihler: 7-25 Ocak 2026 (Yeni Yıl), 5-19 Ağustos 2026 (Summer Festival); tools/ek_etkinlikler.py"
+  },
+  "infiltration": {
+   "ad": "Infiltration",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "11-24",
+     "12-05"
+    ]
+   ],
+   "_kaynak": "diger_etkinlikler.json infiltration.schedule (Şükran Günü 2022, 2024); tools/ek_etkinlikler.py"
+  },
+  "invasion": {
+   "ad": "Invasion (firma yarışı)",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "10-28",
+     "10-31"
+    ],
+    [
+     "12-27",
+     "12-31"
+    ]
+   ],
+   "_kaynak": "diger_etkinlikler.json invasion.schedule (Pumpkin Fest ve Aralık örnekleri); tarihler uyarlama; tools/ek_etkinlikler.py"
+  },
+  "acil_gorevler": {
+   "ad": "Urgent Missions",
+   "gunler": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "turler": [],
+   "basarim": [],
+   "_kaynak": "diger_etkinlikler.json urgent_missions (Mart 2022'den beri sürekli); tools/ek_etkinlikler.py"
+  },
+  "vortex_of_greed": {
+   "ad": "Vortex of Greed",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "01-01",
+     "01-20"
+    ],
+    [
+     "02-01",
+     "02-20"
+    ],
+    [
+     "03-01",
+     "03-20"
+    ],
+    [
+     "04-01",
+     "04-20"
+    ],
+    [
+     "05-01",
+     "05-20"
+    ],
+    [
+     "06-01",
+     "06-20"
+    ],
+    [
+     "07-01",
+     "07-20"
+    ],
+    [
+     "08-01",
+     "08-20"
+    ],
+    [
+     "09-01",
+     "09-20"
+    ],
+    [
+     "10-01",
+     "10-20"
+    ],
+    [
+     "11-01",
+     "11-20"
+    ],
+    [
+     "12-01",
+     "12-20"
+    ]
+   ],
+   "_kaynak": "vortex_of_greed.json runs_pattern: 2026'dan beri her ayın 1'inden 15-25'ine; tools/buyuk_icerikler.py"
+  },
+  "world_boss": {
+   "ad": "Treacherous Domain",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "06-17",
+     "07-01"
+    ]
+   ],
+   "_kaynak": "world_boss_2025.json takvim 2026: 17 Haziran - 1 Temmuz; tools/buyuk_icerikler.py"
+  },
+  "mimesis_mutiny": {
+   "ad": "Mimesis Mutiny",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "03-12",
+     "03-26"
+    ],
+    [
+     "11-12",
+     "11-26"
+    ]
+   ],
+   "_kaynak": "mimesis_mutiny.json schedule: Mart ortası 15 gün (her yıl), Kasım 2025; tools/buyuk_icerikler.py"
+  },
+  "mileage_market": {
+   "ad": "Mileage Market",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "07-17",
+     "07-24"
+    ]
+   ],
+   "_kaynak": "dukkanlar_o7.json: 2023 07-20..27, 2024 07-17..24; dukkanlar_o7"
+  },
+  "vip_merchant": {
+   "ad": "VIP Merchant Exchange",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "05-18",
+     "05-25"
+    ],
+    [
+     "12-19",
+     "01-01"
+    ]
+   ],
+   "_kaynak": "dukkanlar_o7.json: 2023-05-18..25, 2024-12-19..01-01; dukkanlar_o7"
+  },
+  "pre_prometheus": {
+   "ad": "Pre-Prometheus Day Sales",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "11-24",
+     "11-26"
+    ]
+   ],
+   "_kaynak": "dukkanlar_o7.json (board 2025); dukkanlar_o7"
+  },
+  "return_of_hero": {
+   "ad": "Return of Hero",
+   "turler": [],
+   "basarim": [],
+   "donemler": [
+    [
+     "07-25",
+     "08-17"
+    ]
+   ],
+   "_kaynak": "dukkanlar_o7.json: 2025 Temmuz sonu ~3-4 hafta; dukkanlar_o7"
+  }
+ },
+ "_kutu_avlari": "harita_ek kutuları, kapi_odulu, gezgin ve yeni etkinlikler tools/etkinlik_kutulari.py ile (Aşama 7b)."
+}

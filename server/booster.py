@@ -1,0 +1,126 @@
+"""Boosterlar: süreli yüzde bonuslar (profilde "boosterlar"; değerler data/esyalar.json "boosterlar").
+
+İstemci (kayıt): AttributeBoosterUpdateCommand {boostedAttributes: [BoosterUpdateModule {attributeType, value}] (10 tür, kayıttaki
+sırayla), boostedDetailsUpdate: [BoosterPlayerDetailModule {lootId, secondsLeft}], boostedDetailsRemove: [BoosterDetailModule
+{lootId}]}. Kayıttaki oyuncunun boosterı yoktu (hepsi 0); değer yüzde sayısı (istemcinin metinleri "+%BOOSTERVALUE%%"), canlıda
+doğrulanmadı. Uzaylıdan düşen booster: BoosterFoundOnMapCommand {lootId, hours}.
+Kurallar (wiki, belgeler/wiki/extras_cpu_tech.md): mağaza boosterı alındığı andan 10 saat sürer, çevrimdışı da işler; uzaylıdan düşenler
+1-10 saat, çevrimdışı durur. Aynı türdekiler toplanır, tür başına üst sınır (hasar %35, can %30, kalkan %80 …). Aynı boosterdan
+birkaç tane alınca süreler eklenir.
+"""
+import json, os, random, time
+import ayar as AY
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+B = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))['boosterlar']
+O6 = json.load(open(os.path.join(HERE, 'data', 'esyalar_o6.json'), encoding='utf8'))['boosterlar']     # Ö6 (tools/esyalar_o6.py)
+for _loot, _etki in O6['turler'].items():           # bb-01 bonus kutusu, qr-01 görev ödülü, prm-b01 Hybrid Alloy/Indoctrine Oil miktarı …
+    B['turler'].setdefault(_loot, _etki)
+ALIAS = O6['takma_ad']                              # istemcinin tanımadığı boosterlar -> [[eşdeğer, saat]] (MAX-BP01, NBX, NQR, PCOMB …)
+ATTRS = ['ABILITY_COOLDOWN_TIME', 'COLLECT_RESOURCES', 'COLLECT_RESOURCES_NEWBIE', 'EXPERIENCE_POINTS', 'HITPOINTS', 'HONOUR_POINTS',
+         'DAMAGE', 'REPAIR', 'SHIELD', 'SHIELD_REGENERATION']                      # kayıttaki sıra
+# istemcinin türü -> sunucunun bonus anahtarı (profil.mods(): formasyon ve dron tasarımlarıyla toplanır)
+MOD_KEYS = {'DAMAGE': ('lazer', 'roket'), 'HITPOINTS': ('can',), 'SHIELD': ('kalkan',), 'SHIELD_REGENERATION': ('kalkan_yenilenme',),
+            'REPAIR': ('onarim',), 'EXPERIENCE_POINTS': ('ep',), 'HONOUR_POINTS': ('onur',), 'COLLECT_RESOURCES': ('kargo',),
+            'ABILITY_COOLDOWN_TIME': ('bekleme',)}
+
+
+def mod(name, **f):
+    f['_'] = name
+    return f
+
+
+def is_booster(loot):
+    return loot in B['turler'] or loot in ALIAS
+
+
+def state(p):
+    """Profildeki boosterlar: lootId -> {bitis: mağazadakinin bittiği an, kalan: uzaylıdan düşenin kalan saniyesi}."""
+    return p.d.setdefault('boosterlar', {})
+
+
+def left(p, loot, now=None):
+    e = state(p).get(loot)
+    if not e:
+        return 0
+    return max(0.0, e.get('bitis', 0) - (now or time.time())) + e.get('kalan', 0)
+
+
+def active(p, now=None):
+    now = now or time.time()
+    return {l: left(p, l, now) for l in state(p) if left(p, l, now) > 0}
+
+
+def values(p, now=None):
+    """Tür -> yüzde (etkin boosterların toplamı, türün üst sınırıyla)."""
+    out = {}
+    for loot in active(p, now):
+        for a, v in B['turler'].get(loot, {}).items():
+            if a in ATTRS:
+                out[a] = out.get(a, 0) + v
+    return {a: min(v, B['tavan'].get(a, v)) for a, v in out.items()}
+
+
+def mods(p, now=None):
+    """Sunucunun bonus anahtarlarıyla (oran): DAMAGE -> lazer ve roket, HITPOINTS -> can …; türü olmayanlar adıyla (isabet, npc)."""
+    out = {}
+    for a, v in values(p, now).items():
+        for k in MOD_KEYS.get(a, ()):
+            out[k] = out.get(k, 0) + v / 100.0
+    for l in active(p, now):                       # göstergede türü olmayan etkiler: isabet (DMG-H01), npc (NPC-B01), pet_ep
+        for k, v in B['turler'][l].items():
+            if k not in ATTRS:
+                out[k] = out.get(k, 0) + v / 100.0
+    return out
+
+
+def add(p, loot, n=1, seconds=None, hours=None):
+    """Mağazadan n tane (süre gerçek zamanla işler; hours: kendi süresi) ya da seconds verilirse uzaylıdan düşen (çevrimdışı durur).
+    Takma ad (istemcinin tanımadığı booster): eşdeğerleri kendi saatleriyle."""
+    if loot in ALIAS:
+        for other, h in ALIAS[loot]:
+            add(p, other, n, hours=h)
+        return
+    now = time.time()
+    with p.lock:
+        e = state(p).setdefault(loot, {'bitis': 0, 'kalan': 0})
+        if seconds is None:
+            sure = hours * 3600 if hours else B['sure_sn']
+            e['bitis'] = max(e.get('bitis', 0), now) + n * sure * AY.carpan('booster_sure')     # panel: booster süresi
+        else:
+            e['kalan'] = e.get('kalan', 0) + seconds * AY.carpan('booster_sure')
+        p.dirty = True
+
+
+def tick(p, now, dt):
+    """Çevrimiçi geçen süre: uzaylıdan düşen boosterın süresi (mağazadaki bitince) azalır. -> süresi biten lootId'ler."""
+    gone = []
+    with p.lock:
+        for loot, e in list(state(p).items()):
+            if e.get('kalan', 0) > 0 and e.get('bitis', 0) <= now:
+                e['kalan'] = max(0, e['kalan'] - dt)
+                p.dirty = True
+            if left(p, loot, now) <= 0:
+                del state(p)[loot]
+                gone.append(loot)
+                p.dirty = True
+    return gone
+
+
+def update_cmd(p, removed=(), now=None):
+    v = values(p, now)
+    return ('AttributeBoosterUpdateCommand', dict(
+        boostedAttributes=[mod('BoosterUpdateModule', attributeType=a, value=float(v.get(a, 0))) for a in ATTRS],
+        boostedDetailsUpdate=[mod('BoosterPlayerDetailModule', lootId=l, secondsLeft=int(s)) for l, s in sorted(active(p, now).items())],
+        # kaldırılan da BoosterPlayerDetailModule: istemci satırı (sınıf kimliği + lootId) anahtarıyla siler (BoosterModel.RemoveItem);
+        # taban sınıf BoosterDetailModule gidince anahtar tutmuyor, satır süresi donmuş kalıyordu (canlı deneme 2026-10-17)
+        boostedDetailsRemove=[mod('BoosterPlayerDetailModule', lootId=l, secondsLeft=0) for l in removed]))
+
+
+def drop_for(npc_name):
+    """Boss/Uber uzaylıdan booster düşer mi (wiki: "Boss/Uber-Alien (1-10h)"; olasılık uyarlama). -> (lootId, saat) ya da None."""
+    d = B['dusme']
+    kind = 'boss' if npc_name.startswith('..::{') else 'uber' if npc_name.startswith('( Uber') else None
+    if not kind or random.random() >= AY.chance('dusme', d['olasilik'][kind]):
+        return None
+    return random.choice(d['turler']), random.randint(*d['saat'])

@@ -1,0 +1,21 @@
+# Your saves, settings and logs stay on your computer / Kayıtlar, ayarlar ve günlükler bilgisayarında kalır
+server/save/
+server/logs/
+
+# Login templates (account data) / Giriş şablonları (hesap verisi)
+server/data/giris.json
+server/data/haritalar.json
+server/data/yanitlar.json
+
+# Original game client / Orijinal oyun istemcisi
+DarkOrbit_Version*/
+
+# Protocol versions built by the Client page (tools/il2cpp/protokol_guncelle.py) / İstemci sayfasının ürettiği protokol sürümleri
+server/data/protokol/*/
+
+# Caches / Önbellekler
+__pycache__/
+*.pyc
+*.pkl
+.vs/
+.vscode/

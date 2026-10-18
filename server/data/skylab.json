@@ -1,0 +1,1258 @@
+{
+ "_aciklama": "belgeler/wiki/resources_refining.md (darkorbitwiki: Skylab) + kayıttaki başlangıç durumu -> server/data/skylab.json. Üreten: tools/skylab.py.",
+ "seviyeler": [
+  {
+   "enerji": 16,
+   "gunes": 170,
+   "uretim": {
+    "ham": 2200,
+    "prometid_duranium": 110,
+    "promerium": 11,
+    "seprom": 1
+   },
+   "depo": {
+    "ham": 105600,
+    "prometid_duranium": 5280,
+    "promerium": 528,
+    "seprom": 48
+   }
+  },
+  {
+   "enerji": 19,
+   "gunes": 210,
+   "uretim": {
+    "ham": 7400,
+    "prometid_duranium": 370,
+    "promerium": 37,
+    "seprom": 3
+   },
+   "depo": {
+    "ham": 355195,
+    "prometid_duranium": 17760,
+    "promerium": 1776,
+    "seprom": 161
+   }
+  },
+  {
+   "enerji": 24,
+   "gunes": 270,
+   "uretim": {
+    "ham": 15045,
+    "prometid_duranium": 752,
+    "promerium": 75,
+    "seprom": 7
+   },
+   "depo": {
+    "ham": 722148,
+    "prometid_duranium": 36107,
+    "promerium": 3611,
+    "seprom": 328
+   }
+  },
+  {
+   "enerji": 31,
+   "gunes": 350,
+   "uretim": {
+    "ham": 24890,
+    "prometid_duranium": 1245,
+    "promerium": 124,
+    "seprom": 11
+   },
+   "depo": {
+    "ham": 1194728,
+    "prometid_duranium": 59763,
+    "promerium": 5974,
+    "seprom": 543
+   }
+  },
+  {
+   "enerji": 40,
+   "gunes": 450,
+   "uretim": {
+    "ham": 36781,
+    "prometid_duranium": 1839,
+    "promerium": 184,
+    "seprom": 17
+   },
+   "depo": {
+    "ham": 1765474,
+    "prometid_duranium": 88274,
+    "promerium": 8827,
+    "seprom": 802
+   }
+  },
+  {
+   "enerji": 51,
+   "gunes": 570,
+   "uretim": {
+    "ham": 50604,
+    "prometid_duranium": 2530,
+    "promerium": 253,
+    "seprom": 23
+   },
+   "depo": {
+    "ham": 2429006,
+    "prometid_duranium": 121450,
+    "promerium": 12145,
+    "seprom": 1104
+   }
+  },
+  {
+   "enerji": 64,
+   "gunes": 710,
+   "uretim": {
+    "ham": 66274,
+    "prometid_duranium": 3314,
+    "promerium": 331,
+    "seprom": 30
+   },
+   "depo": {
+    "ham": 3181160,
+    "prometid_duranium": 159058,
+    "promerium": 15906,
+    "seprom": 1446
+   }
+  },
+  {
+   "enerji": 79,
+   "gunes": 870,
+   "uretim": {
+    "ham": 83720,
+    "prometid_duranium": 4186,
+    "promerium": 419,
+    "seprom": 38
+   },
+   "depo": {
+    "ham": 4018569,
+    "prometid_duranium": 200925,
+    "promerium": 20093,
+    "seprom": 1827
+   }
+  },
+  {
+   "enerji": 96,
+   "gunes": 1050,
+   "uretim": {
+    "ham": 102884,
+    "prometid_duranium": 5144,
+    "promerium": 514,
+    "seprom": 47
+   },
+   "depo": {
+    "ham": 4938423,
+    "prometid_duranium": 246921,
+    "promerium": 24692,
+    "seprom": 2245
+   }
+  },
+  {
+   "enerji": 115,
+   "gunes": 1250,
+   "uretim": {
+    "ham": 123715,
+    "prometid_duranium": 6186,
+    "promerium": 619,
+    "seprom": 56
+   },
+   "depo": {
+    "ham": 5938324,
+    "prometid_duranium": 296916,
+    "promerium": 29692,
+    "seprom": 2699
+   }
+  },
+  {
+   "enerji": 136,
+   "gunes": 1470,
+   "uretim": {
+    "ham": 146171,
+    "prometid_duranium": 7309,
+    "promerium": 731,
+    "seprom": 66
+   },
+   "depo": {
+    "ham": 7016186,
+    "prometid_duranium": 350809,
+    "promerium": 35081,
+    "seprom": 3189
+   }
+  },
+  {
+   "enerji": 159,
+   "gunes": 1710,
+   "uretim": {
+    "ham": 170212,
+    "prometid_duranium": 8511,
+    "promerium": 851,
+    "seprom": 77
+   },
+   "depo": {
+    "ham": 8170170,
+    "prometid_duranium": 408509,
+    "promerium": 40851,
+    "seprom": 3714
+   }
+  },
+  {
+   "enerji": 184,
+   "gunes": 1970,
+   "uretim": {
+    "ham": 195805,
+    "prometid_duranium": 9790,
+    "promerium": 979,
+    "seprom": 89
+   },
+   "depo": {
+    "ham": 9398635,
+    "prometid_duranium": 469932,
+    "promerium": 46993,
+    "seprom": 4272
+   }
+  },
+  {
+   "enerji": 211,
+   "gunes": 2250,
+   "uretim": {
+    "ham": 222919,
+    "prometid_duranium": 11146,
+    "promerium": 1115,
+    "seprom": 101
+   },
+   "depo": {
+    "ham": 10700104,
+    "prometid_duranium": 535005,
+    "promerium": 53501,
+    "seprom": 4864
+   }
+  },
+  {
+   "enerji": 240,
+   "gunes": 2550,
+   "uretim": {
+    "ham": 251526,
+    "prometid_duranium": 12576,
+    "promerium": 1258,
+    "seprom": 114
+   },
+   "depo": {
+    "ham": 12073234,
+    "prometid_duranium": 603662,
+    "promerium": 60366,
+    "seprom": 5488
+   }
+  },
+  {
+   "enerji": 271,
+   "gunes": 2870,
+   "uretim": {
+    "ham": 281600,
+    "prometid_duranium": 14080,
+    "promerium": 1408,
+    "seprom": 128
+   },
+   "depo": {
+    "ham": 13516800,
+    "prometid_duranium": 675840,
+    "promerium": 67584,
+    "seprom": 6144
+   }
+  },
+  {
+   "enerji": 304,
+   "gunes": 3210,
+   "uretim": {
+    "ham": 313118,
+    "prometid_duranium": 15656,
+    "promerium": 1566,
+    "seprom": 142
+   },
+   "depo": {
+    "ham": 15029673,
+    "prometid_duranium": 751484,
+    "promerium": 75148,
+    "seprom": 6832
+   }
+  },
+  {
+   "enerji": 339,
+   "gunes": 3570,
+   "uretim": {
+    "ham": 346059,
+    "prometid_duranium": 17303,
+    "promerium": 1730,
+    "seprom": 157
+   },
+   "depo": {
+    "ham": 16610810,
+    "prometid_duranium": 830540,
+    "promerium": 80054,
+    "seprom": 7550
+   }
+  },
+  {
+   "enerji": 376,
+   "gunes": 3950,
+   "uretim": {
+    "ham": 380401,
+    "prometid_duranium": 19020,
+    "promerium": 1902,
+    "seprom": 173
+   },
+   "depo": {
+    "ham": 18259241,
+    "prometid_duranium": 912962,
+    "promerium": 91296,
+    "seprom": 8300
+   }
+  },
+  {
+   "enerji": 415,
+   "gunes": 4350,
+   "uretim": {
+    "ham": 416126,
+    "prometid_duranium": 20806,
+    "promerium": 2081,
+    "seprom": 189
+   },
+   "depo": {
+    "ham": 19974063,
+    "prometid_duranium": 998703,
+    "promerium": 99870,
+    "seprom": 9079
+   }
+  }
+ ],
+ "maliyetler": {
+  "basicSolarStorage": [
+   {
+    "sure_sn": 3600,
+    "uridyum": 0,
+    "kredi": 0,
+    "kaynak": 0
+   },
+   {
+    "sure_sn": 8280,
+    "uridyum": 1487,
+    "kredi": 16352,
+    "kaynak": 707
+   },
+   {
+    "sure_sn": 13440,
+    "uridyum": 2468,
+    "kredi": 27144,
+    "kaynak": 2923
+   },
+   {
+    "sure_sn": 19020,
+    "uridyum": 3536,
+    "kredi": 38891,
+    "kaynak": 8000
+   },
+   {
+    "sure_sn": 24840,
+    "uridyum": 4673,
+    "kredi": 51403,
+    "kaynak": 17469
+   },
+   {
+    "sure_sn": 30900,
+    "uridyum": 5869,
+    "kredi": 64560,
+    "kaynak": 33068
+   },
+   {
+    "sure_sn": 37200,
+    "uridyum": 7116,
+    "kredi": 78279,
+    "kaynak": 56718
+   },
+   {
+    "sure_sn": 43680,
+    "uridyum": 8409,
+    "kredi": 92499,
+    "kaynak": 90510
+   },
+   {
+    "sure_sn": 50280,
+    "uridyum": 9743,
+    "kredi": 107171,
+    "kaynak": 136688
+   },
+   {
+    "sure_sn": 54900,
+    "uridyum": 11114,
+    "kredi": 122257,
+    "kaynak": 197642
+   },
+   {
+    "sure_sn": 63960,
+    "uridyum": 12520,
+    "kredi": 137725,
+    "kaynak": 275902
+   },
+   {
+    "sure_sn": 71040,
+    "uridyum": 13595,
+    "kredi": 153550,
+    "kaynak": 374123
+   },
+   {
+    "sure_sn": 78180,
+    "uridyum": 15428,
+    "kredi": 169708,
+    "kaynak": 495087
+   },
+   {
+    "sure_sn": 85440,
+    "uridyum": 16925,
+    "kredi": 186180,
+    "kaynak": 641694
+   },
+   {
+    "sure_sn": 92820,
+    "uridyum": 18450,
+    "kredi": 202949,
+    "kaynak": 816957
+   },
+   {
+    "sure_sn": 100260,
+    "uridyum": 20000,
+    "kredi": 220000,
+    "kaynak": 1024000
+   },
+   {
+    "sure_sn": 107880,
+    "uridyum": 21575,
+    "kredi": 237320,
+    "kaynak": 1266051
+   },
+   {
+    "sure_sn": 115500,
+    "uridyum": 23172,
+    "kredi": 254896,
+    "kaynak": 1546443
+   },
+   {
+    "sure_sn": 123240,
+    "uridyum": 24793,
+    "kredi": 272719,
+    "kaynak": 1868605
+   },
+   {
+    "sure_sn": 131100,
+    "uridyum": 26434,
+    "kredi": 290777,
+    "kaynak": 2236068
+   }
+  ],
+  "collectors": [
+   {
+    "sure_sn": 3600,
+    "uridyum": 500,
+    "kredi": 5500,
+    "kaynak": 50
+   },
+   {
+    "sure_sn": 8280,
+    "uridyum": 1189,
+    "kredi": 13081,
+    "kaynak": 566
+   },
+   {
+    "sure_sn": 13440,
+    "uridyum": 1974,
+    "kredi": 21715,
+    "kaynak": 2338
+   },
+   {
+    "sure_sn": 19020,
+    "uridyum": 2825,
+    "kredi": 31113,
+    "kaynak": 6400
+   },
+   {
+    "sure_sn": 24840,
+    "uridyum": 3738,
+    "kredi": 41122,
+    "kaynak": 13978
+   },
+   {
+    "sure_sn": 30900,
+    "uridyum": 4695,
+    "kredi": 51648,
+    "kaynak": 26454
+   },
+   {
+    "sure_sn": 37200,
+    "uridyum": 5693,
+    "kredi": 62623,
+    "kaynak": 45375
+   },
+   {
+    "sure_sn": 43680,
+    "uridyum": 6727,
+    "kredi": 73999,
+    "kaynak": 72408
+   },
+   {
+    "sure_sn": 50280,
+    "uridyum": 8894,
+    "kredi": 85737,
+    "kaynak": 109350
+   },
+   {
+    "sure_sn": 54900,
+    "uridyum": 8891,
+    "kredi": 97805,
+    "kaynak": 158114
+   },
+   {
+    "sure_sn": 63960,
+    "uridyum": 10016,
+    "kredi": 110180,
+    "kaynak": 220721
+   },
+   {
+    "sure_sn": 71040,
+    "uridyum": 11167,
+    "kredi": 122840,
+    "kaynak": 299298
+   },
+   {
+    "sure_sn": 78180,
+    "uridyum": 12342,
+    "kredi": 135766,
+    "kaynak": 396070
+   },
+   {
+    "sure_sn": 85440,
+    "uridyum": 13540,
+    "kredi": 148944,
+    "kaynak": 513355
+   },
+   {
+    "sure_sn": 92820,
+    "uridyum": 14760,
+    "kredi": 162359,
+    "kaynak": 653566
+   },
+   {
+    "sure_sn": 100260,
+    "uridyum": 16000,
+    "kredi": 176000,
+    "kaynak": 819200
+   },
+   {
+    "sure_sn": 107880,
+    "uridyum": 17260,
+    "kredi": 189856,
+    "kaynak": 1012841
+   },
+   {
+    "sure_sn": 115500,
+    "uridyum": 18538,
+    "kredi": 203914,
+    "kaynak": 1235154
+   },
+   {
+    "sure_sn": 123240,
+    "uridyum": 19834,
+    "kredi": 218175,
+    "kaynak": 1494884
+   },
+   {
+    "sure_sn": 131100,
+    "uridyum": 21147,
+    "kredi": 232622,
+    "kaynak": 1788854
+   }
+  ],
+  "xenoModule": [
+   {
+    "sure_sn": 3600,
+    "uridyum": 750,
+    "kredi": 8250,
+    "kaynak": 75
+   },
+   {
+    "sure_sn": 8280,
+    "uridyum": 1784,
+    "kredi": 19622,
+    "kaynak": 849
+   },
+   {
+    "sure_sn": 13440,
+    "uridyum": 2961,
+    "kredi": 32573,
+    "kaynak": 3507
+   },
+   {
+    "sure_sn": 19020,
+    "uridyum": 4243,
+    "kredi": 46669,
+    "kaynak": 9600
+   },
+   {
+    "sure_sn": 24840,
+    "uridyum": 5608,
+    "kredi": 61683,
+    "kaynak": 20963
+   },
+   {
+    "sure_sn": 30900,
+    "uridyum": 7043,
+    "kredi": 77472,
+    "kaynak": 39682
+   },
+   {
+    "sure_sn": 37200,
+    "uridyum": 8540,
+    "kredi": 93935,
+    "kaynak": 68062
+   },
+   {
+    "sure_sn": 43680,
+    "uridyum": 10091,
+    "kredi": 110998,
+    "kaynak": 108612
+   },
+   {
+    "sure_sn": 50280,
+    "uridyum": 11691,
+    "kredi": 128605,
+    "kaynak": 164025
+   },
+   {
+    "sure_sn": 54900,
+    "uridyum": 13337,
+    "kredi": 146708,
+    "kaynak": 237171
+   },
+   {
+    "sure_sn": 63960,
+    "uridyum": 15025,
+    "kredi": 165270,
+    "kaynak": 331082
+   },
+   {
+    "sure_sn": 71040,
+    "uridyum": 16751,
+    "kredi": 184260,
+    "kaynak": 448948
+   },
+   {
+    "sure_sn": 78180,
+    "uridyum": 18514,
+    "kredi": 203649,
+    "kaynak": 594105
+   },
+   {
+    "sure_sn": 85440,
+    "uridyum": 20311,
+    "kredi": 223416,
+    "kaynak": 770033
+   },
+   {
+    "sure_sn": 92820,
+    "uridyum": 22140,
+    "kredi": 243539,
+    "kaynak": 980349
+   },
+   {
+    "sure_sn": 100260,
+    "uridyum": 24000,
+    "kredi": 264000,
+    "kaynak": 1228800
+   },
+   {
+    "sure_sn": 107880,
+    "uridyum": 25889,
+    "kredi": 284784,
+    "kaynak": 1519261
+   },
+   {
+    "sure_sn": 115500,
+    "uridyum": 27807,
+    "kredi": 305875,
+    "kaynak": 1855731
+   },
+   {
+    "sure_sn": 123240,
+    "uridyum": 29751,
+    "kredi": 327262,
+    "kaynak": 2242327
+   },
+   {
+    "sure_sn": 131100,
+    "uridyum": 31721,
+    "kredi": 248933,
+    "kaynak": 2683282
+   }
+  ],
+  "prometidDuraniumRefinery": [
+   {
+    "sure_sn": 6000,
+    "uridyum": 750,
+    "kredi": 8250,
+    "kaynak": 75
+   },
+   {
+    "sure_sn": 13800,
+    "uridyum": 1784,
+    "kredi": 19622,
+    "kaynak": 849
+   },
+   {
+    "sure_sn": 22440,
+    "uridyum": 2961,
+    "kredi": 32573,
+    "kaynak": 3507
+   },
+   {
+    "sure_sn": 31680,
+    "uridyum": 4243,
+    "kredi": 46669,
+    "kaynak": 9600
+   },
+   {
+    "sure_sn": 41400,
+    "uridyum": 5608,
+    "kredi": 61683,
+    "kaynak": 20963
+   },
+   {
+    "sure_sn": 51540,
+    "uridyum": 7043,
+    "kredi": 77472,
+    "kaynak": 39682
+   },
+   {
+    "sure_sn": 61980,
+    "uridyum": 8540,
+    "kredi": 93935,
+    "kaynak": 68062
+   },
+   {
+    "sure_sn": 130980,
+    "uridyum": 16818,
+    "kredi": 184997,
+    "kaynak": 181019
+   },
+   {
+    "sure_sn": 83820,
+    "uridyum": 11691,
+    "kredi": 128605,
+    "kaynak": 164025
+   },
+   {
+    "sure_sn": 95100,
+    "uridyum": 13337,
+    "kredi": 146708,
+    "kaynak": 237171
+   },
+   {
+    "sure_sn": 106620,
+    "uridyum": 15025,
+    "kredi": 165270,
+    "kaynak": 331082
+   },
+   {
+    "sure_sn": 118380,
+    "uridyum": 16751,
+    "kredi": 184260,
+    "kaynak": 448948
+   },
+   {
+    "sure_sn": 130260,
+    "uridyum": 18514,
+    "kredi": 203649,
+    "kaynak": 594105
+   },
+   {
+    "sure_sn": 142380,
+    "uridyum": 20311,
+    "kredi": 223416,
+    "kaynak": 770033
+   },
+   {
+    "sure_sn": 154680,
+    "uridyum": 22140,
+    "kredi": 243539,
+    "kaynak": 980349
+   },
+   {
+    "sure_sn": 167160,
+    "uridyum": 24000,
+    "kredi": 264000,
+    "kaynak": 1228800
+   },
+   {
+    "sure_sn": 179760,
+    "uridyum": 25889,
+    "kredi": 284784,
+    "kaynak": 1519261
+   },
+   {
+    "sure_sn": 192540,
+    "uridyum": 27807,
+    "kredi": 305875,
+    "kaynak": 1855731
+   },
+   {
+    "sure_sn": 205440,
+    "uridyum": 29751,
+    "kredi": 327262,
+    "kaynak": 2242237
+   },
+   {
+    "sure_sn": 218460,
+    "uridyum": 31721,
+    "kredi": 348933,
+    "kaynak": 2683382
+   }
+  ],
+  "promeriumRefinery": [
+   {
+    "sure_sn": 10800,
+    "uridyum": 1250,
+    "kredi": 13750,
+    "kaynak": 125
+   },
+   {
+    "sure_sn": 24840,
+    "uridyum": 2973,
+    "kredi": 32703,
+    "kaynak": 1414
+   },
+   {
+    "sure_sn": 40380,
+    "uridyum": 4935,
+    "kredi": 54288,
+    "kaynak": 5846
+   },
+   {
+    "sure_sn": 57000,
+    "uridyum": 7071,
+    "kredi": 77782,
+    "kaynak": 16000
+   },
+   {
+    "sure_sn": 75240,
+    "uridyum": 9346,
+    "kredi": 102805,
+    "kaynak": 34939
+   },
+   {
+    "sure_sn": 92700,
+    "uridyum": 11738,
+    "kredi": 129119,
+    "kaynak": 66136
+   },
+   {
+    "sure_sn": 111540,
+    "uridyum": 14233,
+    "kredi": 156558,
+    "kaynak": 113437
+   },
+   {
+    "sure_sn": 3600,
+    "uridyum": 11738,
+    "kredi": 129119,
+    "kaynak": 66136
+   },
+   {
+    "sure_sn": 150840,
+    "uridyum": 19586,
+    "kredi": 214341,
+    "kaynak": 273375
+   },
+   {
+    "sure_sn": 171180,
+    "uridyum": 22228,
+    "kredi": 244513,
+    "kaynak": 395285
+   },
+   {
+    "sure_sn": 191880,
+    "uridyum": 25041,
+    "kredi": 275450,
+    "kaynak": 551803
+   },
+   {
+    "sure_sn": 213060,
+    "uridyum": 27918,
+    "kredi": 307100,
+    "kaynak": 748246
+   },
+   {
+    "sure_sn": 234480,
+    "uridyum": 30856,
+    "kredi": 339416,
+    "kaynak": 990175
+   },
+   {
+    "sure_sn": 256320,
+    "uridyum": 33851,
+    "kredi": 372360,
+    "kaynak": 1283388
+   },
+   {
+    "sure_sn": 278460,
+    "uridyum": 36900,
+    "kredi": 405898,
+    "kaynak": 1633915
+   },
+   {
+    "sure_sn": 300840,
+    "uridyum": 40000,
+    "kredi": 440000,
+    "kaynak": 2048000
+   },
+   {
+    "sure_sn": 323580,
+    "uridyum": 43149,
+    "kredi": 474639,
+    "kaynak": 2532102
+   },
+   {
+    "sure_sn": 346560,
+    "uridyum": 46345,
+    "kredi": 509792,
+    "kaynak": 3092885
+   },
+   {
+    "sure_sn": 369780,
+    "uridyum": 49585,
+    "kredi": 545438,
+    "kaynak": 3737211
+   },
+   {
+    "sure_sn": 393240,
+    "uridyum": 52869,
+    "kredi": 581554,
+    "kaynak": 4472136
+   }
+  ],
+  "sepromRefinery": [
+   {
+    "sure_sn": 21600,
+    "uridyum": 2500,
+    "kredi": 27500,
+    "kaynak": 250
+   },
+   {
+    "sure_sn": 49620,
+    "uridyum": 5946,
+    "kredi": 65406,
+    "kaynak": 2828
+   },
+   {
+    "sure_sn": 80700,
+    "uridyum": 9871,
+    "kredi": 108576,
+    "kaynak": 11691
+   },
+   {
+    "sure_sn": 114000,
+    "uridyum": 14142,
+    "kredi": 155563,
+    "kaynak": 32000
+   },
+   {
+    "sure_sn": 149040,
+    "uridyum": 18692,
+    "kredi": 205610,
+    "kaynak": 69877
+   },
+   {
+    "sure_sn": 185460,
+    "uridyum": 23476,
+    "kredi": 258239,
+    "kaynak": 132272
+   },
+   {
+    "sure_sn": 223140,
+    "uridyum": 28645,
+    "kredi": 313116,
+    "kaynak": 226873
+   },
+   {
+    "sure_sn": 261900,
+    "uridyum": 33636,
+    "kredi": 369994,
+    "kaynak": 362039
+   },
+   {
+    "sure_sn": 301680,
+    "uridyum": 38971,
+    "kredi": 428683,
+    "kaynak": 546750
+   },
+   {
+    "sure_sn": 342360,
+    "uridyum": 44457,
+    "kredi": 489027,
+    "kaynak": 790569
+   },
+   {
+    "sure_sn": 383820,
+    "uridyum": 50082,
+    "kredi": 550901,
+    "kaynak": 1103607
+   },
+   {
+    "sure_sn": 426060,
+    "uridyum": 55836,
+    "kredi": 614199,
+    "kaynak": 1496492
+   },
+   {
+    "sure_sn": 469020,
+    "uridyum": 61712,
+    "kredi": 678831,
+    "kaynak": 1980349
+   },
+   {
+    "sure_sn": 512640,
+    "uridyum": 67102,
+    "kredi": 744720,
+    "kaynak": 2566777
+   },
+   {
+    "sure_sn": 556860,
+    "uridyum": 73800,
+    "kredi": 811796,
+    "kaynak": 3267830
+   },
+   {
+    "sure_sn": 601740,
+    "uridyum": 80000,
+    "kredi": 880000,
+    "kaynak": 4096000
+   },
+   {
+    "sure_sn": 647160,
+    "uridyum": 86298,
+    "kredi": 949279,
+    "kaynak": 5064204
+   },
+   {
+    "sure_sn": 693060,
+    "uridyum": 92690,
+    "kredi": 1019585,
+    "kaynak": 6185770
+   },
+   {
+    "sure_sn": 739560,
+    "uridyum": 99170,
+    "kredi": 1090874,
+    "kaynak": 7474422
+   },
+   {
+    "sure_sn": 786480,
+    "uridyum": 105737,
+    "kredi": 1163108,
+    "kaynak": 8944272
+   }
+  ]
+ },
+ "moduller": {
+  "BASE_MODULE": {
+   "grup": "basicSolarStorage",
+   "azami": 20
+  },
+  "SOLAR_MODULE": {
+   "grup": "basicSolarStorage",
+   "azami": 20
+  },
+  "STORAGE_MODULE": {
+   "grup": "basicSolarStorage",
+   "azami": 20
+  },
+  "TRANSPORT_MODULE": {
+   "grup": null,
+   "azami": 1
+  },
+  "PROMETIUM_COLLECTOR": {
+   "grup": "collectors",
+   "azami": 20
+  },
+  "ENDURIUM_COLLECTOR": {
+   "grup": "collectors",
+   "azami": 20
+  },
+  "TERBIUM_COLLECTOR": {
+   "grup": "collectors",
+   "azami": 20
+  },
+  "PROMETID_REFINERY": {
+   "grup": "prometidDuraniumRefinery",
+   "azami": 20
+  },
+  "DURANIUM_REFINERY": {
+   "grup": "prometidDuraniumRefinery",
+   "azami": 20
+  },
+  "PROMERIUM_REFINERY": {
+   "grup": "promeriumRefinery",
+   "azami": 20
+  },
+  "SEPROM_REFINERY": {
+   "grup": "sepromRefinery",
+   "azami": 20
+  },
+  "XENO_MODULE": {
+   "grup": "xenoModule",
+   "azami": 20
+  }
+ },
+ "baslangic": {
+  "moduller": {
+   "BASE_MODULE": [
+    1,
+    true
+   ],
+   "ENDURIUM_COLLECTOR": [
+    1,
+    true
+   ],
+   "SOLAR_MODULE": [
+    1,
+    true
+   ],
+   "STORAGE_MODULE": [
+    1,
+    true
+   ],
+   "TRANSPORT_MODULE": [
+    1,
+    true
+   ],
+   "PROMETIUM_COLLECTOR": [
+    1,
+    true
+   ],
+   "TERBIUM_COLLECTOR": [
+    1,
+    true
+   ]
+  },
+  "depo": {
+   "1": 200,
+   "2": 200,
+   "3": 200
+  }
+ },
+ "cevherler": {
+  "1": [
+   "Prometium",
+   "ham",
+   0
+  ],
+  "2": [
+   "Endurium",
+   "ham",
+   1
+  ],
+  "3": [
+   "Terbium",
+   "ham",
+   2
+  ],
+  "4": [
+   "Xenomit",
+   "promerium",
+   3
+  ],
+  "11": [
+   "Prometid",
+   "prometid_duranium",
+   4
+  ],
+  "12": [
+   "Duranium",
+   "prometid_duranium",
+   5
+  ],
+  "13": [
+   "Promerium",
+   "promerium",
+   6
+  ],
+  "14": [
+   "Seprom",
+   "seprom",
+   7
+  ]
+ },
+ "_cevherler": "Skylab cevher kimliği -> [ad, depo sütunu, istemcinin OreType'ı (kargo)]",
+ "toplayicilar": {
+  "PROMETIUM_COLLECTOR": "1",
+  "ENDURIUM_COLLECTOR": "2",
+  "TERBIUM_COLLECTOR": "3"
+ },
+ "rafineriler": {
+  "PROMETID_REFINERY": [
+   "11",
+   {
+    "1": 20,
+    "2": 10
+   },
+   "prometid_duranium"
+  ],
+  "DURANIUM_REFINERY": [
+   "12",
+   {
+    "3": 20,
+    "2": 10
+   },
+   "prometid_duranium"
+  ],
+  "PROMERIUM_REFINERY": [
+   "13",
+   {
+    "11": 10,
+    "12": 10,
+    "4": 1
+   },
+   "promerium"
+  ],
+  "SEPROM_REFINERY": [
+   "14",
+   {
+    "13": 10
+   },
+   "seprom"
+  ]
+ },
+ "_rafineriler": "ürün, girdiler (birim başına), üretim sütunu. Prometid/Duranium/Promerium tarifleri wiki'nin rafine sayfasından (istemcinin laboratuvar tarifleriyle aynı); Seprom'un girdisi wiki'de yok: 10 Promerium (uyarlama).",
+ "xeno": {
+  "cevher": "4",
+  "sutun": "promerium"
+ },
+ "_xeno": "Xeno modülü etkinken Skylab deposuna seviyesinin Promerium üretimi kadar Xenomit sağlar (uyarlama: istemcide gemiden Skylab'a taşıma isteği yok; depo sınırı kayıttaki 528 = Promerium sütunu). Wiki: Xenomit sürekli tüketilir.",
+ "robotlar": {
+  "1": {
+   "fiyat": [
+    "credits",
+    250
+   ],
+   "bonus": 1
+  },
+  "2": {
+   "fiyat": [
+    "uridium",
+    50
+   ],
+   "bonus": 4
+  },
+  "azami": 12,
+  "omur_sn": 172800
+ },
+ "_robotlar": "wiki: 250 kredi (+%1) ya da 50 uridyum (+%4), toplayıcı başına en çok 12, 48 saat yaşar",
+ "tasima": {
+  "hizli_uridyum": 1250,
+  "normal_sn": 3600
+ },
+ "_tasima": "anında gönderme (transportMode fast) ve yoldaki taşımayı bitirme (instantFinish) fiyatı kayıttaki SkylabUnifiedReceiptCommand.transportPrice; normal taşımanın süresi uyarlama (1 saat)"
+}

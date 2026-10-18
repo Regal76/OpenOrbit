@@ -1,0 +1,9402 @@
+{
+ "_aciklama": "Season Pass, Battle Pass ve günlük ödül pencereleri -> server/data/biletler.json (yol haritası Aşama 7).\n\nKaynaklar:\n  - Kayıttaki giriş demeti (server/data/giris.json, 2026-10-15): SeasonPassStatusCommand (90 seviyenin puan ve uridyum bedelleri,\n    sezon adı ve görseli), SeasonPassRewardInfoCommand (ücretsiz, Gold ve Extra Gold ödülleri), SeasonPassMissionInfoCommand (33 görev:\n    QuestType 3 günlük, 6 haftalık, 9 sezonluk; durum 2 = Gold Pass gerekir), BattlePassInfoCommand (Halloween 2026'nın 28 görevi),\n    BattlePassKeyExchangeInfoCommand (51 anahtar değişimi ödülü), MiniClientRewardInfoCommand (15 günlük ödül), MonthlyDeluxeInfoCommand\n    (28 günlük ödül), EventUnityClientRewardQuestCommand (7 günlük, günde 3 görev).\n  - CDN'deki Battle Pass XML'i (server/cdn/xml/events/battlepass/pass_*.xml): görev başına ödül (questReward) ve anahtar (bpReward).\n  - Günlük ve haftalık görev havuzu: kayıttakilere ek şablonlar (uyarlama; aşağıda EK_GOREVLER). İstemci görev metnini koşul türünden\n    kendisi kurar (textKeyFoundation boş), bu yüzden şablonlar istemcinin koşul türleriyle yazılır.\n  - Battle Pass paket ödüllerinin adetleri istemcinin İngilizce ipucu metinlerinden (window_objectives_bp_ttip_questReward-*).\nÜreten: tools/biletler.py.",
+ "sezon": {
+  "puan_bedeli": [
+   0,
+   90,
+   90,
+   90,
+   90,
+   135,
+   135,
+   135,
+   135,
+   135,
+   195,
+   195,
+   195,
+   195,
+   195,
+   255,
+   255,
+   255,
+   255,
+   255,
+   315,
+   315,
+   315,
+   315,
+   315,
+   390,
+   390,
+   390,
+   390,
+   390,
+   480,
+   480,
+   480,
+   480,
+   480,
+   570,
+   570,
+   570,
+   570,
+   570,
+   675,
+   675,
+   675,
+   675,
+   675,
+   750,
+   750,
+   750,
+   750,
+   750,
+   525,
+   525,
+   525,
+   525,
+   525,
+   525,
+   525,
+   525,
+   525,
+   525,
+   540,
+   540,
+   540,
+   540,
+   540,
+   540,
+   540,
+   540,
+   540,
+   540,
+   555,
+   555,
+   555,
+   555,
+   555,
+   555,
+   555,
+   555,
+   555,
+   555,
+   585,
+   585,
+   585,
+   585,
+   585,
+   585,
+   585,
+   585,
+   585,
+   585
+  ],
+  "uridyum_bedeli": [
+   0,
+   67500,
+   67500,
+   67500,
+   67500,
+   101250,
+   101250,
+   101250,
+   101250,
+   101250,
+   146250,
+   146250,
+   146250,
+   146250,
+   146250,
+   191250,
+   191250,
+   191250,
+   191250,
+   191250,
+   236250,
+   236250,
+   236250,
+   236250,
+   236250,
+   292500,
+   292500,
+   292500,
+   292500,
+   292500,
+   360000,
+   360000,
+   360000,
+   360000,
+   360000,
+   427500,
+   427500,
+   427500,
+   427500,
+   427500,
+   506250,
+   506250,
+   506250,
+   506250,
+   506250,
+   562500,
+   562500,
+   562500,
+   562500,
+   562500,
+   393750,
+   393750,
+   393750,
+   393750,
+   393750,
+   393750,
+   393750,
+   393750,
+   393750,
+   393750,
+   405000,
+   405000,
+   405000,
+   405000,
+   405000,
+   405000,
+   405000,
+   405000,
+   405000,
+   405000,
+   416250,
+   416250,
+   416250,
+   416250,
+   416250,
+   416250,
+   416250,
+   416250,
+   416250,
+   416250,
+   438750,
+   438750,
+   438750,
+   438750,
+   438750,
+   438750,
+   438750,
+   438750,
+   438750,
+   438750
+  ],
+  "ad": "sp_season-name_1",
+  "gorsel": "ingame-news_Season-Pass-Aug-2026",
+  "odul": {
+   "ucretsiz": [
+    [
+     0,
+     "resource_collectable_schism",
+     5
+    ],
+    [
+     1,
+     "ammunition_specialammo_emp-01",
+     5
+    ],
+    [
+     2,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     3,
+     "resource_key_access-dse",
+     5
+    ],
+    [
+     4,
+     "resource_echo-key-green",
+     5
+    ],
+    [
+     5,
+     "resource_high-frequency-cable",
+     3
+    ],
+    [
+     6,
+     "ammunition_spool_gsp-75",
+     500
+    ],
+    [
+     7,
+     "resource_collectable_bifenon",
+     50
+    ],
+    [
+     8,
+     "resource_collectable_axion-beam-regulator",
+     25
+    ],
+    [
+     9,
+     "resource_collectable_permit",
+     1
+    ],
+    [
+     10,
+     "booster_hon-b01",
+     2
+    ],
+    [
+     11,
+     "resource_extra-energy",
+     15
+    ],
+    [
+     12,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     13,
+     "resource_key_access-dse",
+     5
+    ],
+    [
+     14,
+     "resource_collectable_luminaflux-alloy",
+     800
+    ],
+    [
+     15,
+     "ammunition_spool_gsp-75",
+     1000
+    ],
+    [
+     16,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     17,
+     "resource_booty-key",
+     10
+    ],
+    [
+     18,
+     "resource_collectable_indoctrine-accelerator",
+     5
+    ],
+    [
+     19,
+     "ammunition_specialammo_sr-5",
+     50
+    ],
+    [
+     20,
+     "resource_collectable_tetrathrin",
+     40
+    ],
+    [
+     21,
+     "resource_collectable_quickcoupon",
+     3
+    ],
+    [
+     22,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     23,
+     "equipment_generator_shield_fs-03",
+     1
+    ],
+    [
+     24,
+     "resource_echo-key-green",
+     5
+    ],
+    [
+     25,
+     "resource_hybrid-processor",
+     1
+    ],
+    [
+     26,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     27,
+     "ammunition_spool_gsp-75",
+     1000
+    ],
+    [
+     28,
+     "resource_collectable_axion-beam-regulator",
+     25
+    ],
+    [
+     29,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     30,
+     "booster_dmg-b01",
+     3
+    ],
+    [
+     31,
+     "resource_collectable_quickcoupon",
+     5
+    ],
+    [
+     32,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     33,
+     "resource_micro-transistors",
+     1
+    ],
+    [
+     34,
+     "resource_collectable_luminaflux-alloy",
+     1000
+    ],
+    [
+     35,
+     "resource_prismatic-socket",
+     1
+    ],
+    [
+     36,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     37,
+     "resource_echo-key-red",
+     1
+    ],
+    [
+     38,
+     "resource_collectable_plasmatic-equalization-plate",
+     2500
+    ],
+    [
+     39,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     40,
+     "resource_nano-condenser",
+     1
+    ],
+    [
+     41,
+     "resource_key_access-dse",
+     3
+    ],
+    [
+     42,
+     "ammunition_spool_gsp-150",
+     300
+    ],
+    [
+     43,
+     "package_seasonpass-bootykey",
+     1
+    ],
+    [
+     44,
+     "resource_collectable_luminaflux-alloy",
+     1000
+    ],
+    [
+     45,
+     "resource_collectable_polychromium",
+     300
+    ],
+    [
+     46,
+     "resource_pet-fuel",
+     20000
+    ],
+    [
+     47,
+     "resource_echo-key-red",
+     1
+    ],
+    [
+     48,
+     "resource_collectable_indoctrineoil",
+     5
+    ],
+    [
+     49,
+     "pet_designs_pet-hyperion-cerevisia",
+     1
+    ],
+    [
+     52,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     55,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     57,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     59,
+     "resource_collectable_ether-shard",
+     1
+    ],
+    [
+     62,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     65,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     67,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     69,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     72,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     75,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     77,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     79,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     82,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     85,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     87,
+     "package_seasonpass-free",
+     1
+    ],
+    [
+     89,
+     "package_seasonpass-free",
+     1
+    ]
+   ],
+   "gold": [
+    [
+     0,
+     "resource_collectable_ether-shard",
+     1
+    ],
+    [
+     1,
+     "resource_collectable_calling-chip",
+     4
+    ],
+    [
+     2,
+     "resource_collectable_luminaflux-alloy",
+     1000
+    ],
+    [
+     3,
+     "booster_rep-b01",
+     5
+    ],
+    [
+     4,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     5,
+     "resource_collectable_kyhalon",
+     30
+    ],
+    [
+     6,
+     "resource_echo-key-blue",
+     2
+    ],
+    [
+     7,
+     "package_seasonpass-bootykey",
+     1
+    ],
+    [
+     8,
+     "resource_collectable_plasmatic-equalization-plate",
+     600
+    ],
+    [
+     9,
+     "equipment_shipupgrade_hp-xsp01",
+     1
+    ],
+    [
+     10,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     11,
+     "resource_collectable_indoctrine-accelerator",
+     40
+    ],
+    [
+     12,
+     "captain_captain-generic",
+     1
+    ],
+    [
+     13,
+     "ammunition_laser_a-bl",
+     6000
+    ],
+    [
+     14,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     15,
+     "resource_collectable_polychromium",
+     2500
+    ],
+    [
+     16,
+     "resource_echo-key-blue",
+     2
+    ],
+    [
+     17,
+     "package_seasonpass-bootykey",
+     1
+    ],
+    [
+     18,
+     "ammunition_spool_gsp-150",
+     2000
+    ],
+    [
+     19,
+     "equipment_shipupgrade_shd-xsp01",
+     1
+    ],
+    [
+     20,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     21,
+     "resource_collectable_indoctrineoil",
+     25
+    ],
+    [
+     22,
+     "resource_extra-energy",
+     60
+    ],
+    [
+     23,
+     "resource_collectable_luminaflux-alloy",
+     2500
+    ],
+    [
+     24,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     25,
+     "resource_collectable_axion-beam-regulator",
+     400
+    ],
+    [
+     26,
+     "resource_echo-key-blue",
+     4
+    ],
+    [
+     27,
+     "package_seasonpass-bootykey",
+     1
+    ],
+    [
+     28,
+     "captain_captain-gen3-ups",
+     1
+    ],
+    [
+     29,
+     "equipment_shipupgrade_spc-xsp01",
+     1
+    ],
+    [
+     30,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     31,
+     "resource_collectable_indoctrine-accelerator",
+     60
+    ],
+    [
+     32,
+     "resource_collectable_luminaflux-alloy",
+     4000
+    ],
+    [
+     33,
+     "ammunition_laser_spacecup_group-c",
+     6000
+    ],
+    [
+     34,
+     "equipment_shipupgrade_dmg-xsp01",
+     1
+    ],
+    [
+     35,
+     "ammunition_laser_a-bl",
+     6000
+    ],
+    [
+     36,
+     "resource_echo-key-purple",
+     1
+    ],
+    [
+     37,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     38,
+     "resource_collectable_plasmatic-equalization-plate",
+     1200
+    ],
+    [
+     39,
+     "resource_collectable_spvoucher",
+     5
+    ],
+    [
+     40,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     41,
+     "resource_collectable_diametrion",
+     60
+    ],
+    [
+     42,
+     "package_seasonpass-bootykey",
+     1
+    ],
+    [
+     43,
+     "resource_collectable_luminaflux-alloy",
+     4000
+    ],
+    [
+     44,
+     "resource_collectable_spvoucher",
+     5
+    ],
+    [
+     45,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     46,
+     "resource_echo-key-purple",
+     3
+    ],
+    [
+     47,
+     "drone_designs_drone-hyperion-cerevisia",
+     1
+    ],
+    [
+     48,
+     "booster_npc-b02",
+     10
+    ],
+    [
+     49,
+     "resource_collectable_spvoucher",
+     10
+    ],
+    [
+     50,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     52,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     54,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     56,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     59,
+     "resource_collectable_spvoucher",
+     5
+    ],
+    [
+     60,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     62,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     64,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     66,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     69,
+     "resource_collectable_spvoucher",
+     5
+    ],
+    [
+     70,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     72,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     74,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     76,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     79,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     80,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     82,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     84,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     86,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     89,
+     "package_seasonpass-gold-giant",
+     1
+    ]
+   ],
+   "ext": [
+    [
+     0,
+     "ship_hyperion",
+     1
+    ],
+    [
+     1,
+     "resource_collectable_axion-beam-regulator",
+     300
+    ],
+    [
+     2,
+     "resource_extra-energy",
+     60
+    ],
+    [
+     3,
+     "booster_rep-b01",
+     5
+    ],
+    [
+     4,
+     "ammunition_laser_spacecup_group-c",
+     4000
+    ],
+    [
+     5,
+     "resource_collectable_kyhalon",
+     30
+    ],
+    [
+     6,
+     "resource_collectable_plasmatic-equalization-plate",
+     1000
+    ],
+    [
+     7,
+     "package_seasonpass-bootykey",
+     1
+    ],
+    [
+     8,
+     "ammunition_spool_gsp-300",
+     1000
+    ],
+    [
+     9,
+     "equipment_shipupgrade_hp-xsp01",
+     1
+    ],
+    [
+     10,
+     "resource_collectable_ether-shard",
+     1
+    ],
+    [
+     11,
+     "resource_collectable_indoctrine-accelerator",
+     40
+    ],
+    [
+     12,
+     "captain_captain-generic",
+     1
+    ],
+    [
+     13,
+     "resource_collectable_diametrion",
+     30
+    ],
+    [
+     14,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     15,
+     "resource_echo-key-red",
+     1
+    ],
+    [
+     16,
+     "resource_collectable_salvage-core",
+     100
+    ],
+    [
+     17,
+     "captain_captain-generic",
+     2
+    ],
+    [
+     18,
+     "ammunition_laser_a-bl",
+     10000
+    ],
+    [
+     19,
+     "equipment_shipupgrade_shd-xsp01",
+     1
+    ],
+    [
+     20,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     21,
+     "ammunition_spool_gsp-300",
+     2000
+    ],
+    [
+     22,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     23,
+     "ammunition_laser_rsb-75",
+     10000
+    ],
+    [
+     24,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     25,
+     "resource_collectable_axion-beam-regulator",
+     400
+    ],
+    [
+     26,
+     "resource_echo-key-red",
+     1
+    ],
+    [
+     27,
+     "package_seasonpass-bootykey",
+     1
+    ],
+    [
+     28,
+     "resource_collectable_plasmatic-equalization-plate",
+     1200
+    ],
+    [
+     29,
+     "equipment_shipupgrade_spc-xsp01",
+     1
+    ],
+    [
+     30,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     31,
+     "resource_collectable_indoctrine-accelerator",
+     60
+    ],
+    [
+     32,
+     "resource_collectable_luminaflux-alloy",
+     5000
+    ],
+    [
+     33,
+     "ammunition_laser_spacecup_group-c",
+     8000
+    ],
+    [
+     34,
+     "equipment_shipupgrade_dmg-xsp01",
+     1
+    ],
+    [
+     35,
+     "resource_collectable_diametrion",
+     30
+    ],
+    [
+     36,
+     "resource_echo-key-red",
+     1
+    ],
+    [
+     37,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     38,
+     "booster_cd-b02",
+     10
+    ],
+    [
+     39,
+     "resource_collectable_spvoucher",
+     5
+    ],
+    [
+     40,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     41,
+     "resource_collectable_diametrion",
+     80
+    ],
+    [
+     42,
+     "resource_collectable_luminaflux-alloy",
+     5000
+    ],
+    [
+     43,
+     "ammunition_laser_a-bl",
+     8000
+    ],
+    [
+     44,
+     "resource_collectable_spvoucher",
+     5
+    ],
+    [
+     45,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     46,
+     "resource_echo-key-red",
+     1
+    ],
+    [
+     47,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     48,
+     "resource_collectable_plasmatic-equalization-plate",
+     5000
+    ],
+    [
+     49,
+     "resource_collectable_ether-shard",
+     1
+    ],
+    [
+     50,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     52,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     54,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     56,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     59,
+     "resource_collectable_ether-shard",
+     2
+    ],
+    [
+     60,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     62,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     64,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     66,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     69,
+     "resource_collectable_ether-shard",
+     2
+    ],
+    [
+     70,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     72,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     74,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     76,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     79,
+     "resource_collectable_ether-shard",
+     2
+    ],
+    [
+     80,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     82,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     84,
+     "package_seasonpass-gold-giant",
+     1
+    ],
+    [
+     86,
+     "package_seasonpass-gold",
+     1
+    ],
+    [
+     89,
+     "package_seasonpass-gold",
+     1
+    ]
+   ]
+  },
+  "gorevler": {
+   "701008": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701008,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70100800,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70100801,
+         "matches": [
+          "2",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 300,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701005": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701005,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70100500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70100501,
+         "matches": [],
+         "type": 51,
+         "displayType": 51,
+         "targetValue": 20,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701002": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701002,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70100200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70100201,
+         "matches": [],
+         "type": 1,
+         "displayType": 3,
+         "targetValue": 900000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700040": {
+    "tur": 3,
+    "gold": true,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700040,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70004000,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70004001,
+         "matches": [
+          "6"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 10,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70004002,
+         "matches": [
+          "12"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 5,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70004003,
+         "matches": [
+          "9"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 3,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 15,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701059": {
+    "tur": 3,
+    "gold": true,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701059,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70105900,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70105901,
+         "matches": [
+          "0",
+          "0"
+         ],
+         "type": 29,
+         "displayType": 29,
+         "targetValue": 1500000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": [
+          {
+           "_": "QuestConditionModule",
+           "id": 70105902,
+           "matches": [
+            "474",
+            "475",
+            "476",
+            "477",
+            "478",
+            "479",
+            "480",
+            "481"
+           ],
+           "type": 77,
+           "displayType": 77,
+           "targetValue": 0,
+           "mandatory": true,
+           "state": {
+            "_": "QuestConditionStateModule",
+            "currentValue": 0,
+            "active": true,
+            "completed": false
+           },
+           "subConditions": []
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 30,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "702020": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 702020,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70202000,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70202001,
+         "matches": [
+          "1",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 40000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 120,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701012": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701012,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70101200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70101201,
+         "matches": [
+          "3",
+          "BETA",
+          "DELTA",
+          "KAPPA",
+          "52",
+          "55",
+          "74"
+         ],
+         "type": 80,
+         "displayType": 80,
+         "targetValue": 2,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701021": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701021,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70102100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70102101,
+         "matches": [
+          "2",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 3000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701022": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701022,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70102200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70102201,
+         "matches": [
+          "3",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 20,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701045": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701045,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70104500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70104501,
+         "matches": [
+          "resource_collectable_permit"
+         ],
+         "type": 89,
+         "displayType": 89,
+         "targetValue": 5,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701014": {
+    "tur": 6,
+    "gold": true,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701014,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70101400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70101401,
+         "matches": [
+          "6"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 150,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70101402,
+         "matches": [
+          "12"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 50,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70101403,
+         "matches": [
+          "22"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 25,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701011": {
+    "tur": 6,
+    "gold": true,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701011,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70101100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70101101,
+         "matches": [
+          "3",
+          "ALPHA",
+          "GAMMA",
+          "ZETA",
+          "51",
+          "53",
+          "73"
+         ],
+         "type": 80,
+         "displayType": 80,
+         "targetValue": 2,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700061": {
+    "tur": 6,
+    "gold": true,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700061,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70006100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70006101,
+         "matches": [
+          "0",
+          "0"
+         ],
+         "type": 29,
+         "displayType": 29,
+         "targetValue": 5000000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": [
+          {
+           "_": "QuestConditionModule",
+           "id": 70006102,
+           "matches": [
+            "474",
+            "475",
+            "476",
+            "477",
+            "478",
+            "479",
+            "480",
+            "481"
+           ],
+           "type": 77,
+           "displayType": 77,
+           "targetValue": 0,
+           "mandatory": true,
+           "state": {
+            "_": "QuestConditionStateModule",
+            "currentValue": 0,
+            "active": true,
+            "completed": false
+           },
+           "subConditions": []
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 90,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700026": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700026,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70002600,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70002601,
+         "matches": [
+          "5"
+         ],
+         "type": 95,
+         "displayType": 95,
+         "targetValue": 200,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700027": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700027,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70002700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70002701,
+         "matches": [
+          "6"
+         ],
+         "type": 95,
+         "displayType": 95,
+         "targetValue": 50,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700024": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700024,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70002400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70002401,
+         "matches": [],
+         "type": 87,
+         "displayType": 87,
+         "targetValue": 15,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": [
+          {
+           "_": "QuestConditionModule",
+           "id": 70002402,
+           "matches": [
+            "PVPSummerEvent"
+           ],
+           "type": 97,
+           "displayType": 97,
+           "targetValue": 0,
+           "mandatory": false,
+           "state": {
+            "_": "QuestConditionStateModule",
+            "currentValue": 0,
+            "active": true,
+            "completed": false
+           },
+           "subConditions": []
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700025": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700025,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70002500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70002501,
+         "matches": [],
+         "type": 87,
+         "displayType": 87,
+         "targetValue": 15,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": [
+          {
+           "_": "QuestConditionModule",
+           "id": 70002502,
+           "matches": [
+            "NpcEvent"
+           ],
+           "type": 97,
+           "displayType": 97,
+           "targetValue": 0,
+           "mandatory": false,
+           "state": {
+            "_": "QuestConditionStateModule",
+            "currentValue": 0,
+            "active": true,
+            "completed": false
+           },
+           "subConditions": []
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700030": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700030,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003000,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003001,
+         "matches": [],
+         "type": 85,
+         "displayType": 85,
+         "targetValue": 25,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700031": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700031,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003101,
+         "matches": [],
+         "type": 85,
+         "displayType": 85,
+         "targetValue": 50,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700028": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700028,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70002800,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70002801,
+         "matches": [
+          "2"
+         ],
+         "type": 95,
+         "displayType": 95,
+         "targetValue": 10,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700029": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700029,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70002900,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70002901,
+         "matches": [
+          "6",
+          "ALPHA",
+          "BETA",
+          "GAMMA",
+          "DELTA",
+          "ZETA",
+          "KAPPA",
+          "51",
+          "52",
+          "53",
+          "55",
+          "73",
+          "74"
+         ],
+         "type": 80,
+         "displayType": 80,
+         "targetValue": 13,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700023": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700023,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70002300,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70002301,
+         "matches": [],
+         "type": 87,
+         "displayType": 87,
+         "targetValue": 15,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": [
+          {
+           "_": "QuestConditionModule",
+           "id": 70002302,
+           "matches": [
+            "HitacAssault2016"
+           ],
+           "type": 97,
+           "displayType": 97,
+           "targetValue": 0,
+           "mandatory": false,
+           "state": {
+            "_": "QuestConditionStateModule",
+            "currentValue": 0,
+            "active": true,
+            "completed": false
+           },
+           "subConditions": []
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700034": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700034,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003401,
+         "matches": [
+          "3",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 200,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700035": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700035,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003501,
+         "matches": [
+          "resource_battle-pass-key"
+         ],
+         "type": 89,
+         "displayType": 89,
+         "targetValue": 100,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700032": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700032,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003201,
+         "matches": [
+          "1",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 250000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700033": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700033,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003300,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003301,
+         "matches": [
+          "2",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 25000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700036": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700036,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003600,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003601,
+         "matches": [],
+         "type": 12,
+         "displayType": 13,
+         "targetValue": 15000000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700037": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700037,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70003700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70003701,
+         "matches": [],
+         "type": 51,
+         "displayType": 51,
+         "targetValue": 1500,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700058": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700058,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70005800,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70005801,
+         "matches": [],
+         "type": 1,
+         "displayType": 3,
+         "targetValue": 18000000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": [
+          {
+           "_": "QuestConditionModule",
+           "id": 70005802,
+           "matches": [
+            "306",
+            "307",
+            "308"
+           ],
+           "type": 77,
+           "displayType": 77,
+           "targetValue": 0,
+           "mandatory": false,
+           "state": {
+            "_": "QuestConditionStateModule",
+            "currentValue": 0,
+            "active": true,
+            "completed": false
+           },
+           "subConditions": []
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 180,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700056": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700056,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70005600,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70005601,
+         "matches": [
+          "resource_collectable_agate-splinter"
+         ],
+         "type": 67,
+         "displayType": 67,
+         "targetValue": 8000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700057": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700057,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70005700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70005701,
+         "matches": [
+          "1",
+          "KRONOS",
+          "76"
+         ],
+         "type": 80,
+         "displayType": 80,
+         "targetValue": 1,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 600,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700054": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700054,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70005400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70005401,
+         "matches": [
+          "resource_collectable_neu"
+         ],
+         "type": 67,
+         "displayType": 67,
+         "targetValue": 200,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "700055": {
+    "tur": 9,
+    "gold": false,
+    "kaynak": "kayit",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 700055,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70005500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70005501,
+         "matches": [
+          "resource_collectable_chromin"
+         ],
+         "type": 67,
+         "displayType": 67,
+         "targetValue": 16000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 270,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701901": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701901,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70190100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70190101,
+         "matches": [
+          "1"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 40,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701902": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701902,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70190200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70190201,
+         "matches": [],
+         "type": 55,
+         "displayType": 55,
+         "targetValue": 15,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701903": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701903,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70190300,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70190301,
+         "matches": [],
+         "type": 12,
+         "displayType": 13,
+         "targetValue": 60000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701904": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701904,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70190400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70190401,
+         "matches": [
+          "0",
+          "0"
+         ],
+         "type": 29,
+         "displayType": 29,
+         "targetValue": 600000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701905": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701905,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70190500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70190501,
+         "matches": [
+          "1",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 8000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701906": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701906,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70190600,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70190601,
+         "matches": [
+          "1"
+         ],
+         "type": 52,
+         "displayType": 52,
+         "targetValue": 400,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701907": {
+    "tur": 3,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701907,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70190700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70190701,
+         "matches": [],
+         "type": 85,
+         "displayType": 85,
+         "targetValue": 2,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 25,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701951": {
+    "tur": 3,
+    "gold": true,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701951,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70195100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70195101,
+         "matches": [
+          "2"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 80,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 15,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "701952": {
+    "tur": 3,
+    "gold": true,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 701952,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70195200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70195201,
+         "matches": [
+          "0",
+          "0"
+         ],
+         "type": 29,
+         "displayType": 29,
+         "targetValue": 3000000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 30,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "702901": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 702901,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70290100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70290101,
+         "matches": [
+          "3",
+          "ALPHA",
+          "BETA",
+          "GAMMA",
+          "51",
+          "52",
+          "53"
+         ],
+         "type": 80,
+         "displayType": 80,
+         "targetValue": 1,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "702902": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 702902,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70290200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70290201,
+         "matches": [
+          "6"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 300,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "702903": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 702903,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70290300,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70290301,
+         "matches": [],
+         "type": 55,
+         "displayType": 55,
+         "targetValue": 100,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "702904": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 702904,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70290400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70290401,
+         "matches": [],
+         "type": 12,
+         "displayType": 13,
+         "targetValue": 500000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "702905": {
+    "tur": 6,
+    "gold": false,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 702905,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70290500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70290501,
+         "matches": [
+          "2"
+         ],
+         "type": 52,
+         "displayType": 52,
+         "targetValue": 4000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 105,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   "702951": {
+    "tur": 6,
+    "gold": true,
+    "kaynak": "sablon",
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 702951,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 70295100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 70295101,
+         "matches": [
+          "0",
+          "0"
+         ],
+         "type": 29,
+         "displayType": 29,
+         "targetValue": 25000000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [
+      {
+       "_": "LootModule",
+       "lootId": "resource_season-pass-point",
+       "amount": 120,
+       "modifier": ""
+      }
+     ],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   }
+  },
+  "yenileme": {
+   "_": "RefreshQuestInfo",
+   "nextDailyUridium": -1,
+   "weeklyCount": 0,
+   "dailyLeft": 1,
+   "dailyCount": 1,
+   "nextWeeklyUridium": 500,
+   "weeklyLeft": 0
+  }
+ },
+ "savas_bileti": {
+  "dosya": "pass_halloween2026.xml",
+  "gorevler": {
+   "500363": {
+    "_": "QuestDefinitionModule",
+    "id": 500363,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50036300,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50036301,
+        "matches": [
+         "1",
+         "108",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 2000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500366": {
+    "_": "QuestDefinitionModule",
+    "id": 500366,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50036600,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50036601,
+        "matches": [
+         "109"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 50,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500369": {
+    "_": "QuestDefinitionModule",
+    "id": 500369,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50036900,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50036901,
+        "matches": [
+         "317"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500373": {
+    "_": "QuestDefinitionModule",
+    "id": 500373,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037300,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037301,
+        "matches": [
+         "34"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 3,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500376": {
+    "_": "QuestDefinitionModule",
+    "id": 500376,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037600,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037601,
+        "matches": [
+         "0"
+        ],
+        "type": 7,
+        "displayType": 9,
+        "targetValue": 1000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500379": {
+    "_": "QuestDefinitionModule",
+    "id": 500379,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037900,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037901,
+        "matches": [
+         "0",
+         "0",
+         "0",
+         "1",
+         "0"
+        ],
+        "type": 30,
+        "displayType": 30,
+        "targetValue": 1000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500695": {
+    "_": "QuestDefinitionModule",
+    "id": 500695,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50069500,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50069501,
+        "matches": [
+         "0",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 1000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": [
+         {
+          "_": "QuestConditionModule",
+          "id": 50069502,
+          "matches": [
+           "227",
+           "230",
+           "231",
+           "232",
+           "233",
+           "234",
+           "235"
+          ],
+          "type": 77,
+          "displayType": 77,
+          "targetValue": 0,
+          "mandatory": false,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500364": {
+    "_": "QuestDefinitionModule",
+    "id": 500364,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50036400,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50036401,
+        "matches": [
+         "1",
+         "108",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 5000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500367": {
+    "_": "QuestDefinitionModule",
+    "id": 500367,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50036700,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50036701,
+        "matches": [
+         "109"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 200,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500370": {
+    "_": "QuestDefinitionModule",
+    "id": 500370,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037000,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037001,
+        "matches": [
+         "317"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 4,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500374": {
+    "_": "QuestDefinitionModule",
+    "id": 500374,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037400,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037401,
+        "matches": [
+         "34"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 8,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500377": {
+    "_": "QuestDefinitionModule",
+    "id": 500377,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037700,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037701,
+        "matches": [
+         "0"
+        ],
+        "type": 7,
+        "displayType": 9,
+        "targetValue": 5000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500380": {
+    "_": "QuestDefinitionModule",
+    "id": 500380,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50038000,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50038001,
+        "matches": [
+         "0",
+         "0",
+         "0",
+         "1",
+         "0"
+        ],
+        "type": 30,
+        "displayType": 30,
+        "targetValue": 3000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500696": {
+    "_": "QuestDefinitionModule",
+    "id": 500696,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50069600,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50069601,
+        "matches": [
+         "0",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 10000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": [
+         {
+          "_": "QuestConditionModule",
+          "id": 50069602,
+          "matches": [
+           "227",
+           "230",
+           "231",
+           "232",
+           "233",
+           "234",
+           "235"
+          ],
+          "type": 77,
+          "displayType": 77,
+          "targetValue": 0,
+          "mandatory": false,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500365": {
+    "_": "QuestDefinitionModule",
+    "id": 500365,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50036500,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50036501,
+        "matches": [
+         "1",
+         "108",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 15000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500368": {
+    "_": "QuestDefinitionModule",
+    "id": 500368,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50036800,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50036801,
+        "matches": [
+         "109"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 500,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500371": {
+    "_": "QuestDefinitionModule",
+    "id": 500371,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037100,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037101,
+        "matches": [
+         "317"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 8,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500375": {
+    "_": "QuestDefinitionModule",
+    "id": 500375,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037500,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037501,
+        "matches": [
+         "34"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 15,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500378": {
+    "_": "QuestDefinitionModule",
+    "id": 500378,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037800,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037801,
+        "matches": [
+         "0"
+        ],
+        "type": 7,
+        "displayType": 9,
+        "targetValue": 10000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500381": {
+    "_": "QuestDefinitionModule",
+    "id": 500381,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50038100,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50038101,
+        "matches": [
+         "0",
+         "0",
+         "0",
+         "1",
+         "0"
+        ],
+        "type": 30,
+        "displayType": 30,
+        "targetValue": 5000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500697": {
+    "_": "QuestDefinitionModule",
+    "id": 500697,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50069700,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50069701,
+        "matches": [
+         "0",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 50000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": [
+         {
+          "_": "QuestConditionModule",
+          "id": 50069702,
+          "matches": [
+           "227",
+           "230",
+           "231",
+           "232",
+           "233",
+           "234",
+           "235"
+          ],
+          "type": 77,
+          "displayType": 77,
+          "targetValue": 0,
+          "mandatory": false,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500372": {
+    "_": "QuestDefinitionModule",
+    "id": 500372,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50037200,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50037201,
+        "matches": [
+         "317"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 12,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500698": {
+    "_": "QuestDefinitionModule",
+    "id": 500698,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50069800,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50069801,
+        "matches": [
+         "0",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 100000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": [
+         {
+          "_": "QuestConditionModule",
+          "id": 50069802,
+          "matches": [
+           "227",
+           "230",
+           "231",
+           "232",
+           "233",
+           "234",
+           "235"
+          ],
+          "type": 77,
+          "displayType": 77,
+          "targetValue": 0,
+          "mandatory": false,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500382": {
+    "_": "QuestDefinitionModule",
+    "id": 500382,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50038200,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50038201,
+        "matches": [],
+        "type": 87,
+        "displayType": 87,
+        "targetValue": 16,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500383": {
+    "_": "QuestDefinitionModule",
+    "id": 500383,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50038300,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50038301,
+        "matches": [
+         "34"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 40,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500384": {
+    "_": "QuestDefinitionModule",
+    "id": 500384,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50038400,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50038401,
+        "matches": [
+         "0",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 450000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500699": {
+    "_": "QuestDefinitionModule",
+    "id": 500699,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50069900,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50069901,
+        "matches": [
+         "1",
+         "108",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 20000000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": [
+         {
+          "_": "QuestConditionModule",
+          "id": 50069902,
+          "matches": [
+           "227",
+           "230",
+           "231",
+           "232",
+           "233",
+           "234",
+           "235"
+          ],
+          "type": 77,
+          "displayType": 77,
+          "targetValue": 0,
+          "mandatory": false,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   "500700": {
+    "_": "QuestDefinitionModule",
+    "id": 500700,
+    "types": [],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50070000,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50070001,
+        "matches": [
+         "109"
+        ],
+        "type": 6,
+        "displayType": 6,
+        "targetValue": 1700,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": [
+         {
+          "_": "QuestConditionModule",
+          "id": 50070002,
+          "matches": [
+           "227",
+           "230",
+           "231",
+           "232",
+           "233",
+           "234",
+           "235"
+          ],
+          "type": 77,
+          "displayType": 77,
+          "targetValue": 0,
+          "mandatory": false,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        ]
+       }
+      }
+     ]
+    },
+    "rewards": [],
+    "icons": [],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  },
+  "oduller": {
+   "500363": {
+    "odul": [
+     [
+      "ammunition_laser_sbl-100",
+      1000
+     ]
+    ],
+    "anahtar": 1
+   },
+   "500366": {
+    "odul": [
+     [
+      "ammunition_laser_sbl-100",
+      1000
+     ]
+    ],
+    "anahtar": 1
+   },
+   "500369": {
+    "odul": [
+     [
+      "tech_anti-mine-transmitter",
+      1
+     ]
+    ],
+    "anahtar": 1
+   },
+   "500373": {
+    "odul": [
+     [
+      "ammunition_specialammo_emote_alien-horror",
+      20
+     ]
+    ],
+    "anahtar": 1
+   },
+   "500376": {
+    "odul": [
+     [
+      "ammunition_specialammo_ghostifier",
+      10
+     ]
+    ],
+    "anahtar": 1
+   },
+   "500379": {
+    "odul": [
+     [
+      "ammunition_laser_sbl-100",
+      2500
+     ],
+     [
+      "ammunition_specialammo_spray_strong",
+      20
+     ]
+    ],
+    "anahtar": 1
+   },
+   "500695": {
+    "odul": [
+     [
+      "tech_shield-backup2",
+      1
+     ]
+    ],
+    "anahtar": 1
+   },
+   "500364": {
+    "odul": [
+     [
+      "ammunition_laser_ucb-100",
+      4000
+     ],
+     [
+      "ammunition_specialammo_spray_hand",
+      20
+     ]
+    ],
+    "anahtar": 3
+   },
+   "500367": {
+    "odul": [
+     [
+      "resource_extra-energy",
+      10
+     ],
+     [
+      "ammunition_specialammo_emote_pumpkin-smile",
+      20
+     ]
+    ],
+    "anahtar": 3
+   },
+   "500370": {
+    "odul": [
+     [
+      "ammunition_laser_spacecup_group-a",
+      3500
+     ],
+     [
+      "ammunition_specialammo_spray_watchingyou",
+      20
+     ]
+    ],
+    "anahtar": 3
+   },
+   "500374": {
+    "odul": [
+     [
+      "booster_dmg-dlb",
+      10
+     ],
+     [
+      "resource_collectable_axion-beam-regulator",
+      50
+     ]
+    ],
+    "anahtar": 3
+   },
+   "500377": {
+    "odul": [
+     [
+      "ammunition_laser_sbl-100",
+      2500
+     ],
+     [
+      "ammunition_specialammo_wiz-x",
+      15
+     ]
+    ],
+    "anahtar": 3
+   },
+   "500380": {
+    "odul": [
+     [
+      "resource_booty-key",
+      15
+     ]
+    ],
+    "anahtar": 3
+   },
+   "500696": {
+    "odul": [
+     [
+      "resource_collectable_polychromium",
+      300
+     ]
+    ],
+    "anahtar": 3
+   },
+   "500365": {
+    "odul": [
+     [
+      "ammunition_laser_rsb-75",
+      3000
+     ],
+     [
+      "resource_collectable_axion-beam-regulator",
+      35
+     ]
+    ],
+    "anahtar": 7
+   },
+   "500368": {
+    "odul": [
+     [
+      "resource_collectable_axion-beam-regulator",
+      50
+     ]
+    ],
+    "anahtar": 7
+   },
+   "500371": {
+    "odul": [
+     [
+      "resource_collectable_indoctrineoil",
+      35
+     ]
+    ],
+    "anahtar": 7
+   },
+   "500375": {
+    "odul": [
+     [
+      "equipment_shipupgrade_hp-dim01",
+      1
+     ]
+    ],
+    "anahtar": 7
+   },
+   "500378": {
+    "odul": [
+     [
+      "tech_anti-mine-transmitter",
+      1
+     ]
+    ],
+    "anahtar": 7
+   },
+   "500381": {
+    "odul": [
+     [
+      "tech_anti-mine-transmitter",
+      1
+     ]
+    ],
+    "anahtar": 7
+   },
+   "500697": {
+    "odul": [
+     [
+      "equipment_shipupgrade_dmg-xh01",
+      1
+     ]
+    ],
+    "anahtar": 7
+   },
+   "500372": {
+    "odul": [
+     [
+      "resource_collectable_axion-beam-regulator",
+      100
+     ]
+    ],
+    "anahtar": 10
+   },
+   "500698": {
+    "odul": [
+     [
+      "equipment_shipupgrade_hp-xh01",
+      1
+     ]
+    ],
+    "anahtar": 10
+   },
+   "500382": {
+    "odul": [
+     [
+      "resource_collectable_golden-candy-corn",
+      50
+     ]
+    ],
+    "anahtar": 20
+   },
+   "500383": {
+    "odul": [
+     [
+      "tech_npc-nuke",
+      2
+     ],
+     [
+      "tech_battle-repair-bot2",
+      2
+     ]
+    ],
+    "anahtar": 15
+   },
+   "500384": {
+    "odul": [
+     [
+      "tech_burning-trail",
+      2
+     ],
+     [
+      "resource_collectable_axion-beam-regulator",
+      50
+     ]
+    ],
+    "anahtar": 15
+   },
+   "500699": {
+    "odul": [
+     [
+      "equipment_shipupgrade_hp-xt10",
+      1
+     ]
+    ],
+    "anahtar": 15
+   },
+   "500700": {
+    "odul": [
+     [
+      "resource_collectable_golden-candy-corn",
+      20
+     ]
+    ],
+    "anahtar": 20
+   }
+  },
+  "ayarlar": {
+   "battlePassItemFilters": [
+    "special",
+    "standard"
+   ]
+  },
+  "anahtar_degisimi": [
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 25,
+    "limit": 3,
+    "exchangeReward": "dmg-xv03",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_dmg-xv03",
+      "amount": 1
+     }
+    ],
+    "priority": 6,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "pet-fuel-x1000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_pet-fuel",
+      "amount": 1000
+     }
+    ],
+    "priority": 20,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 3,
+    "limit": 5,
+    "exchangeReward": "plt-2021-x3000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocket_plt-2021",
+      "amount": 3000
+     }
+    ],
+    "priority": 9,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 10,
+    "limit": 5,
+    "exchangeReward": "hp-zpvp02",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_hp-zpvp02",
+      "amount": 1
+     }
+    ],
+    "priority": 17,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 15,
+    "exchangeReward": "sbl-100-x1000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_laser_sbl-100",
+      "amount": 1000
+     }
+    ],
+    "priority": 25,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 35,
+    "limit": 1,
+    "exchangeReward": "asmodeus-laser",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_weapon_laser_am-l",
+      "amount": 1
+     }
+    ],
+    "priority": 5,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 16,
+    "limit": 15,
+    "exchangeReward": "r-ic3-x50",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_specialammo_r-ic3",
+      "amount": 50
+     }
+    ],
+    "priority": 24,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "kyhalon-x75",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_kyhalon",
+      "amount": 75
+     }
+    ],
+    "priority": 18,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "rinusk-x150",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_rinusk",
+      "amount": 150
+     }
+    ],
+    "priority": 22,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 15,
+    "limit": 3,
+    "exchangeReward": "hp-xt10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_hp-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 13,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 10,
+    "limit": 5,
+    "exchangeReward": "shd-zpvp02",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_shd-zpvp02",
+      "amount": 1
+     }
+    ],
+    "priority": 18,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 8,
+    "limit": 5,
+    "exchangeReward": "nova",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "captain_captain-generic",
+      "amount": 1
+     }
+    ],
+    "priority": 26,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 8,
+    "exchangeReward": "frost-field",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "tech_frost-field",
+      "amount": 1
+     }
+    ],
+    "priority": 19,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 7,
+    "exchangeReward": "anti-mine-transmitter",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "tech_anti-mine-transmitter",
+      "amount": 1
+     }
+    ],
+    "priority": 22,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 3,
+    "limit": 8,
+    "exchangeReward": "anti-ai-emergency-reserves",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "tech_anti-ai-emergency-reserves",
+      "amount": 1
+     }
+    ],
+    "priority": 21,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "dcr-250-x25",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_specialammo_dcr-250",
+      "amount": 25
+     }
+    ],
+    "priority": 12,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "abr-x75",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_axion-beam-regulator",
+      "amount": 75
+     }
+    ],
+    "priority": 3,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "scrapium-x25",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_scrapium",
+      "amount": 25
+     }
+    ],
+    "priority": 15,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "seprom-x1000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_ore_seprom",
+      "amount": 1000
+     }
+    ],
+    "priority": 14,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 25,
+    "limit": 1,
+    "exchangeReward": "dusklight-solaris-plus-ship-design",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ship_solaris-plus_design_solaris-plus-dusklight",
+      "amount": 1
+     }
+    ],
+    "priority": 3,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 5,
+    "limit": 10,
+    "exchangeReward": "iac-x25",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_indoctrine-accelerator",
+      "amount": 25
+     }
+    ],
+    "priority": 1,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 5,
+    "limit": 10,
+    "exchangeReward": "indoctrine-oil-x15",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_indoctrineoil",
+      "amount": 15
+     }
+    ],
+    "priority": 2,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 25,
+    "limit": 3,
+    "exchangeReward": "spc-xv03",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_spc-xv03",
+      "amount": 1
+     }
+    ],
+    "priority": 7,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "tetrathrin-x100",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_tetrathrin",
+      "amount": 100
+     }
+    ],
+    "priority": 17,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 10,
+    "limit": 10,
+    "exchangeReward": "hstrm-01-x500",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocketlauncher_hstrm-01",
+      "amount": 500
+     }
+    ],
+    "priority": 11,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "schism-x5",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_schism",
+      "amount": 5
+     }
+    ],
+    "priority": 23,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 45,
+    "limit": 1,
+    "exchangeReward": "odysseus-laser",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_weapon_laser_os-l",
+      "amount": 1
+     }
+    ],
+    "priority": 4,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 10,
+    "limit": 5,
+    "exchangeReward": "dmg-zpvp02",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_dmg-zpvp02",
+      "amount": 1
+     }
+    ],
+    "priority": 15,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 3,
+    "limit": 8,
+    "exchangeReward": "npc-nuke",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "tech_npc-nuke",
+      "amount": 1
+     }
+    ],
+    "priority": 20,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 25,
+    "limit": 5,
+    "exchangeReward": "fs-04",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_generator_shield_fs-04",
+      "amount": 1
+     }
+    ],
+    "priority": 10,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "bifenon-x150",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_bifenon",
+      "amount": 150
+     }
+    ],
+    "priority": 16,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 25,
+    "limit": 3,
+    "exchangeReward": "shd-xv03",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_shd-xv03",
+      "amount": 1
+     }
+    ],
+    "priority": 9,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 30,
+    "limit": 1,
+    "exchangeReward": "hammerclaw",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ship_hammerclaw",
+      "amount": 1
+     }
+    ],
+    "priority": 23,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 13,
+    "limit": 10,
+    "exchangeReward": "ucb-100-x4500",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_laser_ucb-100",
+      "amount": 4500
+     }
+    ],
+    "priority": 7,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 15,
+    "limit": 3,
+    "exchangeReward": "spc-xt10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_spc-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 12,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "sp-100x-x75",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_specialammo_sp-100x",
+      "amount": 75
+     }
+    ],
+    "priority": 25,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 7,
+    "limit": 10,
+    "exchangeReward": "plt-3030-x2000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocket_plt-3030",
+      "amount": 2000
+     }
+    ],
+    "priority": 8,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "log-disks-x45",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_logfile",
+      "amount": 45
+     }
+    ],
+    "priority": 19,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 25,
+    "limit": 1,
+    "exchangeReward": "dusklight-hammerclaw-plus-ship-design",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-dusklight",
+      "amount": 1
+     }
+    ],
+    "priority": 2,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 10,
+    "limit": 5,
+    "exchangeReward": "spc-zpvp02",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_spc-zpvp02",
+      "amount": 1
+     }
+    ],
+    "priority": 16,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 4,
+    "limit": 5,
+    "exchangeReward": "extra-energy-x125",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_extra-energy",
+      "amount": 125
+     }
+    ],
+    "priority": 4,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "sr-5-x50",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_specialammo_sr-5",
+      "amount": 50
+     }
+    ],
+    "priority": 13,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 4,
+    "limit": 10,
+    "exchangeReward": "rsb-75-x3000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_laser_rsb-75",
+      "amount": 3000
+     }
+    ],
+    "priority": 6,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 7,
+    "limit": 10,
+    "exchangeReward": "ubr-100-x500",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocketlauncher_ubr-100",
+      "amount": 500
+     }
+    ],
+    "priority": 10,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 215,
+    "limit": 1,
+    "exchangeReward": "lf-5-mortifer",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_weapon_laser_lf-5-mf",
+      "amount": 1
+     }
+    ],
+    "priority": 1,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 15,
+    "limit": 3,
+    "exchangeReward": "dmg-xt10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_dmg-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 11,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 4,
+    "limit": 10,
+    "exchangeReward": "booty-key-x4",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_booty-key",
+      "amount": 4
+     }
+    ],
+    "priority": 5,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 5,
+    "exchangeReward": "polychromium-x150",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_polychromium",
+      "amount": 150
+     }
+    ],
+    "priority": 21,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 1,
+    "limit": 10,
+    "exchangeReward": "job-100-x2000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_laser_job-100",
+      "amount": 2000
+     }
+    ],
+    "priority": 24,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 25,
+    "limit": 3,
+    "exchangeReward": "hp-xv03",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_hp-xv03",
+      "amount": 1
+     }
+    ],
+    "priority": 8,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 15,
+    "limit": 3,
+    "exchangeReward": "shd-xt10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_shd-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 14,
+    "isSpecial": true,
+    "claimCount": 0
+   }
+  ]
+ },
+ "mini_istemci": [
+  [
+   "resource_collectable_golden-candy-corn",
+   30,
+   false
+  ],
+  [
+   "resource_collectable_candy-corn",
+   10000,
+   false
+  ],
+  [
+   "resource_collectable_armory-token",
+   5,
+   false
+  ],
+  [
+   "ammunition_laser_sbl-100",
+   3000,
+   false
+  ],
+  [
+   "resource_collectable_diametrion",
+   10,
+   false
+  ],
+  [
+   "resource_collectable_golden-candy-corn",
+   30,
+   false
+  ],
+  [
+   "resource_extra-energy",
+   20,
+   true
+  ],
+  [
+   "resource_collectable_armory-token",
+   5,
+   false
+  ],
+  [
+   "resource_collectable_candy-corn",
+   10000,
+   false
+  ],
+  [
+   "resource_collectable_diametrion",
+   10,
+   false
+  ],
+  [
+   "resource_collectable_golden-candy-corn",
+   40,
+   false
+  ],
+  [
+   "resource_collectable_candy-corn",
+   15000,
+   false
+  ],
+  [
+   "resource_collectable_armory-token",
+   5,
+   false
+  ],
+  [
+   "resource_extra-energy",
+   30,
+   true
+  ],
+  [
+   "resource_collectable_indoctrine-accelerator",
+   20,
+   true
+  ]
+ ],
+ "aylik_deluxe": [
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "booster_ep-b02",
+   10
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "ammunition_laser_ucb-100",
+   7500
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "resource_extra-energy",
+   200
+  ],
+  [
+   "resource_collectable_axion-beam-regulator",
+   200
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "booster_hp-b02",
+   10
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "ammunition_laser_rsb-75",
+   7500
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "resource_extra-energy",
+   250
+  ],
+  [
+   "resource_collectable_indoctrineoil",
+   20
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "booster_dmg-dlb",
+   10
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "ammunition_laser_spacecup_group-c",
+   4500
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "resource_collectable_axion-beam-regulator",
+   100
+  ],
+  [
+   "resource_collectable_indoctrine-accelerator",
+   50
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "booster_shd-b02",
+   10
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "ammunition_laser_a-bl",
+   4000
+  ],
+  [
+   "currency_uridium",
+   3000
+  ],
+  [
+   "resource_collectable_diametrion",
+   15
+  ],
+  [
+   "equipment_weapon_laser_os-l",
+   1
+  ]
+ ],
+ "unity_odul": [
+  [
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501000,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100000,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100001,
+        "matches": [],
+        "type": 1,
+        "displayType": 96,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "currency_uridium",
+      "amount": 5000,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501002,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100200,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100201,
+        "matches": [],
+        "type": 100,
+        "displayType": 100,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_generator_shield_sg3n-b02",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_rocket_plt-2021",
+      "amount": 4000,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501001,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100100,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100101,
+        "matches": [],
+        "type": 53,
+        "displayType": 53,
+        "targetValue": 6,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_weapon_laser_lf-4",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_laser_mcb-50",
+      "amount": 5000,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  ],
+  [
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501005,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100500,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100501,
+        "matches": [],
+        "type": 100,
+        "displayType": 100,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_booty-key",
+      "amount": 10,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_laser_ucb-100",
+      "amount": 4000,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501004,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100400,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100401,
+        "matches": [
+         "0",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 250000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_extra_repbot_rep-3",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "equipment_generator_speed_g3n-7900",
+      "amount": 2,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501003,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100300,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100301,
+        "matches": [],
+        "type": 1,
+        "displayType": 96,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_logfile",
+      "amount": 20,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  ],
+  [
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501008,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100800,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100801,
+        "matches": [],
+        "type": 100,
+        "displayType": 100,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_axion-beam-regulator",
+      "amount": 30,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_polychromium",
+      "amount": 500,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501007,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100700,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100701,
+        "matches": [],
+        "type": 1,
+        "displayType": 3,
+        "targetValue": 3600000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_ore_seprom",
+      "amount": 1000,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_rocket_plt-3030",
+      "amount": 1500,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501006,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100600,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100601,
+        "matches": [],
+        "type": 1,
+        "displayType": 96,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_extra_cpu_jp-02",
+      "amount": 1,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  ],
+  [
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501011,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101100,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101101,
+        "matches": [],
+        "type": 100,
+        "displayType": 100,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_generator_shield_fs-03",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "currency_uridium",
+      "amount": 15000,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501010,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101000,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101001,
+        "matches": [],
+        "type": 85,
+        "displayType": 85,
+        "targetValue": 3,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_extra_cpu_cl04k-m",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "booster_ep-b02",
+      "amount": 1,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501009,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50100900,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50100901,
+        "matches": [],
+        "type": 1,
+        "displayType": 96,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_laser_rsb-75",
+      "amount": 2500,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  ],
+  [
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501014,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101400,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101401,
+        "matches": [],
+        "type": 100,
+        "displayType": 100,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_indoctrineoil",
+      "amount": 3,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_schism",
+      "amount": 5,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501013,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101300,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101301,
+        "matches": [],
+        "type": 51,
+        "displayType": 51,
+        "targetValue": 20,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_weapon_rocketlauncher_hst-2",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_rocketlauncher_hstrm-01",
+      "amount": 400,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501012,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101200,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101201,
+        "matches": [],
+        "type": 1,
+        "displayType": 96,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_indoctrine-accelerator",
+      "amount": 3,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  ],
+  [
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501016,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101600,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101601,
+        "matches": [
+         "0",
+         "0"
+        ],
+        "type": 29,
+        "displayType": 29,
+        "targetValue": 400000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_axion-beam-regulator",
+      "amount": 30,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_rocketlauncher_ubr-100",
+      "amount": 400,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501015,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101500,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101501,
+        "matches": [],
+        "type": 1,
+        "displayType": 96,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_scrapium",
+      "amount": 150,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501017,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101700,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101701,
+        "matches": [],
+        "type": 100,
+        "displayType": 100,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_rinusk",
+      "amount": 150,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_salvage-core",
+      "amount": 10,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  ],
+  [
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501020,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50102000,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50102001,
+        "matches": [],
+        "type": 100,
+        "displayType": 100,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "equipment_weapon_laser_lf-4",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "ammunition_specialammo_dcr-250",
+      "amount": 25,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501019,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101900,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101901,
+        "matches": [
+         "1",
+         "0"
+        ],
+        "type": 20,
+        "displayType": 22,
+        "targetValue": 10000,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "captain_captain-generic",
+      "amount": 1,
+      "modifier": ""
+     },
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_evocation-chip",
+      "amount": 100,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   },
+   {
+    "_": "QuestDefinitionModule",
+    "id": 501018,
+    "types": [
+     {
+      "_": "QuestTypeModule",
+      "type": 3
+     }
+    ],
+    "rootCase": {
+     "_": "QuestCaseModule",
+     "id": 50101800,
+     "active": false,
+     "mandatory": true,
+     "ordered": false,
+     "mandatoryCount": 1,
+     "modifier": [
+      {
+       "_": "QuestElementModule",
+       "questCase": {
+        "_": "QuestCaseModule",
+        "id": 0,
+        "active": false,
+        "mandatory": false,
+        "ordered": false,
+        "mandatoryCount": 0,
+        "modifier": []
+       },
+       "condition": {
+        "_": "QuestConditionModule",
+        "id": 50101801,
+        "matches": [],
+        "type": 1,
+        "displayType": 96,
+        "targetValue": 1,
+        "mandatory": true,
+        "state": {
+         "_": "QuestConditionStateModule",
+         "currentValue": 0,
+         "active": true,
+         "completed": false
+        },
+        "subConditions": []
+       }
+      }
+     ]
+    },
+    "rewards": [
+     {
+      "_": "LootModule",
+      "lootId": "resource_collectable_diametrion",
+      "amount": 5,
+      "modifier": ""
+     }
+    ],
+    "icons": [
+     {
+      "_": "QuestIconModule",
+      "icon": 0
+     },
+     {
+      "_": "QuestIconModule",
+      "icon": 1
+     }
+    ],
+    "textKeyFoundation": "",
+    "portraitId": "",
+    "star": 0
+   }
+  ]
+ ]
+}

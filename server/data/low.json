@@ -1,0 +1,24 @@
+{
+ "_aciklama": "LoW (Lord of War), tek kişilik sürüm (low.py; yol haritası Aşama 4). Wiki (belgeler/arastirma/pve_icerik.md 2.9, darkorbitwiki.com/galaxy-gates/low): portal X-3'te, grup kapısı (en az 3 kişi). Uzaylılar ve sayıları wiki'den (LoW sürümleri: npc.json 90-97, npcId 42-48 ve Century Falcon 120): Vagrant 14, Marauder 17, Outcast 18, Corsair 10, Hooligan 17, Ravager 17, Convict 16; hepsi ölünce dört röle istasyonu sırayla etkinleştirilir, dördüncüden sonra Century Falcon Vagrant'larla gelir. Ödüller uzaylıların kendi ödülleri: wiki'nin tek oyunculu toplamı (7.002.000 EP, 26.400 onur, 35.400 U, 35.355.000 kredi) bunların toplamı. Herkes ölünce 5 dk içinde dönülebilir.",
+ "_uyarlama": "Uzaylılar türlerine göre sırayla dalga dalga (109'u birden değil); röle istasyonu vurulmaz: yanında (yaricap) yakında uzaylı yokken sn saniye durunca etkinleşir, her istasyonda birkaç Vagrant savunur; Century Falcon'un eskortu 6 Vagrant; bitince ortada firmanın X-3'üne dönüş portalı. Kırmızı uçuş yasağı bölgeleri (haritanın görselinde) sunucuda yok.",
+ "harita": 200,
+ "dalgalar": [["94", 14], ["93", 17], ["92", 18], ["91", 10], ["96", 17], ["97", 17], ["95", 16]],
+ "boss": "90",
+ "eskort": ["94", 6],
+ "role": {"adet": 4, "sn": 20, "yaricap": 600, "savunma": ["94", 3]},
+ "donus_sn": 300,
+ "giris_sn": 6,
+ "dalga_arasi_sn": 4,
+ "dogma_uzaklik": [1300, 2200],
+ "cikis": {"1": 3, "2": 7, "3": 11},
+ "mesajlar": {
+  "giris": "LoW: destroy all Lord of War ships, then activate the {roleler} relay stations.",
+  "devam": "LoW: welcome back! The instance continues.",
+  "dalga": "LoW: {ad} x{adet} incoming ({dalga}/{toplam})",
+  "role": "Relay station {no}/{roleler}: stay close to it to activate it.",
+  "role_ilerleme": "Relay station {no}/{roleler}: {yuzde}%",
+  "role_tamam": "Relay station {no}/{roleler} activated!",
+  "boss": "Century Falcon has appeared!",
+  "bitti": "LoW completed! The portal in the center of the map leads back to X-3."
+ }
+}

@@ -1,0 +1,263 @@
+{
+ "_aciklama": "Uzaylı yetenekleri (yol haritası Aşama 4; uzayli.py ve dunya.py uygular). Anahtar istemcinin npcId'si (npc.json npc_kimlik, kapilar.json npc_kimlik): aynı uzaylı haritada da kapıda da aynı yetenekle gelir. Kaynak belgeler/wiki/aliens.md (wiki); wiki'nin sayı vermediği yerler '_uyarlama' notunda. Alanlar: vurulunca_cagir {tur, adet, en_cok, bekleme_sn}, yenilenme {can_sn, kalkan_sn, bekleme_sn}, olunce_dogur [{tur, adet}], cagrilar_yasarken_dokunulmaz, cagrilar_yasarken_onarim {can_sn}, ofke {saldiran, sure_sn, hasar_carpani, ek_cagri, onarim_can_sn}, can_esiginde_cagir [{oran, tur, adet}], gizlenme_bozar {menzil}, yavaslatan_atis {hiz | oran, sn, menzil}, coklu_hedef {can_orani}, roket {hasar, bekleme_sn, firlatici, adet}, tekillik {sn_hasar, azami, sure_sn, menzil, bekleme_sn}, kaybolma {hasar, sahte, uzaklik, patlama, patlama_yaricap, sahte_omur_sn, can_sn, kalkan_sn}, yapiskan_bomba {hasar, aralik_sn, gecikme_sn, grup}, hiz_becerisi {hiz, kalkan_orani}, kapsuller {adet, aralik_sn, toplama_ms, toplama_mesafe, can, kalkan, hasar}.",
+ "yetenekler": {
+  "13": {
+   "_ad": "Cubikon",
+   "vurulunca_cagir": {
+    "tur": "81",
+    "adet": 3,
+    "en_cok": 30,
+    "bekleme_sn": 4
+   },
+   "yenilenme": {
+    "can_sn": 125000,
+    "kalkan_sn": 0,
+    "bekleme_sn": 10
+   },
+   "_kaynak": "aliens.md: vurulunca Protegit salar (tabloda 30x Protegit), saldırılmazken saniyede 125.000'e kadar can",
+   "_uyarlama": "çağrı başına 3 Protegit, 4 sn bekleme; yenilenme 10 sn vurulmayınca"
+  },
+  "8": {
+   "_ad": "Lordakium",
+   "olunce_dogur": [
+    {
+     "tur": "npc173",
+     "adet": 3
+    }
+   ],
+   "_kaynak": "aliens.md (Lordakium Spore): Lordakium 3 spor"
+  },
+  "21": {
+   "_ad": "Boss Lordakium",
+   "olunce_dogur": [
+    {
+     "tur": "npc173",
+     "adet": 4
+    }
+   ],
+   "_kaynak": "aliens.md: Boss Lordakium 4 spor"
+  },
+  "35": {
+   "_ad": "Uber Lordakium",
+   "olunce_dogur": [
+    {
+     "tur": "npc173",
+     "adet": 5
+    }
+   ],
+   "_kaynak": "aliens.md: Uber Lordakium 5 spor"
+  },
+  "62": {
+   "_ad": "Battleray",
+   "vurulunca_cagir": {
+    "tur": "111",
+    "adet": 2,
+    "en_cok": 2,
+    "bekleme_sn": 15
+   },
+   "cagrilar_yasarken_dokunulmaz": true,
+   "cagrilar_yasarken_onarim": {
+    "can_sn": 600
+   },
+   "ofke": {
+    "saldiran": 2,
+    "sure_sn": 10,
+    "hasar_carpani": 1.5,
+    "ek_cagri": 2,
+    "onarim_can_sn": 30000
+   },
+   "_kaynak": "aliens.md: Interceptor çağırır; çağırdıkları yaşarken anında kalkan (ISH) ve saniyede 600 onarım; iki ya da daha çok saldıran (P.E.T. 10 sayılır) öfkelendirir: UCB-100 yerine RSB-75, daha çok Interceptor, 30.000 onarım",
+   "_uyarlama": "çağrıda 2 Interceptor, 15 sn bekleme; öfke son 10 sn'deki saldıranlarla; RSB-75/UCB-100 = x1,5 hasar"
+  },
+  "167": {
+   "_ad": "Uber Battleray",
+   "vurulunca_cagir": {
+    "tur": "111",
+    "adet": 2,
+    "en_cok": 2,
+    "bekleme_sn": 15
+   },
+   "cagrilar_yasarken_dokunulmaz": true,
+   "cagrilar_yasarken_onarim": {
+    "can_sn": 600
+   },
+   "ofke": {
+    "saldiran": 2,
+    "sure_sn": 10,
+    "hasar_carpani": 1.5,
+    "ek_cagri": 2,
+    "onarim_can_sn": 30000
+   },
+   "_uyarlama": "wiki yetenek yazmıyor: Battleray'inkiler"
+  },
+  "121": {
+   "_ad": "Deadly Battleray",
+   "vurulunca_cagir": {
+    "tur": "111",
+    "adet": 2,
+    "en_cok": 2,
+    "bekleme_sn": 20
+   },
+   "_kaynak": "aliens.md: Interceptor'larla savunur, ikiden fazla oyuncu saldırmadıkça en çok iki",
+   "_uyarlama": "20 sn bekleme"
+  },
+  "177": {
+   "_ad": "Invoke XVI",
+   "can_esiginde_cagir": [
+    {
+     "oran": 0.75,
+     "tur": "213",
+     "adet": 8
+    }
+   ],
+   "_kaynak": "aliens.md: hareketsiz; bir miktar can kaybedince 8 Impulse II çağırır",
+   "_uyarlama": "canın %75'inde, bir kez"
+  },
+  "178": {
+   "_ad": "Mindfire Behemoth",
+   "gizlenme_bozar": {
+    "menzil": 1500
+   },
+   "yavaslatan_atis": {
+    "oran": 0.5,
+    "sn": 3
+   },
+   "coklu_hedef": {
+    "can_orani": 0.25
+   },
+   "_kaynak": "aliens.md: yakındaki gizli pilotları hemen görünür kılar; Saboteur gibi yavaşlatan mermiler; kritik canda birden çok hedef",
+   "_uyarlama": "gizlenme bozma 1.500 birim; yavaşlatma %50, 3 sn; birden çok hedef canın %25'inde (oyuncu ve P.E.T.). Şok dalgası (+/- işaretli pilotlar) birden çok oyuncu ister: bot oyuncularla."
+  },
+  "11": {
+   "_ad": "StreuneR",
+   "roket": {
+    "hasar": 3000,
+    "bekleme_sn": 6
+   },
+   "_kaynak": "aliens.md: azami hasar 1.000 lazer / 3.000 roket",
+   "_uyarlama": "6 sn'de bir roket"
+  },
+  "61": {
+   "_ad": "Annihilator",
+   "roket": {
+    "hasar": 12000,
+    "bekleme_sn": 12,
+    "firlatici": true,
+    "adet": 5
+   },
+   "_kaynak": "aliens.md: 15.000 / +12.000 roket fırlatıcı",
+   "_uyarlama": "12 sn'de bir 5 roketlik salvo, toplam 12.000"
+  },
+  "166": {
+   "_ad": "Uber Annihilator",
+   "roket": {
+    "hasar": 12000,
+    "bekleme_sn": 12,
+    "firlatici": true,
+    "adet": 5
+   },
+   "_kaynak": "aliens.md: 90.000 / +12.000 roket fırlatıcı"
+  },
+  "60": {
+   "_ad": "Saboteur",
+   "yavaslatan_atis": {
+    "hiz": 120,
+    "sn": 5,
+    "menzil": 600
+   },
+   "_uyarlama": "wiki Saboteur'ün yavaşlatmasını anıyor (Mindfire Behemoth sayfası) ama sayı vermiyor: Barb'ın yavaşlatma küresi, menzili ateş menzili"
+  },
+  "165": {
+   "_ad": "Uber Saboteur",
+   "yavaslatan_atis": {
+    "hiz": 120,
+    "sn": 5,
+    "menzil": 600
+   },
+   "_uyarlama": "Saboteur'ünki"
+  },
+  "283": {
+   "_ad": "Barb",
+   "yavaslatan_atis": {
+    "hiz": 120,
+    "sn": 5,
+    "menzil": 300
+   },
+   "_kaynak": "aliens.md: Slowdown Orb hızı 5 sn 120'ye indirir, yenilenir ama birikmez, menzil ~300, EMP kaldırır"
+  },
+  "281": {
+   "_ad": "The Stinger",
+   "yavaslatan_atis": {
+    "hiz": 120,
+    "sn": 5,
+    "menzil": 300
+   },
+   "tekillik": {
+    "sn_hasar": 20000,
+    "azami": 300000,
+    "sure_sn": 15,
+    "menzil": 800,
+    "bekleme_sn": 30
+   },
+   "_kaynak": "aliens.md: Slowdown Orb; Pirate Singularity hedefine saniyede 20.000, en çok 300.000, 15 sn, menzil 800, bekleme 30 sn"
+  },
+  "114": {
+   "_ad": "Emperor Lordakium",
+   "kaybolma": {
+    "hasar": 1280000,
+    "sahte": 2,
+    "uzaklik": 2500,
+    "patlama": 60000,
+    "patlama_yaricap": 500,
+    "sahte_omur_sn": 90,
+    "can_sn": 40000,
+    "kalkan_sn": 40000
+   },
+   "_kaynak": "aliens.md: ~1.280.000 can kaybedince kaybolur, iki sahte Lordakium'la yeniden belirir; sahtelerin 1 canı var, vurulunca büyük patlama; gerçeği aranırken can ve kalkan doldurur",
+   "_uyarlama": "patlama 60.000 hasar, 500 birim; sahteler 90 sn sonra kaybolur; gizliyken saniyede 40.000 can ve kalkan; harita kenarına varınca kaybolma yok"
+  },
+  "115": {
+   "_ad": "Emperor Kristallon",
+   "yapiskan_bomba": {
+    "hasar": 300000,
+    "aralik_sn": 30,
+    "gecikme_sn": 2,
+    "grup": 4
+   },
+   "_kaynak": "aliens.md: ~30 sn'de bir 300.000 hasarlık yapışkan bomba, yakın duran oyuncular paylaşır",
+   "_uyarlama": "tek oyunculu: hasar Hades'in en küçük grubuna (4) bölünür (75.000). Statik yük (+/- kutuplu pilotlar) birden çok oyuncu ister: bot oyuncularla."
+  },
+  "113": {
+   "_ad": "Emperor Sibelon",
+   "hiz_becerisi": {
+    "hiz": 380,
+    "kalkan_orani": 0.1
+   },
+   "kapsuller": {
+    "adet": 3,
+    "aralik_sn": 15,
+    "toplama_ms": 3000,
+    "toplama_mesafe": 150,
+    "can": 0.1,
+    "kalkan": 0.1,
+    "hasar": 0.1
+   },
+   "_kaynak": "aliens.md: kalkanı biterken hızı ~380'e çıkar; haritada güçlendirme kapsülleri belirir: HP (~%10 can), SHD (~%10 kalkan), DMG (hasarı ~%10 artar, oyuncularınki ~%10 düşer)",
+   "_uyarlama": "kalkan %10'un altına inince; 15 sn'de bir kapsül, en çok 3; Emperor en yakın kapsüle gidip 3 sn'de toplar; oyuncu kapsülün 150 birim yakınından geçerse kapsül yok olur"
+  },
+  "266": {
+   "_ad": "Strokelight Barrage",
+   "roket": {
+    "hasar": 300000,
+    "bekleme_sn": 30
+   },
+   "_kaynak": "aliens.md: azami hasar lazer 20.000 / roket 300.000",
+   "_uyarlama": "30 sn'de bir roket"
+  }
+ },
+ "kapsul_turleri": [
+  "can",
+  "kalkan",
+  "hasar"
+ ]
+}

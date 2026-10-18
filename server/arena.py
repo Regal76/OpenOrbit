@@ -1,0 +1,433 @@
+"""Zorluk seçmeli arena kapıları (yol haritası Aşama 8; veri data/pve_modlari.json <- tools/pve_modlari.py): Voyagers' Ascent ve
+Trinity Trials.
+
+İkisinin ortak akışı: X-1 ve X-8'de portal; portala atlayınca (J) istemcinin kapı penceresi açılır (VoyagersGateWindowCommand /
+TrinityTrialsGateWindowCommand: zorluklar, ücretsiz giriş, jeton); pencereden giriş isteği (VoyagersGateEnterRequest {isFree,
+instanceLevel} / TrinityTrialsGateEnterRequest {attributeType, difficulty}) -> kapı haritasına atlanır; 20 dalga (pve_ortak.Kosu);
+ölünce koşu biter (mod haritasında yeniden doğma yok). Günlük giriş haritaya göre (X-1 ve X-8 ayrı): 1 ücretsiz (VIP rozeti +1 / +2),
+fazlası jetonla (Voyagers' Oath Token, Trinity Token). Geçiş (gecis.Gecis): bitişlerin puanıyla ücretsiz ve VIP ödülleri.
+Voyagers' Ascent: 5 zorluk (bir öncekini 3 yıldızla bitirince açılır); süreye göre 1-3 yıldız (15/10/5 dk); yıldız ödülleri ve geçiş
+puanı; 3 yıldız bir ek ücretsiz giriş verir; jeton yalnız bitirince düşer. Voidmare: 5 sn hasar almaz ve oyuncu 500 birim içindeyse
+saniyede bir canın %5'i kadar füze.
+Trinity Trials: Hellfire (ısıl, pazartesi/çarşamba/cuma) ve Genome (aşındırıcı, salı/perşembe/cumartesi), pazar ikisi; zorluk OS
+modülünün seviyesiyle açılır (1/6/11/21/31); her 5 dalgada Quantum Prism, Xyralith ve geçiş puanı; bitince donanım (sayı ve olasılık
+zorluğa göre, kayıttaki ödül açıklaması; %5 top, %95 kırıcı; nitelik OS seviyesinin tablosundan). OS modülü (Orbital Sweeper):
+Quantum Prism'le yükseltilir, süre Xyralith'le atlanır (TrinityTrialsDropLevelCommand / OptionalRequest).
+Not: bu istemci sürümünde parçacık silahı (top, kırıcı, mermi) sistemi protokolde yok (yol haritası Aşama 9): düşen donanım depoda
+durur. Singularity Drive / Gravity Lens de yok: Voyagers'ın SD/CGL ödülleri depoda.
+Profilde: pve {voyagers|trinity: {gun, girisler {X-1: n}, bonus, acik (Voyagers), os {seviye, bitis, hedef} (Trinity), en_iyi …}}.
+"""
+import datetime, json, math, os, random, time
+
+import gecis as GC
+import harita as H
+import kapi as KAPI
+import pve_ortak as PO
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+D = json.load(open(os.path.join(HERE, 'data', 'pve_modlari.json'), encoding='utf8'))
+PORTAL_BASE = 153900000
+
+
+def today(now=None):
+    return datetime.date.fromtimestamp(time.time() if now is None else now).isoformat()
+
+
+def loot_prob(loot, a):
+    lo, hi = (a[0], a[1]) if isinstance(a, list) else (a, a)
+    return dict(_='LootProbabilityModule', lootId=loot, minLootAmount=int(lo), maxLootAmount=int(hi), probabilityPercentage=100.0)
+
+
+class Arena:
+    """Voyagers ve Trinity'nin ortağı. Alt sınıf: key, ad, D, window(), enter_map(), finish …"""
+    key = ad = ''
+    slot = 0
+
+    def __init__(self, profil, log=print):
+        self.p, self.log = profil, log
+        self.m = None                       # mağaza (ödüller)
+        self.send = None                    # oturuma mesaj
+        self.run = None                     # sürmekte olan koşu: {zorluk, giris (X-1/X-8), ucretsiz, bas}
+        self.gecis = GC.Gecis(profil, self.key, self.D['gecis'])
+
+    @property
+    def st(self):
+        s = self.p.d.setdefault('pve', {}).setdefault(self.key, {})
+        if s.get('gun') != today():
+            s.update(gun=today(), girisler={})
+            self.p.dirty = True
+        return s
+
+    def vip(self):
+        return self.p.resource(self.D['vip']) > 0
+
+    def free_max(self):
+        return self.D['ucretsiz'] + (self.D['vip_ek'] if self.vip() else 0)
+
+    def free_used(self, where):
+        return self.st['girisler'].get(where, 0)
+
+    def free_left(self, where):
+        return max(0, self.free_max() - self.free_used(where)) + self.st.get('bonus', 0)
+
+    def tokens(self):
+        return self.p.resource(self.D['jeton'])
+
+    # ------------------------------------------------------------ portal
+    def portals(self, map_id, station):
+        cls = H.map_class(map_id)
+        if cls not in self.D['giris'] or H.company(map_id) != self.p.d['pilot'].get('factionId'):
+            return []
+        sx, sy = (station['posX'], station['posY']) if station else (KAPI.MAP_W // 2, KAPI.MAP_H // 2)
+        a = math.atan2(KAPI.MAP_H // 2 - sy, KAPI.MAP_W // 2 - sx) + 1.3 + self.slot * 0.45
+        d = KAPI.K['portal_uzaklik'] + 1800
+        return [dict(gateId=PORTAL_BASE + self.slot, x=int(sx + math.cos(a) * d), y=int(sy + math.sin(a) * d), hedef=0,
+                     designId=self.D['portal'], kapi=self.key, pencere=self.key, giris=cls)]
+
+    # ------------------------------------------------------------ koşu
+    def start(self, difficulty, where, free, dest):
+        self.run = dict(zorluk=difficulty, giris=where, ucretsiz=free, bas=None, harita=dest, dalga=0)
+        self.log('   %s: zorluk %d (%s, %s)' % (self.ad, difficulty, where, 'ücretsiz' if free else 'jeton'))
+
+    def use_entry(self):
+        """Girişin bedeli: ücretsizse günün hakkı (yoksa bonus), değilse bir jeton."""
+        r = self.run
+        with self.p.lock:
+            if r['ucretsiz']:
+                if self.free_used(r['giris']) < self.free_max():
+                    self.st['girisler'][r['giris']] = self.free_used(r['giris']) + 1
+                else:
+                    self.st['bonus'] = max(0, self.st.get('bonus', 0) - 1)
+            self.p.dirty = True
+        if not r['ucretsiz']:
+            self.p.add_resource(self.D['jeton'], -1)
+
+    def can_enter(self, where, free):
+        return self.free_left(where) > 0 if free else self.tokens() > 0
+
+    def waves(self):
+        return self.wave_list(self.run['zorluk'])
+
+    def wave_count(self):
+        return len(self.waves())
+
+    def scale(self, n, i, wave):
+        return n
+
+    def wave_started(self, i):
+        if i == 0 and self.run and self.run['bas'] is None:
+            self.run['bas'] = time.time()
+        self.run['dalga'] = i
+        self.world.send([KAPI.screen('%s - Wave %d/%d' % (self.ad, i + 1, self.wave_count()), big=True)])
+
+    def on_death(self):
+        """Mod haritasında ölüm: koşu biter (yeniden giriş gerekir)."""
+        self.log('   %s: oyuncu yok edildi, koşu bitti (dalga %d)' % (self.ad, (self.run or {}).get('dalga', 0) + 1))
+        self.failed()
+        self.run = None
+        return 0
+
+    def failed(self):
+        pass
+
+    def revive(self):
+        pass
+
+    def exit_portal(self, world):
+        x, y = world.map_w // 2, world.map_h // 2
+        home = KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5)
+        return dict(gateId=PORTAL_BASE + 50 + self.slot, x=x, y=y, hedef=home, designId=1, kapi=self.key, cikis=True)
+
+    def attach(self, world):
+        """Mod haritası açıldı: koşu varsa dalgalar, yoksa yalnız çıkış."""
+        self.world = world
+        if not self.run:
+            world.add_gate(self.exit_portal(world))
+            return None
+        world.kapi = PO.Kosu(world, self, break_sn=4)
+        return world.kapi
+
+    def grant(self, loot, n):
+        if loot.startswith('currency_') and self.world:
+            kw = {'currency_uridium': 'uridyum', 'currency_credits': 'kredi', 'currency_experience': 'ep', 'currency_honour': 'onur'}
+            return self.world.grant_loot(loot, n)
+        return self.m.reward(loot, n) if self.m else []
+
+    def grant_rows(self, rows):
+        msgs, got = [], []
+        for loot, a in rows:
+            n = random.randint(a[0], a[1]) if isinstance(a, list) else a
+            msgs += self.grant(loot, n)
+            got.append('%s x%d' % (loot, n))
+        return msgs, got
+
+    def pass_claim(self, f, cmd_name):
+        out = self.gecis.claim(int(f.get('rewardLevel', 0)), bool(f.get('isVip')), self.reward)
+        if out is None:
+            self.log('   %s geçişi: alınamaz (seviye %s)' % (self.ad, f.get('rewardLevel')))
+            out = []
+        return out + [self.gecis.cmd(cmd_name)]
+
+    def reward(self, loot, n):
+        return self.m.reward(loot, n) if self.m else []
+
+
+# ====================================================================== Voyagers' Ascent
+class Voyagers(Arena):
+    key, ad, D, slot = 'voyagers', "Voyagers' Ascent", D['voyagers'], 1
+
+    def opened(self):
+        return max(1, min(len(self.D['zorluklar']), self.st.get('acik', 1)))
+
+    def wave_list(self, d):
+        return self.D['zorluklar'][d - 1]['dalgalar']
+
+    def window(self, where):
+        s = self.D['yildiz_sn']
+        stars = [dict(_='VoyagersGateStarRewardCommand', instanceLevel=i + 1,
+                      star1Loots=[loot_prob(l, a) for l, a in z['oduller']['1']],
+                      star2Loots=[loot_prob(l, a) for l, a in z['oduller']['2']],
+                      star3Loots=[loot_prob(l, a) for l, a in z['oduller']['3']]) for i, z in enumerate(self.D['zorluklar'])]
+        return ('VoyagersGateWindowCommand', dict(
+            maxOpenLevel=self.opened(), Star1Seconds=s[2], Star2Seconds=s[1], Star3Seconds=s[0], curLootAmount=int(self.tokens()),
+            lootId=self.D['jeton'], maxFreeNum=self.free_max() + self.st.get('bonus', 0),
+            freeChallengedNum=self.free_used(where), starRewardLoots=stars))
+
+    def enter(self, f, where):
+        """VoyagersGateEnterRequest -> (hedef harita, varış) ya da (None, mesajlar)."""
+        lvl, free = int(f.get('instanceLevel') or 1), bool(f.get('isFree'))
+        if not 1 <= lvl <= self.opened() or not self.can_enter(where, free):
+            self.log('   Voyagers: girilemez (zorluk %d / açık %d, %s)' % (lvl, self.opened(), 'ücretsiz' if free else 'jeton'))
+            return None, [self.window(where), KAPI.screen('You cannot enter this difficulty right now.')]
+        self.start(lvl, where, free, self.D['harita'])
+        return self.D['harita'], None
+
+    def wave_done(self, i, now):
+        if i + 1 >= self.wave_count():
+            self.complete(now)
+            return 'dur'
+        return 'devam'
+
+    def complete(self, now):
+        r, w = self.run, self.world
+        secs = int(now - (r['bas'] or now))
+        lim = self.D['yildiz_sn']
+        stars = 3 if secs <= lim[0] else 2 if secs <= lim[1] else 1 if secs <= lim[2] else 0
+        z = self.D['zorluklar'][r['zorluk'] - 1]
+        self.use_entry()
+        msgs, got = [], []
+        if stars:
+            msgs, got = self.grant_rows(z['oduller'][str(stars)])
+            self.gecis.add(z['puan'][str(stars)])
+        with self.p.lock:
+            s = self.st
+            best = s.setdefault('en_iyi', {})
+            if stars > best.get(str(r['zorluk']), 0):
+                best[str(r['zorluk'])] = stars
+            if stars == 3:
+                s['bonus'] = s.get('bonus', 0) + 1                  # 3 yıldız: bir ek ücretsiz giriş
+                if r['zorluk'] == s.get('acik', 1) and r['zorluk'] < len(self.D['zorluklar']):
+                    s['acik'] = r['zorluk'] + 1
+            self.p.dirty = True
+        self.p.ach('gate', tur='VOYAGERS_GATE')
+        msgs.append(KAPI.screen("Voyagers' Ascent %s completed in %s: %d star%s" % (z['ad'], fmt(secs), stars, '' if stars == 1 else 's'),
+                                big=True))
+        w.add_gate(self.exit_portal(w))
+        w.send(msgs + [self.gecis.cmd('VoyagersPassCommand')])
+        self.log('   Voyagers %s: %d sn, %d yıldız; %s' % (z['ad'], secs, stars, ', '.join(got) or '-'))
+        self.run = None
+
+    def tick(self, now):
+        """Voidmare: 5 sn vurulmaz ve oyuncu 500 birim içindeyse saniyede bir canın %5'i."""
+        w = self.world
+        if w.hero_dead:
+            return
+        hx, hy = w.hero_pos(now)
+        for n in list(w.npcs.values()):
+            v = n.d.get('davranis', {}).get('dokunulmazsa_fuze')
+            if not v or not n.alive or not n.engaged:
+                continue
+            nx, ny = n.mover.pos(now)
+            if now - max(n.last_hit, getattr(n, 'born', now - 10)) < v['sn'] or math.hypot(hx - nx, hy - ny) > v['menzil']:
+                continue
+            if now < getattr(n, 'next_missile', 0):
+                continue
+            n.next_missile = now + 1.0
+            dmg = int(self.p.d['gemi'].get('hitMax', 0) * v['oran'])
+            w.send(w.hurt_hero(dmg, n, atype=2, now=now))
+
+
+def fmt(secs):
+    return '%d:%02d' % divmod(int(secs), 60)
+
+
+# ====================================================================== Trinity Trials
+RARITY_NAMES = ['Common', 'Uncommon', 'Rare', 'Epic', 'Masterpiece', 'Legendary', 'Ultimate']
+
+
+class Trinity(Arena):
+    key, ad, D, slot = 'trinity', 'Trinity Trials', D['trinity'], 2
+
+    def os_state(self, now=None):
+        """OS modülü: süresi dolan yükseltme tamamlanır."""
+        now = time.time() if now is None else now
+        o = self.p.d.setdefault('pve', {}).setdefault(self.key + '_os', {'seviye': 1})
+        if o.get('bitis') and now >= o['bitis']:
+            with self.p.lock:
+                o['seviye'] = o.pop('hedef', o['seviye'] + 1)
+                o.pop('bitis', None)
+                self.p.dirty = True
+            self.log('   Trinity OS modülü: seviye %d' % o['seviye'])
+        return o
+
+    def os_level(self):
+        return self.os_state()['seviye']
+
+    def opened(self):
+        lv = self.os_level()
+        return max(i + 1 for i, z in enumerate(self.D['zorluklar']) if lv >= z['os_seviye'])
+
+    def arenas_today(self, now=None):
+        wd = datetime.date.fromtimestamp(time.time() if now is None else now).weekday()
+        return [int(a) for a, days in self.D['gunler'].items() if wd in days]
+
+    def wave_list(self, d):
+        return self.D['zorluklar'][d - 1]['arenalar'][str(self.run['arena'])]
+
+    def window(self, where, now=None):
+        today_ = self.arenas_today(now)
+        free = self.free_left(where) > 0
+        # openAttributes: yalnız bugün açık arenalar (istemci başlıkta hepsini "bugün açık" yazıyor ve seçim listesine koyuyor);
+        # param1 o arenada ücretsiz giriş: "0" ve jeton yoksa Go Now mağazayı açıyor (istemci: UITrinityTrialsGateTipsSystem;
+        # canlı test H51: kapalı arena seçili geliyordu, ücretsiz giriş varken mağazaya gidiyordu)
+        return ('TrinityTrialsGateWindowCommand', dict(
+            isFree=free, curLootAmount=int(self.tokens()), lootId=self.D['jeton'],
+            attributeType=today_[0] if today_ else 1, openDifficulty=self.opened(),
+            openAttributes=[dict(_='TupleTwoModule', param0=str(a), param1='1' if free else '0') for a in today_]))
+
+    def enter(self, f, where, now=None):
+        attr, lvl = int(f.get('attributeType') or 1), int(f.get('difficulty') or 1)
+        free = self.free_left(where) > 0
+        if attr not in self.arenas_today(now) or not 1 <= lvl <= self.opened() or not self.can_enter(where, free):
+            self.log('   Trinity: girilemez (arena %d bugün %s, zorluk %d / %d)' % (attr, self.arenas_today(now), lvl, self.opened()))
+            return None, [self.window(where, now), KAPI.screen('This arena or difficulty is not available right now.')]
+        dest = self.D['haritalar'][str(attr)][lvl - 1]
+        self.start(lvl, where, free, dest)
+        self.run['arena'] = attr
+        self.use_entry()                           # Trinity: giriş hakkı girerken düşer
+        return dest, None
+
+    def wave_done(self, i, now):
+        n = i + 1
+        z = self.D['zorluklar'][self.run['zorluk'] - 1]
+        msgs = []
+        if str(n) in z['kilometre']:                # her 5 dalgada Quantum Prism, Xyralith, geçiş puanı
+            k = z['kilometre'][str(n)]
+            msgs += self.grant(self.D['kp'], k['qp']) + self.grant(self.D['xy'], k['xy'])
+            if k['puan']:
+                self.gecis.add(k['puan'])
+            msgs.append(KAPI.screen('Wave %d reward: %d Quantum Prism, %d Xyralith, %d pass points' % (n, k['qp'], k['xy'], k['puan'])))
+        if n >= self.wave_count():
+            msgs += self.complete(z)
+            self.world.send(msgs)
+            return 'dur'
+        self.world.send(msgs)
+        return 'mola' if n % 5 == 0 else 'devam'
+
+    def roll_rarity(self):
+        row = self.D['os'][self.os_level() - 1]['nadirlik']
+        return random.choices(range(7), row)[0]
+
+    def drop(self):
+        """Bitiş donanımı: zorluğa göre adet (ödül açıklaması), her biri %5 top / %95 kırıcı, nitelik OS tablosundan."""
+        z = self.D['zorluklar'][self.run['zorluk'] - 1]
+        counts, weights = zip(*z['dusme'])
+        n = random.choices(counts, weights)[0] if sum(weights) >= 100 else (counts[0] if random.random() * 100 < weights[0] else 0)
+        eq = self.D['esyalar'][str(self.run['arena'])]
+        out = []
+        for _ in range(n):
+            r = self.roll_rarity()
+            out.append(eq['top'][r] if random.random() < self.D['top_payi'] else eq['kirici'][min(r, len(eq['kirici']) - 1)])
+        return out
+
+    def complete(self, z):
+        w = self.world
+        msgs = []
+        got = self.drop()
+        for loot in got:
+            msgs += self.grant(loot, 1)
+        self.p.ach('gate', tur='TRINITY_GATE')
+        msgs.append(KAPI.screen('Trinity Trials %s completed! Equipment: %d' % (z['ad'], len(got)), big=True))
+        w.add_gate(self.exit_portal(w))
+        self.log('   Trinity %s bitti: %s' % (z['ad'], ', '.join(got) or 'donanım yok'))
+        self.run = None
+        return msgs + [self.gecis.cmd('TrinityTrialsPassCommand')]
+
+    # ------------------------------------------------------------ OS modülü
+    def drop_level_cmd(self, now=None):
+        now = time.time() if now is None else now
+        o = self.os_state(now)
+        lv = o['seviye']
+        rows = self.D['os']
+        mx = lv >= len(rows)
+        nxt = rows[min(lv, len(rows) - 1)]
+        cur = rows[lv - 1]
+        left = int(max(0, o['bitis'] - now)) if o.get('bitis') else 0
+        q = lambda r: [dict(_='TupleTwoModule', param0=str(i + 1), param1='%.1f' % v) for i, v in enumerate(r['nadirlik'])]
+        return ('TrinityTrialsDropLevelCommand', dict(
+            costLootAmount=0 if mx else nxt['maliyet'], currentLevel=lv, nextLevel=min(lv + 1, len(rows)), building=bool(o.get('bitis')),
+            max=mx, skipConsume=self.skip_cost(left), currentLevelQualityRandomList=q(cur), totalBuildSeconds=0 if mx else nxt['sure_sn'],
+            lootAmount=int(self.p.resource(self.D['kp'])), nextLevelQualityRandomList=q(nxt), buildSeconds=left, costLootId=self.D['kp']))
+
+    def skip_cost(self, left):
+        return int(math.ceil(left / 60.0)) * self.D['atlama_dakika_basina'] if left else 0
+
+    def drop_level_optional(self, f, now=None):
+        """Yükselt (Quantum Prism) ya da süreyi atla (Xyralith) -> mesajlar."""
+        from magaza import stack_msg
+        now = time.time() if now is None else now
+        o = self.os_state(now)
+        loot = f.get('costLootId')
+        ok = False
+        if loot == self.D['kp'] and not o.get('bitis') and o['seviye'] < len(self.D['os']):
+            row = self.D['os'][o['seviye']]
+            if self.p.resource(self.D['kp']) >= row['maliyet']:
+                self.p.add_resource(self.D['kp'], -row['maliyet'])
+                with self.p.lock:
+                    o.update(hedef=o['seviye'] + 1, bitis=now + row['sure_sn'])
+                    self.p.dirty = True
+                ok = True
+                self.log('   Trinity OS: %d -> %d başladı (%d sn)' % (o['seviye'], o['hedef'], row['sure_sn']))
+        elif loot == self.D['xy'] and o.get('bitis'):
+            cost = self.skip_cost(o['bitis'] - now)
+            if self.p.resource(self.D['xy']) >= cost:
+                self.p.add_resource(self.D['xy'], -cost)
+                with self.p.lock:
+                    o['bitis'] = now
+                    self.p.dirty = True
+                self.os_state(now)
+                ok = True
+                self.log('   Trinity OS: %d Xyralith ile atlandı' % cost)
+        stack = stack_msg('eqt_error_generic') if not ok else dict(_='BaseStackCommand', type=0, enumBaseKey=0, stringBasekey='',
+                                                                    argsList=[])
+        return [('TrinityTrialsDropLevelOptionalCommand', dict(success=ok, stack=stack)), self.drop_level_cmd(now)]
+
+    def ui(self, f, now=None):
+        """TrinityTrialsUIRequest {optionalType: 0 INIT, 1 PASS, 2 DROP_LEVEL} (kayıttaki yanıtlar)."""
+        t = int(f.get('optionalType') or 0)
+        if t == 1:
+            return [self.gecis.cmd('TrinityTrialsPassCommand', now)]
+        if t == 2:
+            return [self.drop_level_cmd(now)]
+        return [self.gecis.cmd('TrinityTrialsPassCommand', now),
+                ('TrinityTrialsRewardDescriptionCommand', dict(rewardDescriptionList=[dict(x) for x in self.D['odul_aciklama']])),
+                self.drop_level_cmd(now)]
+
+    def reward(self, loot, n):
+        """Geçişin paketleri (package_trinity-*): içerikleri."""
+        if loot in self.D['paketler']:
+            out = []
+            for l, k in self.D['paketler'][loot]:
+                out += self.m.reward(l, k * n) if self.m else []
+            return out
+        return super().reward(loot, n)

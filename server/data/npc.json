@@ -1,0 +1,5853 @@
+{
+ "_aciklama": "NPC türleri ve harita doğurma listeleri. tip = istemcideki gemi tipi (ShipCreateCommand.typeId, ShipSelectionCommand.shipType). Değerler darkorbitwiki.com'dan (belgeler/wiki/aliens.md); 'kayit' işaretliler gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md); 'uyarlama' işaretliler tahmindir.",
+ "tipler": {
+  "84": {
+   "ad": "-=[ Streuner ]=-",
+   "hp": 800,
+   "kalkan": 400,
+   "hasar": 20,
+   "hiz": 200,
+   "saldirgan": false,
+   "odul": {
+    "ep": 400,
+    "onur": 2,
+    "kredi": 400,
+    "uridyum": 1
+   },
+   "kargo": {
+    "0": 10,
+    "1": 10
+   },
+   "_kaynak": "wiki; ödül ve kargo kayıtla doğrulandı (400/2/400/1, Prometium 10 + Endurium 10); hız ve pasiflik uyarlama",
+   "npc_kimlik": 1
+  },
+  "152": {
+   "ad": "-=[ Recruit Streuner ]=-",
+   "hp": 600,
+   "kalkan": 800,
+   "hasar": 40,
+   "hiz": 200,
+   "saldirgan": false,
+   "odul": {
+    "ep": 500,
+    "onur": 3,
+    "kredi": 500,
+    "uridyum": 2
+   },
+   "kargo": {
+    "0": 12,
+    "2": 12
+   },
+   "_kaynak": "wiki; hız uyarlama",
+   "npc_kimlik": 152
+  },
+  "153": {
+   "ad": "-=[ Aider Streuner ]=-",
+   "hp": 1500,
+   "kalkan": 1000,
+   "hasar": 70,
+   "hiz": 220,
+   "saldirgan": false,
+   "odul": {
+    "ep": 700,
+    "onur": 4,
+    "kredi": 700,
+    "uridyum": 2
+   },
+   "kargo": {
+    "0": 15,
+    "2": 15
+   },
+   "_kaynak": "wiki; hız uyarlama",
+   "npc_kimlik": 153
+  },
+  "71": {
+   "ad": "-=[ Lordakia ]=-",
+   "hp": 2000,
+   "kalkan": 2000,
+   "hasar": 80,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 800,
+    "onur": 4,
+    "kredi": 800,
+    "uridyum": 2
+   },
+   "kargo": {
+    "0": 20,
+    "2": 20,
+    "1": 20
+   },
+   "_kaynak": "wiki; hız ve saldırganlık uyarlama",
+   "npc_kimlik": 2
+  },
+  "24": {
+   "ad": "..::{ Boss Lordakia }::..",
+   "hp": 8000,
+   "kalkan": 8000,
+   "hasar": 320,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3200,
+    "onur": 16,
+    "kredi": 3200,
+    "uridyum": 8
+   },
+   "kargo": {
+    "0": 80,
+    "2": 80,
+    "1": 80,
+    "4": 10,
+    "3": 1
+   },
+   "_kaynak": "wiki; hız ve saldırganlık uyarlama",
+   "npc_kimlik": 15
+  },
+  "23": {
+   "ad": "..::{ Boss Streuner }::..",
+   "hp": 3200,
+   "kalkan": 1600,
+   "hasar": 100,
+   "hiz": 220,
+   "saldirgan": false,
+   "odul": {
+    "ep": 1600,
+    "onur": 8,
+    "kredi": 1600,
+    "uridyum": 4
+   },
+   "kargo": {
+    "0": 40,
+    "2": 10,
+    "1": 40
+   },
+   "_kaynak": "wiki; tip kimliği istemcinin lib_ships.xml'inden (23 = StreunerBoss); hız uyarlama",
+   "npc_kimlik": 14
+  },
+  "72": {
+   "ad": "-=[ Devolarium ]=-",
+   "hp": 100000,
+   "kalkan": 100000,
+   "hasar": 1200,
+   "hiz": 150,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 51200,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: devolarium); hız, saldırganlık uyarlama",
+   "npc_kimlik": 3
+  },
+  "73": {
+   "ad": "-=[ Mordon ]=-",
+   "hp": 20000,
+   "kalkan": 10000,
+   "hasar": 390,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3200,
+    "onur": 16,
+    "kredi": 6400,
+    "uridyum": 8
+   },
+   "kargo": {
+    "0": 80,
+    "2": 80,
+    "1": 80,
+    "4": 8,
+    "5": 8,
+    "6": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: mordon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 4
+  },
+  "75": {
+   "ad": "-=[ Saimon ]=-",
+   "hp": 6000,
+   "kalkan": 6000,
+   "hasar": 200,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 1600,
+    "onur": 8,
+    "kredi": 1600,
+    "uridyum": 4
+   },
+   "kargo": {
+    "0": 40,
+    "2": 40,
+    "1": 40,
+    "4": 2,
+    "5": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: saimon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 6
+  },
+  "31": {
+   "ad": "..::{ Boss Mordon }::..",
+   "hp": 80000,
+   "kalkan": 40000,
+   "hasar": 1500,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 12800,
+    "onur": 64,
+    "kredi": 25600,
+    "uridyum": 32
+   },
+   "kargo": {
+    "0": 320,
+    "2": 320,
+    "1": 320,
+    "4": 32,
+    "5": 32,
+    "6": 8,
+    "3": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_mordon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 16
+  },
+  "25": {
+   "ad": "..::{ Boss Saimon }::..",
+   "hp": 24000,
+   "kalkan": 12000,
+   "hasar": 800,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 6400,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 160,
+    "2": 160,
+    "1": 160,
+    "4": 8,
+    "5": 8,
+    "6": 1,
+    "3": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_saimon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 17
+  },
+  "26": {
+   "ad": "..::{ Boss Devolarium }::..",
+   "hp": 400000,
+   "kalkan": 400000,
+   "hasar": 4650,
+   "hiz": 140,
+   "saldirgan": true,
+   "odul": {
+    "ep": 26500,
+    "onur": 128,
+    "kredi": 204800,
+    "uridyum": 64
+   },
+   "kargo": {
+    "0": 400,
+    "2": 400,
+    "1": 400,
+    "4": 64,
+    "5": 64,
+    "6": 8,
+    "3": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_devolarium); hız, saldırganlık uyarlama",
+   "npc_kimlik": 18
+  },
+  "74": {
+   "ad": "-=[ Sibelon ]=-",
+   "hp": 200000,
+   "kalkan": 200000,
+   "hasar": 2650,
+   "hiz": 150,
+   "saldirgan": true,
+   "odul": {
+    "ep": 12800,
+    "onur": 64,
+    "kredi": 102400,
+    "uridyum": 32
+   },
+   "kargo": {
+    "0": 200,
+    "2": 200,
+    "1": 200,
+    "4": 32,
+    "5": 32,
+    "6": 4
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: sibelon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 5
+  },
+  "46": {
+   "ad": "..::{ Boss Sibelon }::..",
+   "hp": 800000,
+   "kalkan": 800000,
+   "hasar": 12350,
+   "hiz": 140,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51000,
+    "onur": 256,
+    "kredi": 409600,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 800,
+    "2": 800,
+    "1": 800,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 32
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_sibelon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 20
+  },
+  "76": {
+   "ad": "-=[ Sibelonit ]=-",
+   "hp": 40000,
+   "kalkan": 40000,
+   "hasar": 3200,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3200,
+    "onur": 16,
+    "kredi": 12800,
+    "uridyum": 12
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 8,
+    "5": 8,
+    "6": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: sibelonit); hız, saldırganlık uyarlama",
+   "npc_kimlik": 7
+  },
+  "77": {
+   "ad": "-=[ Lordakium ]=-",
+   "hp": 300000,
+   "kalkan": 200000,
+   "hasar": 3600,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 128,
+    "kredi": 204800,
+    "uridyum": 64
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 64,
+    "5": 64,
+    "6": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lordakium); hız, saldırganlık uyarlama",
+   "npc_kimlik": 8
+  },
+  "27": {
+   "ad": "..::{ Boss Sibelonit }::..",
+   "hp": 160000,
+   "kalkan": 160000,
+   "hasar": 4350,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 12800,
+    "onur": 64,
+    "kredi": 102400,
+    "uridyum": 48
+   },
+   "kargo": {
+    "0": 400,
+    "2": 400,
+    "1": 400,
+    "4": 32,
+    "5": 32,
+    "6": 4,
+    "3": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_sibelonit); hız, saldırganlık uyarlama",
+   "npc_kimlik": 19
+  },
+  "28": {
+   "ad": "..::{ Boss Lordakium }::...",
+   "hp": 1200000,
+   "kalkan": 800000,
+   "hasar": 16000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 102400,
+    "onur": 512,
+    "kredi": 819200,
+    "uridyum": 256
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 256,
+    "5": 256,
+    "6": 32,
+    "3": 32
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_lordakium); hız, saldırganlık uyarlama",
+   "npc_kimlik": 21
+  },
+  "78": {
+   "ad": "-=[ Kristallin ]=-",
+   "hp": 50000,
+   "kalkan": 40000,
+   "hasar": 1650,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: kristallin); hız, saldırganlık uyarlama",
+   "npc_kimlik": 9
+  },
+  "79": {
+   "ad": "-=[ Kristallon ]=-",
+   "hp": 400000,
+   "kalkan": 300000,
+   "hasar": 4450,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 256,
+    "kredi": 409600,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 128,
+    "5": 128,
+    "6": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: kristallon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 10
+  },
+  "80": {
+   "ad": "-=[ Cubikon ]=-",
+   "hp": 1600000,
+   "kalkan": 1200000,
+   "hasar": 0,
+   "hiz": 0,
+   "saldirgan": false,
+   "odul": {
+    "ep": 536200,
+    "onur": 4096,
+    "kredi": 1638400,
+    "uridyum": 1024
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 160
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: cubikon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 13
+  },
+  "29": {
+   "ad": "..::{ Boss Kristallin }::..",
+   "hp": 200000,
+   "kalkan": 160000,
+   "hasar": 4700,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 128,
+    "kredi": 51200,
+    "uridyum": 64
+   },
+   "kargo": {
+    "0": 400,
+    "2": 400,
+    "1": 400,
+    "4": 64,
+    "5": 64,
+    "6": 4,
+    "3": 6
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallin); hız, saldırganlık uyarlama",
+   "npc_kimlik": 22
+  },
+  "35": {
+   "ad": "..::{ Boss Kristallon }::..",
+   "hp": 1600000,
+   "kalkan": 1200000,
+   "hasar": 20000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 204800,
+    "onur": 1024,
+    "kredi": 1638400,
+    "uridyum": 512
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 64
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 23
+  },
+  "252": {
+   "ad": "-=[ Plagued Kristallin ]=-",
+   "hp": 75000,
+   "kalkan": 60000,
+   "hasar": 1700,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: plagued_kristallin); hız, saldırganlık uyarlama",
+   "npc_kimlik": 161
+  },
+  "85": {
+   "ad": "-=[ StreuneR ]=-",
+   "hp": 40000,
+   "kalkan": 30000,
+   "hasar": 1000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6000,
+    "onur": 30,
+    "kredi": 12000,
+    "uridyum": 15
+   },
+   "kargo": {
+    "0": 160,
+    "2": 160,
+    "1": 160,
+    "4": 15,
+    "5": 15,
+    "6": 1,
+    "3": 4
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: streuner_r); hız, saldırganlık uyarlama",
+   "npc_kimlik": 11
+  },
+  "34": {
+   "ad": "..::{ Boss StreuneR }::..",
+   "hp": 80000,
+   "kalkan": 40000,
+   "hasar": 2000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 12800,
+    "onur": 64,
+    "kredi": 25600,
+    "uridyum": 32
+   },
+   "kargo": {
+    "0": 320,
+    "2": 320,
+    "1": 320,
+    "4": 32,
+    "5": 32,
+    "3": 4
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_streuner_r); hız, saldırganlık uyarlama",
+   "npc_kimlik": 24
+  },
+  "213": {
+   "ad": "\\ Impulse II //",
+   "hp": 1200000,
+   "kalkan": 750000,
+   "hasar": 12000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 55000,
+    "onur": 200,
+    "kredi": 200000,
+    "uridyum": 45
+   },
+   "kargo": {
+    "0": 350,
+    "2": 350,
+    "1": 350,
+    "4": 80,
+    "5": 80,
+    "6": 20
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: impulse_ii); hız, saldırganlık uyarlama",
+   "npc_kimlik": 175,
+   "ek_odul": {
+    "resource_collectable_rinusk": [
+     15,
+     25
+    ]
+   },
+   "_model_notu": "istemci: npcId 175 = Black Light 1 (213) tasarımı \"Impulse II\""
+  },
+  "36": {
+   "ad": "( UberStreuner )",
+   "hp": 6400,
+   "kalkan": 3200,
+   "hasar": 160,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3200,
+    "onur": 16,
+    "kredi": 3200,
+    "uridyum": 4
+   },
+   "kargo": {
+    "0": 80,
+    "2": 80,
+    "1": 20,
+    "4": 2,
+    "5": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_streuner); hız, saldırganlık uyarlama",
+   "npc_kimlik": 28
+  },
+  "37": {
+   "ad": "( UberLordakia )",
+   "hp": 16000,
+   "kalkan": 16000,
+   "hasar": 640,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 128,
+    "kredi": 6400,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 160,
+    "2": 160,
+    "1": 160,
+    "4": 20,
+    "5": 20,
+    "6": 2,
+    "3": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakia); hız, saldırganlık uyarlama",
+   "npc_kimlik": 29
+  },
+  "43": {
+   "ad": "( UberMordon )",
+   "hp": 160000,
+   "kalkan": 80000,
+   "hasar": 3120,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 128,
+    "kredi": 51200,
+    "uridyum": 64
+   },
+   "kargo": {
+    "0": 640,
+    "2": 640,
+    "1": 640,
+    "4": 64,
+    "5": 64,
+    "6": 16,
+    "3": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_mordon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 30
+  },
+  "38": {
+   "ad": "( UberSaimon )",
+   "hp": 48000,
+   "kalkan": 24000,
+   "hasar": 1600,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 12800,
+    "onur": 64,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 320,
+    "2": 320,
+    "1": 320,
+    "4": 16,
+    "5": 16,
+    "6": 2,
+    "3": 4
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_saimon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 31
+  },
+  "39": {
+   "ad": "( UberDevolarium )",
+   "hp": 800000,
+   "kalkan": 800000,
+   "hasar": 9600,
+   "hiz": 150,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 256,
+    "kredi": 409600,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 800,
+    "2": 800,
+    "1": 800,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_devolarium); hız, saldırganlık uyarlama",
+   "npc_kimlik": 32
+  },
+  "40": {
+   "ad": "( UberSibelonit )",
+   "hp": 320000,
+   "kalkan": 320000,
+   "hasar": 8000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 128,
+    "kredi": 204800,
+    "uridyum": 96
+   },
+   "kargo": {
+    "0": 800,
+    "2": 800,
+    "1": 800,
+    "4": 64,
+    "5": 64,
+    "6": 8,
+    "3": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_sibelonit); hız, saldırganlık uyarlama",
+   "npc_kimlik": 33
+  },
+  "47": {
+   "ad": "( UberSibelon )",
+   "hp": 1600000,
+   "kalkan": 1600000,
+   "hasar": 24000,
+   "hiz": 150,
+   "saldirgan": true,
+   "odul": {
+    "ep": 102400,
+    "onur": 512,
+    "kredi": 819200,
+    "uridyum": 256
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 256,
+    "5": 256,
+    "6": 64,
+    "3": 64
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_sibelon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 34
+  },
+  "41": {
+   "ad": "( UberLordakium )",
+   "hp": 2400000,
+   "kalkan": 1600000,
+   "hasar": 32000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 204800,
+    "onur": 1024,
+    "kredi": 1638400,
+    "uridyum": 512
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 128
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakium); hız, saldırganlık uyarlama",
+   "npc_kimlik": 35
+  },
+  "42": {
+   "ad": "( UberKristallin )",
+   "hp": 400000,
+   "kalkan": 320000,
+   "hasar": 9600,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 156,
+    "kredi": 102400,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 800,
+    "2": 800,
+    "1": 800,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_kristallin); hız, saldırganlık uyarlama",
+   "npc_kimlik": 36
+  },
+  "45": {
+   "ad": "( UberKristallon )",
+   "hp": 3200000,
+   "kalkan": 2400000,
+   "hasar": 40000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 490000,
+    "onur": 2048,
+    "kredi": 3276800,
+    "uridyum": 1024
+   },
+   "kargo": {
+    "0": 2400,
+    "2": 2400,
+    "1": 2400,
+    "4": 512,
+    "5": 512,
+    "6": 128,
+    "3": 128
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_kristallon); hız, saldırganlık uyarlama",
+   "npc_kimlik": 37
+  },
+  "44": {
+   "ad": "( UberStreuneR )",
+   "hp": 320000,
+   "kalkan": 240000,
+   "hasar": 7500,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 48000,
+    "onur": 240,
+    "kredi": 96000,
+    "uridyum": 120
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 230,
+    "5": 120,
+    "6": 8,
+    "3": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_streuner_r); hız, saldırganlık uyarlama",
+   "npc_kimlik": 38
+  },
+  "111": {
+   "ad": "-=[ Interceptor ]=-",
+   "hp": 60000,
+   "kalkan": 40000,
+   "hasar": 500,
+   "hiz": 320,
+   "saldirgan": true,
+   "odul": {
+    "ep": 7500,
+    "onur": 40,
+    "kredi": 25000,
+    "uridyum": 20
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 18,
+    "5": 18,
+    "6": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: interceptor); hız, saldırganlık uyarlama",
+   "npc_kimlik": 58,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1
+   }
+  },
+  "112": {
+   "ad": "-=[ Barracuda ]=-",
+   "hp": 180000,
+   "kalkan": 100000,
+   "hasar": 6000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 15000,
+    "onur": 56,
+    "kredi": 90000,
+    "uridyum": 25
+   },
+   "kargo": {
+    "0": 200,
+    "2": 200,
+    "1": 200,
+    "4": 24,
+    "5": 24,
+    "6": 4
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: barracuda); hız, saldırganlık uyarlama",
+   "npc_kimlik": 59,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1
+   }
+  },
+  "113": {
+   "ad": "-=[ Saboteur ]=-",
+   "hp": 200000,
+   "kalkan": 150000,
+   "hasar": 4000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 22500,
+    "onur": 72,
+    "kredi": 125000,
+    "uridyum": 45
+   },
+   "kargo": {
+    "0": 200,
+    "2": 200,
+    "1": 200,
+    "4": 32,
+    "5": 32,
+    "6": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: saboteur); hız, saldırganlık uyarlama",
+   "npc_kimlik": 60,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1
+   }
+  },
+  "114": {
+   "ad": "-=[ Annihilator ]=-",
+   "hp": 300000,
+   "kalkan": 200000,
+   "hasar": 15000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 75000,
+    "onur": 128,
+    "kredi": 250000,
+    "uridyum": 65
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 48,
+    "5": 48,
+    "6": 12,
+    "3": 3
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: annihilator); hız, saldırganlık uyarlama",
+   "npc_kimlik": 61,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1
+   }
+  },
+  "115": {
+   "ad": "-=[ Battleray ]=-",
+   "hp": 330000,
+   "kalkan": 260000,
+   "hasar": 16500,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 83300,
+    "onur": 190,
+    "kredi": 1160000,
+    "uridyum": 116
+   },
+   "kargo": {
+    "0": 400,
+    "2": 400,
+    "1": 400,
+    "4": 64,
+    "5": 64,
+    "6": 8,
+    "3": 4
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: battleray); hız, saldırganlık uyarlama",
+   "npc_kimlik": 62,
+   "ek_odul": {
+    "resource_collectable_bifenon": 2
+   }
+  },
+  "npc121": {
+   "ad": "-=[ Deadly Battleray ]=-",
+   "hp": 750000,
+   "kalkan": 600000,
+   "hasar": 14000,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 187500,
+    "onur": 375,
+    "kredi": 2625000,
+    "uridyum": 265
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: deadly_battleray); hız, saldırganlık uyarlama",
+   "npc_kimlik": 121,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1,
+    "resource_ore_palladium": 6
+   },
+   "model": "115",
+   "_model_notu": "istemci: Battleray (115) tasarımı \"Deadly Battleray\""
+  },
+  "257": {
+   "ad": "( Uber Interceptor )",
+   "hp": 480000,
+   "kalkan": 320000,
+   "hasar": 4000,
+   "hiz": 320,
+   "saldirgan": true,
+   "odul": {
+    "ep": 30000,
+    "onur": 100,
+    "kredi": 100000,
+    "uridyum": 80
+   },
+   "kargo": {
+    "0": 800,
+    "2": 800,
+    "1": 800,
+    "4": 72,
+    "5": 72,
+    "6": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_interceptor); hız, saldırganlık uyarlama",
+   "npc_kimlik": 163,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_darksilver-coin": 1,
+    "resource_ore_palladium": 2
+   }
+  },
+  "255": {
+   "ad": "( Uber Barracuda )",
+   "hp": 1440000,
+   "kalkan": 800000,
+   "hasar": 48000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 60000,
+    "onur": 100,
+    "kredi": 360000,
+    "uridyum": 80
+   },
+   "kargo": {
+    "0": 1000,
+    "2": 1000,
+    "1": 1000,
+    "4": 100,
+    "5": 100,
+    "6": 10
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_barracuda); hız, saldırganlık uyarlama",
+   "npc_kimlik": 164,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_darksilver-coin": 1,
+    "resource_ore_palladium": 2
+   }
+  },
+  "258": {
+   "ad": "( Uber Saboteur )",
+   "hp": 1600000,
+   "kalkan": 1200000,
+   "hasar": 32000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 90000,
+    "onur": 130,
+    "kredi": 500000,
+    "uridyum": 150
+   },
+   "kargo": {
+    "0": 1500,
+    "2": 1500,
+    "1": 1500,
+    "4": 120,
+    "5": 120,
+    "6": 32
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_saboteur); hız, saldırganlık uyarlama",
+   "npc_kimlik": 165,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_darksilver-coin": 1,
+    "resource_ore_palladium": 3
+   }
+  },
+  "254": {
+   "ad": "( Uber Annihilator )",
+   "hp": 2400000,
+   "kalkan": 1600000,
+   "hasar": 90000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 300000,
+    "onur": 200,
+    "kredi": 1000000,
+    "uridyum": 220
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 200,
+    "5": 200,
+    "6": 48,
+    "3": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_annihilator); hız, saldırganlık uyarlama",
+   "npc_kimlik": 166,
+   "ek_odul": {
+    "resource_ore_palladium": 4,
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_kyhalon": 1,
+    "resource_collectable_tetrathrin": 1,
+    "resource_collectable_darksilver-coin": 1
+   }
+  },
+  "256": {
+   "ad": "( Uber Battleray )",
+   "hp": 2640000,
+   "kalkan": 2080000,
+   "hasar": 51200,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 320000,
+    "onur": 300,
+    "kredi": 4000000,
+    "uridyum": 300
+   },
+   "kargo": {
+    "0": 1400,
+    "2": 1400,
+    "1": 1400,
+    "4": 250,
+    "5": 250,
+    "6": 80,
+    "3": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_battleray); hız, saldırganlık uyarlama",
+   "npc_kimlik": 167,
+   "ek_odul": {
+    "resource_collectable_bifenon": 1,
+    "resource_ore_palladium": 6
+   }
+  },
+  "217": {
+   "ad": "\\ Attend IX //",
+   "hp": 9000000,
+   "kalkan": 4800000,
+   "hasar": 17000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 350000,
+    "onur": 750,
+    "kredi": 1000000,
+    "uridyum": 275
+   },
+   "kargo": {
+    "0": 500,
+    "2": 500,
+    "1": 500,
+    "4": 200,
+    "5": 200,
+    "6": 26
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: attend_ix); hız, saldırganlık uyarlama",
+   "npc_kimlik": 176,
+   "ek_odul": {
+    "resource_collectable_rinusk": [
+     80,
+     90
+    ],
+    "resource_collectable_blacklight-trace": [
+     5,
+     15
+    ]
+   },
+   "_model_notu": "istemci: npcId 176 = Black Light 2 (217)"
+  },
+  "221": {
+   "ad": "\\ Invoke XVI //",
+   "hp": 36000000,
+   "kalkan": 0,
+   "hasar": 30000,
+   "hiz": 0,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3500000,
+    "onur": 20000,
+    "kredi": 9500000,
+    "uridyum": 2000
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: invoke_xvi); hız, saldırganlık uyarlama",
+   "npc_kimlik": 177,
+   "ek_odul": {
+    "resource_collectable_rinusk": [
+     59,
+     79
+    ],
+    "resource_collectable_blacklight-trace": [
+     32,
+     39
+    ],
+    "resource_collectable_eternal-fragment": [
+     15,
+     25
+    ]
+   },
+   "_model_notu": "istemci: npcId 177 = Black Light 3 (221)",
+   "_hiz_notu": "wiki: Invoke XVI hareketsiz (belgeler/wiki/aliens.md)"
+  },
+  "225": {
+   "ad": "\\ Mindfire Behemoth //",
+   "hp": 135000000,
+   "kalkan": 0,
+   "hasar": 145000,
+   "hiz": 0,
+   "saldirgan": true,
+   "odul": {
+    "ep": 80000000,
+    "onur": 500000,
+    "kredi": 200000000,
+    "uridyum": 5000
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: mindfire_behemoth); hız, saldırganlık uyarlama",
+   "npc_kimlik": 178,
+   "ek_odul": {
+    "resource_collectable_rinusk": [
+     100,
+     120
+    ],
+    "resource_collectable_blacklight-trace": [
+     120,
+     140
+    ],
+    "resource_collectable_eternal-fragment": [
+     200,
+     300
+    ],
+    "resource_collectable_mindfire-cerebrum": [
+     31,
+     41
+    ]
+   },
+   "_model_notu": "istemci: npcId 178 = Black Light 4 (225)"
+  },
+  "214": {
+   "ad": "\\ Purpose XXI //",
+   "hp": 800000,
+   "kalkan": 0,
+   "hasar": 12000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 57750,
+    "onur": 200,
+    "kredi": 200000,
+    "uridyum": 5
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: purpose_xxi); hız, saldırganlık uyarlama",
+   "npc_kimlik": 174,
+   "_model_notu": "istemci: npcId 174 = Unidentified Black Light yellow (214)"
+  },
+  "81": {
+   "ad": "-=[ Protegit ]=-",
+   "hp": 50000,
+   "kalkan": 40000,
+   "hasar": 1500,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: protegit); hız, saldırganlık uyarlama",
+   "npc_kimlik": 12
+  },
+  "npc173": {
+   "ad": "* Lordakium Spore *",
+   "hp": 4000,
+   "kalkan": 4000,
+   "hasar": 160,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 400,
+    "onur": 8,
+    "kredi": 800,
+    "uridyum": 3
+   },
+   "kargo": {
+    "0": 40,
+    "2": 40,
+    "1": 40
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lordakium_spore); hız, saldırganlık uyarlama",
+   "npc_kimlik": 173,
+   "model": "77",
+   "_model_notu": "istemci: Lordakium (77) tasarımı \"Lordakium Spore\""
+  },
+  "90": {
+   "ad": "-=[ Century Falcon ]=-",
+   "hp": 12000000,
+   "kalkan": 9000000,
+   "hasar": 70000,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3000000,
+    "onur": 15000,
+    "kredi": 3000000,
+    "uridyum": 15000
+   },
+   "kargo": {
+    "0": 1,
+    "2": 1,
+    "1": 1,
+    "4": 1,
+    "5": 1,
+    "6": 1,
+    "3": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: century_falcon_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 120,
+   "_model_notu": "istemci: Century Falcon (90); LoW sürümü"
+  },
+  "npc179": {
+   "ad": "\\ Urge IV //",
+   "hp": 1000000,
+   "kalkan": 0,
+   "hasar": 15000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 10000000,
+    "onur": 100000,
+    "kredi": 2000000,
+    "uridyum": 5000
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: urge_iv); hız, saldırganlık uyarlama",
+   "npc_kimlik": 179,
+   "ek_odul": {
+    "resource_collectable_tetrathrin": 150,
+    "resource_collectable_kyhalon": 80,
+    "resource_collectable_indoctrineoil": 35
+   },
+   "model": "214"
+  },
+  "215": {
+   "ad": "\\ Attitude XIII //",
+   "hp": 1000000,
+   "kalkan": 0,
+   "hasar": 15000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 10000000,
+    "onur": 100000,
+    "kredi": 2000000,
+    "uridyum": 5000
+   },
+   "kargo": {
+    "7": 3000
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: attitude_xiii); hız, saldırganlık uyarlama",
+   "npc_kimlik": 180
+  },
+  "216": {
+   "ad": "\\ Capital I //",
+   "hp": 2000000,
+   "kalkan": 0,
+   "hasar": 20000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 10000000,
+    "onur": 100000,
+    "kredi": 4000000,
+    "uridyum": 50000
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: capital_i); hız, saldırganlık uyarlama; hp, damage uyarlama",
+   "npc_kimlik": 181
+  },
+  "218": {
+   "ad": "\\ Regard CXI //",
+   "hp": 1000000,
+   "kalkan": 0,
+   "hasar": 15000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 10000000,
+    "onur": 100000,
+    "kredi": 2000000,
+    "uridyum": 5000
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: regard_cxi); hız, saldırganlık uyarlama",
+   "npc_kimlik": 182,
+   "ek_odul": {
+    "resource_collectable_tetrathrin": 150,
+    "resource_collectable_kyhalon": 80,
+    "resource_collectable_indoctrineoil": 35
+   }
+  },
+  "219": {
+   "ad": "\\ Observe X //",
+   "hp": 1000000,
+   "kalkan": 0,
+   "hasar": 15000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 10000000,
+    "onur": 100000,
+    "kredi": 2000000,
+    "uridyum": 5000
+   },
+   "kargo": {
+    "7": 3000
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: observe_x); hız, saldırganlık uyarlama",
+   "npc_kimlik": 183
+  },
+  "220": {
+   "ad": "\\ Find VII //",
+   "hp": 2000000,
+   "kalkan": 0,
+   "hasar": 20000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 10000000,
+    "onur": 100000,
+    "kredi": 4000000,
+    "uridyum": 50000
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: find_vii); hız, saldırganlık uyarlama; hp, damage uyarlama",
+   "npc_kimlik": 184
+  },
+  "npc268": {
+   "ad": "\\ Abide I //",
+   "hp": 600000,
+   "kalkan": 0,
+   "hasar": 6000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 15000,
+    "onur": 55,
+    "kredi": 55000,
+    "uridyum": 10
+   },
+   "kargo": {
+    "0": 80,
+    "2": 80,
+    "1": 80,
+    "4": 25,
+    "5": 25,
+    "6": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: abide_i); hız, saldırganlık uyarlama; damage uyarlama",
+   "npc_kimlik": 268,
+   "model": "214",
+   "_model_notu": "istemci: npcId 268 = Black Light yellow (214) \"Abide I\""
+  },
+  "npc269": {
+   "ad": "\\ Steadfast III //",
+   "hp": 300000,
+   "kalkan": 300000,
+   "hasar": 6000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 15000,
+    "onur": 55,
+    "kredi": 55000,
+    "uridyum": 10
+   },
+   "kargo": {
+    "0": 80,
+    "2": 80,
+    "1": 80,
+    "4": 25,
+    "5": 25,
+    "6": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: steadfast_iii); hız, saldırganlık uyarlama; damage uyarlama",
+   "npc_kimlik": 269,
+   "model": "217",
+   "_model_notu": "istemci: Black Light 2 (217) tasarımı \"SteadFast III\""
+  },
+  "330": {
+   "ad": "-=[: The Stinger :]=-",
+   "hp": 85000000,
+   "kalkan": 70000000,
+   "hasar": 100000,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 5000000,
+    "onur": 12000,
+    "kredi": 10000000,
+    "uridyum": 5000
+   },
+   "kargo": {
+    "0": 4800,
+    "2": 4800,
+    "1": 4800,
+    "4": 2048,
+    "5": 2048,
+    "6": 256,
+    "3": 1024
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: stinger); hız, saldırganlık uyarlama",
+   "npc_kimlik": 281,
+   "ek_odul": {
+    "resource_collectable_darksilver-coin": 75,
+    "resource_collectable_isochronate": {
+     "adet": [
+      20,
+      40
+     ],
+     "olasilik": 0.45
+    },
+    "resource_collectable_indoctrine-accelerator": {
+     "adet": [
+      15,
+      30
+     ],
+     "olasilik": 0.2
+    },
+    "resource_collectable_indoctrineoil": {
+     "adet": [
+      10,
+      15
+     ],
+     "olasilik": 0.045
+    },
+    "equipment_weapon_laser_caucasus": {
+     "adet": 1,
+     "olasilik": 0.005
+    }
+   }
+  },
+  "331": {
+   "ad": "-=[: Pike :]=-",
+   "hp": 4000000,
+   "kalkan": 1500000,
+   "hasar": 60000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 800000,
+    "onur": 1600,
+    "kredi": 1000000,
+    "uridyum": 800
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 256
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: pike); hız, saldırganlık uyarlama",
+   "npc_kimlik": 282,
+   "ek_odul": {
+    "resource_collectable_darksilver-coin": 5,
+    "resource_booty-key-silver": 1
+   }
+  },
+  "332": {
+   "ad": "-=[: Barb :]=-",
+   "hp": 1800000,
+   "kalkan": 1000000,
+   "hasar": 45000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 350000,
+    "onur": 800,
+    "kredi": 650000,
+    "uridyum": 360
+   },
+   "kargo": {
+    "0": 800,
+    "2": 800,
+    "1": 800,
+    "4": 128,
+    "5": 128,
+    "6": 8,
+    "3": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: barb); hız, saldırganlık uyarlama",
+   "npc_kimlik": 283,
+   "ek_odul": {
+    "resource_collectable_darksilver-coin": 3
+   }
+  },
+  "333": {
+   "ad": "-=[: Lanternfish :]=-",
+   "hp": 1500000,
+   "kalkan": 800000,
+   "hasar": 30000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 250000,
+    "onur": 600,
+    "kredi": 500000,
+    "uridyum": 240
+   },
+   "kargo": {
+    "0": 400,
+    "2": 400,
+    "1": 400,
+    "4": 64,
+    "5": 64,
+    "6": 4,
+    "3": 8
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanternfish); hız, saldırganlık uyarlama",
+   "npc_kimlik": 284,
+   "ek_odul": {
+    "resource_collectable_darksilver-coin": 2
+   }
+  },
+  "334": {
+   "ad": "-=[: Spookfish :]=-",
+   "hp": 800000,
+   "kalkan": 500000,
+   "hasar": 20000,
+   "hiz": 320,
+   "saldirgan": true,
+   "odul": {
+    "ep": 150000,
+    "onur": 300,
+    "kredi": 250000,
+    "uridyum": 180
+   },
+   "kargo": {
+    "0": 200,
+    "2": 200,
+    "1": 200,
+    "4": 32,
+    "5": 32,
+    "6": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spookfish); hız, saldırganlık uyarlama",
+   "npc_kimlik": 285,
+   "ek_odul": {
+    "resource_collectable_darksilver-coin": 1
+   }
+  },
+  "94": {
+   "ad": "-=[ Vagrant ]=-",
+   "hp": 80000,
+   "kalkan": 80000,
+   "hasar": 5000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 9000,
+    "onur": 12,
+    "kredi": 45000,
+    "uridyum": 24
+   },
+   "kargo": {
+    "0": 50,
+    "2": 50,
+    "1": 50,
+    "4": 4,
+    "5": 4,
+    "3": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: vagrant_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 42
+  },
+  "93": {
+   "ad": "-=[ Marauder ]=-",
+   "hp": 200000,
+   "kalkan": 120000,
+   "hasar": 11000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 18000,
+    "onur": 24,
+    "kredi": 90000,
+    "uridyum": 48
+   },
+   "kargo": {
+    "0": 75,
+    "2": 75,
+    "1": 75,
+    "4": 8,
+    "5": 8,
+    "3": 2
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: marauder_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 43
+  },
+  "92": {
+   "ad": "-=[ Outcast ]=-",
+   "hp": 300000,
+   "kalkan": 160000,
+   "hasar": 15000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 27000,
+    "onur": 36,
+    "kredi": 150000,
+    "uridyum": 72
+   },
+   "kargo": {
+    "0": 50,
+    "2": 50,
+    "1": 50,
+    "4": 4,
+    "5": 4,
+    "3": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: outcast_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 44
+  },
+  "91": {
+   "ad": "-=[ Corsair ]=-",
+   "hp": 400000,
+   "kalkan": 240000,
+   "hasar": 16000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 39000,
+    "onur": 48,
+    "kredi": 240000,
+    "uridyum": 96
+   },
+   "kargo": {
+    "0": 50,
+    "2": 50,
+    "1": 50,
+    "4": 4,
+    "5": 4,
+    "3": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: corsair_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 45
+  },
+  "96": {
+   "ad": "-=[ Hooligan ]=-",
+   "hp": 750000,
+   "kalkan": 600000,
+   "hasar": 9000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 48000,
+    "onur": 96,
+    "kredi": 375000,
+    "uridyum": 192
+   },
+   "kargo": {
+    "0": 50,
+    "2": 50,
+    "1": 50,
+    "4": 4,
+    "5": 4,
+    "3": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hooligan_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 46
+  },
+  "97": {
+   "ad": "-=[ Ravager ]=-",
+   "hp": 900000,
+   "kalkan": 600000,
+   "hasar": 22000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 54000,
+    "onur": 192,
+    "kredi": 480000,
+    "uridyum": 384
+   },
+   "kargo": {
+    "0": 50,
+    "2": 50,
+    "1": 50,
+    "4": 4,
+    "5": 4,
+    "6": 2,
+    "3": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: ravager_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 47
+  },
+  "95": {
+   "ad": "-=[ Convict ]=-",
+   "hp": 1200000,
+   "kalkan": 600000,
+   "hasar": 23000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 60000,
+    "onur": 300,
+    "kredi": 660000,
+    "uridyum": 450
+   },
+   "kargo": {
+    "0": 50,
+    "2": 50,
+    "1": 50,
+    "4": 4,
+    "5": 4,
+    "6": 2,
+    "3": 1
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: convict_low); hız, saldırganlık uyarlama",
+   "npc_kimlik": 48
+  },
+  "uber_protegit": {
+   "ad": "( Uber Protegit )",
+   "hp": 400000,
+   "kalkan": 320000,
+   "hasar": 12000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 256,
+    "kredi": 102400,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 800,
+    "2": 800,
+    "1": 800,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 16
+   },
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_protegit); hız, saldırganlık uyarlama",
+   "model": "81"
+  },
+  "320": {
+   "ad": "\\ Strokelight Barrage //",
+   "hp": 4500000,
+   "kalkan": 500000,
+   "hasar": 20000,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3500000,
+    "onur": 350000,
+    "kredi": 6500000,
+    "uridyum": 4000
+   },
+   "kargo": {},
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: strokelight_barrage); hız, saldırganlık uyarlama",
+   "npc_kimlik": 266,
+   "ek_odul": {
+    "resource_collectable_rinusk": [
+     68,
+     97
+    ],
+    "resource_collectable_blacklight-trace": [
+     41,
+     48
+    ]
+   },
+   "_model_notu": "istemci: \"Strokelight Barrage Boss (Blacklight Event)\" (320)"
+  },
+  "etk_spinel_x3": {
+   "ad": "-=[ Spinel ]=-",
+   "hp": 40000,
+   "kalkan": 40000,
+   "hasar": 500,
+   "hiz": 260,
+   "saldirgan": false,
+   "odul": {
+    "ep": 3815,
+    "onur": 23,
+    "kredi": 8000,
+    "uridyum": 7
+   },
+   "kargo": {
+    "0": 80,
+    "2": 80,
+    "1": 80,
+    "4": 8,
+    "5": 8,
+    "6": 1
+   },
+   "npc_kimlik": 264,
+   "model": "305",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spinel_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_spinel_x4": {
+   "ad": "-=[ Spinel ]=-",
+   "hp": 80000,
+   "kalkan": 80000,
+   "hasar": 750,
+   "hiz": 260,
+   "saldirgan": false,
+   "odul": {
+    "ep": 7630,
+    "onur": 46,
+    "kredi": 16000,
+    "uridyum": 14
+   },
+   "kargo": {
+    "0": 160,
+    "2": 160,
+    "1": 160,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "npc_kimlik": 264,
+   "model": "305",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spinel_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_spinel_x5": {
+   "ad": "-=[ Spinel ]=-",
+   "hp": 140000,
+   "kalkan": 140000,
+   "hasar": 1750,
+   "hiz": 260,
+   "saldirgan": false,
+   "odul": {
+    "ep": 12589,
+    "onur": 76,
+    "kredi": 26400,
+    "uridyum": 24
+   },
+   "kargo": {
+    "0": 264,
+    "2": 264,
+    "1": 264,
+    "4": 26,
+    "5": 26,
+    "6": 3
+   },
+   "npc_kimlik": 264,
+   "model": "305",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spinel_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_spinel_x6": {
+   "ad": "-=[ Spinel ]=-",
+   "hp": 220000,
+   "kalkan": 220000,
+   "hasar": 2800,
+   "hiz": 260,
+   "saldirgan": false,
+   "odul": {
+    "ep": 18313,
+    "onur": 112,
+    "kredi": 38401,
+    "uridyum": 34
+   },
+   "kargo": {
+    "0": 384,
+    "2": 384,
+    "1": 384,
+    "4": 38,
+    "5": 38,
+    "6": 5
+   },
+   "npc_kimlik": 264,
+   "model": "305",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spinel_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_spinel_x7": {
+   "ad": "-=[ Spinel ]=-",
+   "hp": 280000,
+   "kalkan": 280000,
+   "hasar": 3500,
+   "hiz": 260,
+   "saldirgan": false,
+   "odul": {
+    "ep": 20983,
+    "onur": 127,
+    "kredi": 44000,
+    "uridyum": 39
+   },
+   "kargo": {
+    "0": 440,
+    "2": 440,
+    "1": 440,
+    "4": 44,
+    "5": 44,
+    "6": 6
+   },
+   "npc_kimlik": 264,
+   "model": "305",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spinel_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_spinel_x8": {
+   "ad": "-=[ Spinel ]=-",
+   "hp": 320000,
+   "kalkan": 320000,
+   "hasar": 4000,
+   "hiz": 260,
+   "saldirgan": false,
+   "odul": {
+    "ep": 22890,
+    "onur": 138,
+    "kredi": 48000,
+    "uridyum": 42
+   },
+   "kargo": {
+    "0": 480,
+    "2": 480,
+    "1": 480,
+    "4": 48,
+    "5": 48,
+    "6": 6
+   },
+   "npc_kimlik": 264,
+   "model": "305",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spinel_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_agatus_x3": {
+   "ad": "-=[ Agatus ]=-",
+   "hp": 400000,
+   "kalkan": 400000,
+   "hasar": 10000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 55808,
+    "onur": 254,
+    "kredi": 409600,
+    "uridyum": 188
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 4
+   },
+   "npc_kimlik": 260,
+   "model": "307",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: agatus_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_agatus_x4": {
+   "ad": "-=[ Agatus ]=-",
+   "hp": 800000,
+   "kalkan": 800000,
+   "hasar": 15000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 111616,
+    "onur": 507,
+    "kredi": 819200,
+    "uridyum": 376
+   },
+   "kargo": {
+    "0": 600,
+    "2": 600,
+    "1": 600,
+    "4": 256,
+    "5": 256,
+    "6": 32,
+    "3": 8
+   },
+   "npc_kimlik": 260,
+   "model": "307",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: agatus_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_agatus_x5": {
+   "ad": "-=[ Agatus ]=-",
+   "hp": 1400000,
+   "kalkan": 1400000,
+   "hasar": 25000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 184167,
+    "onur": 837,
+    "kredi": 1351680,
+    "uridyum": 621
+   },
+   "kargo": {
+    "0": 990,
+    "2": 990,
+    "1": 990,
+    "4": 422,
+    "5": 422,
+    "6": 53,
+    "3": 13
+   },
+   "npc_kimlik": 260,
+   "model": "307",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: agatus_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_agatus_x6": {
+   "ad": "-=[ Agatus ]=-",
+   "hp": 2200000,
+   "kalkan": 2200000,
+   "hasar": 45000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 267879,
+    "onur": 1218,
+    "kredi": 1966081,
+    "uridyum": 903
+   },
+   "kargo": {
+    "0": 1440,
+    "2": 1440,
+    "1": 1440,
+    "4": 614,
+    "5": 614,
+    "6": 77,
+    "3": 19
+   },
+   "npc_kimlik": 260,
+   "model": "307",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: agatus_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_agatus_x7": {
+   "ad": "-=[ Agatus ]=-",
+   "hp": 2800000,
+   "kalkan": 2800000,
+   "hasar": 55000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 308400,
+    "onur": 1413,
+    "kredi": 1867200,
+    "uridyum": 1116
+   },
+   "kargo": {
+    "0": 1650,
+    "2": 1650,
+    "1": 1650,
+    "4": 704,
+    "5": 704,
+    "6": 88,
+    "3": 22
+   },
+   "npc_kimlik": 260,
+   "model": "307",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: agatus_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_agatus_x8": {
+   "ad": "-=[ Agatus ]=-",
+   "hp": 3200000,
+   "kalkan": 3200000,
+   "hasar": 65000,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 334848,
+    "onur": 1522,
+    "kredi": 2457600,
+    "uridyum": 1128
+   },
+   "kargo": {
+    "0": 1800,
+    "2": 1800,
+    "1": 1800,
+    "4": 768,
+    "5": 768,
+    "6": 96,
+    "3": 24
+   },
+   "npc_kimlik": 260,
+   "model": "307",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: agatus_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_chaos_protegit_x2": {
+   "ad": "-=[ Chaos Protegit ]=-",
+   "hp": 15000,
+   "kalkan": 12500,
+   "hasar": 500,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 1600,
+    "onur": 8,
+    "kredi": 3200,
+    "uridyum": 4
+   },
+   "kargo": {
+    "0": 25,
+    "2": 25,
+    "1": 25,
+    "4": 4,
+    "5": 4,
+    "6": 1
+   },
+   "npc_kimlik": 229,
+   "model": "273",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: chaos_protegit_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_chaos_protegit_x3": {
+   "ad": "-=[ Chaos Protegit ]=-",
+   "hp": 30000,
+   "kalkan": 25000,
+   "hasar": 1000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 3200,
+    "onur": 16,
+    "kredi": 6400,
+    "uridyum": 8
+   },
+   "kargo": {
+    "0": 50,
+    "2": 50,
+    "1": 50,
+    "4": 8,
+    "5": 8,
+    "6": 1
+   },
+   "npc_kimlik": 229,
+   "model": "273",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: chaos_protegit_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_chaos_protegit_x4": {
+   "ad": "-=[ Chaos Protegit ]=-",
+   "hp": 60000,
+   "kalkan": 50000,
+   "hasar": 1500,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "npc_kimlik": 229,
+   "model": "273",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: chaos_protegit_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_chaos_protegit_x5": {
+   "ad": "-=[ Chaos Protegit ]=-",
+   "hp": 75000,
+   "kalkan": 62500,
+   "hasar": 2000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 8000,
+    "onur": 40,
+    "kredi": 16200,
+    "uridyum": 20
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 24,
+    "5": 4,
+    "6": 3
+   },
+   "npc_kimlik": 229,
+   "model": "273",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: chaos_protegit_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_chaos_protegit_x6": {
+   "ad": "-=[ Chaos Protegit ]=-",
+   "hp": 105000,
+   "kalkan": 87500,
+   "hasar": 2500,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 11200,
+    "onur": 56,
+    "kredi": 22400,
+    "uridyum": 28
+   },
+   "kargo": {
+    "0": 200,
+    "2": 200,
+    "1": 200,
+    "4": 32,
+    "5": 32,
+    "6": 4
+   },
+   "npc_kimlik": 229,
+   "model": "273",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: chaos_protegit_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_chaos_protegit_x7": {
+   "ad": "-=[ Chaos Protegit ]=-",
+   "hp": 135000,
+   "kalkan": 112500,
+   "hasar": 3500,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 16000,
+    "onur": 72,
+    "kredi": 32000,
+    "uridyum": 40
+   },
+   "kargo": {
+    "0": 250,
+    "2": 250,
+    "1": 250,
+    "4": 40,
+    "5": 40,
+    "6": 5
+   },
+   "npc_kimlik": 229,
+   "model": "273",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: chaos_protegit_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_chaos_protegit_x8": {
+   "ad": "-=[ Chaos Protegit ]=-",
+   "hp": 165000,
+   "kalkan": 142500,
+   "hasar": 4000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 19200,
+    "onur": 97,
+    "kredi": 38400,
+    "uridyum": 48
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 48,
+    "5": 48,
+    "6": 6
+   },
+   "npc_kimlik": 229,
+   "model": "273",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: chaos_protegit_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underling_x2": {
+   "ad": "Hitac-Underling",
+   "hp": 12000,
+   "kalkan": 9000,
+   "hasar": 200,
+   "hiz": 300,
+   "saldirgan": false,
+   "odul": {
+    "ep": 801,
+    "onur": 5,
+    "kredi": 1001,
+    "uridyum": 3
+   },
+   "kargo": {},
+   "npc_kimlik": 299,
+   "model": "358",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underling_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underling_x3": {
+   "ad": "Hitac-Underling",
+   "hp": 20000,
+   "kalkan": 15000,
+   "hasar": 350,
+   "hiz": 300,
+   "saldirgan": false,
+   "odul": {
+    "ep": 2000,
+    "onur": 12,
+    "kredi": 2500,
+    "uridyum": 6
+   },
+   "kargo": {},
+   "npc_kimlik": 299,
+   "model": "358",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underling_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underling_x4": {
+   "ad": "Hitac-Underling",
+   "hp": 32000,
+   "kalkan": 24000,
+   "hasar": 600,
+   "hiz": 300,
+   "saldirgan": false,
+   "odul": {
+    "ep": 3201,
+    "onur": 20,
+    "kredi": 4001,
+    "uridyum": 10
+   },
+   "kargo": {},
+   "npc_kimlik": 299,
+   "model": "358",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underling_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underling_x5": {
+   "ad": "Hitac-Underling",
+   "hp": 86000,
+   "kalkan": 65500,
+   "hasar": 1500,
+   "hiz": 300,
+   "saldirgan": false,
+   "odul": {
+    "ep": 8801,
+    "onur": 52,
+    "kredi": 10751,
+    "uridyum": 26
+   },
+   "kargo": {},
+   "npc_kimlik": 299,
+   "model": "358",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underling_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underling_x6": {
+   "ad": "Hitac-Underling",
+   "hp": 176000,
+   "kalkan": 132000,
+   "hasar": 3100,
+   "hiz": 300,
+   "saldirgan": false,
+   "odul": {
+    "ep": 17601,
+    "onur": 108,
+    "kredi": 22001,
+    "uridyum": 53
+   },
+   "kargo": {},
+   "npc_kimlik": 299,
+   "model": "358",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underling_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underling_x7": {
+   "ad": "Hitac-Underling",
+   "hp": 270000,
+   "kalkan": 202500,
+   "hasar": 4800,
+   "hiz": 300,
+   "saldirgan": false,
+   "odul": {
+    "ep": 26601,
+    "onur": 160,
+    "kredi": 33251,
+    "uridyum": 80
+   },
+   "kargo": {},
+   "npc_kimlik": 299,
+   "model": "358",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underling_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underling_x8": {
+   "ad": "Hitac-Underling",
+   "hp": 320000,
+   "kalkan": 240000,
+   "hasar": 5600,
+   "hiz": 300,
+   "saldirgan": false,
+   "odul": {
+    "ep": 32000,
+    "onur": 192,
+    "kredi": 40000,
+    "uridyum": 96
+   },
+   "kargo": {},
+   "npc_kimlik": 299,
+   "model": "358",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underling_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underboss_x2": {
+   "ad": "Hitac-Underboss",
+   "hp": 240000,
+   "kalkan": 180000,
+   "hasar": 2000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 20481,
+    "onur": 64,
+    "kredi": 163841,
+    "uridyum": 52
+   },
+   "kargo": {},
+   "npc_kimlik": 300,
+   "model": "359",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underboss_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underboss_x3": {
+   "ad": "Hitac-Underboss",
+   "hp": 400000,
+   "kalkan": 300000,
+   "hasar": 8000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 156,
+    "kredi": 409600,
+    "uridyum": 128
+   },
+   "kargo": {},
+   "npc_kimlik": 300,
+   "model": "359",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underboss_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underboss_x4": {
+   "ad": "Hitac-Underboss",
+   "hp": 640000,
+   "kalkan": 480000,
+   "hasar": 12000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 83521,
+    "onur": 258,
+    "kredi": 656961,
+    "uridyum": 209
+   },
+   "kargo": {},
+   "npc_kimlik": 300,
+   "model": "359",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underboss_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underboss_x5": {
+   "ad": "Hitac-Underboss",
+   "hp": 1720000,
+   "kalkan": 1290000,
+   "hasar": 29000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 220161,
+    "onur": 672,
+    "kredi": 1761281,
+    "uridyum": 551
+   },
+   "kargo": {},
+   "npc_kimlik": 300,
+   "model": "359",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underboss_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underboss_x6": {
+   "ad": "Hitac-Underboss",
+   "hp": 3520000,
+   "kalkan": 2640000,
+   "hasar": 35000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 450561,
+    "onur": 1374,
+    "kredi": 3604481,
+    "uridyum": 1127
+   },
+   "kargo": {},
+   "npc_kimlik": 300,
+   "model": "359",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underboss_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underboss_x7": {
+   "ad": "Hitac-Underboss",
+   "hp": 5400000,
+   "kalkan": 4050000,
+   "hasar": 55000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 680961,
+    "onur": 2076,
+    "kredi": 5447681,
+    "uridyum": 1706
+   },
+   "kargo": {},
+   "npc_kimlik": 300,
+   "model": "359",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underboss_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_hitac_underboss_x8": {
+   "ad": "Hitac-Underboss",
+   "hp": 6400000,
+   "kalkan": 4800000,
+   "hasar": 110000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 819200,
+    "onur": 2498,
+    "kredi": 6553600,
+    "uridyum": 2048
+   },
+   "kargo": {},
+   "npc_kimlik": 300,
+   "model": "359",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hitac_underboss_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_curcubitor_x2": {
+   "ad": "-=[ Curcubitor ]=-",
+   "hp": 10000,
+   "kalkan": 7500,
+   "hasar": 100,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 800,
+    "onur": 4,
+    "kredi": 1001,
+    "uridyum": 3
+   },
+   "kargo": {
+    "0": 20,
+    "1": 20,
+    "4": 4,
+    "5": 4,
+    "6": 1
+   },
+   "npc_kimlik": 109,
+   "model": "119",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: curcubitor_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_curcubitor_x3": {
+   "ad": "-=[ Curcubitor ]=-",
+   "hp": 20000,
+   "kalkan": 15000,
+   "hasar": 300,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 2000,
+    "onur": 12,
+    "kredi": 2500,
+    "uridyum": 6
+   },
+   "kargo": {
+    "0": 50,
+    "1": 50,
+    "4": 10,
+    "5": 10,
+    "6": 2
+   },
+   "npc_kimlik": 109,
+   "model": "119",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: curcubitor_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_curcubitor_x4": {
+   "ad": "-=[ Curcubitor ]=-",
+   "hp": 32000,
+   "kalkan": 24000,
+   "hasar": 600,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 3200,
+    "onur": 20,
+    "kredi": 4001,
+    "uridyum": 10
+   },
+   "kargo": {
+    "0": 80,
+    "1": 80,
+    "2": 80,
+    "4": 16,
+    "5": 16,
+    "6": 3
+   },
+   "npc_kimlik": 109,
+   "model": "119",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: curcubitor_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_curcubitor_x5": {
+   "ad": "-=[ Curcubitor ]=-",
+   "hp": 94000,
+   "kalkan": 70500,
+   "hasar": 1200,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 8600,
+    "onur": 52,
+    "kredi": 10751,
+    "uridyum": 26
+   },
+   "kargo": {
+    "0": 215,
+    "1": 215,
+    "4": 43,
+    "5": 43,
+    "6": 9
+   },
+   "npc_kimlik": 109,
+   "model": "119",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: curcubitor_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_curcubitor_x6": {
+   "ad": "-=[ Curcubitor ]=-",
+   "hp": 180000,
+   "kalkan": 135000,
+   "hasar": 3100,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 17601,
+    "onur": 106,
+    "kredi": 22001,
+    "uridyum": 53
+   },
+   "kargo": {
+    "0": 440,
+    "1": 440,
+    "4": 88,
+    "5": 88,
+    "6": 18
+   },
+   "npc_kimlik": 109,
+   "model": "119",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: curcubitor_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_curcubitor_x7": {
+   "ad": "-=[ Curcubitor ]=-",
+   "hp": 270000,
+   "kalkan": 202500,
+   "hasar": 4300,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 26601,
+    "onur": 160,
+    "kredi": 33251,
+    "uridyum": 80
+   },
+   "kargo": {
+    "0": 665,
+    "1": 665,
+    "4": 133,
+    "5": 133,
+    "6": 27
+   },
+   "npc_kimlik": 109,
+   "model": "119",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: curcubitor_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_curcubitor_x8": {
+   "ad": "-=[ Curcubitor ]=-",
+   "hp": 360000,
+   "kalkan": 270000,
+   "hasar": 5700,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 36000,
+    "onur": 216,
+    "kredi": 45000,
+    "uridyum": 108
+   },
+   "kargo": {
+    "0": 900,
+    "1": 900,
+    "4": 180,
+    "5": 180,
+    "6": 36
+   },
+   "npc_kimlik": 109,
+   "model": "119",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: curcubitor_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_boss_curcubitor_x2": {
+   "ad": "-=[ Boss Curcubitor ]=-",
+   "hp": 200000,
+   "kalkan": 150000,
+   "hasar": 1500,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 20480,
+    "onur": 63,
+    "kredi": 163841,
+    "uridyum": 52
+   },
+   "kargo": {
+    "0": 120,
+    "2": 120,
+    "1": 120,
+    "4": 51,
+    "5": 51,
+    "6": 6,
+    "3": 2
+   },
+   "npc_kimlik": 108,
+   "model": "118",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_curcubitor_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_boss_curcubitor_x3": {
+   "ad": "-=[ Boss Curcubitor ]=-",
+   "hp": 400000,
+   "kalkan": 300000,
+   "hasar": 4000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 156,
+    "kredi": 409600,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 4
+   },
+   "npc_kimlik": 108,
+   "model": "118",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_curcubitor_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_boss_curcubitor_x4": {
+   "ad": "-=[ Boss Curcubitor ]=-",
+   "hp": 640000,
+   "kalkan": 480000,
+   "hasar": 10000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 81920,
+    "onur": 250,
+    "kredi": 655361,
+    "uridyum": 205
+   },
+   "kargo": {
+    "0": 480,
+    "2": 480,
+    "1": 480,
+    "4": 205,
+    "5": 205,
+    "6": 28,
+    "3": 6
+   },
+   "npc_kimlik": 108,
+   "model": "118",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_curcubitor_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_boss_curcubitor_x5": {
+   "ad": "-=[ Boss Curcubitor ]=-",
+   "hp": 1880000,
+   "kalkan": 1410000,
+   "hasar": 20000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 220160,
+    "onur": 672,
+    "kredi": 1761281,
+    "uridyum": 551
+   },
+   "kargo": {
+    "0": 1290,
+    "2": 1290,
+    "1": 1290,
+    "4": 550,
+    "5": 550,
+    "6": 69,
+    "3": 17
+   },
+   "npc_kimlik": 108,
+   "model": "118",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_curcubitor_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_boss_curcubitor_x6": {
+   "ad": "-=[ Boss Curcubitor ]=-",
+   "hp": 3600000,
+   "kalkan": 2700000,
+   "hasar": 40000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 335600,
+    "onur": 1246,
+    "kredi": 3604461,
+    "uridyum": 1014
+   },
+   "kargo": {
+    "0": 2580,
+    "2": 2580,
+    "1": 2580,
+    "4": 1126,
+    "5": 1126,
+    "6": 141,
+    "3": 35
+   },
+   "npc_kimlik": 108,
+   "model": "118",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_curcubitor_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_boss_curcubitor_x7": {
+   "ad": "-=[ Boss Curcubitor ]=-",
+   "hp": 5400000,
+   "kalkan": 4050000,
+   "hasar": 55000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 507200,
+    "onur": 1884,
+    "kredi": 4447681,
+    "uridyum": 1533
+   },
+   "kargo": {
+    "0": 3440,
+    "2": 3440,
+    "1": 3440,
+    "4": 1702,
+    "5": 1702,
+    "6": 213,
+    "3": 53
+   },
+   "npc_kimlik": 108,
+   "model": "118",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_curcubitor_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_boss_curcubitor_x8": {
+   "ad": "-=[ Boss Curcubitor ]=-",
+   "hp": 7200000,
+   "kalkan": 5400000,
+   "hasar": 80000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 922000,
+    "onur": 2864,
+    "kredi": 7400000,
+    "uridyum": 2300
+   },
+   "kargo": {
+    "0": 3900,
+    "2": 3900,
+    "1": 3900,
+    "4": 2304,
+    "5": 2304,
+    "6": 288,
+    "3": 72
+   },
+   "npc_kimlik": 108,
+   "model": "118",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_curcubitor_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_icy": {
+   "ad": "Icy",
+   "hp": 100000,
+   "kalkan": 80000,
+   "hasar": 2000,
+   "hiz": 320,
+   "saldirgan": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "npc_kimlik": 56,
+   "model": "103",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "X-5",
+    "X-6",
+    "X-7",
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: icy); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_ice_meteoroid": {
+   "ad": "Ice Meteoroid",
+   "hp": 1600000,
+   "kalkan": 1200000,
+   "hasar": 0,
+   "hiz": 40,
+   "saldirgan": false,
+   "odul": {
+    "ep": 1000000,
+    "onur": 5000,
+    "kredi": 3000000,
+    "uridyum": 1800
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 256
+   },
+   "npc_kimlik": 54,
+   "model": "101",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "X-5",
+    "X-6",
+    "X-7",
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: ice_meteoroid); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_super_ice_meteoroid": {
+   "ad": "Super Ice Meteoroid",
+   "hp": 3200000,
+   "kalkan": 2400000,
+   "hasar": 0,
+   "hiz": 40,
+   "saldirgan": false,
+   "odul": {
+    "ep": 2000000,
+    "onur": 8000,
+    "kredi": 6553600,
+    "uridyum": 3600
+   },
+   "kargo": {
+    "0": 2400,
+    "2": 2400,
+    "1": 2400,
+    "4": 1024,
+    "5": 1024,
+    "6": 128,
+    "3": 512
+   },
+   "npc_kimlik": 55,
+   "model": "33",
+   "haritalar": [
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: super_ice_meteoroid); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_lanatum_x2": {
+   "ad": "-=[ Lanatum ]=-",
+   "hp": 10000,
+   "kalkan": 5000,
+   "hasar": 400,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 1837,
+    "onur": 10,
+    "kredi": 4000,
+    "uridyum": 4
+   },
+   "kargo": {
+    "0": 40,
+    "1": 40,
+    "2": 40,
+    "4": 4,
+    "5": 4,
+    "6": 1
+   },
+   "npc_kimlik": 230,
+   "model": "274",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanatum_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_lanatum_x3": {
+   "ad": "-=[ Lanatum ]=-",
+   "hp": 20000,
+   "kalkan": 15000,
+   "hasar": 500,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 3675,
+    "onur": 20,
+    "kredi": 8000,
+    "uridyum": 7
+   },
+   "kargo": {
+    "0": 80,
+    "1": 80,
+    "2": 80,
+    "4": 8,
+    "5": 8,
+    "6": 1
+   },
+   "npc_kimlik": 230,
+   "model": "274",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanatum_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_lanatum_x4": {
+   "ad": "-=[ Lanatum ]=-",
+   "hp": 42500,
+   "kalkan": 32000,
+   "hasar": 1200,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 7350,
+    "onur": 40,
+    "kredi": 17000,
+    "uridyum": 15
+   },
+   "kargo": {
+    "0": 160,
+    "1": 160,
+    "2": 160,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "npc_kimlik": 230,
+   "model": "274",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanatum_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_lanatum_x5": {
+   "ad": "-=[ Lanatum ]=-",
+   "hp": 110000,
+   "kalkan": 82500,
+   "hasar": 2600,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 18742,
+    "onur": 104,
+    "kredi": 40800,
+    "uridyum": 36
+   },
+   "kargo": {
+    "0": 408,
+    "1": 408,
+    "2": 408,
+    "4": 41,
+    "5": 41,
+    "6": 8
+   },
+   "npc_kimlik": 230,
+   "model": "274",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanatum_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_lanatum_x6": {
+   "ad": "-=[ Lanatum ]=-",
+   "hp": 210000,
+   "kalkan": 160000,
+   "hasar": 5200,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 37120,
+    "onur": 209,
+    "kredi": 80801,
+    "uridyum": 71
+   },
+   "kargo": {
+    "0": 808,
+    "1": 808,
+    "2": 808,
+    "4": 81,
+    "5": 81,
+    "6": 10
+   },
+   "npc_kimlik": 230,
+   "model": "274",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanatum_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_lanatum_x7": {
+   "ad": "-=[ Lanatum ]=-",
+   "hp": 256000,
+   "kalkan": 192000,
+   "hasar": 6000,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 44835,
+    "onur": 251,
+    "kredi": 97600,
+    "uridyum": 86
+   },
+   "kargo": {
+    "0": 976,
+    "1": 976,
+    "2": 976,
+    "4": 98,
+    "5": 98,
+    "6": 12
+   },
+   "npc_kimlik": 230,
+   "model": "274",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanatum_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_lanatum_x8": {
+   "ad": "-=[ Lanatum ]=-",
+   "hp": 320000,
+   "kalkan": 240000,
+   "hasar": 7000,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 56962,
+    "onur": 319,
+    "kredi": 124000,
+    "uridyum": 109
+   },
+   "kargo": {
+    "0": 1240,
+    "1": 1240,
+    "2": 1240,
+    "4": 124,
+    "5": 124,
+    "6": 16
+   },
+   "npc_kimlik": 230,
+   "model": "274",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanatum_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_styxus_x2": {
+   "ad": "-=[ Styxus ]=-",
+   "hp": 225000,
+   "kalkan": 150000,
+   "hasar": 3500,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 113,
+    "kredi": 204800,
+    "uridyum": 94
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 64,
+    "5": 64,
+    "6": 8,
+    "3": 2
+   },
+   "npc_kimlik": 231,
+   "model": "275",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_styxus_x3": {
+   "ad": "-=[ Styxus ]=-",
+   "hp": 400000,
+   "kalkan": 300000,
+   "hasar": 8000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 226,
+    "kredi": 409600,
+    "uridyum": 188
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 4
+   },
+   "npc_kimlik": 231,
+   "model": "275",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_styxus_x4": {
+   "ad": "-=[ Styxus ]=-",
+   "hp": 920000,
+   "kalkan": 690000,
+   "hasar": 16000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 102400,
+    "onur": 452,
+    "kredi": 819200,
+    "uridyum": 376
+   },
+   "kargo": {
+    "0": 600,
+    "2": 600,
+    "1": 600,
+    "4": 256,
+    "5": 256,
+    "6": 32,
+    "3": 8
+   },
+   "npc_kimlik": 231,
+   "model": "275",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_styxus_x5": {
+   "ad": "-=[ Styxus ]=-",
+   "hp": 2200000,
+   "kalkan": 1650000,
+   "hasar": 32000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 261120,
+    "onur": 1154,
+    "kredi": 2088960,
+    "uridyum": 959
+   },
+   "kargo": {
+    "0": 1530,
+    "2": 1530,
+    "1": 1530,
+    "4": 653,
+    "5": 653,
+    "6": 82,
+    "3": 20
+   },
+   "npc_kimlik": 231,
+   "model": "275",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_styxus_x6": {
+   "ad": "-=[ Styxus ]=-",
+   "hp": 4400000,
+   "kalkan": 3300000,
+   "hasar": 45000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 542894,
+    "onur": 2286,
+    "kredi": 4136961,
+    "uridyum": 1899
+   },
+   "kargo": {
+    "0": 2999,
+    "2": 2999,
+    "1": 2999,
+    "4": 1293,
+    "5": 1293,
+    "6": 162,
+    "3": 80
+   },
+   "npc_kimlik": 231,
+   "model": "275",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_styxus_x7": {
+   "ad": "-=[ Styxus ]=-",
+   "hp": 5760000,
+   "kalkan": 3840000,
+   "hasar": 55000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 624640,
+    "onur": 2760,
+    "kredi": 4997120,
+    "uridyum": 2294
+   },
+   "kargo": {
+    "0": 3660,
+    "2": 3660,
+    "1": 3660,
+    "4": 1562,
+    "5": 1562,
+    "6": 195,
+    "3": 49
+   },
+   "npc_kimlik": 231,
+   "model": "275",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_styxus_x8": {
+   "ad": "-=[ Styxus ]=-",
+   "hp": 7200000,
+   "kalkan": 4800000,
+   "hasar": 70000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 793600,
+    "onur": 3507,
+    "kredi": 6348800,
+    "uridyum": 2914
+   },
+   "kargo": {
+    "0": 4880,
+    "2": 4880,
+    "1": 4880,
+    "4": 1984,
+    "5": 1984,
+    "6": 248,
+    "3": 62
+   },
+   "npc_kimlik": 231,
+   "model": "275",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_charopos_x2": {
+   "ad": "-=[ Charopos ]=-",
+   "hp": 225000,
+   "kalkan": 150000,
+   "hasar": 3500,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 113,
+    "kredi": 204800,
+    "uridyum": 94
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 64,
+    "5": 64,
+    "6": 8,
+    "3": 2
+   },
+   "npc_kimlik": 232,
+   "model": "276",
+   "haritalar": [
+    "X-2"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_charopos_x3": {
+   "ad": "-=[ Charopos ]=-",
+   "hp": 400000,
+   "kalkan": 300000,
+   "hasar": 8000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 226,
+    "kredi": 409600,
+    "uridyum": 188
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 4
+   },
+   "npc_kimlik": 232,
+   "model": "276",
+   "haritalar": [
+    "X-3"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_charopos_x4": {
+   "ad": "-=[ Charopos ]=-",
+   "hp": 920000,
+   "kalkan": 690000,
+   "hasar": 16000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 102400,
+    "onur": 452,
+    "kredi": 819200,
+    "uridyum": 376
+   },
+   "kargo": {
+    "0": 600,
+    "2": 600,
+    "1": 600,
+    "4": 256,
+    "5": 256,
+    "6": 32,
+    "3": 8
+   },
+   "npc_kimlik": 232,
+   "model": "276",
+   "haritalar": [
+    "X-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_charopos_x5": {
+   "ad": "-=[ Charopos ]=-",
+   "hp": 2200000,
+   "kalkan": 1650000,
+   "hasar": 32000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 261120,
+    "onur": 1154,
+    "kredi": 2088960,
+    "uridyum": 959
+   },
+   "kargo": {
+    "0": 1530,
+    "2": 1530,
+    "1": 1530,
+    "4": 653,
+    "5": 653,
+    "6": 82,
+    "3": 20
+   },
+   "npc_kimlik": 232,
+   "model": "276",
+   "haritalar": [
+    "X-5"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_charopos_x6": {
+   "ad": "-=[ Charopos ]=-",
+   "hp": 4400000,
+   "kalkan": 3300000,
+   "hasar": 45000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 542894,
+    "onur": 2286,
+    "kredi": 4136961,
+    "uridyum": 1899
+   },
+   "kargo": {
+    "0": 2999,
+    "2": 2999,
+    "1": 2999,
+    "4": 1293,
+    "5": 1293,
+    "6": 162,
+    "3": 80
+   },
+   "npc_kimlik": 232,
+   "model": "276",
+   "haritalar": [
+    "X-6"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_charopos_x7": {
+   "ad": "-=[ Charopos ]=-",
+   "hp": 5760000,
+   "kalkan": 3840000,
+   "hasar": 55000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 624640,
+    "onur": 2760,
+    "kredi": 4997120,
+    "uridyum": 2294
+   },
+   "kargo": {
+    "0": 3660,
+    "2": 3660,
+    "1": 3660,
+    "4": 1562,
+    "5": 1562,
+    "6": 195,
+    "3": 49
+   },
+   "npc_kimlik": 232,
+   "model": "276",
+   "haritalar": [
+    "X-7"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_charopos_x8": {
+   "ad": "-=[ Charopos ]=-",
+   "hp": 7200000,
+   "kalkan": 4800000,
+   "hasar": 70000,
+   "hiz": 260,
+   "saldirgan": true,
+   "odul": {
+    "ep": 793600,
+    "onur": 3507,
+    "kredi": 6348800,
+    "uridyum": 2914
+   },
+   "kargo": {
+    "0": 4880,
+    "2": 4880,
+    "1": 4880,
+    "4": 1984,
+    "5": 1984,
+    "6": 248,
+    "3": 62
+   },
+   "npc_kimlik": 232,
+   "model": "276",
+   "haritalar": [
+    "X-8"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_santa_x2": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 100000,
+   "kalkan": 300000,
+   "hasar": 1800,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 78,
+    "kredi": 204800,
+    "uridyum": 64
+   },
+   "kargo": {
+    "0": 150,
+    "1": 150,
+    "2": 150,
+    "4": 64,
+    "5": 64,
+    "6": 8,
+    "3": 2
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_santa_x3": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 200000,
+   "kalkan": 428571,
+   "hasar": 2828,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 38400,
+    "onur": 117,
+    "kredi": 307200,
+    "uridyum": 96
+   },
+   "kargo": {
+    "0": 214,
+    "1": 214,
+    "2": 214,
+    "4": 91,
+    "5": 91,
+    "6": 11,
+    "3": 2
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_santa_x4": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 300000,
+   "kalkan": 557142,
+   "hasar": 3857,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 156,
+    "kredi": 409600,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 278,
+    "1": 278,
+    "2": 278,
+    "4": 118,
+    "5": 118,
+    "6": 14,
+    "3": 3
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_santa_4_5": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 400000,
+   "kalkan": 685714,
+   "hasar": 4885,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 76800,
+    "onur": 234,
+    "kredi": 614400,
+    "uridyum": 192
+   },
+   "kargo": {
+    "0": 342,
+    "1": 342,
+    "2": 342,
+    "4": 146,
+    "5": 146,
+    "6": 18,
+    "3": 4
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_santa_x5": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 500000,
+   "kalkan": 814285,
+   "hasar": 5914,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 102400,
+    "onur": 312,
+    "kredi": 819200,
+    "uridyum": 256
+   },
+   "kargo": {
+    "0": 407,
+    "1": 407,
+    "2": 407,
+    "4": 173,
+    "5": 173,
+    "6": 21,
+    "3": 5
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_santa_x6": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 600000,
+   "kalkan": 942857,
+   "hasar": 6942,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 153600,
+    "onur": 468,
+    "kredi": 1228800,
+    "uridyum": 384
+   },
+   "kargo": {
+    "0": 471,
+    "1": 471,
+    "2": 471,
+    "4": 201,
+    "5": 201,
+    "6": 25,
+    "3": 6
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_santa_x7": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 700000,
+   "kalkan": 1071428,
+   "hasar": 7971,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 204800,
+    "onur": 624,
+    "kredi": 1638400,
+    "uridyum": 512
+   },
+   "kargo": {
+    "0": 535,
+    "1": 535,
+    "2": 535,
+    "4": 228,
+    "5": 228,
+    "6": 28,
+    "3": 7
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_santa_x8": {
+   "ad": "Santa-1100101",
+   "model": "32",
+   "npc_kimlik": 74,
+   "hp": 800000,
+   "kalkan": 1200000,
+   "hasar": 9000,
+   "hiz": 290,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 256000,
+    "onur": 780,
+    "kredi": 2048000,
+    "uridyum": 640
+   },
+   "kargo": {
+    "0": 600,
+    "1": 600,
+    "2": 600,
+    "4": 256,
+    "5": 256,
+    "6": 32,
+    "3": 8
+   },
+   "_kaynak": "wiki/fandom: Santa-1100101 harita başına ödül (X-3 EP yazım hatası 38.400); can/kalkan/hasar aralıkta haritaya göre"
+  },
+  "etk_hitac_minion": {
+   "ad": "Hitac-Minion 2.5",
+   "model": "117",
+   "npc_kimlik": 263,
+   "hp": 2000000,
+   "kalkan": 1500000,
+   "hasar": 10000,
+   "hiz": 300,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 500000,
+    "onur": 12000,
+    "kredi": 2500000,
+    "uridyum": 1250
+   },
+   "kargo": {},
+   "_kaynak": "wiki: Hitac 2.5 Minion"
+  },
+  "etk_hitac_mothership": {
+   "ad": "Hitac 2.5",
+   "model": "116",
+   "npc_kimlik": 261,
+   "hp": 6250000,
+   "kalkan": 3500000,
+   "hasar": 30000,
+   "hiz": 180,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 5000000,
+    "onur": 50000,
+    "kredi": 1000000,
+    "uridyum": 2500
+   },
+   "kargo": {},
+   "davranis": {
+    "cagrilar_yasarken_dokunulmaz": true,
+    "vurulunca_cagir": {
+     "tur": "etk_hitac_minion",
+     "adet": 6,
+     "en_cok": 6,
+     "bekleme_sn": 90
+    }
+   },
+   "_kaynak": "wiki: Hitac 2.5 (rota 1-3 > 1-4 > 3-4 > 3-3 > 2-4 > 2-3); fandom 2012: altı yardımcı yaşarken kalkanlı, yenileri ana gemiden çıkar (vurulunca çağırır; bekleme uyarlama)"
+  }
+ },
+ "haritalar": {
+  "5": {
+   "_ad": "2-1",
+   "npc": [
+    {
+     "tip": "84",
+     "adet": 36
+    },
+    {
+     "tip": "152",
+     "adet": 5
+    },
+    {
+     "tip": "153",
+     "adet": 4
+    }
+   ],
+   "bonus_kutu": 20
+  },
+  "6": {
+   "_ad": "2-2",
+   "npc": [
+    {
+     "tip": "84",
+     "adet": 12
+    },
+    {
+     "tip": "152",
+     "adet": 4
+    },
+    {
+     "tip": "153",
+     "adet": 4
+    },
+    {
+     "tip": "23",
+     "adet": 2
+    },
+    {
+     "tip": "71",
+     "adet": 22
+    },
+    {
+     "tip": "24",
+     "adet": 2
+    }
+   ],
+   "bonus_kutu": 20,
+   "_kaynak": "tür listesi istemcinin spacemap-config.xml'inden (1-2/2-2/3-2: Streuner, Lordakia, Boss Streuner, Boss Lordakia, Recruit, Aider); adetler uyarlama"
+  },
+  "1": {
+   "_ad": "1-1",
+   "npc": [
+    {
+     "tip": "84",
+     "adet": 36
+    },
+    {
+     "tip": "152",
+     "adet": 5
+    },
+    {
+     "tip": "153",
+     "adet": 4
+    }
+   ],
+   "bonus_kutu": 20,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-1)"
+  },
+  "2": {
+   "_ad": "1-2",
+   "npc": [
+    {
+     "tip": "84",
+     "adet": 12
+    },
+    {
+     "tip": "71",
+     "adet": 22
+    },
+    {
+     "tip": "23",
+     "adet": 2
+    },
+    {
+     "tip": "24",
+     "adet": 2
+    },
+    {
+     "tip": "152",
+     "adet": 4
+    },
+    {
+     "tip": "153",
+     "adet": 4
+    }
+   ],
+   "bonus_kutu": 20,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-2)"
+  },
+  "3": {
+   "_ad": "1-3",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 15
+    },
+    {
+     "tip": "72",
+     "adet": 3
+    },
+    {
+     "tip": "73",
+     "adet": 10
+    },
+    {
+     "tip": "75",
+     "adet": 15
+    },
+    {
+     "tip": "31",
+     "adet": 1
+    },
+    {
+     "tip": "25",
+     "adet": 2
+    },
+    {
+     "tip": "26",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 15,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-3)"
+  },
+  "4": {
+   "_ad": "1-4",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 15
+    },
+    {
+     "tip": "73",
+     "adet": 10
+    },
+    {
+     "tip": "74",
+     "adet": 4
+    },
+    {
+     "tip": "75",
+     "adet": 15
+    },
+    {
+     "tip": "25",
+     "adet": 2
+    },
+    {
+     "tip": "46",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 15,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-4)"
+  },
+  "7": {
+   "_ad": "2-3",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 15
+    },
+    {
+     "tip": "72",
+     "adet": 3
+    },
+    {
+     "tip": "73",
+     "adet": 10
+    },
+    {
+     "tip": "75",
+     "adet": 15
+    },
+    {
+     "tip": "31",
+     "adet": 1
+    },
+    {
+     "tip": "25",
+     "adet": 2
+    },
+    {
+     "tip": "26",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 15,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-3)"
+  },
+  "8": {
+   "_ad": "2-4",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 15
+    },
+    {
+     "tip": "73",
+     "adet": 10
+    },
+    {
+     "tip": "74",
+     "adet": 4
+    },
+    {
+     "tip": "75",
+     "adet": 15
+    },
+    {
+     "tip": "25",
+     "adet": 2
+    },
+    {
+     "tip": "46",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 15,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-4)"
+  },
+  "9": {
+   "_ad": "3-1",
+   "npc": [
+    {
+     "tip": "84",
+     "adet": 36
+    },
+    {
+     "tip": "152",
+     "adet": 5
+    },
+    {
+     "tip": "153",
+     "adet": 4
+    }
+   ],
+   "bonus_kutu": 20,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-1)"
+  },
+  "10": {
+   "_ad": "3-2",
+   "npc": [
+    {
+     "tip": "84",
+     "adet": 12
+    },
+    {
+     "tip": "71",
+     "adet": 22
+    },
+    {
+     "tip": "23",
+     "adet": 2
+    },
+    {
+     "tip": "24",
+     "adet": 2
+    },
+    {
+     "tip": "152",
+     "adet": 4
+    },
+    {
+     "tip": "153",
+     "adet": 4
+    }
+   ],
+   "bonus_kutu": 20,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-2)"
+  },
+  "11": {
+   "_ad": "3-3",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 15
+    },
+    {
+     "tip": "72",
+     "adet": 3
+    },
+    {
+     "tip": "73",
+     "adet": 10
+    },
+    {
+     "tip": "75",
+     "adet": 15
+    },
+    {
+     "tip": "31",
+     "adet": 1
+    },
+    {
+     "tip": "25",
+     "adet": 2
+    },
+    {
+     "tip": "26",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 15,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-3)"
+  },
+  "12": {
+   "_ad": "3-4",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 15
+    },
+    {
+     "tip": "73",
+     "adet": 10
+    },
+    {
+     "tip": "74",
+     "adet": 4
+    },
+    {
+     "tip": "75",
+     "adet": 15
+    },
+    {
+     "tip": "25",
+     "adet": 2
+    },
+    {
+     "tip": "46",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 15,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-4)"
+  },
+  "13": {
+   "_ad": "4-1",
+   "npc": [
+    {
+     "tip": "npc121",
+     "adet": 3
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (4-X)"
+  },
+  "14": {
+   "_ad": "4-2",
+   "npc": [
+    {
+     "tip": "npc121",
+     "adet": 3
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (4-X)"
+  },
+  "15": {
+   "_ad": "4-3",
+   "npc": [
+    {
+     "tip": "npc121",
+     "adet": 3
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (4-X)"
+  },
+  "16": {
+   "_ad": "4-4",
+   "npc": [
+    {
+     "tip": "npc121",
+     "adet": 3
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (4-X)",
+   "boyut": [
+    42000,
+    26200
+   ]
+  },
+  "17": {
+   "_ad": "1-5",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 10
+    },
+    {
+     "tip": "76",
+     "adet": 15
+    },
+    {
+     "tip": "77",
+     "adet": 6
+    },
+    {
+     "tip": "27",
+     "adet": 2
+    },
+    {
+     "tip": "28",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-5)"
+  },
+  "18": {
+   "_ad": "1-6",
+   "npc": [
+    {
+     "tip": "78",
+     "adet": 20
+    },
+    {
+     "tip": "79",
+     "adet": 6
+    },
+    {
+     "tip": "80",
+     "adet": 1
+    },
+    {
+     "tip": "29",
+     "adet": 2
+    },
+    {
+     "tip": "252",
+     "adet": 5
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6)",
+   "sabit_noktalar": {
+    "80": [
+     [
+      13400,
+      3900
+     ],
+     [
+      13400,
+      7900
+     ],
+     [
+      7500,
+      3900
+     ],
+     [
+      7500,
+      7900
+     ]
+    ]
+   },
+   "zamanli": [
+    {
+     "tip": "npc179",
+     "saatler": [
+      "11:30",
+      "13:30",
+      "03:30",
+      "05:30"
+     ]
+    },
+    {
+     "tip": "218",
+     "saatler": [
+      "17:30",
+      "19:30"
+     ]
+    }
+   ]
+  },
+  "19": {
+   "_ad": "1-7",
+   "npc": [
+    {
+     "tip": "78",
+     "adet": 20
+    },
+    {
+     "tip": "79",
+     "adet": 8
+    },
+    {
+     "tip": "29",
+     "adet": 3
+    },
+    {
+     "tip": "35",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-7)",
+   "zamanli": [
+    {
+     "tip": "215",
+     "saatler": [
+      "13:30",
+      "15:30",
+      "23:30",
+      "01:30"
+     ]
+    },
+    {
+     "tip": "219",
+     "saatler": [
+      "19:30",
+      "21:30"
+     ]
+    }
+   ]
+  },
+  "20": {
+   "_ad": "1-8",
+   "npc": [
+    {
+     "tip": "85",
+     "adet": 25
+    },
+    {
+     "tip": "34",
+     "adet": 3
+    },
+    {
+     "tip": "214",
+     "adet": 2
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-8)",
+   "zamanli": [
+    {
+     "tip": "216",
+     "saatler": [
+      "15:30",
+      "17:30",
+      "03:30",
+      "05:30"
+     ]
+    },
+    {
+     "tip": "220",
+     "saatler": [
+      "21:30",
+      "23:30"
+     ]
+    }
+   ]
+  },
+  "21": {
+   "_ad": "2-5",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 10
+    },
+    {
+     "tip": "76",
+     "adet": 15
+    },
+    {
+     "tip": "77",
+     "adet": 6
+    },
+    {
+     "tip": "27",
+     "adet": 2
+    },
+    {
+     "tip": "28",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-5)"
+  },
+  "22": {
+   "_ad": "2-6",
+   "npc": [
+    {
+     "tip": "78",
+     "adet": 20
+    },
+    {
+     "tip": "79",
+     "adet": 6
+    },
+    {
+     "tip": "80",
+     "adet": 1
+    },
+    {
+     "tip": "29",
+     "adet": 2
+    },
+    {
+     "tip": "252",
+     "adet": 5
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6)",
+   "sabit_noktalar": {
+    "80": [
+     [
+      13400,
+      3900
+     ],
+     [
+      13400,
+      7900
+     ],
+     [
+      7500,
+      3900
+     ],
+     [
+      7500,
+      7900
+     ]
+    ]
+   },
+   "zamanli": [
+    {
+     "tip": "npc179",
+     "saatler": [
+      "11:30",
+      "13:30",
+      "03:30",
+      "05:30"
+     ]
+    },
+    {
+     "tip": "218",
+     "saatler": [
+      "17:30",
+      "19:30"
+     ]
+    }
+   ]
+  },
+  "23": {
+   "_ad": "2-7",
+   "npc": [
+    {
+     "tip": "78",
+     "adet": 20
+    },
+    {
+     "tip": "79",
+     "adet": 8
+    },
+    {
+     "tip": "29",
+     "adet": 3
+    },
+    {
+     "tip": "35",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-7)",
+   "zamanli": [
+    {
+     "tip": "215",
+     "saatler": [
+      "13:30",
+      "15:30",
+      "23:30",
+      "01:30"
+     ]
+    },
+    {
+     "tip": "219",
+     "saatler": [
+      "19:30",
+      "21:30"
+     ]
+    }
+   ]
+  },
+  "24": {
+   "_ad": "2-8",
+   "npc": [
+    {
+     "tip": "85",
+     "adet": 25
+    },
+    {
+     "tip": "34",
+     "adet": 3
+    },
+    {
+     "tip": "214",
+     "adet": 2
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-8)",
+   "zamanli": [
+    {
+     "tip": "216",
+     "saatler": [
+      "15:30",
+      "17:30",
+      "03:30",
+      "05:30"
+     ]
+    },
+    {
+     "tip": "220",
+     "saatler": [
+      "21:30",
+      "23:30"
+     ]
+    }
+   ]
+  },
+  "25": {
+   "_ad": "3-5",
+   "npc": [
+    {
+     "tip": "71",
+     "adet": 10
+    },
+    {
+     "tip": "76",
+     "adet": 15
+    },
+    {
+     "tip": "77",
+     "adet": 6
+    },
+    {
+     "tip": "27",
+     "adet": 2
+    },
+    {
+     "tip": "28",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-5)"
+  },
+  "26": {
+   "_ad": "3-6",
+   "npc": [
+    {
+     "tip": "78",
+     "adet": 20
+    },
+    {
+     "tip": "79",
+     "adet": 6
+    },
+    {
+     "tip": "80",
+     "adet": 1
+    },
+    {
+     "tip": "29",
+     "adet": 2
+    },
+    {
+     "tip": "252",
+     "adet": 5
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6)",
+   "sabit_noktalar": {
+    "80": [
+     [
+      13400,
+      3900
+     ],
+     [
+      13400,
+      7900
+     ],
+     [
+      7500,
+      3900
+     ],
+     [
+      7500,
+      7900
+     ]
+    ]
+   },
+   "zamanli": [
+    {
+     "tip": "npc179",
+     "saatler": [
+      "11:30",
+      "13:30",
+      "03:30",
+      "05:30"
+     ]
+    },
+    {
+     "tip": "218",
+     "saatler": [
+      "17:30",
+      "19:30"
+     ]
+    }
+   ]
+  },
+  "27": {
+   "_ad": "3-7",
+   "npc": [
+    {
+     "tip": "78",
+     "adet": 20
+    },
+    {
+     "tip": "79",
+     "adet": 8
+    },
+    {
+     "tip": "29",
+     "adet": 3
+    },
+    {
+     "tip": "35",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-7)",
+   "zamanli": [
+    {
+     "tip": "215",
+     "saatler": [
+      "13:30",
+      "15:30",
+      "23:30",
+      "01:30"
+     ]
+    },
+    {
+     "tip": "219",
+     "saatler": [
+      "19:30",
+      "21:30"
+     ]
+    }
+   ]
+  },
+  "28": {
+   "_ad": "3-8",
+   "npc": [
+    {
+     "tip": "85",
+     "adet": 25
+    },
+    {
+     "tip": "34",
+     "adet": 3
+    },
+    {
+     "tip": "214",
+     "adet": 2
+    }
+   ],
+   "bonus_kutu": 12,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-8)",
+   "zamanli": [
+    {
+     "tip": "216",
+     "saatler": [
+      "15:30",
+      "17:30",
+      "03:30",
+      "05:30"
+     ]
+    },
+    {
+     "tip": "220",
+     "saatler": [
+      "21:30",
+      "23:30"
+     ]
+    }
+   ]
+  },
+  "29": {
+   "_ad": "4-5",
+   "npc": [
+    {
+     "tip": "23",
+     "adet": 2
+    },
+    {
+     "tip": "24",
+     "adet": 2
+    },
+    {
+     "tip": "31",
+     "adet": 2
+    },
+    {
+     "tip": "25",
+     "adet": 2
+    },
+    {
+     "tip": "26",
+     "adet": 2
+    },
+    {
+     "tip": "27",
+     "adet": 2
+    },
+    {
+     "tip": "46",
+     "adet": 2
+    },
+    {
+     "tip": "28",
+     "adet": 2
+    },
+    {
+     "tip": "29",
+     "adet": 2
+    },
+    {
+     "tip": "35",
+     "adet": 2
+    },
+    {
+     "tip": "34",
+     "adet": 2
+    },
+    {
+     "tip": "36",
+     "adet": 2
+    },
+    {
+     "tip": "37",
+     "adet": 2
+    },
+    {
+     "tip": "43",
+     "adet": 2
+    },
+    {
+     "tip": "38",
+     "adet": 2
+    },
+    {
+     "tip": "39",
+     "adet": 2
+    },
+    {
+     "tip": "40",
+     "adet": 2
+    },
+    {
+     "tip": "47",
+     "adet": 2
+    },
+    {
+     "tip": "41",
+     "adet": 2
+    },
+    {
+     "tip": "42",
+     "adet": 2
+    },
+    {
+     "tip": "45",
+     "adet": 2
+    },
+    {
+     "tip": "44",
+     "adet": 2
+    },
+    {
+     "tip": "npc121",
+     "adet": 2
+    },
+    {
+     "tip": "257",
+     "adet": 2
+    },
+    {
+     "tip": "255",
+     "adet": 2
+    },
+    {
+     "tip": "258",
+     "adet": 2
+    },
+    {
+     "tip": "254",
+     "adet": 2
+    },
+    {
+     "tip": "256",
+     "adet": 2
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (4-5)",
+   "boyut": [
+    42000,
+    26200
+   ],
+   "solucan_deligi": {
+    "hedef": 42,
+    "tasinma_sn": 600,
+    "_kaynak": "wiki: 4-5'te yeri değişen gizli portal; 10 dk uyarlama"
+   }
+  },
+  "91": {
+   "_ad": "5-1",
+   "npc": [
+    {
+     "tip": "111",
+     "adet": 15
+    },
+    {
+     "tip": "112",
+     "adet": 10
+    },
+    {
+     "tip": "113",
+     "adet": 8
+    },
+    {
+     "tip": "114",
+     "adet": 5
+    },
+    {
+     "tip": "257",
+     "adet": 2
+    },
+    {
+     "tip": "255",
+     "adet": 2
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (5-1)",
+   "boyut": [
+    42000,
+    26200
+   ]
+  },
+  "92": {
+   "_ad": "5-2",
+   "npc": [
+    {
+     "tip": "111",
+     "adet": 15
+    },
+    {
+     "tip": "112",
+     "adet": 10
+    },
+    {
+     "tip": "113",
+     "adet": 8
+    },
+    {
+     "tip": "114",
+     "adet": 5
+    },
+    {
+     "tip": "257",
+     "adet": 2
+    },
+    {
+     "tip": "255",
+     "adet": 2
+    },
+    {
+     "tip": "258",
+     "adet": 1
+    },
+    {
+     "tip": "254",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (5-2)",
+   "zamanli": [
+    {
+     "tip": "npc179",
+     "saatler": [
+      "11:30",
+      "13:30",
+      "03:30",
+      "05:30"
+     ]
+    },
+    {
+     "tip": "218",
+     "saatler": [
+      "17:30",
+      "19:30"
+     ]
+    }
+   ]
+  },
+  "93": {
+   "_ad": "5-3",
+   "npc": [
+    {
+     "tip": "111",
+     "adet": 12
+    },
+    {
+     "tip": "112",
+     "adet": 10
+    },
+    {
+     "tip": "113",
+     "adet": 8
+    },
+    {
+     "tip": "114",
+     "adet": 6
+    },
+    {
+     "tip": "115",
+     "adet": 4
+    },
+    {
+     "tip": "257",
+     "adet": 2
+    },
+    {
+     "tip": "255",
+     "adet": 2
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (5-3)",
+   "boyut": [
+    42000,
+    26200
+   ],
+   "zamanli": [
+    {
+     "tip": "215",
+     "saatler": [
+      "13:30",
+      "15:30",
+      "23:30",
+      "01:30"
+     ]
+    },
+    {
+     "tip": "219",
+     "saatler": [
+      "19:30",
+      "21:30"
+     ]
+    }
+   ]
+  },
+  "306": {
+   "_ad": "BL-1",
+   "npc": [
+    {
+     "tip": "213",
+     "adet": 12
+    },
+    {
+     "tip": "217",
+     "adet": 5
+    },
+    {
+     "tip": "221",
+     "adet": 2
+    },
+    {
+     "tip": "225",
+     "adet": 1
+    },
+    {
+     "tip": "npc268",
+     "adet": 6
+    },
+    {
+     "tip": "npc269",
+     "adet": 6
+    },
+    {
+     "tip": "320",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-BL)"
+  },
+  "307": {
+   "_ad": "BL-2",
+   "npc": [
+    {
+     "tip": "213",
+     "adet": 12
+    },
+    {
+     "tip": "217",
+     "adet": 5
+    },
+    {
+     "tip": "221",
+     "adet": 2
+    },
+    {
+     "tip": "225",
+     "adet": 1
+    },
+    {
+     "tip": "npc268",
+     "adet": 6
+    },
+    {
+     "tip": "npc269",
+     "adet": 6
+    },
+    {
+     "tip": "320",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-BL)"
+  },
+  "308": {
+   "_ad": "BL-3",
+   "npc": [
+    {
+     "tip": "213",
+     "adet": 12
+    },
+    {
+     "tip": "217",
+     "adet": 5
+    },
+    {
+     "tip": "221",
+     "adet": 2
+    },
+    {
+     "tip": "225",
+     "adet": 1
+    },
+    {
+     "tip": "npc268",
+     "adet": 6
+    },
+    {
+     "tip": "npc269",
+     "adet": 6
+    },
+    {
+     "tip": "320",
+     "adet": 1
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-BL)"
+  },
+  "42": {
+   "_ad": "???",
+   "npc": [
+    {
+     "tip": "80",
+     "adet": 4
+    },
+    {
+     "tip": "uber_protegit",
+     "adet": 12
+    }
+   ],
+   "bonus_kutu": 40,
+   "_kaynak": "türler wiki (belgeler/wiki/maps.md); adetler uyarlama (???)",
+   "bonus_dizisi": [
+    [
+     "ammunition_laser_ucb-100",
+     1000
+    ],
+    [
+     "ammunition_laser_ucb-100",
+     500
+    ],
+    [
+     "ammunition_laser_mcb-50",
+     500
+    ],
+    [
+     "ammunition_laser_mcb-25",
+     500
+    ],
+    [
+     "ammunition_laser_lcb-10",
+     500
+    ]
+   ],
+   "yavaslatma": 0.3,
+   "gizlenme_yok": true,
+   "_kurallar": "Cubikon Mezarlığı (wiki, belgeler/arastirma/pve_icerik.md 2.38): girişte gizlenme kalkar ve kullanılamaz, yavaşlatan hava (oran uyarlama), her yerde bonus kutusu (ilki 1.000 UCB-100, değeri giderek LCB-10'a düşer); çıkış yalnız atlama CPU'su ya da ölüm. Giriş: atlama CPU'su (esyalar.json mezarlik_sansi) ya da 4-5'teki gizli, yer değiştiren solucan deliği."
+  },
+  "94": {
+   "_ad": "5-4",
+   "npc": [
+    {
+     "tip": "330",
+     "adet": 1
+    },
+    {
+     "tip": "331",
+     "adet": 5
+    },
+    {
+     "tip": "332",
+     "adet": 12
+    },
+    {
+     "tip": "333",
+     "adet": 25
+    },
+    {
+     "tip": "334",
+     "adet": 40
+    }
+   ],
+   "bonus_kutu": 8,
+   "_kaynak": "türler wiki (belgeler/wiki/maps.md); adetler uyarlama (5-4)",
+   "boyut": [
+    42000,
+    26200
+   ],
+   "_kurallar": "5-4 (wiki): portalı 5-2'de, girişi bir Gümüş Booty Key (Assembly gelene dek anahtar yoksa 25 Darksilver Coin, uyarlama); sabit nüfus 1 The Stinger, 5 Pike, 12 Barb, 25 Lanternfish, 40 Spookfish. Gümüş sandıklar anahtarlı kutularla (yol haritası Aşama 5)."
+  }
+ },
+ "harita_boyutu": [
+  21000,
+  13100
+ ],
+ "savas": {
+  "_kaynak": "kayıttan gözlenen: lazer aralığı ~1,1 sn; LF-1 + LCB-10 ile 50–64 hasar; NPC kalkanı hasarın %70'ini emer; R-310 roketi 850–1000 hasar, 4 sn bekleme, ~0,8 sn uçuş",
+  "lazer_aralik_sn": 1.1,
+  "lazer_hasar": [
+   48,
+   66
+  ],
+  "lazer_isabet": 0.8,
+  "lazer_menzil": 700,
+  "roket_hasar": [
+   850,
+   1000
+  ],
+  "roket_bekleme_ms": 4000,
+  "roket_ucus_sn": 0.8,
+  "roket_menzil": 900,
+  "roket_isabet": 0.8,
+  "_roket_isabet": "roketin isabet şansı (uyarlama: wiki taban değer vermiyor, lazerinkiyle aynı); Heat-Seeking Missiles yeteneği (roket_isabet) ve DMG-H01 boosterı (isabet) artırır, PLD-8 gibi etkiler düşürür; BDR-1211 %100 (esyalar.json isabet)",
+  "npc_kalkan_emme": 0.7,
+  "npc_isabet": 0.6,
+  "npc_menzil": 600,
+  "npc_saldiri_aralik_sn": 1.1,
+  "yeniden_dogma_sn": [
+   12,
+   25
+  ],
+  "kutu_gecikme_sn": 1.2,
+  "kutu_omur_sn": 120,
+  "toplama_mesafe": 250,
+  "npc_fark_mesafe": 1000,
+  "_npc_fark_mesafe": "uyarlama: saldırgan NPC oyuncuyu bu mesafede fark edip kovalar (önceden 500; güvenli bölgede fark etmez)",
+  "gorus_mesafesi": 2000,
+  "gorus_birakma": 2200,
+  "_gorus_mesafesi": "Kayıt: gerçek sunucu NPC'leri kahramana 1.500-2.000 birim kala ShipCreateCommand ile gösteriyor, uzaklaşınca ShipRemoveCommand ile kaldırıyor (88 create, 84 ölümsüz remove). Bırakma uzaklığı uyarlama (sınırda titremesin).",
+  "radyasyon_yuzde": [
+   0.01,
+   0.05
+  ],
+  "radyasyon_artis_sn": 3,
+  "_radyasyon": "darkorbit.fandom.com Radiation zone: harita sınırı dışında saniyede azami canın %1'i, %5'e kadar artar. Artış hızı (3 sn'de bir +%1) uyarlama; kalkanı değil gövdeyi vurur.",
+  "x1_kargo": [
+   [
+    7,
+    0.5
+   ],
+   [
+    8,
+    0.25
+   ],
+   [
+    9,
+    0.13
+   ],
+   [
+    10,
+    0
+   ]
+  ],
+  "_x1_kargo": "darkorbit.fandom.com Hall of Fame: X-1 haritalarında yüksek seviyede NPC kargosu azalır: seviye 7 %50, 8 %25, 9 %13, 10 ve üstü hiç (alçak seviyelilerin haritası).",
+  "kutu_gorus": 1000,
+  "kutu_birakma": 1150,
+  "_kutu_gorus": "Kayıt: kutular ve cevherler kahramana ~1.000 birim kala AddBoxCommand/AddOreCommand ile geliyor, uzaklaşınca toplanmadan RemoveCollectableCommand (161 kez, 900-1.150 birim). Bırakma uzaklığı uyarlama.",
+  "npc_menzil_sabit": 1000,
+  "_npc_menzil_sabit": "hareketsiz uzaylıların (Mindfire Behemoth, Cubikon …) ateş menzili: oyuncunun lazer (700) ve roket (900) menzilinden uzun olmalı, yoksa karşılık vermeden kesilirler (wiki: Behemoth \"en uzun menzil\"; değer uyarlama)",
+  "yeniden_dogma_ozel": {
+   "boss": [
+    90,
+    180
+   ],
+   "uber": [
+    180,
+    360
+   ],
+   "80": [
+    300,
+    600
+   ],
+   "225": [
+    1800,
+    2700
+   ],
+   "320": [
+    1800,
+    2700
+   ]
+  },
+  "_yeniden_dogma_ozel": "Boss/Uber, Cubikon (80) ve Mindfire Behemoth (225) sıradan uzaylı gibi 12-25 sn'de dönmesin (değerler uyarlama; wiki süre vermiyor). Anahtar: tür ya da ada göre \"boss\" (..::{), \"uber\"; Strokelight Barrage (320) Behemoth gibi",
+  "zamanli_sure_sn": 3600,
+  "_zamanli": "Zaman çizelgeli Black Light başıboşları (haritalar.zamanli; wiki saatleri, yerel saat): saatinden sonra bu kadar saniye içinde haritaya gelinirse doğar (uyarlama); ölünce o saat bir daha doğmaz (profil zamanli)."
+ },
+ "bonus_kutu": [
+  [
+   "ammunition_laser_lcb-10",
+   10
+  ],
+  [
+   "ammunition_laser_lcb-10",
+   20
+  ],
+  [
+   "ammunition_laser_lcb-10",
+   50
+  ],
+  [
+   "ammunition_laser_mcb-25",
+   5
+  ],
+  [
+   "ammunition_laser_mcb-25",
+   10
+  ],
+  [
+   "ammunition_laser_mcb-25",
+   20
+  ],
+  [
+   "ammunition_laser_mcb-50",
+   5
+  ],
+  [
+   "ammunition_laser_mcb-50",
+   10
+  ],
+  [
+   "ammunition_laser_mcb-50",
+   20
+  ],
+  [
+   "ammunition_laser_sab-50",
+   5
+  ],
+  [
+   "ammunition_laser_sab-50",
+   10
+  ],
+  [
+   "ammunition_laser_sab-50",
+   20
+  ],
+  [
+   "uridyum",
+   20
+  ],
+  [
+   "uridyum",
+   50
+  ],
+  [
+   "uridyum",
+   100
+  ],
+  [
+   "kredi",
+   200
+  ],
+  [
+   "kredi",
+   500
+  ],
+  [
+   "kredi",
+   1000
+  ],
+  [
+   "enerji",
+   1
+  ]
+ ],
+ "_harita_notu": "Kayıtta olmayan haritalar tools/npc_haritalari.py ile üretildi. \"model\": istemciye gönderilen gemi modeli (tür anahtarından farklıysa). \"boyut\": büyük haritalar (maps-config.xml scaleFactor 2).",
+ "bonus_kutu_4x": [
+  [
+   "ammunition_laser_lcb-10",
+   10
+  ],
+  [
+   "ammunition_laser_lcb-10",
+   30
+  ],
+  [
+   "ammunition_laser_lcb-10",
+   75
+  ],
+  [
+   "ammunition_laser_mcb-25",
+   7
+  ],
+  [
+   "ammunition_laser_mcb-25",
+   15
+  ],
+  [
+   "ammunition_laser_mcb-25",
+   30
+  ],
+  [
+   "ammunition_laser_mcb-50",
+   7
+  ],
+  [
+   "ammunition_laser_mcb-50",
+   15
+  ],
+  [
+   "ammunition_laser_mcb-50",
+   30
+  ],
+  [
+   "ammunition_laser_sab-50",
+   7
+  ],
+  [
+   "ammunition_laser_sab-50",
+   15
+  ],
+  [
+   "ammunition_laser_sab-50",
+   30
+  ],
+  [
+   "uridyum",
+   30
+  ],
+  [
+   "uridyum",
+   75
+  ],
+  [
+   "uridyum",
+   150
+  ],
+  [
+   "kredi",
+   300
+  ],
+  [
+   "kredi",
+   750
+  ],
+  [
+   "kredi",
+   1500
+  ],
+  [
+   "enerji",
+   2
+  ]
+ ],
+ "_bonus_kutu_4x": "belgeler/wiki/boxes.md normal_box_4x: 4-X haritalarındaki zengin bonus kutusu",
+ "_davranis": "Tür başına isteğe bağlı alanlar (yoksa savas değerleri): fark_mesafe (saldırgan türün oyuncuyu fark ettiği uzaklık), atis_aralik_sn, isabet, menzil; davranis: olunce_dogur [{tur, adet}] (ölünce doğanlar, yeniden doğmaz), vurulunca_cagir {tur, adet, en_cok, bekleme_sn}, yenilenme {can_sn, kalkan_sn, bekleme_sn} (vurulmadan geçen süre), cagrilar_yasarken_dokunulmaz (bool). İçerik (Cubikon, Lordakium sporları, Battleray …) yol haritasının 4. aşamasında.",
+ "_ek_odul": "tipler.ek_odul: ölünce ek ödül {lootId: adet} (aliens.md \"Extra destroy rewards\"; Palladium kargoya, ötekiler kaynak deposuna). Olasılıklı ödüller (Stinger: 20-40 Isochronate, %45 …) henüz yok.",
+ "_etkinlik_turleri": "etk_* türleri tools/etkinlik_uzaylilari.py ile (harita etkinlikleri, Aşama 7).",
+ "_etkinlik_kutulari": "etk_santa_*, etk_hitac_* tools/etkinlik_kutulari.py ile."
+}

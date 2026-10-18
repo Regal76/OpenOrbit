@@ -1,0 +1,86 @@
+"""Panelin canlı durum sayfası (yol haritası Ö2): oyun sunucusu birkaç saniyede bir oyunun anlık durumunu bir JSON dosyasına
+(<günlük klasörü>/canli_durum.json) yazar; panel (server/panel/panel.py, /api/canli) okuyup gösterir. Sunucuya ayrı bir kanal açılmaz;
+dosya geçici adla yazılıp yerine konduğu için panel yarım dosya okumaz.
+
+İçerik: bağlantı, pilot (seviye, EP, kredi, uridyum, onur), gemi (can, kalkan, kargo), konum (harita, x, y), harita
+(canlı uzaylı, kutu ve cevher sayısı, hedef, savaşta mı, güvenli bölgede mi: istasyon ya da portal, kapı/dalga, döngü adımının
+süresi), takvimde süren etkinlikler, oynama süresi.
+"""
+import json, os, threading, time
+
+ARALIK_SN = 2.0
+
+
+def _world_info(w):
+    now = time.time()
+    alive = [n for n in list(w.npcs.values()) if n.alive]
+    t = w.npcs.get(w.target) if w.target else None
+    out = {'uzayli': len(alive), 'kutu': len(w.boxes), 'cevher': len(getattr(w, 'ores', {})),
+           'hedef': (t.d.get('ad') if t and t.alive else None), 'savasta': bool(now - getattr(w, 'last_combat', 0) < 10),
+           'olu': bool(w.hero_dead), 'guvenli': bool(w.in_station())}
+    perf = getattr(w, 'perf', None)
+    if perf:
+        out['dongu'] = perf.ozet()               # döngü adımının süresi (ms; dunya.Olcum)
+    kosu = getattr(w, 'kapi', None)
+    g = getattr(kosu, 'g', None) if kosu else None
+    if g:
+        try:
+            wave = kosu.wave()
+            out['kapi'] = {'ad': g.get('ad'), 'dalga': wave.get('ad') if isinstance(wave, dict) else wave, 'evre': kosu.phase}
+        except Exception:
+            out['kapi'] = {'ad': g.get('ad')}
+    return out
+
+
+def snapshot(game):
+    """game: game.py modülü (PROFIL, CURRENT) -> durum sözlüğü."""
+    import harita as H
+    import takvim as TK
+    p = game.PROFIL
+    pl, g, k = p.d['pilot'], p.d['gemi'], p.d['konum']
+    s = game.CURRENT
+    w = s.world if s else None
+    ship = p.d.get('gemiler', {}).get(str(p.d.get('aktif_gemi')), {})
+    played = p.d.get('oynama_sn', 0) + (time.time() - s.play_start if s and getattr(s, 'play_start', None) else 0)
+    d = {'zaman': time.time(), 'bagli': s is not None,
+         'pilot': {'ad': pl.get('userName'), 'seviye': pl.get('level', 1), 'ep': pl.get('ep', 0), 'kredi': pl.get('credits', 0),
+                   'uridyum': pl.get('uridium', 0), 'onur': pl.get('honourPoints', 0), 'firma': pl.get('factionId')},
+         'gemi': {'ad': ship.get('lootId'), 'can': int(g.get('hitPoints', 0)), 'can_azami': g.get('hitMax', 0),
+                  'kalkan': int(g.get('shield', 0)), 'kalkan_azami': g.get('shieldMax', 0), 'kargo': p.cargo_used(),
+                  'kargo_azami': g.get('cargoSpaceMax', 0)},
+         'konum': {'harita': H.name(k.get('mapId')), 'harita_id': k.get('mapId'), 'x': int(k.get('x', 0)), 'y': int(k.get('y', 0))},
+         'etkinlikler': sorted(TK.active()), 'oynama_sn': int(played)}
+    if w:
+        try:
+            x, y = w.hero_pos()
+            d['konum'].update(x=int(x), y=int(y))
+            d['dunya'] = _world_info(w)
+        except Exception as e:                   # harita değişirken dünya yarım olabilir
+            d['dunya'] = {'hata': repr(e)}
+    return d
+
+
+def write(path, data):
+    tmp = path + '.tmp'
+    with open(tmp, 'w', encoding='utf8') as fh:
+        json.dump(data, fh, ensure_ascii=False)
+    os.replace(tmp, path)
+
+
+def start(game, folder, log=print):
+    path = os.path.join(folder, 'canli_durum.json')
+
+    def loop():
+        warned = False
+        while True:
+            try:
+                write(path, snapshot(game))
+                warned = False
+            except Exception as e:
+                if not warned:
+                    log('   canlı durum yazılamadı: %r' % e)
+                    warned = True
+            time.sleep(ARALIK_SN)
+
+    threading.Thread(target=loop, daemon=True).start()
+    return path

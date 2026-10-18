@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<battlePass>
+    <!-- objective Panel -->
+    <objectiveList>
+
+        <!-- Squash -->
+        <objective questId="500363">
+            <questReward lootid="ammunition_laser_sbl-100" amount="1000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+
+        <!-- Pumpkin Spice -->
+        <objective questId="500366">
+            <questReward lootid="ammunition_laser_sbl-100" amount="1000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+
+        <!-- Shake Up -->
+        <objective questId="500369">
+            <questReward lootid="tech_anti-mine-transmitter" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+
+        <!-- Shocking -->
+        <objective questId="500373">
+            <questReward lootid="ammunition_specialammo_emote_alien-horror" amount="20"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+
+        <!-- Something's Brewing -->
+        <objective questId="500376">
+            <questReward lootid="ammunition_specialammo_ghostifier" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+
+        <!-- Living Daylights -->
+        <objective questId="500379">
+            <questReward packageid="package_battlepass_questReward-500379" packageItemIds="ammunition_laser_sbl-100,ammunition_specialammo_spray_strong" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500379"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+
+        <!-- Ghost Hunt -->
+        <objective questId="500695">
+            <questReward lootid="tech_shield-backup2" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+
+        <!-- Carve It Out -->
+        <objective questId="500364">
+            <questReward packageid="package_battlepass_questReward-500364" packageItemIds="ammunition_laser_ucb-100,ammunition_specialammo_spray_hand" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500364"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+
+        <!-- Carnival -->
+        <objective questId="500367">
+            <questReward packageid="package_battlepass_questReward-500367" packageItemIds="resource_extra-energy,ammunition_specialammo_emote_pumpkin-smile" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500367"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+
+        <!-- Terrorize -->
+        <objective questId="500370">
+            <questReward packageid="package_battlepass_questReward-500370" packageItemIds="ammunition_laser_spacecup_group-a,ammunition_specialammo_spray_watchingyou" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500370"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+
+        <!-- Night Terrors -->
+        <objective questId="500374">
+            <questReward packageid="package_battlepass_questReward-500374" packageItemIds="booster_dmg-dlb,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500374"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+
+        <!-- Boiling Cauldron -->
+        <objective questId="500377">
+            <questReward packageid="package_battlepass_questReward-500377" packageItemIds="ammunition_laser_sbl-100,ammunition_specialammo_wiz-x" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500377"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+
+        <!-- Sacrificial Rite -->
+        <objective questId="500380">
+            <questReward lootid="resource_booty-key" amount="15"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+
+        <!-- Paranormal Busting -->
+        <objective questId="500696">
+            <questReward lootid="resource_collectable_polychromium" amount="300"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+
+        <!-- Hot Soup -->
+        <objective questId="500365">
+            <questReward packageid="package_battlepass_questReward-500365" packageItemIds="ammunition_laser_rsb-75,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500365"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+
+        <!-- Mass Harvest -->
+        <objective questId="500368">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+
+        <!-- Concoction -->
+        <objective questId="500371">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="35"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+
+        <!-- Constant Shivers -->
+        <objective questId="500375">
+            <questReward lootid="equipment_shipupgrade_hp-dim01" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+
+        <!-- Pick your Poison -->
+        <objective questId="500378">
+            <questReward lootid="tech_anti-mine-transmitter" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+
+        <!-- Monstrous Abomination -->
+        <objective questId="500381">
+            <questReward lootid="tech_anti-mine-transmitter" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+
+        <!-- Supernatural Slayer -->
+        <objective questId="500697">
+            <questReward lootid="equipment_shipupgrade_dmg-xh01" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+
+        <!-- Petrify -->
+        <objective questId="500372">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="100"/>
+            <bpReward lootid="resource_battle-pass-key" amount="10"/>
+        </objective>
+
+        <!-- Bane of Spectres -->
+        <objective questId="500698">
+            <questReward lootid="equipment_shipupgrade_hp-xh01" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="10"/>
+        </objective>
+
+        <!-- Trick or Treat -->
+        <objective questId="500382">
+            <questReward lootid="resource_collectable_golden-candy-corn" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="20"/>
+        </objective>
+
+        <!-- Terrible Terrors -->
+        <objective questId="500383">
+            <questReward packageid="package_battlepass_questReward-500383" packageItemIds="tech_npc-nuke,tech_battle-repair-bot2" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500383"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+
+        <!-- Fright Night -->
+        <objective questId="500384">
+            <questReward packageid="package_battlepass_questReward-500384" packageItemIds="tech_burning-trail,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500384"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+
+        <!-- Ghastly Ghouls -->
+        <objective questId="500699">
+            <questReward lootid="equipment_shipupgrade_hp-xt10" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+
+        <!-- Monstrous Mischief -->
+        <objective questId="500700">
+            <questReward lootid="resource_collectable_golden-candy-corn" amount="20"/>
+            <bpReward lootid="resource_battle-pass-key" amount="20"/>
+        </objective>
+
+    </objectiveList>
+
+    <flvDisplayLootId>resource_battle-pass-key</flvDisplayLootId>
+
+    <titleKeyBeforePurchase>window_objectives_bp_title</titleKeyBeforePurchase>
+    <descriptionKeyBeforePurchase>window_objectives_bp_promo_desc-halloweenoct2025</descriptionKeyBeforePurchase>
+
+    <descriptionKeyCollect>window_objectives_bp_collect_desc</descriptionKeyCollect>
+
+    <titleKeyAfterPurchase>window_objectives_bp_highlight_title-halloweenoct2025</titleKeyAfterPurchase>
+    <descriptionKeyAfterPurchase>window_objectives_bp_highlight_desc-halloweenoct2025</descriptionKeyAfterPurchase>
+</battlePass>

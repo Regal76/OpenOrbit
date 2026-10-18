@@ -1,0 +1,964 @@
+"""Savaş eşyaları ve etkin CPU'lar: mayınlar, Smart Bomb, Insta-Shield, EMP-01, atlama/gizlenme/nişan CPU'ları, otomatik roket ve
+fırlatıcı CPU'ları, roket fırlatıcısı, özel roketler. Veri esyalar.json "savas_esyalari", "roketler" ve "ekstralar" (araştırma:
+istemcinin kodu, belgeler/wiki/rockets.md, belgeler/wiki/extras_cpu_tech.md). Dünya başına bir Esyalar (dunya.items); kısayol çubuğu
+dunya.menu_action'dan, roket AttackRocketRequest'ten gelir.
+
+İstemci (1.1.114) ikili MapEvent* ve JumpCPU* komutlarını işlemez; etkiler eski metin protokolüyle gösterilir:
+  AddMineCommand / RemoveMineCommand        mayın koyma / sessiz kaldırma (ömür bitince)
+  0|n|MIN|hash                              mayın patlar ve haritadan kalkar
+  0|n|SMB|uid  0|n|ISH|uid  0|n|EMP|uid     Smart Bomb, Insta-Shield, EMP görseli
+  0|n|INV|uid|1 ya da 0                     gizlenme
+  0|A|JCPU|S|sn|harita                      CPU atlamasının geri sayımı (-1|0 iptal); sonra portal atlamasındaki harita değişimi
+  0|A|JCPU|I|…  0|A|JCPU|C|…  0|A|JV|n      gelişmiş atlama (AJP-01): harita listesi, seçim yanıtı, kupon sayısı
+  0|RL|S|tür|roket|dolu                     fırlatıcı doldukça (ses); HellstormAttackCommand: fırlatıcı atışı
+  0|v|saldıran|hedef|H|roket|0|0            roket (roket = görsel kimliği)
+  0|n|fx|start ya da end|ICY_CUBE|uid       donma, SABOTEUR_DEBUFF yavaşlama görseli
+Beklemeler MenuItemCooldownGroupTimerCommand ile (grup: istemcinin CooldownType'ı); bitişler profilde (harita değişince de sürer).
+"""
+import json, math, os, random, time
+
+import ekstra as EK
+import harita as H
+import ayar as AY
+from eski_protokol import legacy
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+_E = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
+_N = json.load(open(os.path.join(HERE, 'data', 'npc.json'), encoding='utf8'))
+S = _E['savas_esyalari']
+O6 = json.load(open(os.path.join(HERE, 'data', 'esyalar_o6.json'), encoding='utf8'))       # Ö6: ifadeler (tools/esyalar_o6.py)
+EMOTE_PREFIX = 'ammunition_specialammo_emote_'
+ROCKETS = _E['roketler']
+MINES = S['mayinlar']
+LAUNCHERS = S['fircatici']['turler']
+LAUNCHER_AMMO = S['fircatici_cephane']
+TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
+TOGGLE_DEFAULT = {'nisan': False}             # Xenomit harcar: kendiliğinden açılmaz; ötekiler takılınca açık
+XENOMIT = 3
+TIMERS = 'bekleme_gruplari'                   # profilde: {grup: [bitiş, azami ms]}
+ROCKET_FLIGHT = _N['savas']['roket_ucus_sn']
+ATTACK_MINE = 2                               # istemcinin AttackType'ı: MINE
+
+
+def mod(name, **f):
+    f['_'] = name
+    return f
+
+
+def attack_type(v):
+    return mod('AttackTypeModule', attackTypeValue=v)
+
+
+def stm(key):
+    return legacy('0|A|STM|%s' % key)
+
+
+# ------------------------------------------------------------ eşya sınıfları
+def ammo_kind(loot):
+    """Seçilen cephanenin türü: lazer, roket (özel roketler dahil), fircatici ya da None (tek atımlık eşyalar)."""
+    if loot.startswith('ammunition_laser_'):
+        return 'lazer'
+    if loot.startswith('ammunition_rocketlauncher_'):
+        return 'fircatici'
+    if loot.startswith('ammunition_rocket_') or loot in ROCKETS:
+        return 'roket'
+    if loot.startswith('ammunition_slug_'):
+        return 'slug'                                   # parçacık topu (parcacik.py)
+    if loot.startswith('ammunition_spool_'):
+        return 'gsp'                                    # Singularity Drive (parcacik.py)
+    return None
+
+
+def special(rocket):
+    return bool(ROCKETS.get(rocket, {}).get('ozel'))
+
+
+def item_cooldown(loot):
+    """Kısayol öğesinin bekleme grubu ve süresi (sn, çarpanlardan önce) ya da None."""
+    if loot.startswith(EMOTE_PREFIX):
+        return O6['ifadeler']['bekleme_grubu'], O6['ifadeler']['bekleme_sn']
+    if loot in MINES:
+        m = MINES[loot]
+        return m.get('bekleme_grubu', S['mayin']['bekleme_grubu']), m.get('bekleme_sn', S['mayin']['bekleme_sn'])
+    for key in ('akilli_bomba', 'aninda_kalkan', 'emp'):
+        if loot == S[key]['menu']:
+            return S[key]['bekleme_grubu'], S[key]['bekleme_sn']
+    r = ROCKETS.get(loot, {})
+    if r.get('ozel'):
+        return r['bekleme_grubu'], r['bekleme_sn']
+    return None
+
+
+def mine_based(loot):
+    """Mayın ve mayından yapılanlar: Turbo Mine CPU'su (MIN-T01/02) beklemeyi kısaltır."""
+    return loot in MINES or loot in (S['akilli_bomba']['menu'], S['aninda_kalkan']['menu'])
+
+
+def timer_msg(group, ms, cooling=True):
+    return ('MenuItemCooldownGroupTimerCommand', dict(timerState=mod('TimerStateModule', timerStateValue=2 if cooling else 0),
+                                                      cooldownType=mod('CooldownTypeModule', typeValue=group), maxTime=ms,
+                                                      time=ms if cooling else 0))
+
+
+def ready_at(p, group):
+    return (p.d.get(TIMERS, {}).get(str(group)) or [0, 0])[0]
+
+
+def timer_fields(p, loot, now=None):
+    """Girişte ve harita değişiminde kısayol öğesinin süren beklemesi (profil.patch_template) ya da None."""
+    c = item_cooldown(loot)
+    if not c:
+        return None
+    now = now or time.time()
+    until, mx = p.d.get(TIMERS, {}).get(str(c[0])) or [0, 0]
+    if until <= now:
+        return None
+    return dict(activatable=False, timerState=2, maxTime=mx, time=int((until - now) * 1000))
+
+
+# ------------------------------------------------------------ takılı CPU'lar
+def _first(p, key):
+    return next((l for l, v in EK.props(p, key)), None)
+
+
+def jump_loot(p):
+    return next((l for l, v in EK.props(p, 'atlama') if 'hak' in EK.X[l]), None)
+
+
+def has_ajp(p):
+    return EK.has(p, 'gelismis_atlama')
+
+
+def cloak_loot(p):
+    return _first(p, 'gizlenme')
+
+
+def toggled(p, item):
+    key = TOGGLES.get(item)
+    if not key or not EK.has(p, key):
+        return False
+    return p.d.get('cpu_acik', {}).get(item, TOGGLE_DEFAULT.get(key, True))
+
+
+def home_map(p):
+    return S['atlama_cpu']['ana_harita'].get(str(p.d['pilot'].get('factionId')), 1)
+
+
+def jump_allowed(loot, map_id):
+    """CPU'nun bu haritadan çalışıp çalışmadığı: JP-01 yalnız X-1..X-4; JP-02 ve AJP-01 5-X, BL ve kapı haritaları dışında.
+    Cubikon Mezarlığı'ndan her atlama CPU'su çıkar (wiki: tek çıkış atlama CPU'su ya da ölüm); LoW'dan çalışmaz."""
+    if int(map_id) == 42:
+        return True
+    if int(map_id) not in H.NAMES or int(map_id) in H.SPECIAL:
+        return False                                  # Galaksi Kapısı haritaları, LoW
+    cfg = EK.X.get(loot, {}).get('atlama', {})
+    if 'haritalar' in cfg:
+        return H.map_class(map_id) in cfg['haritalar']
+    return not any(H.name(map_id).startswith(s) for s in cfg.get('yasak', []))
+
+
+def launchers(p):
+    return [l for l in p.d.get('ekipman', {}).get('rocket', []) if l in LAUNCHERS]
+
+
+def launcher_upgrade(p):
+    """Fırlatıcının yükseltme çarpanı (yukseltme.py; birden çok fırlatıcıda en yükseği)."""
+    import yukseltme as YK
+    eq, lv = p.d.get('ekipman', {}).get('rocket', []), p.d.get('ekipman_seviye', {}).get('rocket', [])
+    return max([YK.factor(l, lv[i] if i < len(lv) else 0, YK.ROCKET) for i, l in enumerate(eq) if l in LAUNCHERS] or [1.0])
+
+
+def capacity(p):
+    return sum(LAUNCHERS[l]['kapasite'] for l in launchers(p))
+
+
+def launcher_type(p):
+    return max((LAUNCHERS[l]['tur'] for l in launchers(p)), default=0)
+
+
+def loaded(p):
+    """Fırlatıcıdaki roketler: [cephane, adet]."""
+    return p.d.get('fircatici_dolu') or [None, 0]
+
+
+def mine_uses(p, cfg):
+    """Smart Bomb / Insta-Shield: eldeki mayın ve Xenomit'le kaç kez."""
+    return min(p.ammo(cfg['mayin']) // cfg['mayin_adet'], p.ore_count(XENOMIT) // cfg['xenomit'])
+
+
+# ------------------------------------------------------------ kısayol çubuğu durumu (profil.menu_status)
+def _line(key, reps=(), ktype=5):
+    return {'_': 'MessageKeyListWildcardModule', 'baseKey': key, 'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': ktype},
+            'textStyle': 0, 'wildCardReplacements': [
+                {'_': 'MessageWildcardReplacementModule', 'wildcard': w, 'replacement': str(r),
+                 'replacementType': {'_': 'ReplacementTypeModule', 'typeValue': t}} for w, r, t in reps]}
+
+
+def _tips(st, lines):
+    for k in ('toolTipSlotBar', 'toolTipItemBar'):
+        st[k] = {'_': 'MessageKeyListWildcardCommand', 'commandList': json.loads(json.dumps(lines))}
+
+
+def _explosive(st, loot, n):
+    _tips(st, [_line('ttip_explosive', [('%TYPE%', loot, 1)]), _line('ttip_count', [('%COUNT%', n, 0)]), _line(loot, ktype=7)])
+
+
+def menu_status(p, menu_id, st):
+    """Bu modülün öğelerinin durumu (st: kayıttaki şablonun kopyası) ya da None (başka öğe)."""
+    start_map = H.map_class(p.d['konum'].get('mapId', 0)) == 'X-1'
+    if menu_id in MINES:
+        n = p.ammo(menu_id)
+        st.update(counterValue=n, visible=st.get('visible') or n > 0, available=n > 0 and not start_map,
+                  activatable=n > 0 and not start_map)
+        if not start_map:                      # kayıt (başlangıç haritası): ttip_inactive_mine_start_map
+            _explosive(st, menu_id, n)
+        return st
+    if menu_id in (S['akilli_bomba']['menu'], S['aninda_kalkan']['menu']):
+        smb = menu_id == S['akilli_bomba']['menu']
+        cfg = S['akilli_bomba' if smb else 'aninda_kalkan']
+        owned = EK.has(p, 'akilli_bomba' if smb else 'aninda_kalkan')
+        n = mine_uses(p, cfg) if owned else 0
+        blocked = smb and start_map             # kayıt: ttip_inactive_smb_start_map
+        st.update(visible=owned, counterValue=n, available=owned and n > 0 and not blocked, activatable=owned and n > 0 and not blocked)
+        if owned and not blocked:
+            _explosive(st, menu_id, n)
+        return st
+    if menu_id == S['atlama_cpu']['menu']:
+        loot = jump_loot(p)
+        if not loot:
+            st.update(visible=False, available=False, activatable=False, counterValue=0)
+            return st
+        n = EK.uses(p, loot)
+        here = p.d['konum'].get('mapId', 0)
+        if here == home_map(p):
+            lines, ok = [_line('ttip_inactive_jump_already_on_map')], False       # kayıt
+        elif not jump_allowed(loot, here):
+            lines, ok = [_line('ttip_inactive_jump_map_range_exceeded')], False
+        else:
+            lines = [_line('ttip_jump_cpu', [('%TYPE%', loot, 1)]), _line('ttip_cpu_jump_count', [('%COUNT%', n, 0)]),
+                     _line('ttip_cpu_jump_desc')]
+            ok = n > 0
+        _tips(st, lines)
+        st.update(visible=True, available=True, activatable=ok, counterValue=n, iconLootId=loot)
+        return st
+    if menu_id == S['gelismis_atlama']['menu']:
+        owned = has_ajp(p)
+        st.update(visible=owned, available=owned, activatable=owned)
+        if owned:
+            for tip in ('toolTipSlotBar', 'toolTipItemBar'):
+                lines = (st.get(tip) or {}).get('commandList')
+                if lines:
+                    lines[:] = [l for l in lines if l.get('baseKey') != 'ttip_cpu_not_equipped']
+        return st
+    if menu_id == S['gizlenme_cpu']['menu']:
+        loot = cloak_loot(p)
+        if not loot:
+            st.update(visible=False, available=False, activatable=False, selected=False, counterValue=0)
+            return st
+        n = EK.uses(p, loot)
+        on = bool(p.d.get('cpu_gizli'))
+        _tips(st, [_line('ttip_cloak_cpu', [('%TYPE%', loot, 1)]), _line('ttip_cpu_cloak_count', [('%COUNT%', n, 0)])])
+        st.update(visible=True, available=True, activatable=n > 0 and not on, selected=on, counterValue=n, iconLootId=loot)
+        return st
+    if menu_id in TOGGLES:
+        key = TOGGLES[menu_id]
+        loot = _first(p, key)
+        st.update(visible=bool(loot), available=bool(loot), activatable=bool(loot), selected=toggled(p, menu_id))
+        if loot:
+            if menu_id == S['nisan_cpu']['menu']:
+                _tips(st, [_line('ttip_aim_cpu_category'), _line(loot, ktype=7)])
+                st['iconLootId'] = loot
+            for tip in ('toolTipSlotBar', 'toolTipItemBar'):
+                lines = (st.get(tip) or {}).get('commandList')
+                if lines:
+                    lines[:] = [l for l in lines if l.get('baseKey') != 'ttip_cpu_not_equipped']
+        return st
+    if menu_id == S['fircatici']['menu']:
+        lns = launchers(p)
+        if not lns:
+            return st                           # kayıttaki "fırlatıcı yok" durumu
+        ammo, n = loaded(p)
+        cap = capacity(p)
+        sel = p.d.get('secili', {}).get('fircatici')
+        if n:
+            _tips(st, [_line('ttip_rocketlauncher', [('%TYPE%', lns[0], 1)]),
+                       _line('ttip_rocketlauncher_loadcount', [('%COUNT%', n, 0), ('%TYPE%', ammo, 1)])])
+        else:
+            _tips(st, [_line('ttip_rocketlauncher', [('%TYPE%', lns[0], 1)]), _line('ttip_rocketlauncher_unloaded')])
+        st.update(visible=True, available=n > 0, activatable=n > 0, counterValue=n, maxCounterValue=cap, iconLootId=lns[0],
+                  selected=False)
+        if sel is None:
+            st['available'] = st['activatable'] = False
+        return st
+    return None
+
+
+# ------------------------------------------------------------ gelişmiş atlama (AJP-01) listesi
+def jcpu_list(p):
+    """0|A|JCPU|I|anahtar|harita;…;|… : -1 seviye yetmiyor, -2 uridyum yetmiyor, fiyat: seçilebilir (sondaki ; istemci için)."""
+    here = p.d['konum'].get('mapId', 0)
+    lv, fac = p.d['pilot'].get('level', 1), p.d['pilot'].get('factionId')
+    price = 0 if p.resource(S['gelismis_atlama']['kupon']) else S['gelismis_atlama']['fiyat']
+    groups = {-1: [], -2: [], price: []}
+    for m in sorted(H.NAMES):
+        if m == here or m in H.SPECIAL or any(H.name(m).startswith(s) for s in ('5-', 'BL-')):
+            continue
+        if lv < H.level_required(m, fac):
+            groups[-1].append(m)
+        elif price and p.d['pilot'].get('uridium', 0) < price:
+            groups[-2].append(m)
+        else:
+            groups[price].append(m)
+    parts = ['0', 'A', 'JCPU', 'I']
+    for k, maps in groups.items():
+        if maps:
+            parts += [str(k), ''.join('%d;' % m for m in maps)]
+    return legacy('|'.join(parts))
+
+
+def vouchers_msg(p):
+    return legacy('0|A|JV|%d' % p.resource(S['gelismis_atlama']['kupon']))
+
+
+# ------------------------------------------------------------ dünyadaki eşyalar
+class Esyalar:
+    def __init__(self, world):
+        self.w, self.p = world, world.p
+        self.mines = {}            # hash -> {loot, x, y, sahip, kurulma, bitis}
+        self.seq = 0
+        self.jump = None           # CPU atlaması: {hedef, zaman, cpu, basla}
+        self.ajp_target = None     # gelişmiş atlamada seçilen harita
+        self.next_load = 0.0       # fırlatıcının bir sonraki dolumu
+        self.next_lure = 0.0
+        self.waiting = {}          # grup -> bitiş: bitince READY bildirimi
+        self.next_dep = 0.0        # Smart Bomb / Insta-Shield sayacının denetimi (dependent_tick)
+        self.born = time.time()    # bu harita yüklemesi (giriş, atlama, portal): atlama CPU'su 10 sn sonra (jump_cpu_failed_time)
+        now = time.time()
+        for g, (until, mx) in self.p.d.get(TIMERS, {}).items():
+            if until > now:
+                self.waiting[int(g)] = until
+
+    # ------------------------------------------------------------ yardımcılar
+    def send(self, msgs):
+        if msgs:
+            self.w.send(msgs)
+
+    def log(self, s):
+        self.w.log(s)
+
+    def status(self, *loots):
+        out = [st for st in (self.p.menu_status(l) for l in loots) if st]
+        for st in out:
+            self.p.menu_mark(st)
+        return [('MenuItemStatusCommand', st) for st in out]
+
+    def dependent_tick(self, now):
+        """Smart Bomb ve Insta-Shield'in sayacı ACM-01 ve Xenomit'e bağlı: bunlar her yerden değişebilir (mağaza, toplama,
+        satış, takma/çıkarma). Durum değişince istemciye bildirilir (canlı test H20: mayın alınca sayaç 0'da kalıyordu)."""
+        if now < self.next_dep:
+            return
+        self.next_dep = now + 1.0
+        self.send(self.p.menu_changes([S['akilli_bomba']['menu'], S['aninda_kalkan']['menu']]))
+
+    def start_map(self):
+        return H.map_class(self.w.map_id) == 'X-1'
+
+    def ready(self, group, now):
+        return now >= ready_at(self.p, group)
+
+    def cooldown(self, loot, now):
+        """Öğenin bekleme grubunu başlat -> zamanlayıcı mesajı. Turbo Mine CPU'su ve formasyon/tasarım çarpanları burada."""
+        group, sec = item_cooldown(loot)
+        if mine_based(loot):
+            sec *= EK.mine_factor(self.p) * max(0.0, 1 + self.p.mods().get('mayin_bekleme', 0))
+        sec *= AY.carpan('yetenek_bekleme')                            # panel: yetenek ve eşya beklemeleri
+        ms = int(sec * 1000)
+        with self.p.lock:
+            self.p.d.setdefault(TIMERS, {})[str(group)] = [now + sec, ms]
+            self.p.dirty = True
+        self.waiting[group] = now + sec
+        return timer_msg(group, ms)
+
+    def ore_msgs(self):
+        msgs = [('AttributeOreCountUpdateCommand', {'oreCountList': self.p.d['madenler']})]
+        if self.w.ore_pack:
+            msgs.append(self.w.ore_pack([XENOMIT]))
+        return msgs
+
+    def pay_mines(self, cfg):
+        """Smart Bomb / Insta-Shield bedeli: 10 ACM-01 + 100 Xenomit -> mesajlar ya da None (yetmiyor)."""
+        p = self.p
+        if mine_uses(p, cfg) < 1:
+            return None
+        p.use_ammo(cfg['mayin'], cfg['mayin_adet'])
+        p.remove_ores({XENOMIT: cfg['xenomit']})
+        return self.w.ammo_msgs(cfg['mayin']) + self.ore_msgs()
+
+    def tick(self, now):
+        for g, until in list(self.waiting.items()):
+            if now >= until:
+                del self.waiting[g]
+                mx = (self.p.d.get(TIMERS, {}).get(str(g)) or [0, 0])[1]
+                self.send([timer_msg(g, mx, cooling=False)])
+        self.mine_tick(now)
+        self.dependent_tick(now)
+        self.lure_tick(now)
+        self.jump_tick(now)
+        self.launcher_tick(now)
+
+    # ------------------------------------------------------------ kısayol çubuğu (dunya.menu_action)
+    def menu(self, item, now=None):
+        """Tek atımlık ve aç-kapa öğeleri -> True: bu modülün öğesi (aç-kapa öğelerinde istemci actionType 0 gönderir)."""
+        now = now or time.time()
+        if item in MINES:
+            self.place_mine(item, now)
+        elif item == S['akilli_bomba']['menu']:
+            self.smart_bomb(now)
+        elif item == S['aninda_kalkan']['menu']:
+            self.insta_shield(now)
+        elif item == S['emp']['menu']:
+            self.emp(now)
+        elif item == S['atlama_cpu']['menu']:
+            self.jump_cpu(now)
+        elif item == S['gelismis_atlama']['menu']:
+            self.log('   AJP-01: hedef uzay haritasından seçilir')
+        elif item == S['gizlenme_cpu']['menu']:
+            self.cloak(now)
+        elif item in TOGGLES:
+            self.toggle(item)
+        elif item == S['fircatici']['menu']:
+            self.launcher_fire(now)
+        else:
+            return False
+        return True
+
+    def toggle(self, item):
+        if not EK.has(self.p, TOGGLES[item]):
+            return
+        on = not toggled(self.p, item)
+        with self.p.lock:
+            self.p.d.setdefault('cpu_acik', {})[item] = on
+            self.p.dirty = True
+        self.send(self.status(item))
+        self.log('   %s %s' % (item, 'açık' if on else 'kapalı'))
+
+    # ------------------------------------------------------------ mayınlar
+    def place_mine(self, loot, now):
+        w, p, M = self.w, self.p, S['mayin']
+        cfg = MINES[loot]
+        group = item_cooldown(loot)[0]
+        if w.hero_dead or w.jumping or self.start_map() or p.ammo(loot) <= 0 or not self.ready(group, now):
+            self.log('   mayın konmadı: %s' % loot)
+            return
+        x, y = w.hero_pos(now)
+        if w.in_peace(x, y):
+            self.log('   mayın konmadı: güvenli bölge')
+            return
+        if any(math.hypot(m['x'] - x, m['y'] - y) < M['istif'] for m in self.mines.values()):
+            self.send([stm('msg_no_mine_stacking')])
+            return
+        if len(self.mines) >= M['harita_siniri']:
+            self.send([stm('msg_map_too_many_mine')])
+            return
+        p.use_ammo(loot, 1)
+        self.seq += 1
+        h = 'M%d_%d' % (w.hid, self.seq)
+        self.mines[h] = dict(loot=loot, x=x, y=y, sahip=w.hid, kurulma=now + M['kurulma_sn'],
+                             bitis=now + cfg.get('omur_sn', M['omur_sn']))
+        p.ach('shot', silah='MINE')
+        self.send(w.ammo_msgs(loot) + [('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=cfg['tip'], maxSkill1=False,
+                                                               maxSkill5b=False)),
+                                       self.cooldown(loot, now)])
+        self.log('   mayın: %s (%d, %d)' % (loot, x, y))
+
+    def alien_mine(self, loot, x, y, owner, now):
+        """Uzaylının mayını (Curcubitor'un Trick'i, Agatus): oyuncu yakınındaysa kurulunca patlar (mine_tick)."""
+        M = S['mayin']
+        self.seq += 1
+        h = 'U%d_%d' % (owner, self.seq)
+        self.mines[h] = dict(loot=loot, x=x, y=y, sahip=owner, kurulma=now + M['kurulma_sn'], bitis=now + M['omur_sn'])
+        self.send([('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=MINES[loot]['tip'], maxSkill1=False, maxSkill5b=False))])
+
+    def mine_tick(self, now):
+        if not self.mines:
+            return
+        w, M = self.w, S['mayin']
+        hx, hy = w.hero_pos(now)
+        for h, m in list(self.mines.items()):
+            if h not in self.mines:
+                continue
+            if now >= m['bitis']:
+                del self.mines[h]
+                self.send([('RemoveMineCommand', {'hash': h})])
+                continue
+            if now < m['kurulma'] or 'yem' in MINES[m['loot']]:
+                continue
+            if m['sahip'] == w.hid:          # kendi mayını uzaylılarca tetiklenir
+                hit = any(math.hypot(*(a - b for a, b in zip(n.mover.pos(now), (m['x'], m['y'])))) <= M['tetik']
+                          for n in w.npcs.values() if n.alive)
+            else:                            # uzaylı mayını (Aşama 4: Agatus, Iceterion) oyuncuyla
+                hit = (not w.hero_dead and math.hypot(hx - m['x'], hy - m['y']) <= M['tetik']
+                       and not w.tech.mine_protected(now))                         # Anti-Mine Transmitter
+            if hit:
+                self.explode(h, now)
+
+    def explode(self, h, now):
+        m = self.mines.pop(h)
+        self.send([legacy('0|n|MIN|%s' % h)])
+        self.log('   mayın patladı: %s' % m['loot'])
+        self.blast(m['x'], m['y'], S['mayin']['patlama'], MINES[m['loot']], m['sahip'], now, m['loot'],
+                   self_hit=S['mayin'].get('kendine_hasar', False))
+
+    def blast(self, x, y, radius, cfg, owner, now, source, self_hit=False):
+        """Patlama: yarıçaptaki uzaylılara (sahibi oyuncuysa) ve oyuncuya (uzaylının mayınıysa ya da self_hit) mayın etkisi."""
+        w = self.w
+        m = self.p.mods()
+        f = max(0.0, 1 + m.get('mayin', 0)) if owner == w.hid else 1.0      # Lance +%50, Turtle -%7,5, Detonation I/II
+        if owner == w.hid:
+            radius *= 1 + m.get('mayin_yaricap', 0)                         # Explosives
+            for n in list(w.npcs.values()):
+                nx, ny = n.mover.pos(now)
+                if n.alive and math.hypot(nx - x, ny - y) <= radius:
+                    self.mine_npc(n, cfg, f, now, source)
+        if owner != w.hid or self_hit:
+            hx, hy = w.hero_pos(now)
+            if math.hypot(hx - x, hy - y) <= radius:
+                self.mine_hero(cfg, f, owner, now, source)
+
+    def mine_npc(self, n, cfg, f, now, source):
+        w = self.w
+        sh, hp = n.d['kalkan'] * cfg.get('kalkan', 0) * f, n.d['hp'] * cfg.get('can', 0) * f
+        if sh or hp:
+            w.hit_npc(n.id, 0, ATTACK_MINE, split=(int(sh), int(hp)))
+        if not n.alive:
+            return
+        if 'yavas' in cfg:
+            w.npc_effect(n, 'yavas', cfg['yavas'][1], cfg['yavas'][0], source=source)
+        enf = cfg.get('enfeksiyon')
+        if enf:
+            w.npc_effect(n, 'yavas', enf['sn'], enf['yavas'], source=source)
+            w.npc_effect(n, 'hasar_bonus', enf['sn'], enf['hasar_bonus'], source=source)
+        if not sh and not hp and not n.engaged and ('yavas' in cfg or enf):
+            n.engaged = True                   # yavaşlatılan uzaylı saldırgana döner
+
+    def mine_hero(self, cfg, f, owner, now, source):
+        w, p = self.w, self.p
+        g = p.d['gemi']
+        if w.hero_dead:
+            return
+        k = AY.carpan('npc_hasar') if owner != w.hid else 1.0       # panelin hasar çarpanı: uzaylının mayını
+        sh = min(g.get('shield', 0), g.get('shieldMax', 0) * cfg.get('kalkan', 0) * f * k)
+        hp = g.get('hitMax', 0) * cfg.get('can', 0) * f * k
+        if w.hero_etki.invulnerable(now) or w.invulnerable:
+            sh = hp = 0
+        if cfg.get('emp'):                     # EMPM-01: "patlayınca %100 gizlenme kaldırır" (eşya açıklaması); uzaylılar gizlenmez
+            w.abilities.reveal()
+            self.reveal('msg_uncloaked')
+        if owner != w.hid and 'yavas' in cfg:
+            w.hero_effect('yavas', cfg['yavas'][1], cfg['yavas'][0], source=source)
+        if not sh and not hp:
+            return
+        w.last_combat = w.last_hurt = now
+        w.stop_repair()
+        new = g.get('hitPoints', 0) - hp
+        if owner != w.hid:
+            new = max(new, w.tech.hp_floor(now))                  # Anti-AI Emergency Reserves (uzaylı hasarı)
+        p.set_hull(hp=max(0, new), shield=g.get('shield', 0) - sh)
+        msgs = [('AttackHitCommand', dict(attackType=attack_type(ATTACK_MINE), attackerId=owner, victimId=w.hid,
+                                          victimHitpoints=int(g['hitPoints']), victimShield=int(g.get('shield', 0)),
+                                          victimNanoHull=int(g.get('nanoHull', 0)), damage=int(sh + hp), skilled=False, strike=False,
+                                          cannonType=0))]
+        self.log('   mayın oyuncuyu vurdu: %d' % (sh + hp))
+        if g['hitPoints'] <= 0:
+            w.hero_death(msgs, w.npcs.get(owner), note='killed_by_mine')
+        self.send(msgs)
+
+    def lure_tick(self, now):
+        """AGL-M01: Agatus ve Spinel'ler yeme gelir (saldırıda değilken)."""
+        if now < self.next_lure:
+            return
+        self.next_lure = now + 2.0
+        baits = [m for m in self.mines.values() if 'yem' in MINES[m['loot']]]
+        if not baits:
+            return
+        w = self.w
+        for n in w.npcs.values():
+            if not n.alive or n.engaged or n.d['hiz'] <= 0:
+                continue
+            names = [b for b in baits if any(k in n.d['ad'] for k in MINES[b['loot']]['yem'])]
+            if not names:
+                continue
+            nx, ny = n.mover.pos(now)
+            b = min(names, key=lambda b: math.hypot(b['x'] - nx, b['y'] - ny))
+            if math.hypot(b['x'] - nx, b['y'] - ny) < 100:
+                continue
+            ms = n.mover.go(b['x'], b['y'], n.d['hiz'] * n.etki.speed_factor(now), now)
+            n.next_think = now + ms / 1000.0
+            if n.id in w.visible:
+                self.send([('MoveCommand', dict(userId=n.id, x=int(b['x']), y=int(b['y']), timeToTarget=ms))])
+
+    # ------------------------------------------------------------ Smart Bomb, Insta-Shield, EMP
+    def smart_bomb(self, now):
+        w, c = self.w, S['akilli_bomba']
+        if (not EK.has(self.p, 'akilli_bomba') or self.start_map() or w.hero_dead or w.jumping
+                or not self.ready(c['bekleme_grubu'], now)):
+            return
+        paid = self.pay_mines(c)
+        if paid is None:
+            self.log('   Smart Bomb: mayın ya da Xenomit yetmiyor')
+            return
+        x, y = w.hero_pos(now)
+        self.send([legacy('0|n|SMB|%d' % w.hid)])
+        self.blast(x, y, c['yaricap'], c, w.hid, now, c['menu'], self_hit=False)      # kendi gemisine zarar vermez (wiki)
+        self.send(paid + [self.cooldown(c['menu'], now)] + self.status(c['menu'], S['aninda_kalkan']['menu']))
+        self.p.ach('shot', silah='MINE')
+        self.log('   Smart Bomb patladı')
+
+    def insta_shield(self, now):
+        w, c = self.w, S['aninda_kalkan']
+        if not EK.has(self.p, 'aninda_kalkan') or w.hero_dead or not self.ready(c['bekleme_grubu'], now):
+            return
+        paid = self.pay_mines(c)
+        if paid is None:
+            self.log('   Insta-Shield: mayın ya da Xenomit yetmiyor')
+            return
+        w.hero_effect('dokunulmaz', c['sure_sn'], source=c['menu'])
+        self.send([legacy('0|n|ISH|%d' % w.hid)] + paid + [self.cooldown(c['menu'], now)]
+                  + self.status(c['menu'], S['akilli_bomba']['menu']))
+        self.log('   Insta-Shield: %d sn hasar yok' % c['sure_sn'])
+
+    def emp(self, now):
+        w, p, c = self.w, self.p, S['emp']
+        loot = c['menu']
+        if w.hero_dead or w.jumping or p.ammo(loot) <= 0 or not self.ready(c['bekleme_grubu'], now):
+            return
+        p.use_ammo(loot, 1)
+        hx, hy = w.hero_pos(now)
+        msgs = [legacy('0|n|EMP|%d' % w.hid)]
+        reset = 0
+        for n in w.npcs.values():
+            nx, ny = n.mover.pos(now)
+            if n.alive and n.engaged and math.hypot(nx - hx, ny - hy) <= c['yaricap']:
+                n.engaged = False                                   # hedefi sıfırlanır
+                n.next_shot = max(getattr(n, 'next_shot', 0), now + c['saskinlik_sn'])
+                reset += 1
+        if w.hero_etki.get('yavas') or w.hero_etki.get('hiz_siniri'):
+            w.hero_etki.remove('yavas')                             # EMP yavaşlatmaları kaldırır (aliens.md: Slowdown Orb)
+            w.hero_etki.remove('hiz_siniri')
+            msgs += w.stats_msgs() if w.stats_msgs else []
+        self.send(msgs + w.ammo_msgs(loot) + [self.cooldown(loot, now)])
+        self.log('   EMP: %d uzaylının hedefi sıfırlandı' % reset)
+
+    # ------------------------------------------------------------ gizlenme CPU'su
+    def cloaked(self):
+        return bool(self.p.d.get('cpu_gizli'))
+
+    def cloak(self, now):
+        w, p = self.w, self.p
+        loot = cloak_loot(p)
+        if not loot or self.cloaked() or w.hero_dead:
+            return
+        if EK.uses(p, loot) <= 0:
+            self.send([stm('cloak_cpu_failed_generic')])
+            return
+        left = EK.use(p, loot)
+        with p.lock:
+            p.d['cpu_gizli'] = True
+            p.dirty = True
+        for n in w.npcs.values():
+            if n.engaged:
+                w.disengage(n, now)
+        self.send([legacy('0|n|INV|%d|1' % w.hid)] + self.status(S['gizlenme_cpu']['menu']))
+        self.log('   gizlendi (%s, kalan %d)' % (loot, left))
+
+    def reveal(self, key='lost_invisible_attack'):
+        """Saldırınca gizlenme biter."""
+        if not self.cloaked():
+            return
+        with self.p.lock:
+            self.p.d['cpu_gizli'] = False
+            self.p.dirty = True
+        self.send([legacy('0|n|INV|%d|0' % self.w.hid), stm(key)] + self.status(S['gizlenme_cpu']['menu']))
+        self.log('   gizlenme bitti')
+
+    # ------------------------------------------------------------ nişan CPU'su, otomatik roket ve fırlatıcı
+    def aim(self, chance):
+        """AIM-01/02: ıska oranı -%25/-%50; atış başına 10 Xenomit (yoksa etkisiz)."""
+        p = self.p
+        item = S['nisan_cpu']['menu']
+        r = max((v for l, v in EK.props(p, 'nisan')), default=0)
+        if not r or not toggled(p, item) or p.ore_count(XENOMIT) < S['nisan_cpu']['xenomit']:
+            return chance
+        p.remove_ores({XENOMIT: S['nisan_cpu']['xenomit']})
+        self.send(self.ore_msgs())
+        return 1 - (1 - chance) * (1 - r)
+
+    def auto_weapons(self, n, now):
+        """Lazer saldırısında: AROL-X seçili roketi, RL-LB1 dolu fırlatıcıyı kendiliğinden ateşler."""
+        w = self.w
+        if toggled(self.p, 'equipment_extra_cpu_arol-x'):
+            r = self.p.d['secili'].get('roket')
+            if r and (self.ready(item_cooldown(r)[0], now) if special(r) else now >= w.rocket_ready):
+                w.rocket({'targetId': n.id})
+        if toggled(self.p, 'equipment_extra_cpu_rllb-x') and capacity(self.p) and loaded(self.p)[1] >= capacity(self.p):
+            self.launcher_fire(now, n)
+
+    # ------------------------------------------------------------ roket fırlatıcısı
+    def launcher_tick(self, now):
+        w, p = self.w, self.p
+        cap = capacity(p)
+        if not cap or w.hero_dead:
+            return
+        sel = p.d['secili'].get('fircatici')
+        ammo, n = loaded(p)
+        msgs = []
+        if n and ammo != sel:                  # cephane değişti: yüklüler geri
+            p.add_ammo(ammo, n)
+            msgs += w.ammo_msgs(ammo)
+            ammo, n = sel, 0
+            self.store(ammo, 0)
+        if not sel or n >= cap:
+            self.send(msgs)
+            return
+        rapid = bool(w.abilities.flags.get('roket'))            # Tartarus Rapid Fire: fırlatıcı hemen dolar
+        if not rapid and now < self.next_load:
+            self.send(msgs)
+            return
+        add = min(cap - n, p.ammo(sel)) if rapid else min(1, p.ammo(sel))
+        if add <= 0:
+            self.send(msgs)
+            return
+        p.use_ammo(sel, add)
+        n += add
+        self.store(sel, n)
+        self.next_load = now + S['fircatici']['dolum_sn'] * max(0.1, 1 + p.mods().get('fircatici_bekleme', 0))   # Star +%33 …
+        self.send(msgs + w.ammo_msgs(sel) + self.status(S['fircatici']['menu'])
+                  + [legacy('0|RL|S|%d|%d|%d' % (launcher_type(p), LAUNCHER_AMMO.get(sel, {}).get('kimlik', 7), n))])
+
+    def store(self, ammo, n):
+        with self.p.lock:
+            self.p.d['fircatici_dolu'] = [ammo, n]
+            self.p.dirty = True
+
+    def launcher_fire(self, now, n=None):
+        w, p = self.w, self.p
+        n = n or w.npcs.get(w.target)
+        ammo, cnt = loaded(p)
+        if not n or not n.alive or cnt <= 0 or w.hero_dead or w.jumping or ammo not in LAUNCHER_AMMO:
+            return
+        hx, hy = w.hero_pos(now)
+        nx, ny = n.mover.pos(now)
+        rng = S['fircatici']['menzil']
+        if math.hypot(nx - hx, ny - hy) > rng:
+            self.send([('AttackRangeExceededCommand', {'uid': n.id, 'maxRange': rng, 'type': 0})])
+            return
+        w.end_invuln(force=True)
+        w.abilities.reveal()
+        self.reveal()
+        w.last_combat = now
+        w.stop_repair()
+        cfg = LAUNCHER_AMMO[ammo]
+        hit = random.random() < cfg.get('isabet', 1.0)
+        self.store(ammo, 0)
+        self.next_load = now + S['fircatici']['dolum_sn']
+        p.ach('shot', silah='ROCKET_LAUNCHER')
+        self.send([('HellstormAttackCommand', dict(attackerId=w.hid, targetId=n.id, hit=hit, currentLoad=cnt,
+                                                   rocketType=mod('AmmunitionTypeModule', typeValue=cfg['tur']))),
+                   legacy('0|RL|S|%d|%d|0' % (launcher_type(p), cfg['kimlik']))] + self.status(S['fircatici']['menu']))
+        self.log('   fırlatıcı: %d x %s%s' % (cnt, ammo, '' if hit else ' (ıska)'))
+        if not hit:
+            return
+        mods = p.mods()
+        dmg = sum(cfg.get('hasar', 0) * random.uniform(0.85, 1.0) for _ in range(cnt))
+        dmg = int(dmg * (1 + mods.get('roket', 0) + mods.get('npc', 0)) * (1 + p.lab_bonus(1)) * launcher_upgrade(p))
+        drain = cfg.get('kalkan_cek', 0) * cnt
+        uid = n.id
+
+        def land():
+            if drain:                          # SAR/CBR/PIR: uzaylının kalkanından çekilen oyuncuya
+                w.last_shield_hit = 0
+                w.hit_npc(uid, drain, cfg.get('saldiri', 0), shield_only=True)
+                if w.last_shield_hit:
+                    g = p.d['gemi']
+                    p.set_hull(shield=g.get('shield', 0) + w.last_shield_hit)
+                    self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
+            if dmg:
+                w.hit_npc(uid, dmg, 0)
+        w.later(S['fircatici']['ucus_sn'], land)
+
+    # ------------------------------------------------------------ özel roketler
+    def fire_special(self, rocket, n, now):
+        w, p = self.w, self.p
+        r = ROCKETS[rocket]
+        if not self.ready(r['bekleme_grubu'], now) or p.use_ammo(rocket, 1) is None:
+            return
+        w.end_invuln(force=True)
+        w.abilities.reveal()
+        self.reveal()
+        w.last_combat = now
+        w.stop_repair()
+        p.ach('shot', silah='ROCKET_LAUNCHER')
+        hit = random.random() < w.rocket_hit(rocket)
+        self.send(w.ammo_msgs(rocket) + [legacy('0|v|%d|%d|%s|%d|0|0' % (w.hid, n.id, 'H' if hit else 'M', r.get('kimlik', 1))),
+                                         self.cooldown(rocket, now)])
+        uid = n.id
+        if hit:
+            w.later(ROCKET_FLIGHT, lambda: self.special_hit(rocket, uid))
+        else:
+            w.later(ROCKET_FLIGHT, lambda: self.send([('AttackMissedCommand', dict(attackType=attack_type(0), targetUserId=uid,
+                                                                                    skillColorId=0))]))
+        self.log('   özel roket: %s' % rocket)
+
+    def special_hit(self, rocket, uid):
+        import lazer as LAZER
+        w, p = self.w, self.p
+        n = w.npcs.get(uid)
+        if not n or not n.alive:
+            return
+        r = ROCKETS[rocket]
+        dmg = r.get('hasar', 0) * (LAZER.name_match(r.get('hedef_carpan', {}), n) or 1)      # AGT-500: Agatus'a x5
+        if dmg:
+            mods = p.mods()
+            w.hit_npc(uid, int(dmg * random.uniform(0.85, 1.0) * (1 + mods.get('roket', 0) + mods.get('npc', 0))), 0,
+                      hull_only=bool(r.get('yalniz_govde')))                                  # SP-100X: kalkanı atlar
+        if r.get('kalkan_hasar'):                                                             # SR-5: kalkandan çal
+            w.last_shield_hit = 0
+            w.hit_npc(uid, r['kalkan_hasar'], 0, shield_only=True)
+            got = int(w.last_shield_hit * r.get('kalkan_cal', 0))
+            if got:
+                g = p.d['gemi']
+                p.set_hull(shield=g.get('shield', 0) + got)
+                self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
+            if r.get('kendine_yavas'):
+                w.hero_effect('yavas', r['kendine_yavas'][1], r['kendine_yavas'][0], source=rocket)
+        if not n.alive:
+            return
+        if r.get('gorunum_sn'):                                                               # WIZ-X: başka bir geminin görünümü
+            models = {int(t.get('model', k)) for k, t in _N['tipler'].items() if str(t.get('model', k)).isdigit()}
+            model = str(random.choice(sorted(models - {int(n.model)})))
+            vis = lambda on: [('VisualModifierCommand', dict(userId=uid, modifier=25, attribute=0, additionalAttribute=model, count=0,
+                                                             activated=on))]
+            self.send(vis(True))
+            w.later(r['gorunum_sn'], lambda: self.send(vis(False)) if uid in w.npcs else None)
+        for kind, (val, sec) in r.get('etki', {}).items():
+            w.npc_effect(n, kind, sec, val, source=rocket)
+        fx = r.get('fx')
+        if fx:
+            sec = max(s for v, s in r.get('etki', {}).values())
+            self.send([legacy('0|n|fx|start|%s|%d' % (fx, uid))])
+            w.later(sec, lambda: self.send([legacy('0|n|fx|end|%s|%d' % (fx, uid))]))
+        if not n.engaged:
+            n.engaged = True
+
+    # ------------------------------------------------------------ atlama CPU'ları
+    def jump_cpu(self, now):
+        w, p = self.w, self.p
+        loot = jump_loot(p)
+        if not loot or w.hero_dead or w.jumping or self.jump:
+            return
+        if w.map_id == home_map(p) or not jump_allowed(loot, w.map_id) or EK.uses(p, loot) <= 0:
+            self.send(self.status(S['atlama_cpu']['menu']))
+            return
+        if self.too_soon(now):
+            return
+        self.start_jump(home_map(p), loot, now)
+
+    def too_soon(self, now):
+        """İstemcinin metni: "son atlamanız ya da girişiniz 10 saniyeden kısa süre önceydi"."""
+        if now - self.born < S['atlama_cpu'].get('bekleme_sn', 10):
+            self.send([stm('jump_cpu_failed_time')])
+            return True
+        return False
+
+    def start_jump(self, dest, loot, now, voucher=False):
+        w = self.w
+        if now - w.last_combat < S['atlama_cpu']['savas_sn']:
+            self.send([stm('jump_cpu_failed_attack3')])          # "uzaylıyla çatışmadan sonra 5 sn" (savas_sn)
+            return False
+        sec = S['atlama_cpu']['geri_sayim_sn']
+        self.jump = dict(hedef=dest, zaman=now + sec, cpu=loot, basla=now, kupon=voucher)
+        self.send([legacy('0|A|JCPU|S|%d|%d' % (sec, dest))])
+        self.log('   CPU atlaması: %s -> %s, %d sn' % (H.name(w.map_id), H.name(dest), sec))
+        return True
+
+    def cancel_jump(self, key='jump_cpu_failed_attack3'):
+        """Geri sayımda saldırı: attack3 uzaylı metni (attack2 "başka pilotla 20 sn" PvP'nin; canlı test H22)."""
+        if not self.jump:
+            return
+        self.jump = None
+        self.send([legacy('0|A|JCPU|S|-1|0'), stm(key)])
+        self.log('   CPU atlaması iptal')
+
+    def jump_tick(self, now):
+        j = self.jump
+        if not j:
+            return
+        w, p = self.w, self.p
+        if w.hero_dead or w.last_combat > j['basla']:
+            self.cancel_jump()
+            return
+        if now < j['zaman']:
+            return
+        self.jump = None
+        if j['cpu'] == 'ajp':
+            if not self.pay_ajp():
+                self.send([legacy('0|A|JCPU|S|-1|0'), stm('jump_cpu_malfunction')])
+                return
+        else:
+            EK.use(p, j['cpu'])
+        w.jumping, w.attacking, w.target = True, False, None
+        for n in w.npcs.values():
+            n.engaged = False
+        dest, pos = j['hedef'], 'istasyon'
+        if j['cpu'] != 'ajp' and int(w.map_id) != 42 and random.random() < S['atlama_cpu'].get('mezarlik_sansi', 0):
+            dest, pos = 42, None                      # Cubikon Mezarlığı (wiki: "her 1.000 atlamada bir"; tek oyunculu oran)
+            self.log('   atlama CPU\'su Cubikon Mezarlığı\'na saptı')
+        if w.on_jump:
+            w.on_jump(dest, None, pos)
+
+    def pay_ajp(self):
+        p, c = self.p, S['gelismis_atlama']
+        if p.resource(c['kupon']):
+            p.add_resource(c['kupon'], -1)
+            self.send([vouchers_msg(p)])
+            return True
+        if p.d['pilot'].get('uridium', 0) < c['fiyat']:
+            return False
+        p.gain(uridyum=-c['fiyat'], neden='buy_cpu_jump')
+        self.send(self.w.money_msgs() if self.w.money_msgs else [])
+        return True
+
+    def jcpu(self, parts):
+        """İstemcinin JCPU isteği (uzay haritası): S|harita seçim, J atla (GET girişte; game.py yanıtlar)."""
+        w, p = self.w, self.p
+        cmd = parts[1] if len(parts) > 1 else ''
+        if cmd == 'GET':
+            self.send([jcpu_list(p), vouchers_msg(p)])
+        elif cmd == 'S' and len(parts) > 2 and parts[2].isdigit():
+            m = int(parts[2])
+            ok = (has_ajp(p) and m != w.map_id and m in H.NAMES and jump_allowed('equipment_extra_cpu_ajp-01', m)
+                  and jump_allowed('equipment_extra_cpu_ajp-01', w.map_id)
+                  and p.d['pilot'].get('level', 1) >= H.level_required(m, p.d['pilot'].get('factionId')))
+            price = 0 if p.resource(S['gelismis_atlama']['kupon']) else S['gelismis_atlama']['fiyat']
+            self.ajp_target = m if ok else None
+            self.send([legacy('0|A|JCPU|C|%d|%d|%d' % (m, price, 1 if ok else 0))])
+        elif cmd == 'J':
+            m = self.ajp_target
+            if m is None or not has_ajp(p) or w.hero_dead or w.jumping or self.jump:
+                self.send([stm('jump_cpu_malfunction')])
+                return
+            price = 0 if p.resource(S['gelismis_atlama']['kupon']) else S['gelismis_atlama']['fiyat']
+            if price and p.d['pilot'].get('uridium', 0) < price:
+                self.send([stm('jump_cpu_malfunction')])
+                return
+            if self.too_soon(time.time()):
+                return
+            self.start_jump(m, 'ajp', time.time())
+
+    # ------------------------------------------------------------ ölüm
+    def on_death(self):
+        self.cancel_jump('jump_cpu_malfunction')
+        if self.cloaked():
+            with self.p.lock:
+                self.p.d['cpu_gizli'] = False
+                self.p.dirty = True

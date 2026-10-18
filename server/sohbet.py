@@ -1,0 +1,422 @@
+"""Yerel sohbet sunucusu (yol haritası Aşama 10): istemcinin "AChat" sohbeti, TCP 7771.
+
+İstemci sohbet adresini girişteki ChatParamCommand'dan (chat_ip) alır. Kayıttaki şablon resmî sohbet sunucusunu gösteriyordu ve
+istemci yerel oyunda oraya bağlanıyordu (istemci günlüğü: "achat:connected"); artık login_replace ile bu sunucuya yönlenir.
+
+Bağlantı başında istemci 2 baytlık tanışma gönderir: 0x2A ('*') + 0x01 (TcpEndpoint2ServerNetLayer.Open); sunucu da bir
+0x10 tanışma çerçevesi gönderir (istemcinin görünen adresi, UTF-8). İstemci InitConnector'ı ancak bu çerçeve gelince yollar
+(TcpEndpoint2ServerNetLayer.Write: LowLevelIntroductionMessage -> bağlantı işleyicisi). Canlı deneme 2026-10-17: ikisi de
+eksikti, gerçek istemcide sohbet hiç kurulmuyordu (testlerin sahte istemcisi doğrudan InitConnector gönderiyordu).
+Çerçeve (istemcinin APServiceStorm.Net.Codec.APlay kodlayıcısı): 1 bayt tür + int32 BE uzunluk + yük
+  0x50 'P'  UTF-8 JSON (sunucu -> istemci bunu kullanır)
+  0x53 'S'  ikili JSON (istemci -> sunucu; JSONWriter: nesne = int32 sayı + [int32 uzunluk + UTF-8 ad, değer]…)
+  0x61 'a'  gzip'li JSON (istemci göndermiyor)
+  0x10 tanışma (UTF-8), 0x11 ping (sunucu -> istemci: int64 zaman + int32 gecikme), 0x12 pong (int64)
+İkili JSON değer türleri (tür baytı + değer): 0 null, 1 bool (1/2), 2 dizi (int32 sayı), 3 int32, 4 nesne, 5 metin (int32 + UTF-8),
+6 bayt, 7 int64, 8 float32. Sayılar big-endian.
+
+Infinicast mesajları JSON nesnesi, 't' türü (Connector2Eps/Eps2Connector dönüştürücüleri): 1 Request, 2 RequestResponse,
+3 InitConnector, 8 Message, 14 RemoveHandlers, 15 RegisterHandler; ötekiler (30 GetListeningList …) istek kimliğiyle yanıtlanır.
+Akış (istemcinin AChatGameClientConnection'ı):
+  1. InitConnector {space: achat, role: chatter} -> InitConnector {endpointObject {path: /endpoint/<uç>/, endpoint: <uç>}}
+  2. istemci uç noktasının serverStatus/ ve changePredefinedRoom/ yollarına Message işleyicisi kaydeder (her kayıt
+     RequestResponse {requestId} ile onaylanır); onaylanınca uç kimliğini oyun sunucusuna ChatAuthenticateUserRequest ile bildirir
+  3. oyun sunucusu (game.py) authenticate() çağırır: serverStatus'a {type: loggedIn}, changePredefinedRoom'a her oda için
+     {roomType, roomClass, newRoomName}; istemci /room/<roomClass>/<newRoomName>/ yoluna işleyici kaydeder ve odayı açar
+     (burada roomClass = roomType)
+  4. oyuncunun mesajı: Message {path: oda, data: {msg}} -> odayı dinleyenlere Message {path, data {msg, sentAt},
+     endpointObject {path, endpoint, data: gönderenin bilgisi}}
+Gönderenin bilgisi (ChatUserVo.FromJson): userId = görünen ad, id = sayısal kimlik, globalId, role (chatter/system/mod),
+clanTag, factionId, instanceId. Oda türleri (ChatRoomVo): global, faction, clan, group (sekme adları istemcide çevrilir).
+
+Duyurular (duyuru()): sistem kullanıcısının (role system) mesajı. İstemci sistem mesajını yerelleştirme anahtarı sayar
+("anahtar|eski|yeni|…": anahtarın metnini çevirip çiftleri değiştirir; bilinmeyen anahtar boş çıkar). Bu yüzden metin
+'dochat.chat.system' anahtarının çevirisinin ("System"/"Sistem") yerine konur.
+"""
+import json, socket, struct, threading, time
+
+PORT = 7771
+P_JSON, P_BIN, P_GZIP, P_INTRO, P_PING, P_PONG = 0x50, 0x53, 0x61, 0x10, 0x11, 0x12
+T_REQUEST, T_RESPONSE, T_INIT, T_MESSAGE, T_REMOVE, T_REGISTER = 1, 2, 3, 8, 14, 15
+T_LISTENING_LIST = 30             # GetListeningList: sohbetin /users komutu (oda dinleyenleri; Infinicast ListenerQueryExecutor)
+PING_SN = 15
+SISTEM_ANAHTARI = 'dochat.chat.system'
+SISTEM_METNI = {'en': 'System', 'tr': 'Sistem'}       # istemcinin çevirisi (resource_chat); başka dilde ikisi de denenir
+
+
+# ------------------------------------------------------------ APlay çerçevesi ve ikili JSON
+def frame(obj):
+    """Sunucu -> istemci: düz JSON çerçevesi."""
+    data = json.dumps(obj, ensure_ascii=False, separators=(',', ':')).encode('utf8')
+    return bytes([P_JSON]) + struct.pack('>i', len(data)) + data
+
+
+def ping_frame(ms):
+    return bytes([P_PING]) + struct.pack('>iqi', 12, ms, 0)
+
+
+def read_value(b, i):
+    t = b[i]
+    i += 1
+    if t == 0:
+        return None, i
+    if t == 1:
+        return b[i] == 2, i + 1
+    if t == 2:
+        n, = struct.unpack_from('>i', b, i)
+        i += 4
+        out = []
+        for _ in range(n):
+            v, i = read_value(b, i)
+            out.append(v)
+        return out, i
+    if t == 3:
+        return struct.unpack_from('>i', b, i)[0], i + 4
+    if t == 4:
+        return read_object(b, i)
+    if t == 5:
+        n, = struct.unpack_from('>i', b, i)
+        return b[i + 4:i + 4 + n].decode('utf8'), i + 4 + n
+    if t == 6:
+        return b[i], i + 1
+    if t == 7:
+        return struct.unpack_from('>q', b, i)[0], i + 8
+    if t == 8:
+        return struct.unpack_from('>f', b, i)[0], i + 4
+    raise ValueError('ikili JSON: bilinmeyen tür %d' % t)
+
+
+def read_object(b, i=0):
+    n, = struct.unpack_from('>i', b, i)
+    i += 4
+    out = {}
+    for _ in range(n):
+        k, = struct.unpack_from('>i', b, i)
+        key = b[i + 4:i + 4 + k].decode('utf8')
+        i += 4 + k
+        out[key], i = read_value(b, i)
+    return out, i
+
+
+def write_value(v):
+    """İstemcinin JSONWriter'ı (testlerde istemciyi taklit etmek için)."""
+    if v is None:
+        return b'\x00'
+    if isinstance(v, bool):
+        return bytes([1, 2 if v else 1])
+    if isinstance(v, int):
+        return b'\x03' + struct.pack('>i', v)
+    if isinstance(v, float):
+        return b'\x08' + struct.pack('>f', v)
+    if isinstance(v, str):
+        d = v.encode('utf8')
+        return b'\x05' + struct.pack('>i', len(d)) + d
+    if isinstance(v, dict):
+        return b'\x04' + write_object(v)
+    if isinstance(v, (list, tuple)):
+        return b'\x02' + struct.pack('>i', len(v)) + b''.join(write_value(x) for x in v)
+    raise TypeError(type(v))
+
+
+def write_object(o):
+    out = [struct.pack('>i', len(o))]
+    for k, v in o.items():
+        d = k.encode('utf8')
+        out += [struct.pack('>i', len(d)), d, write_value(v)]
+    return b''.join(out)
+
+
+def intro_frame(address):
+    """Sunucunun tanışma çerçevesi (0x10 + uzunluk + UTF-8 adres)."""
+    data = address.encode('utf8')
+    return bytes([P_INTRO]) + struct.pack('>i', len(data)) + data
+
+
+def client_frame(obj):
+    """İstemci -> sunucu çerçevesi ('S' + ikili JSON)."""
+    data = write_object(obj)
+    return bytes([P_BIN]) + struct.pack('>i', len(data)) + data
+
+
+TANISMA = b'*'                # istemcinin bağlantı başındaki baytları (protokol işareti + sürüm)
+
+
+class Cozucu:
+    """Akıştan çerçeveler: feed(bayt) -> [(tür, yük)]; JSON türlerinde yük sözlük. tanisma=True: akışın başındaki istemci
+    tanışması (TANISMA) atlanır (sunucu tarafı); istemci tarafı (testler) False."""
+    def __init__(self, tanisma=False):
+        self.buf = b''
+        self.bekle_tanisma = tanisma
+
+    def feed(self, data):
+        self.buf += data
+        out = []
+        if self.bekle_tanisma:
+            if len(self.buf) < len(TANISMA):
+                return out
+            if self.buf.startswith(TANISMA):
+                self.buf = self.buf[len(TANISMA):]
+            self.bekle_tanisma = False
+        while len(self.buf) >= 5:
+            kind = self.buf[0]
+            n, = struct.unpack_from('>i', self.buf, 1)
+            if n < 0 or len(self.buf) < 5 + n:
+                break
+            body, self.buf = self.buf[5:5 + n], self.buf[5 + n:]
+            if kind == P_BIN:
+                out.append((kind, read_object(body)[0]))
+            elif kind == P_JSON:
+                out.append((kind, json.loads(body.decode('utf8'))))
+            else:
+                out.append((kind, body))
+        return out
+
+
+# ------------------------------------------------------------ sunucu
+class Baglanti:
+    def __init__(self, srv, sock, ep):
+        self.srv, self.sock, self.ep = srv, sock, ep
+        self.send_lock = threading.Lock()
+        self.handlers = set()             # Message işleyicisi kayıtlı yollar
+        self.user = None                  # authenticate() sonrası gönderen bilgisi
+        self.dil = None
+        self.pending = []                 # odası henüz kaydedilmemiş duyurular (oda türü, metin)
+        self.alive = True
+
+    @property
+    def path(self):
+        return '/endpoint/%s/' % self.ep
+
+    def send(self, obj):
+        self.send_raw(frame(obj))
+
+    def send_raw(self, data):
+        if self.srv.iz:                   # canlı test izi (game.py --kontrol): giden çerçeve
+            self.srv.iz('->', data[0], data[5:])
+        try:
+            with self.send_lock:
+                self.sock.sendall(data)
+        except OSError:
+            self.alive = False
+
+    def run(self):
+        dec = Cozucu(tanisma=True)
+        try:
+            while self.alive:
+                data = self.sock.recv(65536)
+                if not data:
+                    break
+                for kind, body in dec.feed(data):
+                    if self.srv.iz:
+                        self.srv.iz('<-', kind, body)
+                    if kind in (P_BIN, P_JSON):
+                        self.srv.on_message(self, body)
+                    elif kind != P_PONG:
+                        self.srv.log('sohbet: bilinmeyen çerçeve 0x%02x (%d bayt) %r' % (kind, len(body), bytes(body[:60])))
+        except (OSError, ValueError) as e:
+            self.srv.log('sohbet: bağlantı hatası %r' % e)
+        self.alive = False
+        self.srv.drop(self)
+
+
+class Sohbet:
+    def __init__(self, log=print, port=PORT):
+        self.log, self.port = log, port
+        self.lock = threading.RLock()
+        self.conns = {}                   # uç kimliği -> Baglanti
+        self.seq = 0
+        self.sock = None
+        self.running = False
+        self.iz = None                    # canlı test izi: iz(yön, tür, yük) (game.py --kontrol bağlar)
+
+    # -------------------------------------------------------- dinleme
+    def start(self):
+        """Dinlemeye başlar -> gerçek port (port 0 verilirse işletim sisteminin seçtiği); port doluysa None."""
+        s = socket.socket()
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            s.bind(('127.0.0.1', self.port))
+        except OSError as e:
+            self.log('sohbet: %d dinlenemedi (%r)' % (self.port, e))
+            s.close()
+            return None
+        s.listen(5)
+        self.sock, self.running = s, True
+        self.port = s.getsockname()[1]
+        threading.Thread(target=self.accept_loop, daemon=True).start()
+        threading.Thread(target=self.ping_loop, daemon=True).start()
+        self.log('sohbet listening %d' % self.port)
+        return self.port
+
+    def stop(self):
+        self.running = False
+        try:
+            self.sock.close()
+        except (OSError, AttributeError):
+            pass
+        with self.lock:
+            conns = list(self.conns.values())
+        for c in conns:
+            c.alive = False
+            try:
+                c.sock.close()
+            except OSError:
+                pass
+
+    def accept_loop(self):
+        while self.running:
+            try:
+                sock, addr = self.sock.accept()
+            except OSError:
+                break
+            with self.lock:
+                self.seq += 1
+                ep = 'yerel_sohbet_%d_%d' % (int(time.time()) % 100000, self.seq)
+                c = Baglanti(self, sock, ep)
+                self.conns[ep] = c
+            self.log('sohbet: bağlantı %s' % ep)
+            c.send_raw(intro_frame('%s:%d' % addr[:2]))       # istemci bunu görmeden InitConnector göndermez
+            threading.Thread(target=c.run, daemon=True).start()
+
+    def ping_loop(self):
+        while self.running:
+            time.sleep(PING_SN)
+            with self.lock:
+                conns = list(self.conns.values())
+            for c in conns:
+                c.send_raw(ping_frame(int(time.time() * 1000)))
+
+    def drop(self, c):
+        with self.lock:
+            if self.conns.get(c.ep) is c:
+                del self.conns[c.ep]
+        try:
+            c.sock.close()
+        except OSError:
+            pass
+        self.log('sohbet: bağlantı kapandı %s' % c.ep)
+
+    # -------------------------------------------------------- Infinicast
+    def on_message(self, c, m):
+        t, rid = m.get('t'), m.get('requestId')
+        if t == T_INIT:
+            c.send({'t': T_INIT, 'endpointObject': {'path': c.path, 'endpoint': c.ep}, 'requestId': rid or 0})
+            return
+        if t == T_REGISTER:
+            if m.get('handlerType', 'Message') == 'Message' and m.get('path'):
+                c.handlers.add(m['path'])
+                if m['path'].startswith('/room/') and rid is not None:
+                    c.send({'t': T_RESPONSE, 'requestId': rid})
+                    rid = None
+                    self.flush(c)
+        elif t == T_REMOVE:
+            c.handlers.discard(m.get('path'))
+        elif t == T_MESSAGE:
+            self.relay(c, m.get('path') or '', m.get('data') or {})
+        elif t == T_REQUEST:
+            self.request(c, m)
+            return
+        elif t == T_LISTENING_LIST and rid is not None:
+            c.send({'t': T_RESPONSE, 'requestId': rid, 'data': {'list': self.listeners(m.get('path') or '')}})
+            return
+        if rid is not None:
+            c.send({'t': T_RESPONSE, 'requestId': rid})
+
+    def listeners(self, path):
+        """Odayı dinleyenler (istemci yanıtın data.list'inden okur: path, endpoint, data = kullanıcı bilgisi)."""
+        with self.lock:
+            conns = list(self.conns.values())
+        return [{'path': x.path, 'endpoint': x.ep, 'data': x.user} for x in conns if x.user and path in x.handlers]
+
+    def request(self, c, m):
+        """Oda servisi istekleri (/roomSvc/usr/createRoom/ …): tek oyunculuda özel oda yok -> başarısız yanıt."""
+        self.log('sohbet: istek %s' % m.get('path'))
+        c.send({'t': T_RESPONSE, 'requestId': m.get('requestId', 0), 'data': {'success': False}})
+
+    def relay(self, c, path, data):
+        """Oyuncunun oda mesajı: odayı dinleyenlere (kendisi dahil) gönderenin bilgisiyle."""
+        if not c.user or not path.startswith('/room/'):
+            return
+        msg = str(data.get('msg', ''))[:500]
+        if not msg:
+            return
+        self.log('sohbet: %s: %s' % (path, msg))
+        self.broadcast(path, msg, c.ep, c.user)
+
+    def broadcast(self, path, msg, ep, user):
+        out = {'t': T_MESSAGE, 'path': path, 'data': {'msg': msg, 'sentAt': str(int(time.time() * 1000))},
+               'endpointObject': {'path': '/endpoint/%s/' % ep, 'endpoint': ep, 'data': user}}
+        with self.lock:
+            conns = [x for x in self.conns.values() if path in x.handlers]
+        for x in conns:
+            x.send(out)
+        return len(conns)
+
+    # -------------------------------------------------------- oyun sunucusundan
+    def authenticate(self, ep, user, rooms, dil=None):
+        """ChatAuthenticateUserRequest: uç noktası bu oyuncu -> loggedIn ve odalar. rooms: [(roomType, roomClass, ad)]."""
+        with self.lock:
+            c = self.conns.get(ep)
+        if not c:
+            self.log('sohbet: bilinmeyen uç %s' % ep)
+            return False
+        c.user, c.dil = dict(user), dil
+        c.send({'t': T_MESSAGE, 'path': c.path + 'serverStatus/', 'data': {'type': 'loggedIn', 'wordFilter': []},
+                'endpointObject': {'path': c.path, 'endpoint': c.ep, 'data': {}}})
+        for room in rooms:
+            self.join(c, *room)
+        self.log('sohbet: giriş %s (%s), odalar %s' % (user.get('userId'), ep, [r[0] for r in rooms]))
+        return True
+
+    def join(self, c, room_type, room_class, name):
+        c.send({'t': T_MESSAGE, 'path': c.path + 'changePredefinedRoom/',
+                'data': {'roomType': room_type, 'roomClass': room_class, 'newRoomName': name},
+                'endpointObject': {'path': c.path, 'endpoint': c.ep, 'data': {}}})
+
+    def update_rooms(self, rooms):
+        """Oda değişimi (klan kuruldu/dağıldı): giriş yapmış bağlantılara yeni oda listesi."""
+        with self.lock:
+            conns = [x for x in self.conns.values() if x.user]
+        for c in conns:
+            for room in rooms:
+                self.join(c, *room)
+
+    def update_user(self, **kw):
+        with self.lock:
+            for c in self.conns.values():
+                if c.user:
+                    c.user.update(kw)
+
+    def duyuru(self, text, room_type='global'):
+        """Sistem duyurusu: giriş yapmış oyuncuların o türdeki odalarına -> gönderilen mesaj sayısı. Oda henüz kaydedilmemişse
+        (girişin hemen ardı) duyuru bekler, oda kaydı gelince gider."""
+        text = str(text).replace('|', '/')
+        n = 0
+        with self.lock:
+            conns = [x for x in self.conns.values() if x.user]
+        for c in conns:
+            c.pending.append((room_type, text))
+            n += self.flush(c)
+        return n
+
+    def flush(self, c):
+        sent, keep = 0, []
+        for room_type, text in c.pending:
+            paths = [p for p in c.handlers if p.startswith('/room/%s/' % room_type)]
+            if not paths:
+                keep.append((room_type, text))
+                continue
+            msg = '|'.join([SISTEM_ANAHTARI] + ([SISTEM_METNI[c.dil], text] if c.dil in SISTEM_METNI else
+                                               [v for k in ('en', 'tr') for v in (SISTEM_METNI[k], text)]))
+            data = {'msg': msg, 'sentAt': str(int(time.time() * 1000))}
+            for p in paths:
+                c.send({'t': T_MESSAGE, 'path': p, 'data': data,
+                        'endpointObject': {'path': '/endpoint/sistem/', 'endpoint': 'sistem',
+                                           'data': {'userId': 'System', 'id': '0', 'globalId': '0', 'role': 'system'}}})
+                sent += 1
+        c.pending = keep[-20:]
+        return sent
+
+    def online(self):
+        with self.lock:
+            return any(c.user for c in self.conns.values())

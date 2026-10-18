@@ -1,0 +1,818 @@
+{
+ "_aciklama": "Clan Battle Station -> server/data/cbs.json (yol haritası Ö5).",
+ "_kaynak": "belgeler/wiki/cbs.json; tools/cbs.py",
+ "_uyarlama": "Seviye tablosu doğrusal (L16 = L1 x 1,3); silah menzil/aralık/isabet, onarım hızı, kurulum süresi (50 sn), deflector birikimi (48 sa), acil onarım bedeli (500 U), modül yıkma ödülleri, prime time 18:00-21:00 (Türkiye sunucusu), uzaylı baskınları (güçleri istasyona göre: silahlar ~90 sn içinde temizler, savunmasız istasyon o sürede modül canının ~%25 kadarını yitirir) ve sanal rakip klanlar (modül canı x0,2, oyuncuya silah hasarı x0,05: tek gemi ~8 dk ateşle yıkabilsin) tek oyunculu uyarlama.",
+ "asteroitler": [
+  {
+   "kimlik": 1,
+   "ad": "Aries",
+   "harita": 3,
+   "x_yuzde": 50,
+   "y_yuzde": 18,
+   "ad_anahtari": "battleStation_name_1"
+  },
+  {
+   "kimlik": 2,
+   "ad": "Balzar",
+   "harita": 4,
+   "x_yuzde": 21,
+   "y_yuzde": 68,
+   "ad_anahtari": "battleStation_name_2"
+  },
+  {
+   "kimlik": 3,
+   "ad": "Cetus",
+   "harita": 17,
+   "x_yuzde": 82,
+   "y_yuzde": 18,
+   "ad_anahtari": "battleStation_name_3"
+  },
+  {
+   "kimlik": 4,
+   "ad": "Draco",
+   "harita": 18,
+   "x_yuzde": 47,
+   "y_yuzde": 46,
+   "ad_anahtari": "battleStation_name_4"
+  },
+  {
+   "kimlik": 5,
+   "ad": "Equleus",
+   "harita": 19,
+   "x_yuzde": 47,
+   "y_yuzde": 53,
+   "ad_anahtari": "battleStation_name_5"
+  },
+  {
+   "kimlik": 6,
+   "ad": "Fornax",
+   "harita": 7,
+   "x_yuzde": 50,
+   "y_yuzde": 18,
+   "ad_anahtari": "battleStation_name_6"
+  },
+  {
+   "kimlik": 7,
+   "ad": "Gemini",
+   "harita": 8,
+   "x_yuzde": 77,
+   "y_yuzde": 63,
+   "ad_anahtari": "battleStation_name_7"
+  },
+  {
+   "kimlik": 8,
+   "ad": "Hydra",
+   "harita": 21,
+   "x_yuzde": 49,
+   "y_yuzde": 66,
+   "ad_anahtari": "battleStation_name_8"
+  },
+  {
+   "kimlik": 9,
+   "ad": "Indus",
+   "harita": 22,
+   "x_yuzde": 41,
+   "y_yuzde": 47,
+   "ad_anahtari": "battleStation_name_9"
+  },
+  {
+   "kimlik": 10,
+   "ad": "Julius",
+   "harita": 23,
+   "x_yuzde": 49,
+   "y_yuzde": 43,
+   "ad_anahtari": "battleStation_name_10"
+  },
+  {
+   "kimlik": 11,
+   "ad": "Kepler",
+   "harita": 11,
+   "x_yuzde": 50,
+   "y_yuzde": 18,
+   "ad_anahtari": "battleStation_name_11"
+  },
+  {
+   "kimlik": 12,
+   "ad": "Lynx",
+   "harita": 12,
+   "x_yuzde": 22,
+   "y_yuzde": 66,
+   "ad_anahtari": "battleStation_name_12"
+  },
+  {
+   "kimlik": 13,
+   "ad": "Mensa",
+   "harita": 25,
+   "x_yuzde": 51,
+   "y_yuzde": 67,
+   "ad_anahtari": "battleStation_name_13"
+  },
+  {
+   "kimlik": 14,
+   "ad": "Nashira",
+   "harita": 26,
+   "x_yuzde": 46,
+   "y_yuzde": 61,
+   "ad_anahtari": "battleStation_name_14"
+  },
+  {
+   "kimlik": 15,
+   "ad": "Orion",
+   "harita": 27,
+   "x_yuzde": 50,
+   "y_yuzde": 34,
+   "ad_anahtari": "battleStation_name_15"
+  },
+  {
+   "kimlik": 16,
+   "ad": "Volan",
+   "harita": 13,
+   "x_yuzde": 47,
+   "y_yuzde": 42,
+   "ad_anahtari": "battleStation_name_16"
+  },
+  {
+   "kimlik": 17,
+   "ad": "Wican",
+   "harita": 14,
+   "x_yuzde": 54,
+   "y_yuzde": 43,
+   "ad_anahtari": "battleStation_name_17"
+  },
+  {
+   "kimlik": 18,
+   "ad": "Xenitor",
+   "harita": 15,
+   "x_yuzde": 42,
+   "y_yuzde": 44,
+   "ad_anahtari": "battleStation_name_18"
+  },
+  {
+   "kimlik": 19,
+   "ad": "Yukian",
+   "harita": 16,
+   "x_yuzde": 21,
+   "y_yuzde": 21,
+   "ad_anahtari": "battleStation_name_19"
+  },
+  {
+   "kimlik": 20,
+   "ad": "Zerpan",
+   "harita": 29,
+   "x_yuzde": 28,
+   "y_yuzde": 20,
+   "ad_anahtari": "battleStation_name_20"
+  },
+  {
+   "kimlik": 21,
+   "ad": "Adnomis",
+   "harita": 306,
+   "x_yuzde": 52,
+   "y_yuzde": 53,
+   "ad_anahtari": "battleStation_name_21"
+  },
+  {
+   "kimlik": 22,
+   "ad": "Kardlatot",
+   "harita": 307,
+   "x_yuzde": 61,
+   "y_yuzde": 62,
+   "ad_anahtari": "battleStation_name_22"
+  },
+  {
+   "kimlik": 23,
+   "ad": "Detea Ay",
+   "harita": 308,
+   "x_yuzde": 56,
+   "y_yuzde": 88,
+   "ad_anahtari": "battleStation_name_23"
+  }
+ ],
+ "moduller": {
+  "module_hulm-1": {
+   "ad": "Hull Module",
+   "kod": "HULM-1",
+   "tur": 2,
+   "kategori": "hull",
+   "merkez": true,
+   "en_cok": 1,
+   "tasarim": 0,
+   "can": [
+    3900000,
+    3978000,
+    4056000,
+    4134000,
+    4212000,
+    4290000,
+    4368000,
+    4446000,
+    4524000,
+    4602000,
+    4680000,
+    4758000,
+    4836000,
+    4914000,
+    4992000,
+    5070000
+   ]
+  },
+  "module_defm-1": {
+   "ad": "Deflector Module",
+   "kod": "DEFM-1",
+   "tur": 3,
+   "kategori": "deflector",
+   "merkez": true,
+   "en_cok": 1,
+   "tasarim": 0,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ]
+  },
+  "module_repm-1": {
+   "ad": "Repair Module",
+   "kod": "REPM-1",
+   "tur": 4,
+   "kategori": "engineering_bay",
+   "merkez": false,
+   "en_cok": 1,
+   "tasarim": 3,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "onarim_sn": [
+    2600,
+    2652,
+    2704,
+    2756,
+    2808,
+    2860,
+    2912,
+    2964,
+    3016,
+    3068,
+    3120,
+    3172,
+    3224,
+    3276,
+    3328,
+    3380
+   ]
+  },
+  "module_ltm-lr": {
+   "ad": "LR Laser Module",
+   "kod": "LTM-LR",
+   "tur": 7,
+   "kategori": "lasers",
+   "merkez": false,
+   "en_cok": 8,
+   "tasarim": 4,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "silah": "lazer",
+   "hasar": [
+    24000,
+    24480,
+    24960,
+    25440,
+    25920,
+    26400,
+    26880,
+    27360,
+    27840,
+    28320,
+    28800,
+    29280,
+    29760,
+    30240,
+    30720,
+    31200
+   ],
+   "menzil": 650,
+   "aralik_sn": 1.5,
+   "isabet": 0.5
+  },
+  "module_ltm-mr": {
+   "ad": "MR Laser Module",
+   "kod": "LTM-MR",
+   "tur": 6,
+   "kategori": "lasers",
+   "merkez": false,
+   "en_cok": 8,
+   "tasarim": 5,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "silah": "lazer",
+   "hasar": [
+    21000,
+    21420,
+    21840,
+    22260,
+    22680,
+    23100,
+    23520,
+    23940,
+    24360,
+    24780,
+    25200,
+    25620,
+    26040,
+    26460,
+    26880,
+    27300
+   ],
+   "menzil": 900,
+   "aralik_sn": 2.5,
+   "isabet": 0.7
+  },
+  "module_ltm-hr": {
+   "ad": "HR Laser Module",
+   "kod": "LTM-HR",
+   "tur": 5,
+   "kategori": "lasers",
+   "merkez": false,
+   "en_cok": 8,
+   "tasarim": 6,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "silah": "lazer",
+   "hasar": [
+    16000,
+    16320,
+    16640,
+    16960,
+    17280,
+    17600,
+    17920,
+    18240,
+    18560,
+    18880,
+    19200,
+    19520,
+    19840,
+    20160,
+    20480,
+    20800
+   ],
+   "menzil": 1200,
+   "aralik_sn": 3.0,
+   "isabet": 0.9
+  },
+  "module_ram-la": {
+   "ad": "LA Rocket Module",
+   "kod": "RAM-LA",
+   "tur": 9,
+   "kategori": "rockets",
+   "merkez": false,
+   "en_cok": 8,
+   "tasarim": 7,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "silah": "roket",
+   "hasar": [
+    37000,
+    37740,
+    38480,
+    39220,
+    39960,
+    40700,
+    41440,
+    42180,
+    42920,
+    43660,
+    44400,
+    45140,
+    45880,
+    46620,
+    47360,
+    48100
+   ],
+   "menzil": 1200,
+   "aralik_sn": 4,
+   "isabet": 0.53
+  },
+  "module_ram-ma": {
+   "ad": "MA Rocket Module",
+   "kod": "RAM-MA",
+   "tur": 8,
+   "kategori": "rockets",
+   "merkez": false,
+   "en_cok": 8,
+   "tasarim": 8,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "silah": "roket",
+   "hasar": [
+    33000,
+    33660,
+    34320,
+    34980,
+    35640,
+    36300,
+    36960,
+    37620,
+    38280,
+    38940,
+    39600,
+    40260,
+    40920,
+    41580,
+    42240,
+    42900
+   ],
+   "menzil": 1200,
+   "aralik_sn": 4,
+   "isabet": 0.63
+  },
+  "module_honm-1": {
+   "ad": "Honor Booster Module",
+   "kod": "HONM-1",
+   "tur": 10,
+   "kategori": "boosters",
+   "merkez": false,
+   "en_cok": 1,
+   "tasarim": 9,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "booster": "onur",
+   "booster_yuzde": [
+    3.0,
+    3.47,
+    3.93,
+    4.4,
+    4.87,
+    5.33,
+    5.8,
+    6.27,
+    6.73,
+    7.2,
+    7.67,
+    8.13,
+    8.6,
+    9.07,
+    9.53,
+    10.0
+   ]
+  },
+  "module_dmgm-1": {
+   "ad": "Damage Booster Module",
+   "kod": "DMGM-1",
+   "tur": 11,
+   "kategori": "boosters",
+   "merkez": false,
+   "en_cok": 1,
+   "tasarim": 10,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "booster": "hasar",
+   "booster_yuzde": [
+    3.0,
+    3.47,
+    3.93,
+    4.4,
+    4.87,
+    5.33,
+    5.8,
+    6.27,
+    6.73,
+    7.2,
+    7.67,
+    8.13,
+    8.6,
+    9.07,
+    9.53,
+    10.0
+   ]
+  },
+  "module_xpm-1": {
+   "ad": "Experience Booster Module",
+   "kod": "XPM-1",
+   "tur": 12,
+   "kategori": "boosters",
+   "merkez": false,
+   "en_cok": 1,
+   "tasarim": 11,
+   "can": [
+    1040000,
+    1060800,
+    1081600,
+    1102400,
+    1123200,
+    1144000,
+    1164800,
+    1185600,
+    1206400,
+    1227200,
+    1248000,
+    1268800,
+    1289600,
+    1310400,
+    1331200,
+    1352000
+   ],
+   "booster": "ep",
+   "booster_yuzde": [
+    3.0,
+    3.47,
+    3.93,
+    4.4,
+    4.87,
+    5.33,
+    5.8,
+    6.27,
+    6.73,
+    7.2,
+    7.67,
+    8.13,
+    8.6,
+    9.07,
+    9.53,
+    10.0
+   ]
+  }
+ },
+ "kalkan_orani": 0.8,
+ "kurma_dk": [
+  5,
+  60,
+  5
+ ],
+ "deflector_dk": [
+  30,
+  480,
+  30
+ ],
+ "deflector_azami_sn": 172800,
+ "deflector_hiz": {
+  "normal": 120,
+  "prime_time": 600
+ },
+ "deflector_bitince_dk": 120,
+ "kurulunca_kapali_dk": 30,
+ "kurulum_sn": 50,
+ "degistirme_sn": 240,
+ "menzil": 600,
+ "acil_onarim": {
+  "bedel": 500,
+  "can_sn": 7500,
+  "sure_sn": 20
+ },
+ "pasif_onarim": {
+  "can_sn": 260,
+  "gecikme_sn": 30
+ },
+ "booster": {
+  "baslangic": 1.0,
+  "buyume_sa": 20,
+  "tavan": 0.5
+ },
+ "prime_time": [
+  "18:00",
+  "21:00"
+ ],
+ "maden_carpani": 1.1,
+ "yikma_odulu": {
+  "taban": {
+   "roket": 1000,
+   "lazer": 800,
+   "diger": 500
+  },
+  "seviye_basina": 107,
+  "merkez": {
+   "uridyum": 5000,
+   "kredi": 50000
+  }
+ },
+ "onarim_bedeli": {
+  "can_basina_U": 0.001,
+  "en_az": 100
+ },
+ "baskin": {
+  "saat_basina": 2,
+  "ara_dk": 20,
+  "adet": [
+   6,
+   12
+  ],
+  "turler": {
+   "X-3": [
+    "76",
+    "78"
+   ],
+   "X-4": [
+    "78",
+    "81"
+   ],
+   "X-5": [
+    "81",
+    "79"
+   ],
+   "X-6": [
+    "79",
+    "111"
+   ],
+   "X-7": [
+    "111",
+    "112"
+   ],
+   "4-1": [
+    "112",
+    "113"
+   ],
+   "4-2": [
+    "112",
+    "113"
+   ],
+   "4-3": [
+    "112",
+    "113"
+   ],
+   "4-4": [
+    "113",
+    "114"
+   ],
+   "4-5": [
+    "113",
+    "114"
+   ],
+   "BL-1": [
+    "111",
+    "113"
+   ],
+   "BL-2": [
+    "111",
+    "113"
+   ],
+   "BL-3": [
+    "111",
+    "113"
+   ]
+  },
+  "menzil": 1500,
+  "sure_sn": 90,
+  "hasar_orani": 0.25
+ },
+ "rakip": {
+  "sure_sa": [
+   6,
+   24
+  ],
+  "olasilik": 0.5,
+  "klanlar": [
+   "Nova Raiders",
+   "Iron Veil",
+   "Starfall",
+   "Void Hunters",
+   "Crimson Arc",
+   "Black Nebula",
+   "Orbital Fang",
+   "Silent Comet",
+   "Eclipse Order",
+   "Astral Wolves"
+  ],
+  "deflector_prime_disinda": true,
+  "can_carpani": 0.2,
+  "hasar_carpani": 0.05
+ }
+}

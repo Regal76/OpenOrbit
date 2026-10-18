@@ -1,0 +1,286 @@
+"""Yerel müzayede (yol haritası Aşama 10; istemcinin Auction* mesajları ve UIAuction penceresi).
+
+Lotlar kayıttaki listeden (data/sosyal.json, tools/sosyal.py): saatlik, günlük ve haftalık; teklif kredisiyle, anında alım
+uridyumla. Dönem bitişi: saatlik her saatin 30. dakikası, günlük 22:30 UTC, haftalık pazar 22:30 UTC (kayıttaki kalan süreler).
+  AuctionListRequest          -> AuctionListCommand {hour/day/weekSubSec, auctionList, myBidList, historyList}
+  AuctionBidRequest {lootId, type, price}  -> AuctionBidCommand {success, myBid, curBid, stack} + liste + para
+      en az 10.000 kredi, en yüksek tekliften büyük ve önceki teklifinden en az 10.000 fazla ("auction_bid_minBid_not_reached");
+      kredi teklifte düşer (önceki teklifin farkı), kredi yetmezse "auction_bid_credits_to_little" (kayıt: enumBaseKey 93)
+  AuctionQuickBuyRequest {lootId, type}    -> uridyumla hemen (anında alımı olmayan lot: "auction_buy_instant_invalid")
+  Get/UpdateNamFIagRequest                 -> onay postaları açık mı (istemci: "Enable confirmation messages")
+Dönem bitince en yüksek teklif oyuncununsa eşya verilir (mağazanın ödül yolu), geçmişe yazılır, onay postası açıksa posta
+(müzayede mesajı, msgType 2 "Item purchased").
+Sanal rakipler isteğe bağlı (panelin Müzayede ayarı, ayar.py muzayede_rakip; varsayılan kapalı: teklifleri yalnız oyuncu verir).
+Seviyeler data/sosyal.json rakipler'de. Her lotun her döneminde olasılıkla bir rakip: bütçesi, dönem içindeki teklif adımları ve
+adı lot, dönem ve seviye tohumlu (yeniden hesaplanır, saklanmaz).
+  Çekingen, Ilımlı ('gecer' yok): birkaç küçük teklif verir; oyuncu teklif verince donar, oyuncuyu hiç geçmez -> lot oyuncunun.
+  Rekabetçi, Agresif: oyuncu geçince bir tepki süresi sonra karşılık verir (oyuncunun teklifi + artış, bütçeye kadar; dönemin
+  son 5 saniyesine kalmadan). Bütçeyi aşan teklif kazanır; kaybedilen lotun kredisi dönem sonunda geri gelir.
+Bot oyuncular gelince (Aşama 11) teklifleri rival() döndürecek.
+"""
+import json, os, random, time
+
+import ayar as AY
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+D = json.load(open(os.path.join(HERE, 'data', 'sosyal.json'), encoding='utf8'))['muzayede']
+LOTS = {(l[2], l[0]): {'loot': l[0], 'grup': l[1], 'tur': l[2], 'adet': l[3], 'anlik': l[4], 'fiyat': l[5]} for l in D['lotlar']}
+REQUESTS = {'AuctionListRequest', 'AuctionBidRequest', 'AuctionQuickBuyRequest', 'GetNamFIagRequest', 'UpdateNamFIagRequest',
+            'AuctionTestRequest'}
+B = D['bitis']
+
+
+def mod(_cls, **f):
+    f['_'] = _cls
+    return f
+
+
+def period_end(kind, now):
+    """Dönemin bitiş anı (UTC saniye)."""
+    t = int(now)
+    if kind == 'hour':
+        end = t - t % 3600 + B['saat_dk'] * 60
+        return end if end > t else end + 3600
+    end = t - t % 86400 + B['gun_sn']
+    if end <= t:
+        end += 86400
+    if kind == 'day':
+        return end
+    while time.gmtime(end).tm_wday != B['hafta_gunu']:
+        end += 86400
+    return end
+
+
+R = D['rakipler']
+SPAN = {'hour': 3600, 'day': 86400, 'week': 7 * 86400}
+SON_SN = 5                      # rakip karşılığını dönemin bitiminden en geç bu kadar önce verir
+
+
+def rival_level():
+    return AY.get('muzayede_rakip')
+
+
+def plan(lot, end, level):
+    """Rakibin bu dönemdeki planı {'butce', 'adimlar' [(an, teklif)], 'ad', 'id', 'tohum', 'cfg'} ya da None (rakip yok)."""
+    cfg = R['seviyeler'].get(str(level))
+    if not cfg:
+        return None
+    seed = '%s|%s|%d|%d' % (lot['tur'], lot['loot'], end, level)
+    r = random.Random(seed)
+    if r.random() >= cfg['ilgi']:
+        return None
+    if lot['anlik'] and lot['fiyat']:
+        budget = lot['fiyat'] * r.uniform(*cfg['carpan'])
+    else:
+        budget = r.uniform(*cfg['fiyatsiz'])
+    least, step = D['en_az_teklif'], D['artis']
+    budget = max(least + step, int(round(budget, -4)))
+    final = max(least, min(int(round(budget * r.uniform(*cfg['son']), -4)), budget - step))   # karşılıksız en son teklifi
+    span = SPAN[lot['tur']]
+    times = sorted(end - span + span * r.uniform(0, 0.95) for _ in range(r.randint(1, cfg['adim'])))
+    fracs = sorted(r.uniform(0.2, 1.0) for _ in times[:-1]) + [1.0]
+    steps, last = [], 0
+    for t, fr in zip(times, fracs):
+        a = max(least, int(round(final * fr, -4)))
+        if a > last:
+            steps.append((t, a))
+            last = a
+    name = '%s%s' % (r.choice(R['adlar']), r.choice(R['ekler']))
+    return {'butce': budget, 'adimlar': steps, 'ad': name, 'id': 900000 + r.randrange(100000), 'tohum': seed, 'cfg': cfg}
+
+
+def rival(lot, end, now, bid=None, level=None):
+    """Rakibin `now` anındaki teklifi -> (teklif, ad, kimlik); rakip yoksa (0, '', 0). bid: oyuncunun bu dönemki teklifi
+    {'teklif', 'zaman'}: Çekingen/Ilımlı rakip o anda donar, Rekabetçi/Agresif tepki süresi sonra karşılık verir."""
+    level = rival_level() if level is None else level
+    pl = plan(lot, end, level) if level else None
+    if not pl:
+        return 0, '', 0
+    at = lambda t: max([a for s, a in pl['adimlar'] if s <= t], default=0)
+    v = at(now)
+    if bid and bid.get('teklif'):
+        price, t0 = bid['teklif'], bid.get('zaman', end - SPAN[lot['tur']])
+        if not pl['cfg'].get('gecer'):
+            v = min(v, at(t0))                  # oyuncuyu geçmez: oyuncunun teklifindeki yerinde kalır
+        elif price < pl['butce']:
+            delay = SPAN[lot['tur']] * random.Random('%s|%d' % (pl['tohum'], int(t0))).uniform(*pl['cfg']['tepki'])
+            if now >= min(t0 + delay, end - SON_SN):
+                v = max(v, min(pl['butce'], price + D['artis']))
+    return (v, pl['ad'], pl['id']) if v else (0, '', 0)
+
+
+def stamp(t):
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t))
+
+
+class Muzayede:
+    def __init__(self, profil, log=print):
+        self.p, self.log = profil, log
+        self.m = None
+        self.posta = None
+        with self.p.lock:
+            d = self.p.d.setdefault('muzayede', {})
+            d.setdefault('teklifler', {})
+            d.setdefault('gecmis', [])
+            d.setdefault('onay_postasi', False)
+
+    @property
+    def d(self):
+        return self.p.d['muzayede']
+
+    def bid_rec(self, lot, now):
+        """Oyuncunun bu dönemdeki teklif kaydı {'teklif', 'bitis', 'zaman'} ya da None."""
+        b = self.d['teklifler'].get('%s|%s' % (lot['tur'], lot['loot']))
+        return b if b and b['bitis'] == period_end(lot['tur'], now) else None
+
+    def bid_of(self, lot, now):
+        b = self.bid_rec(lot, now)
+        return b['teklif'] if b else 0
+
+    def data(self, lot, now):
+        b = self.bid_rec(lot, now)
+        mine = b['teklif'] if b else 0
+        riv, rname, rid = rival(lot, period_end(lot['tur'], now), now, b)
+        lead = mine and mine > riv
+        pl = self.p.d['pilot']
+        return mod('AuctionDataCommand', instantBuy=lot['anlik'], price=lot['fiyat'], highestBid=max(mine, riv),
+                   highestBidderName=pl.get('userName', '') if lead else rname, id=lot['loot'], myBid=mine, type=lot['tur'],
+                   highestBidderId=self.p.user_id if lead else rid, group=lot['grup'], amount=lot['adet'])
+
+    def list_cmd(self, now=None):
+        now = now or time.time()
+        hist = [mod('AuctionHistoryCommand', group=h['grup'], winnerId=h['kim'], currendBid=h['teklif'], auctionStartTime=h['tarih'],
+                    lootId=h['loot'], type=h['tur'], winnerName=h['ad']) for h in self.history(now)]
+        return ('AuctionListCommand', {
+            'weekSubSec': period_end('week', now) - int(now), 'hourSubSec': period_end('hour', now) - int(now),
+            'daySubSec': period_end('day', now) - int(now), 'historyList': hist,
+            'myBidList': [self.data(l, now) for l in LOTS.values() if self.bid_of(l, now)],
+            'auctionList': [self.data(l, now) for l in LOTS.values()]})
+
+    def history(self, now):
+        """Oyuncunun kazandıkları ve kaybettikleri + (rakipler açıksa) son biten dönemlerin rakip kazananları."""
+        out = list(self.d['gecmis'])
+        level = rival_level()
+        if level:
+            seen = {(h['tur'], h['loot'], h['tarih']) for h in out}
+            for kind, span in SPAN.items():
+                end = period_end(kind, now) - span
+                for lot in LOTS.values():
+                    if lot['tur'] != kind or (kind, lot['loot'], stamp(end - span)) in seen:
+                        continue
+                    v, name, rid = rival(lot, end, end, None, level)
+                    if v:
+                        out.append({'grup': lot['grup'], 'kim': rid, 'teklif': v, 'tarih': stamp(end - span), 'loot': lot['loot'],
+                                    'tur': kind, 'ad': name})
+        return out[:D['gecmis_siniri']]
+
+    # -------------------------------------------------------- istekler
+    def handle(self, name, f, now=None):
+        now = now or time.time()
+        self.settle(now)
+        if name == 'AuctionListRequest':
+            return [self.list_cmd(now), self.flag_cmd()]
+        if name == 'GetNamFIagRequest':
+            return [self.flag_cmd()]
+        if name == 'UpdateNamFIagRequest':
+            with self.p.lock:
+                self.d['onay_postasi'] = bool(f.get('open'))
+                self.p.dirty = True
+            return [('UpdateNamFIagCommand', {'open': self.d['onay_postasi'], 'success': True})]
+        if name == 'AuctionBidRequest':
+            return self.bid(f, now)
+        if name == 'AuctionQuickBuyRequest':
+            return self.quick(f, now)
+        if name == 'AuctionTestRequest':
+            return [('AuctionTestCommand', {'args': []})]
+        return []
+
+    def flag_cmd(self):
+        return ('GetNamFlagCommand', {'open': self.d['onay_postasi']})
+
+    def bid(self, f, now):
+        from magaza import stack_msg
+        lot = LOTS.get((f.get('type'), f.get('lootId')))
+        price = int(f.get('price') or 0)
+        empty = mod('AuctionDataCommand', instantBuy=False, price=0, highestBid=0, highestBidderName='', id='', myBid=0, type='',
+                    highestBidderId=0, group='', amount=0)
+        fail = lambda key, **a: [('AuctionBidCommand', {'success': False, 'myBid': empty, 'curBid': empty, 'stack': stack_msg(key, **a)}),
+                                 self.list_cmd(now), self.flag_cmd()]
+        if not lot:
+            return fail('auction_error_generic')
+        end = period_end(lot['tur'], now)
+        rec = self.bid_rec(lot, now)
+        mine = rec['teklif'] if rec else 0
+        top = max(mine, rival(lot, end, now, rec)[0])
+        if price < D['en_az_teklif'] or price <= top or (mine and price < mine + D['artis']):
+            return fail('auction_bid_minBid_not_reached', _MINIMUM_BID_='{:,}'.format(D['artis']))
+        import envanter as INV
+        if INV.spend(self.p, {'currency_credits': price - mine}, 'buy_SPECIAL', lot['loot']) is None:
+            return fail('auction_bid_credits_to_little')
+        with self.p.lock:
+            self.d['teklifler']['%s|%s' % (lot['tur'], lot['loot'])] = {'teklif': price, 'bitis': end, 'zaman': int(now)}
+            self.p.dirty = True
+        self.log('   müzayede teklifi: %s %s %d kredi' % (lot['tur'], lot['loot'], price))
+        cur = self.data(lot, now)
+        return [('AuctionBidCommand', {'success': True, 'myBid': cur, 'curBid': cur, 'stack': stack_msg('auction_bid_saved')}),
+                self.list_cmd(now), self.flag_cmd()] + (self.m.money_msgs() if self.m else [])
+
+    def quick(self, f, now):
+        from magaza import stack_msg
+        lot = LOTS.get((f.get('type'), f.get('lootId')))
+        if not lot or not lot['anlik'] or not lot['fiyat']:
+            return [('AuctionQuickBuyCommand', {'success': False, 'stack': stack_msg('auction_buy_instant_invalid')})]
+        import envanter as INV
+        if INV.spend(self.p, {'currency_uridium': lot['fiyat']}, 'buy_SPECIAL', lot['loot']) is None:
+            return [('AuctionQuickBuyCommand', {'success': False, 'stack': stack_msg('not_enough_uridium')})]
+        self.log('   müzayede anında alım: %s x%d (%d U)' % (lot['loot'], lot['adet'], lot['fiyat']))
+        msgs = self.m.reward(lot['loot'], lot['adet']) if self.m else []
+        return [('AuctionQuickBuyCommand', {'success': True, 'stack': stack_msg('empty')}), self.list_cmd(now)] + \
+            (self.m.money_msgs() if self.m else []) + msgs
+
+    # -------------------------------------------------------- dönem sonu
+    def settle(self, now=None):
+        """Biten dönemlerdeki teklifler: kazanılan eşya verilir -> mesajlar (oturum gönderir)."""
+        now = now or time.time()
+        msgs = []
+        for key, b in list(self.d['teklifler'].items()):
+            if b['bitis'] > now:
+                continue
+            kind, loot = key.split('|', 1)
+            lot = LOTS.get((kind, loot))
+            with self.p.lock:
+                self.d['teklifler'].pop(key, None)
+                self.p.dirty = True
+            if not lot:
+                self.p.gain(kredi=b['teklif'], neden='auction_bookMoneyBack', detay=loot)
+                continue
+            span = SPAN[kind]
+            riv, rname, rid = rival(lot, b['bitis'], b['bitis'], b)
+            if b['teklif'] <= riv:                                      # rakip kazandı: kredi geri, geçmişte rakibin adı
+                self.p.gain(kredi=b['teklif'], neden='auction_bookMoneyBack', detay=loot)
+                with self.p.lock:
+                    self.d['gecmis'].insert(0, {'grup': lot['grup'], 'kim': rid, 'teklif': riv, 'tarih': stamp(b['bitis'] - span),
+                                                'loot': loot, 'tur': kind, 'ad': rname})
+                    del self.d['gecmis'][D['gecmis_siniri']:]
+                self.log('   müzayede kaybedildi: %s (%s %d kredi; teklifin %d geri)' % (loot, rname, riv, b['teklif']))
+                msgs += self.mail(lot, b, 1)
+                continue
+            pl = self.p.d['pilot']
+            with self.p.lock:
+                self.d['gecmis'].insert(0, {'grup': lot['grup'], 'kim': self.p.user_id, 'teklif': b['teklif'],
+                                            'tarih': stamp(b['bitis'] - span), 'loot': loot, 'tur': kind, 'ad': pl.get('userName', '')})
+                del self.d['gecmis'][D['gecmis_siniri']:]
+                self.p.dirty = True
+            self.log('   müzayede kazanıldı: %s x%d (%d kredi)' % (loot, lot['adet'], b['teklif']))
+            msgs += (self.m.reward(loot, lot['adet']) if self.m else []) + self.mail(lot, b, 2)
+        if msgs and self.m:
+            msgs += self.m.money_msgs()
+        return msgs
+
+    def mail(self, lot, b, msg_type):
+        if not (self.posta and self.d['onay_postasi']):
+            return []
+        import posta as PS
+        rec = self.posta.add(PS.AUCTION, '', '', sender='', extra={'lootId': lot['loot'], 'auctionType': lot['tur'],
+                                                                  'amount': b['teklif'], 'msgType': msg_type, 'auctionId': 0})
+        return [self.posta.notify(rec)]

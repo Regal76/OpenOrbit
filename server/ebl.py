@@ -1,0 +1,278 @@
+"""Eternal Black Light (yol haritası Aşama 8; istemcinin EternalBlacklight* komutları; veri data/pve_modlari.json "ebl").
+
+Eternal CPU (kısayol çubuğundan) şirketinin X-BL haritasında kapıyı açar (seviye 17). Sonsuz dalga: bir tur 51 dalga, 6 oda
+(460-465; beşi 10'ar dalga, altıncısı Strokelight Barrage); tur bitince baştan, uzaylıların değerleri ve ödülleri x1,8. Tek can:
+ölünce koşu biter, son tamamlanan dalganın kademesinin Blacklight Shard ödülü (ve 26. dalgadan Indoctrine Accelerator olasılığı)
+verilir. Kontrol noktaları (10, 20, 30, 40, 50 ve 51. dalgalardan sonra): booster puanı (1; 51'de 2), devam ve çıkış portalı; çıkıp
+sonra kaldığın yerden sürdürebilirsin (yeni CPU gerekmez). Boosterlar (istemcinin BoosterType'ı: 0 bekleme, 1 hasar, 2 lazer hasarı,
+3 roket hasarı, 4 lazer isabeti, 5 can, 6 kalkan, 7 hız): pencerede üç seçenek (EternalBlacklightBoosterInfoCommand), seçim bir puan
+(EternalBlacklightChooseOptionRequest {choosenOption}); seçilen türün yeniden çıkma olasılığı azalır; yalnız bu modun haritalarında
+etkin, koşu bitince sıfırlanır. Uridyum koşu başına en çok 75.000 (sonra uzaylılar uridyum vermez). Sıralama: en ileri dalga (tek
+oyunculu: yalnız oyuncu; Hall of Fame'in EternalGate listesi).
+Profilde: pve.ebl {kapi, kosu {dalga, puan, secenek [3], agirlik {tur: çarpan}, aktif {tur: %}, uridyum, bas}, en_iyi, en_iyi_an}.
+"""
+import json, math, os, random, time
+
+import kapi as KAPI
+import siralama as SR
+import pve_ortak as PO
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+D = json.load(open(os.path.join(HERE, 'data', 'pve_modlari.json'), encoding='utf8')).get('ebl')
+PORTAL = 156900000           # + 0 X-BL kapısı, + 1 devam, + 2 çıkış
+
+
+def mod(_cls, **f):
+    f['_'] = _cls
+    return f
+
+
+class Ebl:
+    key, ad = 'ebl', 'Eternal Black Light'
+
+    def __init__(self, profil, magaza, log=print):
+        self.p, self.m, self.log = profil, magaza, log
+        self.D = D
+        self.world = None
+
+    @staticmethod
+    def maps():
+        return D['haritalar'] if D else []
+
+    @property
+    def st(self):
+        return self.p.d.setdefault('pve', {}).setdefault('ebl', {})
+
+    @property
+    def run(self):
+        return self.st.get('kosu')
+
+    # ------------------------------------------------------------ CPU ve kapı
+    def own_bl(self, map_id):
+        import harita as H
+        name = H.name(map_id)                      # sunucunun adı BL-1/2/3 (istemcide 1-BL …)
+        return name == 'BL-%s' % self.p.d['pilot'].get('factionId')
+
+    def use_cpu(self, map_id):
+        if not self.own_bl(map_id) or self.st.get('kapi') or self.run or self.p.d['pilot'].get('level', 1) < D['seviye']:
+            return None
+        if self.p.use_ammo(D['cpu']) is None:
+            return None
+        with self.p.lock:
+            self.st['kapi'] = True
+            self.p.dirty = True
+        self.log('   Eternal CPU: X-BL\'de kapı')
+        return [KAPI.screen('The Eternal Black Light gate has opened.', big=True), self.info_cmd()]
+
+    def portals(self, map_id):
+        import harita as H
+        if not self.own_bl(map_id) or not (self.st.get('kapi') or self.run):
+            return []
+        w, h = H.map_size(map_id)
+        return [dict(gateId=PORTAL, x=w // 2, y=h // 2 - 1500, hedef=0, designId=D['portal'], kapi='ebl', pencere='ebl')]
+
+    def gate_jump(self):
+        """X-BL kapısına atlandı: koşu yoksa başlar, varsa kaldığı odaya -> (hedef, mesajlar)."""
+        if not self.run:
+            with self.p.lock:
+                self.st['kosu'] = dict(dalga=0, puan=0, secenek=[], agirlik={}, aktif={}, uridyum=0, bas=time.time())
+                self.st['kapi'] = False
+                self.p.dirty = True
+            self.log('   Eternal Black Light: koşu başladı')
+        return self.room_map(), []
+
+    # ------------------------------------------------------------ dalgalar
+    def wave_in_lap(self, done=None):
+        """Sıradaki dalga (1-51) ve tur (1…): tamamlanan dalga sayısından."""
+        done = self.run['dalga'] if done is None else done
+        return done % D['tur'] + 1, done // D['tur'] + 1
+
+    def room_map(self):
+        w, lap = self.wave_in_lap()
+        room = D['dalgalar'][w - 1]['oda']
+        return D['haritalar'][room - 1]
+
+    def waves(self):
+        """Bu odanın kalan dalgaları (koşu sırası: tamamlanan sayısından)."""
+        w, lap = self.wave_in_lap(self.start_done)
+        room = D['dalgalar'][w - 1]['oda']
+        return [x for x in D['dalgalar'] if x['oda'] == room and int(x['ad']) >= w]
+
+    def wave_count(self):
+        return len(self.waves())
+
+    def scale(self, n, i, wave):
+        w, lap = self.wave_in_lap(self.start_done + i)
+        f = D['carpan_tur'] ** (lap - 1)
+        k = wave.get('carpan', 1.0)
+        PO.scale_npc(n, f * k, f * k, f * k)
+        r = self.run
+        if r['uridyum'] >= D['uridyum_siniri']:
+            n.d['odul']['uridyum'] = 0                  # koşunun uridyum sınırı
+        else:
+            r['uridyum'] += n.d['odul']['uridyum']
+        return n
+
+    def attach(self, world):
+        self.world = world
+        if not self.run:
+            world.add_gate(self.exit_portal(world))
+            return None
+        if int(world.map_id) != int(self.room_map()):
+            # odanın son dalgası bitmiş (oda geçişleri kontrol noktalarında): kontrol noktasında çıkış yapılıp girilmiş. Portallar
+            # dünyayla gidiyordu; koşu eski odada 11. dalgayla çıkışsız sürüyordu (canlı test H77). Portallar yeniden, dalga yok
+            self.checkpoint_gates(world)
+            world.send([self.info_cmd(), self.booster_cmd(), self.rank_cmd()])
+            return None
+        self.start_done = self.run['dalga']
+        world.kapi = PO.Kosu(world, self, break_sn=2)
+        world.send([self.info_cmd(), self.booster_cmd()])
+        return world.kapi
+
+    def wave_started(self, i):
+        w, lap = self.wave_in_lap(self.start_done + i)
+        self.world.send([KAPI.screen('Eternal Black Light - Wave %d (lap %d)' % ((lap - 1) * D['tur'] + w, lap), big=True)])
+
+    def wave_done(self, i, now):
+        r = self.run
+        with self.p.lock:
+            r['dalga'] += 1
+            done = r['dalga']
+            if done > self.st.get('en_iyi', 0):
+                self.st['en_iyi'] = done
+                self.st['en_iyi_an'] = int(time.time() * 1000)
+            self.p.dirty = True
+        self.p.ach('gate_wave', tur='ETERNAL_GATE', dalga=done)       # başarım: "Eternal Gate'te N. dalgaya ulaş"
+        w = (done - 1) % D['tur'] + 1
+        pts = D['kontrol'].get(str(w))
+        self.world.send([('EternalBlacklightWaveInfoCommand', self.wave_info())])
+        if not pts:
+            return 'devam'
+        with self.p.lock:
+            r['puan'] += pts
+            self.p.dirty = True
+        if not r['secenek']:
+            self.roll()
+        self.checkpoint(done, pts)
+        return 'dur'
+
+    def checkpoint_gates(self, w):
+        x, y = w.map_w // 2, w.map_h // 2
+        w.add_gate(dict(gateId=PORTAL + 1, x=x - 1200, y=y, hedef=self.room_map(), designId=D['portal'], kapi='ebl', varis=(10500, 6550)))
+        w.add_gate(self.exit_portal(w, side=True))
+
+    def checkpoint(self, done, pts):
+        w = self.world
+        self.checkpoint_gates(w)
+        w.send([KAPI.screen('Checkpoint! +%d booster point%s. Continue or leave (your progress is kept).' % (pts, 's' if pts > 1 else ''),
+                            big=True), self.booster_cmd(), self.info_cmd(), self.rank_cmd()])
+        self.log('   EBL kontrol noktası: dalga %d, +%d puan' % (done, pts))
+
+    def exit_portal(self, world, side=False):
+        bl = {1: 306, 2: 307, 3: 308}.get(self.p.d['pilot'].get('factionId'), 306)
+        return dict(gateId=PORTAL + 2, x=world.map_w // 2 + (1200 if side else 0), y=world.map_h // 2, hedef=bl, designId=1, kapi='ebl',
+                    cikis=True)
+
+    def on_death(self):
+        """Tek can: koşu biter, son tamamlanan dalganın kademesinin ödülü."""
+        r = self.run
+        if not r:
+            return 0
+        done = r['dalga']
+        tier = next((t for t in D['olum_odulu'] if t['en_az'] <= done <= t['en_cok']), None)
+        msgs = []
+        if tier and done:
+            msgs += self.m.reward(D['parca'], tier['parca'])
+            if tier['iac'] and random.random() < D['iac'][2]:
+                msgs += self.m.reward(D['iac'][0], D['iac'][1])
+        with self.p.lock:
+            self.st['kosu'] = None
+            self.p.dirty = True
+        self.log('   EBL bitti: %d dalga; %s' % (done, '%d Blacklight Shard' % tier['parca'] if tier and done else 'ödül yok'))
+        if self.m:
+            msgs += self.m.apply_stats()             # boosterlar kalktı
+        self.world.send(msgs + [KAPI.screen('Eternal Black Light ended at wave %d.' % done, big=True), self.info_cmd(), self.rank_cmd()])
+        return 0
+
+    def revive(self):
+        pass
+
+    # ------------------------------------------------------------ boosterlar
+    def roll(self):
+        """Üç seçenek: tür ağırlıkla (seçilenlerin ağırlığı azalır), kademe 60/30/10."""
+        r = self.run
+        pool = list(D['boosterlar'])
+        out = []
+        for _ in range(3):
+            weights = [r['agirlik'].get(str(b['tur']), 1.0) for b in pool]
+            b = random.choices(pool, weights)[0]
+            pool.remove(b)
+            vals = b['degerler']
+            tier = random.choices(range(len(vals)), D['booster_kademe'][:len(vals)])[0]
+            out.append([b['tur'], vals[tier]])
+        r['secenek'] = out
+
+    def choose(self, f):
+        """EternalBlacklightChooseOptionRequest {choosenOption} -> mesajlar."""
+        r = self.run
+        if not r or r['puan'] <= 0 or not r['secenek']:
+            return [self.booster_cmd()]
+        i = int(f.get('choosenOption') or 0)
+        i = i - 1 if 1 <= i <= 3 else i               # istemci 0-2 ya da 1-3 gönderebilir
+        if not 0 <= i < len(r['secenek']):
+            return [self.booster_cmd()]
+        t, v = r['secenek'][i]
+        with self.p.lock:
+            r['aktif'][str(t)] = r['aktif'].get(str(t), 0) + v
+            r['agirlik'][str(t)] = r['agirlik'].get(str(t), 1.0) * D['booster_azalma']
+            r['puan'] -= 1
+            self.roll()
+            self.p.dirty = True
+        self.log('   EBL booster: tür %d +%d%% (toplam %d%%)' % (t, v, r['aktif'][str(t)]))
+        return (self.m.apply_stats() if self.m else []) + [self.booster_cmd()]
+
+    def mods(self, map_id):
+        """Bu modun haritasındayken boosterların bonusları (profil.mods'a)."""
+        r = self.run
+        if not r or int(map_id) not in D['haritalar']:
+            return {}
+        keys = {b['tur']: b['anahtar'] for b in D['boosterlar']}
+        return {keys[int(t)]: v / 100.0 for t, v in r['aktif'].items() if int(t) in keys}
+
+    # ------------------------------------------------------------ göstergeler
+    def wave_info(self):
+        r = self.run or {}
+        return dict(furthestWave=int(self.st.get('en_iyi', 0)), currentWave=int(r.get('dalga', 0)))
+
+    def booster_cmd(self):
+        r = self.run or {}
+        opts = (r.get('secenek') or []) + [[0, 0]] * 3
+        b = lambda t, v: mod('EternalBlacklightBoosterCommand', value=int(v), boosterType=int(t))
+        return ('EternalBlacklightBoosterInfoCommand', dict(
+            option1=b(*opts[0]), option2=b(*opts[1]), option3=b(*opts[2]),
+            skillPointInfo=mod('EternalBlacklightSkillPointInfoCommand', skillPoint=int(r.get('puan', 0))),
+            currentBooster=[b(int(t), v) for t, v in sorted((r.get('aktif') or {}).items())]))
+
+    def info_cmd(self):
+        return ('EternalBlacklightInfoCommand', dict(
+            waveInfo=mod('EternalBlacklightWaveInfoCommand', **self.wave_info()),
+            cpuInfoCommand=mod('EternalBlacklightCpuInfoCommand', cpuCount=int(self.p.ammo(D['cpu']))),
+            boosterInfoCommand=mod('EternalBlacklightBoosterInfoCommand', **self.booster_cmd()[1])))
+
+    def when(self):
+        """Rank sekmesinin TIME sütunu: istemci metni olduğu gibi yazıyor; ham ms damgası "1792220704339" görünüyordu (H76).
+        Biçim kayıttaki seyir defteri tarihleri gibi."""
+        t = self.st.get('en_iyi_an')
+        if not t:
+            return ''
+        return time.strftime('%Y-%m-%d %H:%M', time.localtime(float(t) / (1000.0 if float(t) > 1e11 else 1.0)))
+
+    def rank_cmd(self):
+        best = int(self.st.get('en_iyi', 0))
+        me = mod('EternalBlacklightRankModule', waves=best, name=self.p.d['pilot'].get('userName', ''), rank=1 if best else 0,
+                 lastUpdateTime=self.when())
+        info = mod('EternalBlacklightRankInfoCommand', topRankers=[me] if best else [], myRank=me)
+        # Rank sekmesi yalnız etkinlik sarmalını tanıyor (Astral'ın RogueLiteRankEventInfoCommand'ı gibi); isEventEnabled olmadan
+        # "No ranking boards are available at the moment." (canlı test H76)
+        return ('EternalBlacklightRankingEventInfoCommand', dict(playerRankRanges=SR.ranges(SR.EBL), rankInfoCommand=info,
+                                                                isEventEnabled=True))
