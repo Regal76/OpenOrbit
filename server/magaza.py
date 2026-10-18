@@ -1473,6 +1473,7 @@ class Magaza:
             cfg = self.p.config(cid, sid)
             dcfg = self.p.drone_config(cid, sid)
             pcfg = self.pet.config(cid) if self.pet.owned else {}
+            pet_before = {k: list(v) for k, v in pcfg.items()}
             busy = self.p.hangar_map()
 
             def detach(iid):
@@ -1581,6 +1582,7 @@ class Magaza:
             if moved:
                 self.p.dirty = True
                 self.p.sync_ekipman()
+            pet_changed = {k: list(v) for k, v in pcfg.items()} != pet_before
         where = ' (dron %s%s)' % (f.get('droneId'), ' ' + f['slotSet'] if f.get('slotSet') else '') if 'drone' in (src, dst) else ''
         self.log('   hangar %s config %s: %s %s -> %s%s%s' % (ship['lootId'], cid, ', '.join(l.rsplit('_', 1)[-1] for i, l in moved) or '-',
                                                             src, dst, where, ' (hata: %s)' % err if err else ''))
@@ -1604,8 +1606,10 @@ class Magaza:
                 msgs += self.apply_stats()
             if designs:
                 msgs += self.drone_msgs()                  # uzaydaki dronların görünümü
-            if any(PETM.slot_for(l) for i, l in moved):
-                msgs += self.pet.refresh()                 # uzaydaki P.E.T.'in dişlileri ve değerleri
+            if pet_changed:
+                # uzaydaki P.E.T.'in dişlileri ve değerleri: yalnız P.E.T.'in donanımı değişince (gemiye lazer/jeneratör takmak da
+                # P.E.T. yuvası türünden sayılıyordu, her seferinde seviye atlama efekti çıkıyordu)
+                msgs += self.pet.refresh()
         return msgs
 
     # ------------------------------------------------------------ gemi değiştirme ve config geçişi

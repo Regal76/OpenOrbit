@@ -15,6 +15,11 @@ Kayıtta olmayanlar istemcinin koduna ve metinlerine göre (GalaxyGateComponentS
   Kayıtta kapı oynanmadığı için gerçek sunucunun metinleri bilinmiyor: istemcinin kendi metinleri (atk_wave_started,
   log_galaxygate_wave_name, log_msg_gg_completed_*) ve data/kapilar.json "mesajlar" (geri sayım, dalga bitti …). İstemcinin
   geri sayım komutları (EpicFightMessageCommand, CountdownStatusCommand) bu sürümde boş işleyicili, kullanılamıyor.
+Kurulu kapı (2026-10-19, kullanıcı bildirimi: kurulu kapıda enerji "Tanımlanamayan bir hata" veriyordu): istemci enerji düğmesini
+kapının durumundan bağımsız açık tutuyor, yanıtta yalnız 0 / uridyum yetmiyor / "unclassified_error" var (ParseProduceResponse);
+kurulu kapıya çekiliş de kabul edilir: her parça kopyadır (çarpan), öteki ödüller olağan. Pencere kurulu kapıda (state FINISHED)
+her açılışta "Kapı ALPHA inşaatı bitti" bildirimini açıyor (UIGalaxyGatesSystem.RefProgress, GATE_DETAILS); kapı hazırlanınca
+(PREPARE JUMP, portalı X-1'de) durum IN_PROGRESS gönderilir, bildirim yalnız hazırlanmamış kurulu kapıda çıkar.
 Kapı haritası: ana dalgalar, her biri alt dalgalar ("gruplar"; alt dalga temizlenince sonraki). Ana dalgadan sonra ortada eve
 dönüş portalı açılır; mola bitince sonraki dalga başlar. Eve dönülürse ilerleme saklanır. Vurulunca üste tamir olunur, can 1
 azalır; can kalmazsa kapı (parçalarıyla) kaybolur. Değerler data/kapilar.json (tools/kapilar.py).
@@ -208,6 +213,11 @@ class Kapilar:
     def built(self, key):
         return len(self.gate(key)['parcalar']) >= KAPI[key]['parca']
 
+    def state(self, key):
+        """Penceredeki durum: kurulu ve henüz hazırlanmamışsa FINISHED (istemci "Prepare jump"u açar, "inşaatı bitti" bildirimini
+        gösterir); hazırlanmış kapı IN_PROGRESS (portalı X-1'de, bildirim her açılışta çıkmasın)."""
+        return FINISHED if self.built(key) and not self.gate(key)['hazir'] else IN_PROGRESS
+
     def energy_price(self):
         """Enerji fiyatı: Premium -%5 (tek oyunculuda herkes premium; galaxy_gates.md), hafta sonu -%15."""
         import takvim as TK
@@ -267,7 +277,7 @@ class Kapilar:
             pct = percentages()
             out['probabilityModules'] = [dict(m, percentage=pct.get(m.get('category'), m.get('percentage', 0)))
                                          for m in out['probabilityModules']]
-        out.update(currPart=len(G['parcalar']), currWave=G['dalga'], state=FINISHED if self.built(key) else IN_PROGRESS,
+        out.update(currPart=len(G['parcalar']), currWave=G['dalga'], state=self.state(key),
                    livesLeft=G['can'] if G['hazir'] else -1, lifePrice=self.life_price(key), multiplier=self.d['carpan'], mode=key,
                    id=g['kimlik'], bonusGGRewardModules=self.bonus_modules(key))
         if 'kaynaklar' in g:
@@ -324,9 +334,10 @@ class Kapilar:
         reply = lambda err, items=(), extra=None: [('GalaxyGateBuilderMultiEnergyCommand', dict(
             gatePartIds=self.part_ids(key) if key else [], items=list(items), spinamount_selected=n, errorCode=err, money=self.money(),
             multiplier=self.d['carpan'], gateMode=key or '', samples=self.d['enerji']))] + (extra or [])
-        if not key or n <= 0 or self.built(key) or KAPI[key].get('uretilmez'):
+        if not key or n <= 0 or KAPI[key].get('uretilmez'):
             self.log('   kapı üreticisi: çekiliş yok (kapı %s, %d)' % (gid, n))     # Kronos: parçaları diğer kapılardan
             return reply(ERR_OTHER)
+        was_built = self.built(key)              # kurulu kapıda da çekiliş: parçalar kopya (çarpan), öteki ödüller olağan
         price, sale = self.energy_price()
         free = min(n, self.d['enerji'])
         cost = (n - free) * price
@@ -336,8 +347,8 @@ class Kapilar:
         results, grants = [], {}
         used = 0
         for _ in range(n):
-            if self.built(key):
-                break                          # kapı tamamlandı: kalan enerji harcanmaz
+            if not was_built and self.built(key):
+                break                          # kapı bu çekilişlerde kuruldu: kalan enerji harcanmaz
             used += 1
             results.append(self.draw(key, f.get('useMultiplier'), grants))
         free = min(used, self.d['enerji'])
@@ -354,7 +365,7 @@ class Kapilar:
         self.log('   kapı üreticisi %s: %d çekiliş (%d ücretsiz, %d U), parça %d/%d, çarpan %d: %s' % (
             key, used, free, cost, len(self.gate(key)['parcalar']), KAPI[key]['parca'], self.d['carpan'],
             ', '.join('%s %s' % (k, v) for k, v in sorted(grants.items()))))
-        if self.built(key):
+        if not was_built and self.built(key):
             self.log('   %s kapısı kuruldu' % KAPI[key]['ad'])
         return reply(ERR_NONE, items, msgs)
 
@@ -370,8 +381,9 @@ class Kapilar:
                 break
         if cat == CAT_PART:
             pid = random.randint(1, g['parca'])
-            if pid in G['parcalar'] and random.random() < K['kopya_eksige']:
-                pid = random.choice([i for i in range(1, g['parca'] + 1) if i not in G['parcalar']])
+            missing = [i for i in range(1, g['parca'] + 1) if i not in G['parcalar']]
+            if pid in G['parcalar'] and missing and random.random() < K['kopya_eksige']:
+                pid = random.choice(missing)
             dup = pid in G['parcalar']
             with self.p.lock:
                 if dup:
@@ -410,7 +422,7 @@ class Kapilar:
                 key = BY_ID[r['gate_id']]
                 # son parçada FINISHED: istemci "Prepare jump" düğmesini kapı durumundan açar (canlı test: IN_PROGRESS gidince düğme
                 # pencere yeniden açılana dek kapalı kaldı)
-                done = r['current'] >= KAPI[key]['parca']
+                done = r['current'] >= KAPI[key]['parca'] and not self.gate(key)['hazir']
                 out.append(mod('GalaxyGateBuilderPartItemModule', type=PART, date=now, livesLeft=-1, gate_id=r['gate_id'],
                                state=FINISHED if done else IN_PROGRESS, multiplier_used=0, current=r['current'], part_id=r['part_id'],
                                duplicate=r['duplicate'], lifePrice=-1))

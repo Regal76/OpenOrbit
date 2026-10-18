@@ -148,6 +148,7 @@ class Pet:
         self.fuel_sent, self.next_fuel_msg = 0, 0.0
         self.release_end = 0.0       # G-HR1 (Heat Release) çalışıyorsa bitişi
         self.release_ready = 0.0     # G-HR1 bekleme bitişi
+        self.look = None             # istemcinin bildiği görünüm (gemi türü): yalnız değişince PetLevelUpdateCommand
         self.release_wait = False    # bekleme bitince "hazır" iletisi gidecek
         self.heat_sent, self.next_heat_msg = None, 0.0
         self.on_stats = None         # gemi değerleri yeniden (magaza.apply_stats): HEAT bonusu değişince
@@ -409,6 +410,7 @@ class Pet:
 
     def activation_msg(self, x, y):
         pl = self.p.d['pilot']
+        self.look = self.ship_type()
         return ('PetHeroActivationCommand', dict(
             ownerId=self.p.user_id, petId=self.pid, shipType=self.ship_type(), expansionStage=1, petName=self.d['ad'],
             factionId=pl.get('factionId', 1), clanId=0, petLevel=self.d['seviye'], clanTag='', x=int(x), y=int(y), petSpeed=self.speed(),
@@ -1063,6 +1065,7 @@ class Pet:
             self.p.dirty = True
         msgs = [('PetExperiencePointsUpdateCommand', dict(currentExperiencePoints=d['ep'], maxExperiencePoints=self.next_xp()))]
         if d['seviye'] > old:
+            self.look = self.ship_type()
             msgs += [('PetLevelUpdateCommand', dict(petLevel=d['seviye'], petExperiencePointsUntilNextLevel=self.next_xp(),
                                                     designId=self.ship_type(), expansionStage=1)), self.status_msg()]
             self.log('   P.E.T. seviye atladı: %d' % d['seviye'])
@@ -1070,7 +1073,9 @@ class Pet:
         return msgs
 
     def refresh(self):
-        """Hangarda P.E.T. donanımı değişti: uzaydaysa dişliler, durum ve görünüm (tasarım) yeniden."""
+        """Hangarda P.E.T. donanımı değişti: uzaydaysa dişliler, durum ve görünüm (tasarım) yeniden. Görünüm PetLevelUpdateCommand'la
+        gidiyor; istemci onu seviye atlama efektiyle ve üstte seviye yazısıyla gösteriyor: yalnız görünüm değişince (2026-10-19,
+        kullanıcı bildirimi: hangarda her eşya değişince efekt çıkıyordu)."""
         if not self.active:
             return []
         hp, sh = self.hp_max(), self.shield_max()
@@ -1079,9 +1084,12 @@ class Pet:
             self.d['kalkan'] = min(self.d['kalkan'], sh)
         if self.d.get('disli') not in {t for t, lv, ok in self.gear_list() if ok}:
             self.d['disli'] = GUARD
-        look = ('PetLevelUpdateCommand', dict(petLevel=self.d['seviye'], petExperiencePointsUntilNextLevel=self.next_xp(),
-                                              designId=self.ship_type(), expansionStage=1))
-        return [('PetGearResetCommand', {}), self.status_msg(), look] + self.gear_msgs()
+        look = []
+        if self.ship_type() != self.look:
+            self.look = self.ship_type()
+            look = [('PetLevelUpdateCommand', dict(petLevel=self.d['seviye'], petExperiencePointsUntilNextLevel=self.next_xp(),
+                                                   designId=self.look, expansionStage=1))]
+        return [('PetGearResetCommand', {}), self.status_msg()] + look + self.gear_msgs()
 
 
 ORE_DELAY = ESYA['cevherler']['toplama_sn']
