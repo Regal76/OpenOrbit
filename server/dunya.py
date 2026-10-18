@@ -97,7 +97,7 @@ def range_exceeded(uid, max_range, kind):
 
 # cephane bitince otomatik geçiş sırası (sıradan cephaneler; özel cephaneye kendiliğinden geçilmez)
 AUTO_AMMO = ['ammunition_laser_ucb-100', 'ammunition_laser_mcb-50', 'ammunition_laser_mcb-25', 'ammunition_laser_lcb-10']
-AUTO_REFINE = (4, 5)          # otomatik arıtmanın ürünleri: Prometid, Duranium (hammaddeden; Promerium arıtılmış cevherden)
+AUTO_REFINE = (4, 5, 6)       # otomatik arıtmanın ürünleri (laboratuvar tarifleri, bu sırayla): Prometid, Duranium, Promerium
 
 
 def attack_type(v):
@@ -933,35 +933,38 @@ class World:
         self.send(msgs + self.auto_refine() + self.p.hint(IP.SELL_RESOURCE))
         self.schedule(random.uniform(*ORE['yeniden_dogma_sn']), 'ore', o['tip'])
 
-    def auto_refine(self, need=1):
+    def auto_refine(self):
         """Ayarlar > Gameplay "Auto-refine raw materials" (autoRefinement; istemcinin ipucu "Only works with a premium pack", tek
-        oyunculuda herkes premium): kargoda need birimlik yer yoksa hammaddeler (Prometium, Endurium, Terbium) laboratuvar
-        tarifleriyle Prometid ve Duranium'a arıtılır, yer açılır ("Raw materials were automatically refined.", auto_ore_update).
-        Ayar hiç uygulanmıyordu (H84). -> mesajlar"""
-        if self.p.cargo_free() >= need or not self.p.gameplay('autoRefinement'):
+        oyunculuda herkes premium): her toplamadan sonra (cevher, kargo kutusu, P.E.T.'in topladıkları), toplamadan önce ve kargo
+        doluyken laboratuvar tarifleri yettikçe her şey arıtılır: Prometium + Endurium -> Prometid, Endurium + Terbium -> Duranium,
+        Prometid + Duranium + Xenomit -> Promerium ("Raw materials were automatically refined.", auto_ore_update). Ayar hiç
+        uygulanmıyordu (H84); 2026-10-18'e dek yalnız kargo dolunca ve Promerium'suz çalışıyordu (kullanıcı bildirimi). -> mesajlar"""
+        if not self.p.gameplay('autoRefinement'):
             return []
         recipes = [(t, {int(k): v for k, v in ESYA['laboratuvar']['tarifler'][str(t)].items()}) for t in AUTO_REFINE]
-        have = {k: self.p.ore_count(k) for _, r in recipes for k in r}
+        have = {k: self.p.ore_count(k) for t, r in recipes for k in [t, *r]}
         start, made, more = dict(have), {}, True
-        while more:                                     # sırayla birer birim: ortak Endurium iki ürüne paylaşılır
+        while more:                 # sırayla birer birim: ortak Endurium iki ürüne paylaşılır, yeni Prometid/Duranium Promerium'a girer
             more = False
             for t, r in recipes:
                 if all(have[k] >= v for k, v in r.items()):
                     for k, v in r.items():
                         have[k] -= v
+                    have[t] += 1
                     made[t] = made.get(t, 0) + 1
                     more = True
         if not made:
             return []
-        used = {k: start[k] - have[k] for k in have if start[k] > have[k]}
+        used = {k: start[k] - have[k] for k in have if have[k] < start[k]}
+        gained = {k: have[k] - start[k] for k in have if have[k] > start[k]}
         self.p.remove_ores(used)
-        totals = self.p.add_ores(made)
+        totals = self.p.add_ores(gained)
         self.log('   otomatik arıtma: %s (%s); kargoda boş %d' % (', '.join('%s %d' % (ORE['turler'].get(str(t)), n) for t, n in made.items()),
                                                                  ', '.join('%s %d' % (ORE['turler'].get(str(k)), n) for k, n in used.items()),
                                                                  self.p.cargo_free()))
         msgs = [('AttributeOreCountUpdateCommand', {'oreCountList': totals}), stm('auto_ore_update')]
         if self.ore_pack:
-            msgs.append(self.ore_pack(sorted(set(used) | set(made))))
+            msgs.append(self.ore_pack(sorted(set(used) | set(gained))))
         for t, n in made.items():
             msgs += self.quest('loot', loot=ORE['turler'].get(str(t), ''), amount=n)
         return msgs
@@ -1358,8 +1361,8 @@ class World:
             boost = 1 + (self.pet.proto('kutu') if self.pet and self.pet.active else 0)
             m = self.p.mods()          # pilot yetenekleri: Tractor Beam I/II (kargo/bonus kutusu), Luck (bonus kutusu uridyumu)
             pre = []
-            if b['tip'] == 'FROM_SHIP':                         # sığmayacaksa önce otomatik arıtma (ayar açıksa)
-                pre = self.auto_refine(sum(int(v * boost * (1 + m.get('kargo_kutusu', 0))) for v in b['icerik'].values()))
+            if b['tip'] == 'FROM_SHIP':                         # önce otomatik arıtma (ayar açıksa): yer açılır
+                pre = self.auto_refine()
             if b['tip'] == 'FROM_SHIP' and self.p.cargo_free() < 1:
                 self.send(pre + [legacy('0|A|STM|loadfull')] + self.p.hint(IP.FULL_CARGO))     # kargo dolu: kutu yerinde kalır
                 return False
@@ -1383,7 +1386,7 @@ class World:
                 for t, c in sorted(ores.items()):
                     msgs += self.quest('loot', loot=ORE['turler'].get(str(t), ''), amount=c)
                     RT.note(self.p, 'received_item', ORE['turler'].get(str(t), ''), c)       # seyir defteri
-                msgs += self.auto_refine()               # kargo doldu: sonraki toplama için yer
+                msgs += self.auto_refine()               # her toplamadan sonra (ayar açıksa)
             elif b.get('al'):                        # kendi toplama işlevi olan kutu (Ö4: Vortex'in Stellar Coin kutuları)
                 msgs += b['al'](b) or []
             elif b.get('etk'):                       # etkinlik kutusu (etkinlik_harita.py): içerik açılınca çekilir
