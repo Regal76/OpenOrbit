@@ -20,9 +20,10 @@ DEFAULTS = {
     'istemci_kapaninca': 'kapat',   # kapat: panelin açtığı sunucular kapanır | acik: açık kalır
     'gunluk_dondur': True,          # büyük günlükler başlatmada .1, .2 … olarak kayar
     'pencere_kapaninca': 'bekle',   # panel penceresi kapanınca: bekle (oyun sürüyorsa bitince kapanır) | kapat (her şeyi kapatır)
+    'guncelleme': 'otomatik',       # GitHub'daki yeni sürüm (guncelleme.py): otomatik kur | bildir (yalnız haber ver) | kapali
 }
 CHOICES = {'pencere_modu': ('pencere', 'tam_ekran', 'kenarliksiz'), 'istemci_kapaninca': ('kapat', 'acik'),
-           'pencere_kapaninca': ('bekle', 'kapat')}
+           'pencere_kapaninca': ('bekle', 'kapat'), 'guncelleme': ('otomatik', 'bildir', 'kapali')}
 LIMITS = {'genislik': (640, 7680), 'yukseklik': (480, 4320), 'monitor': (0, 8), 'yedek_sayisi': (1, 200), 'yedek_aralik_dk': (0, 600)}
 
 

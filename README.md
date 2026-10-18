@@ -13,8 +13,8 @@ Orijinal DarkOrbit Unity istemcisi için tek oyunculu, çevrimdışı sunucu ve 
 
 DarkOrbit Server Emulator runs a local server on your computer and starts the **original DarkOrbit client** against it.
 You play alone and offline: the client never connects to the official servers and its files are never changed. Internet
-is needed only once, if the panel downloads the game for you. A management panel starts the game and handles your
-saves, game settings and events.
+is needed only to download the game (once, if the panel does it for you) and to check for updates. A management panel
+starts the game and handles your saves, game settings and events.
 
 ### Features
 
@@ -43,6 +43,7 @@ saves, game settings and events.
 - **Events:** each event by calendar, or on / off by hand.
 - **Client:** game folder, game download, version check, window mode, resolution and display.
 - **Server:** processes, ports, behavior and live logs.
+- **Panel:** language, setup wizard, updates, desktop shortcut and folders.
 
 ### Requirements
 
@@ -66,6 +67,19 @@ saves, game settings and events.
 You can run the wizard again at any time from the **Panel** page, where you can also switch the language and put a
 desktop shortcut on your desktop.
 
+### Updates
+
+The panel checks this repository for a newer version shortly after it starts and then every six hours. By default it
+installs the update by itself once the game and the servers are closed, then restarts; the open panel window reloads.
+On the **Panel** page you can choose *Only notify* or turn it off, and check by hand.
+
+- **Downloaded as a ZIP** (no Git needed): the new version's archive (about 33 MB) is downloaded, changed files are
+  replaced and files that were removed from the project are taken out. Their old versions are kept in
+  `server/save/guncelleme/` (last two updates).
+- **Cloned with Git:** the panel fast-forwards with `git`. If you changed tracked files or have commits of your own, it
+  changes nothing and only tells you.
+- Your saves, settings, logs, personal login templates and the game client are never changed.
+
 ### In-game tips
 
 - Choose the game's own language on the client's login screen (the selector at the top, before START).
@@ -83,6 +97,7 @@ desktop shortcut on your desktop.
 | `server/save/panel.json` | Panel settings (language, game folder, display, backups) |
 | `server/logs/` | Server, client and panel logs |
 | `DarkOrbit_Version1.1.114/` | The game client, if the panel downloaded it (`istemci_indiriliyor/` while downloading) |
+| `server/save/guncelleme/` | Old versions of the files that updates replaced (last two updates) |
 
 All of these are created on first run and stay on your computer.
 
@@ -107,9 +122,9 @@ Don't use it to connect to or harm the official servers.
 ### Nedir
 
 DarkOrbit Server Emulator bilgisayarında yerel bir sunucu çalıştırır ve **orijinal DarkOrbit istemcisini** ona bağlar.
-Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, dosyaları değiştirilmez. İnternet yalnız bir kez,
-panel oyunu senin için indirirse gerekir. Bir yönetim paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikleri
-yönetir.
+Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, dosyaları değiştirilmez. İnternet yalnız oyunu
+indirmek (panel senin için indirirse, bir kez) ve güncellemeleri denetlemek için gerekir. Bir yönetim paneli oyunu başlatır;
+kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 
 ### Özellikler
 
@@ -137,6 +152,7 @@ yönetir.
 - **Etkinlikler:** her etkinlik takvime göre ya da elle açık / kapalı.
 - **İstemci:** oyun klasörü, oyunu indirme, sürüm denetimi, pencere kipi, çözünürlük ve ekran.
 - **Sunucu:** süreçler, portlar, davranış ve canlı günlükler.
+- **Panel:** dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu ve klasörler.
 
 ### Gereksinimler
 
@@ -159,6 +175,18 @@ yönetir.
 Sihirbazı istediğin zaman **Panel** sayfasından yeniden açabilirsin; dili değiştirmek ve masaüstüne kısayol koymak da
 orada.
 
+### Güncellemeler
+
+Panel açıldıktan kısa süre sonra ve sonra altı saatte bir bu depoda yeni sürüm olup olmadığına bakar. Varsayılan olarak
+oyun ve sunucular kapanınca güncellemeyi kendisi kurar ve yeniden başlar; açık panel penceresi kendini yeniler. **Panel**
+sayfasından *Yalnız haber ver*'i seçebilir, kapatabilir ve elle denetleyebilirsin.
+
+- **ZIP olarak indirdiysen** (Git gerekmez): yeni sürümün arşivi (yaklaşık 33 MB) indirilir, değişen dosyalar yenilenir,
+  projeden kaldırılan dosyalar çıkarılır. Eski hâlleri `server/save/guncelleme/`'de saklanır (son iki güncelleme).
+- **Git ile klonladıysan:** panel `git` ile ileri sarar. İzlenen dosyaları değiştirdiysen ya da kendi commit'lerin varsa hiçbir
+  şeye dokunmaz, yalnız haber verir.
+- Kayıtların, ayarların, günlüklerin, kişisel giriş şablonların ve oyun istemcisi hiç değişmez.
+
 ### Oyun içi ipuçları
 
 - Oyunun kendi dilini istemcinin giriş ekranında seç (START'tan önce üstteki seçici).
@@ -176,6 +204,7 @@ orada.
 | `server/save/panel.json` | Panel ayarları (dil, oyun klasörü, görüntü, yedekleme) |
 | `server/logs/` | Sunucu, istemci ve panel günlükleri |
 | `DarkOrbit_Version1.1.114/` | Oyun istemcisi, panel indirdiyse (inerken `istemci_indiriliyor/`) |
+| `server/save/guncelleme/` | Güncellemelerin değiştirdiği dosyaların eski hâlleri (son iki güncelleme) |
 
 Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 

@@ -1,7 +1,8 @@
 /* DarkOrbit yerel sunucu paneli — arayüz (panel.py'nin /api/... uçları). Dış kitaplık yok.
    Dil: metinler Türkçe yazılır, T() seçili dildeki hâlini verir (İngilizcesi en.json; Python tarafıyla ortak, dil.py).
    İlk açılışta kurulum sihirbazı: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun
-   bilgisayarda bulunamazsa oyun klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). */
+   bilgisayarda bulunamazsa oyun klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). Panel GitHub'daki yeni
+   sürümü kurup yeniden başlayınca (guncelleme.py) belirteç değişir: sayfa kendini yeniler. */
 'use strict';
 const TOKEN = document.querySelector('meta[name="panel-token"]').content;
 const $ = (s, r = document) => r.querySelector(s);
@@ -132,6 +133,7 @@ async function api(path, body) {
   let r;
   try { r = await fetch(path, opt); } catch (e) { throw new Error(T('Panele ulaşılamıyor: panel kapanmış olabilir.')); }
   const d = await r.json().catch(() => ({}));
+  if (r.status === 403 && d.hata && d.hata !== 'host' && !api.reloading) { api.reloading = true; location.reload(); }   // panel yeniden başladı
   if (!r.ok) throw new Error(d.hata || ('HTTP ' + r.status));
   return d;
 }
@@ -204,7 +206,7 @@ const PAGES = [
   { id: 'etkinlikler', ad: N('Etkinlikler'), ic: 'calendar', sub: N('Her etkinlik takvime göre ya da elle açık / kapalı.') },
   { id: 'istemci', ad: N('İstemci'), ic: 'monitor', sub: N('Oyun klasörü, sürüm denetimi ve görüntü seçenekleri.') },
   { id: 'sunucu', ad: N('Sunucu'), ic: 'server', sub: N('Sunucu süreçleri, portlar, davranış ve günlükler.') },
-  { id: 'panel', ad: N('Panel'), ic: 'info', sub: N('Dil, kurulum sihirbazı, masaüstü kısayolu, klasörler ve panel hakkında.') },
+  { id: 'panel', ad: N('Panel'), ic: 'info', sub: N('Dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu, klasörler ve panel hakkında.') },
 ];
 const S = { durum: null, page: null, sig: {}, timers: [] };
 
@@ -266,6 +268,7 @@ function renderChrome() {
 
 async function poll() {
   try { S.durum = await api('/api/durum'); S.offline = false; } catch (e) { S.offline = true; }
+  if (S.durum?.panel?.guncellendi && S.durum.panel.acik_sn < 60 && !S.updToast) { S.updToast = true; toast(T('Panel güncellendi ve yeniden başladı.'), 'ok'); }
   renderChrome();
   if (S.page === 'oyna') { renderOynaBody(); liveTick(); }
   if (S.page === 'sunucu') { renderServerCards(); testTick(); }
@@ -1002,6 +1005,50 @@ async function loadLog(quiet) {
 
 // ================================================================== PANEL
 const DIL_ADLARI = { tr: 'Türkçe', en: 'English' };
+// ---- güncellemeler (guncelleme.py, /api/guncelleme): GitHub'daki son sürüm, otomatik kurulum
+const UPD_MODES = [['otomatik', N('Otomatik kur')], ['bildir', N('Yalnız haber ver')], ['kapali', N('Kapalı')]];
+const UPD_TEXT = { guncel: N('Panel güncel.'), var: N('Yeni sürüm var.'), indiriliyor: N('Yeni sürüm indiriliyor…'), kuruluyor: N('Yeni sürüm kuruluyor…'),
+  kuruldu: N('Yeni sürüm kuruldu: oyun ve sunucular kapalıysa panel şimdi yeniden başlar.'), bilinmiyor: N('Henüz denetlenmedi.'),
+  yerel_degisiklik: N("GitHub'da yeni sürüm var, ama bu kopyada yerel değişiklikler var: güncellemeyi git ile al."),
+  yerelde_ileri: N("Bu kopyada GitHub'a gönderilmemiş commit'ler var: kurulacak bir şey yok.") };
+const fmtSurum = v => v && v.surum ? v.surum.slice(0, 7) + (v.tarih ? ' · ' + new Date(v.tarih).toLocaleString(LOC(), { dateStyle: 'medium', timeStyle: 'short' }) : '') : T('bilinmiyor');
+function updCard() {
+  const card = h('div', { class: 'card' }, h('h2', null, icon('refresh'), T('Güncellemeler')),
+    h('p', { class: 'desc' }, T("Panel GitHub'daki son sürümü denetler ve yeniyse kurar. Kayıtların, ayarların ve oyun istemcisi değişmez; değişen dosyaların eski hâli yedeklenir.")),
+    h('div', { class: 'upd-body' }));
+  let sig = '';
+  const draw = r => {
+    const s = JSON.stringify(r); if (s === sig) return; sig = s;
+    const body = card.querySelector('.upd-body'); if (!body) return;
+    const run = r.calisiyor || ['indiriliyor', 'kuruluyor'].includes(r.durum);
+    const cls = r.durum === 'hata' ? 'hata' : ['var', 'kuruldu', 'yerel_degisiklik'].includes(r.durum) ? 'uyari' : 'bilgi';
+    const text = r.durum === 'hata' ? r.hata : r.calisiyor && r.durum !== 'indiriliyor' && r.durum !== 'kuruluyor' ? T('Denetleniyor…') : T(UPD_TEXT[r.durum] || r.durum);
+    const pct = r.toplam ? Math.floor(100 * r.alinan / r.toplam) : null;
+    const save = k => act(() => api('/api/panel_ayarlari', { degerler: { guncelleme: k } }), T('Kaydedildi.')).then(x => x && load());
+    body.replaceChildren(h('div', null,                  // h() boşları atlar (replaceChildren null'ı metin yapar)
+      h('div', { class: 'kv', style: { maxWidth: '620px' } },
+        h('div', null, T('Kurulu sürüm'), h('b', null, fmtSurum(r.kurulu))),
+        h('div', null, 'GitHub', h('b', null, r.son ? fmtSurum(r.son) : '—')),
+        h('div', null, T('Kurulum biçimi'), h('b', null, r.kurulu.bicim === 'git' ? T('Git klonu (git ile ileri sarılır)') : T('İndirilmiş ZIP'))),
+        h('div', null, T('Son denetim'), h('b', null, r.denetim ? fmtWhen(new Date(r.denetim * 1000).toISOString()) : '—'))),
+      r.son && r.son.mesaj && r.durum === 'var' ? h('div', { class: 'small muted', style: { marginTop: '6px' } }, T('Son değişiklik: {0}', r.son.mesaj)) : null,
+      h('div', { class: 'alert ' + cls, style: { marginTop: '12px' } }, icon(cls === 'bilgi' ? 'info' : 'alert'),
+        h('div', null, text, r.durum === 'indiriliyor' ? ' ' + (pct != null ? pct + '% · ' : '') + fmtBytes(r.alinan) : '',
+          r.durum === 'var' && !r.bosta ? h('div', { class: 'small' }, T('Oyun, sunucular ya da başka bir iş açık: kapanınca kurulabilir.')) : null)),
+      r.durum === 'indiriliyor' && pct != null ? h('div', { class: 'meter', style: { marginTop: '8px' } }, h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } }))) : null,
+      h('div', { class: 'stack', style: { gap: '12px', marginTop: '14px' } },
+        field(T('Yeni sürüm çıkınca'), h('div', { class: 'seg' }, UPD_MODES.map(([k, t]) => h('button', { class: r.ayar === k ? 'on info' : '', onclick: () => r.ayar !== k && save(k) }, T(t))))),
+        h('div', { class: 'row wrap' },
+          btn(T('Şimdi denetle'), () => act(() => api('/api/guncelleme/denetle', {})).then(x => x && draw(x)), '', 'refresh', { disabled: run }),
+          r.durum === 'var' ? btn(T('Güncellemeyi kur'), () => act(() => api('/api/guncelleme/kur', {})).then(x => x && draw(x)), 'primary', 'download', { disabled: !r.bosta }) : null,
+          h('span', { class: 'small muted mono' }, r.depo)))));
+  };
+  const load = () => api('/api/guncelleme').then(draw).catch(() => {});
+  load();
+  S.timers.push(setInterval(() => { if (card.isConnected) load(); }, 2000));
+  return card;
+}
+
 async function renderPanel() {
   const r = await act(() => api('/api/hakkinda')); if (!r || S.page !== 'panel') return;
   const pathRow = (label, p, ne) => h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, label), h('div', { class: 'help mono' }, p)),
@@ -1017,6 +1064,7 @@ async function renderPanel() {
       h('div', { class: 'card' }, h('h2', null, icon('wand'), T('Kurulum sihirbazı')),
         h('p', { class: 'desc' }, T('Dil, oyun klasörü, ilk pilot ve oyun ayarları adımlarını yeniden aç.')),
         btn(T('Sihirbazı aç'), () => openWizard(0), 'primary', 'wand'))),
+    updCard(),
     h('div', { class: 'grid g2' },
       h('div', { class: 'card' }, h('h2', null, icon('star'), T('Masaüstü kısayolu')),
         h('p', { class: 'desc' }, T('Masaüstüne DarkOrbit simgeli bir kısayol koyar; çift tıklayınca bu panel açılır (konsol penceresi olmadan).')),
@@ -1032,7 +1080,7 @@ async function renderPanel() {
       pathRow(T('Oyun ayarları dosyası'), r.ayarlar), pathRow(T('Panel ayarları dosyası'), r.panel)),
     h('div', { class: 'card' }, h('h2', null, icon('info'), T('Hakkında')),
       h('div', { class: 'kv', style: { maxWidth: '520px' } }, h('div', null, T('Panel sürümü'), h('b', null, r.surum)), h('div', null, 'Python', h('b', null, r.python)),
-        h('div', null, T('Panel adresi'), h('b', null, '127.0.0.1:' + r.port)), h('div', null, T('İnternet'), h('b', null, T('gerekmez')))),
+        h('div', null, T('Panel adresi'), h('b', null, '127.0.0.1:' + r.port)), h('div', null, T('İnternet'), h('b', null, T('yalnız güncelleme ve oyunu indirme için')))),
       h('p', { class: 'desc', style: { marginTop: '14px' } }, T("DarkOrbit Server Emulator: tek oyunculu, çevrimdışı yerel sunucu. İstemci, grafikler ve metinler Bigpoint GmbH'ye aittir; yalnız kişisel kullanım içindir.")))));
 }
 

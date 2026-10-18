@@ -10,6 +10,9 @@ Yollar: yollar.py (save/kayitlar, save/panel.json, save/ayarlar.json, logs/).
 Dil: Türkçe ya da İngilizce (dil.py; metinler Türkçe yazılır, İngilizceleri arayuz/en.json). İlk açılışta arayüz kurulum sihirbazını
 açar: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun bilgisayarda bulunamazsa sihirbazın oyun
 klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da).
+Güncelleme (guncelleme.py): açılıştan biraz sonra ve GUNCELLEME_SN'de bir GitHub'daki son sürüm denetlenir; panel ayarı 'guncelleme'
+otomatikse ve oyun, sunucular, indirme ya da başka bir iş sürmüyorsa kurulur, ardından panel yeniden başlar (yeni süreç aynı portu
+alır, açık pencere sayfayı yeniler).
 """
 import datetime, json, os, re, secrets, shutil, subprocess, sys, threading, time, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -32,6 +35,7 @@ from yapilandirma import PanelConfig  # noqa: E402
 from testler import Testler  # noqa: E402
 from protokol import Uyarlayici  # noqa: E402
 from indirme import Indirici, IndirmeHatasi  # noqa: E402
+from guncelleme import Guncelleyici, GuncellemeHatasi  # noqa: E402
 
 SURUM = '1.0'
 PORT = 8077
@@ -40,6 +44,7 @@ SABLONLAR = os.path.join(YOL.SAVE, 'ayar_sablonlari.json')
 TARAYICI_PROFILI = os.path.join(os.environ.get('LOCALAPPDATA') or YOL.SAVE, 'DarkOrbitPanel', 'tarayici')
 GUNLUKLER = ('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log', 'panel.log', 'errors.log', 'unknown.log')
 NABIZ_SN = 180                      # tarayıcı penceresi izlenemiyorsa: bu kadar istek gelmezse pencere kapandı sayılır
+GUNCELLEME_SN = 6 * 3600            # GitHub'da yeni sürüm denetimi aralığı (başarısızsa bir saat sonra yeniden)
 ETKINLIK_ACIKLAMA = {
     'yukseltme_saati': "Assembly'de ekipman yükseltmesi %25 daha az uridyum.",
     'dispatch_gunu': 'Dispatch gönderimlerinin etkinlik günü.',
@@ -86,9 +91,11 @@ KAY = Kayitlar(CFG, python=SR.python_exe())
 KAY.in_use = lambda slot: YON.running() and YON.slot == slot
 TEST = Testler(SERVER, SR.python_exe(), log, SR.NO_WINDOW)     # panelden testler (testler.py)
 UYAR = Uyarlayici(ROOT, SR.python_exe(), log, SR.NO_WINDOW)    # yeni istemciye protokol uyarlaması (protokol.py)
+UPD = Guncelleyici(ROOT, YOL.SAVE, log)                          # GitHub'dan güncelleme (guncelleme.py)
 TOKEN = secrets.token_hex(16)
 STATE = {'oyna': {'calisiyor': False, 'adimlar': [], 'hata': None, 'bitti': None, 'sadece_sunucu': False},
-         'nabiz': time.time(), 'pencere_kapandi': False, 'pencere_izleniyor': False, 'son_yedek': 0.0, 'kapaniyor': False}
+         'nabiz': time.time(), 'pencere_kapandi': False, 'pencere_izleniyor': False, 'son_yedek': 0.0, 'kapaniyor': False,
+         'sonraki_denetim': time.time() + 8, 'guncellendi': '--guncellendi' in sys.argv, 'srv': None, 'acilis': time.time()}
 
 
 class Hata(Exception):
@@ -295,6 +302,15 @@ def warnings():
     if missing:
         out.append({'tur': 'uyari', 'metin': _('Giriş şablonları eksik (%s): oyun en küçük girişle açılır, bazı pencereler ve mağaza '
                                                'boş kalabilir.', ', '.join(missing)), 'sayfa': 'sunucu'})
+    u = UPD.state()
+    if u['durum'] in ('indiriliyor', 'kuruluyor'):
+        out.append({'tur': 'uyari', 'metin': _('Panel güncelleniyor; bitince kendiliğinden yeniden başlar.'), 'sayfa': 'panel'})
+    elif u['durum'] == 'var' and CFG.get('guncelleme') != 'kapali':
+        auto = CFG.get('guncelleme') == 'otomatik' and CFG.get('kurulum_tamam')
+        out.append({'tur': 'uyari', 'metin': _('Yeni sürüm var (%s): oyun ve sunucular kapanınca kendiliğinden kurulur.', u['son']['surum'][:7])
+                    if auto else _('Yeni sürüm var (%s): Panel sayfasından kurabilirsin.', u['son']['surum'][:7]), 'sayfa': 'panel'})
+    elif u['durum'] == 'kuruldu':
+        out.append({'tur': 'uyari', 'metin': _('Güncelleme kuruldu: oyun ve sunucular kapanınca panel yeniden başlar.'), 'sayfa': 'panel'})
     alive = YON.servers_alive()
     table = SR.listeners()
     foreign = [p for ad, ports in SR.PORTS.items() for p in ports if not alive.get(ad) and SR.listening(p, table)]
@@ -326,7 +342,8 @@ def status():
             'ayar_ozet': settings_summary(vals), 'etkinlikler': ev,
             'uyarilar': warnings(), 'oyna': STATE['oyna'], 'istemci_klasoru': client_folder(),
             'panel': {'surum': SURUM, 'pencere_kapandi': STATE['pencere_kapandi'], 'dil': CFG.get('dil'),
-                      'kurulum_tamam': CFG.get('kurulum_tamam')}}
+                      'kurulum_tamam': CFG.get('kurulum_tamam'), 'guncellendi': STATE['guncellendi'],
+                      'acik_sn': int(time.time() - STATE['acilis'])}}
 
 
 # ------------------------------------------------------------------ oyna
@@ -408,11 +425,52 @@ def on_client_exit(early):
 YON.on_client_exit = on_client_exit
 
 
+def idle(strict=False):
+    """Güncelleme kurulabilir mi: oyun, sunucular, başlatma, istemci indirmesi, protokol aracı ve testler durmuş (strict: panelin
+    açmadığı DarkOrbit istemcisi de yok; tasklist çalışır)."""
+    busy = (YON.running() or YON.client_alive() or STATE['oyna']['calisiyor'] or DL.running() or UYAR.state()['calisiyor']
+            or TEST.calisiyor)
+    return not busy and not (strict and IST.running_clients())
+
+
+def update_tick(now):
+    """GitHub denetimi (GUNCELLEME_SN'de bir), otomatik kurulum ve kurulumdan sonra yeniden başlatma (boştayken)."""
+    mode = CFG.get('guncelleme')
+    st = UPD.state()
+    if st['calisiyor']:
+        return
+    if st['durum'] == 'kuruldu':
+        if idle(strict=True):
+            restart()
+        return
+    if mode == 'kapali':
+        return
+    if now >= STATE['sonraki_denetim']:
+        st = UPD.check()
+        STATE['sonraki_denetim'] = now + (3600 if st['durum'] == 'hata' else GUNCELLEME_SN)
+    if st['durum'] == 'var' and mode == 'otomatik' and CFG.get('kurulum_tamam') and idle(strict=True):
+        UPD.install_async()
+
+
+def restart():
+    """Güncellemeden sonra yeniden başla: yeni süreç (pencere açmadan) eski kapanınca aynı portu alır; açık pencere sayfayı yeniler."""
+    STATE['kapaniyor'] = True
+    args = [sys.executable, os.path.join(PANEL_DIR, 'panel.py'), '--pencere-yok', '--guncellendi', '--port=%d' % PORT]
+    log('panel güncellendi: yeniden başlatılıyor')
+    try:
+        subprocess.Popen(args, cwd=ROOT, close_fds=True, creationflags=0x00000008 | 0x00000200)   # DETACHED, yeni süreç grubu
+        if STATE['srv']:
+            STATE['srv'].server_close()
+    finally:
+        os._exit(0)
+
+
 def ticker():
-    """Oyun sürerken aralıklı yedek; pencere kapandıysa ve iş kalmadıysa çıkış."""
+    """Oyun sürerken aralıklı yedek; pencere kapandıysa ve iş kalmadıysa çıkış; güncelleme (update_tick)."""
     while not STATE['kapaniyor']:
         time.sleep(5)
         try:
+            update_tick(time.time())
             iv = CFG.get('yedek_aralik_dk')
             if YON.client_alive() and YON.slot and iv and time.time() - STATE['son_yedek'] >= iv * 60:
                 KAY.backup(YON.slot, 'oto', _('Oyun sırasında'))
@@ -581,6 +639,8 @@ def h_get(path, q):
         return TEST.state()
     if path == '/api/istemci/indirme':              # istemci indirmenin durumu (indirme.py)
         return DL.state()
+    if path == '/api/guncelleme':                   # GitHub'dan güncelleme (guncelleme.py)
+        return dict(UPD.state(), ayar=CFG.get('guncelleme'), bosta=idle())
     if path == '/api/protokol':                     # protokol uyarlamasının durumu (protokol.py)
         return dict(UYAR.state(), etkin=IST.supported())
     if path == '/api/esya_listesi':                 # kayıt düzenleyicinin "eşya ver" listesi
@@ -759,6 +819,18 @@ def h_post(path, b):
     if path == '/api/istemci/otomatik':
         CFG.update({'istemci_klasoru': None})
         return api_client()
+    if path == '/api/guncelleme/denetle':
+        UPD.check()
+        STATE['sonraki_denetim'] = time.time() + GUNCELLEME_SN
+        return h_get('/api/guncelleme', {})
+    if path == '/api/guncelleme/kur':
+        if not idle(strict=True):
+            raise Hata(_('Önce oyunu, sunucuları ve süren işleri kapatın.'))
+        try:
+            UPD.install_async()
+        except GuncellemeHatasi as e:
+            raise Hata(str(e))
+        return h_get('/api/guncelleme', {})
     if path == '/api/istemci/indir':                # oyunu indir ve proje köküne aç (sürer, kaldığı yerden)
         return DL.start()
     if path == '/api/istemci/indir_durdur':
@@ -903,8 +975,17 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     global PORT
+    PORT = next((int(a.split('=', 1)[1]) for a in sys.argv if a.startswith('--port=') and a.split('=', 1)[1].isdigit()), PORT)
+    srv = None
+    if STATE['guncellendi']:                          # güncellemeden sonra: eski süreç portu bırakana dek bekle
+        for _k in range(75):
+            try:
+                srv = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
+                break
+            except OSError:
+                time.sleep(0.2)
     try:
-        srv = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
+        srv = srv or ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
     except OSError:
         try:                                          # panel zaten açık mı?
             with urlopen('http://127.0.0.1:%d/api/ping' % PORT, timeout=2) as r:
@@ -916,7 +997,8 @@ def main():
         srv = ThreadingHTTPServer(('127.0.0.1', 0), Handler)       # port başka programda: boş bir port
         PORT = srv.server_address[1]
     srv.daemon_threads = True
-    log('panel açıldı: http://127.0.0.1:%d/ (python %s)' % (PORT, sys.version.split()[0]))
+    STATE['srv'] = srv
+    log('panel açıldı: http://127.0.0.1:%d/ (python %s)%s' % (PORT, sys.version.split()[0], ' (güncellemeden sonra)' if STATE['guncellendi'] else ''))
     try_migrate()
     if not CFG.get('aktif_kayit') and KAY.slots():
         CFG.update({'aktif_kayit': KAY.slots()[0]})
