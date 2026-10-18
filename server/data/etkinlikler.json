@@ -141,7 +141,11 @@
     "hile": {
      "etk_curcubitor": 0.3
     },
-    "_kaynak": "wiki trial-of-terrors: harita başına kota (X-2..X-4 40, X-5..X-7 30, X-8 20), 5 Boss Curcubitor 30 dk; ölen Curcubitor Trick (2 sn sonra canın %20si) ya da Treat (Candy Corn kutusu). Uyarlama: nüfus 12, Treat yerine doğrudan Candy Corn, Trick olasılığı %30, adetler."
+    "_kaynak": "wiki trial-of-terrors: harita başına kota (X-2..X-4 40, X-5..X-7 30, X-8 20), 5 Boss Curcubitor 30 dk; ölen Curcubitor ya Trick (toplanamayan mayın: kurulunca yakındaysan canın %20'si) ya da Treat (Curcubitor sandığı); kargo kutusu düşmez (kullanıcı, gerçek oyun). Uyarlama: nüfus 12, Trick olasılığı %30, adetler.",
+    "kargo_yok": [
+     "etk_curcubitor",
+     "etk_boss_curcubitor"
+    ]
    },
    "para": [
     "resource_collectable_candy-corn",
@@ -385,7 +389,7 @@
      "kutu_dusme": {
       "etk_curcubitor": {
        "tur": "CURCUBITOR_BOX",
-       "olasilik": 0.5,
+       "olasilik": 1.0,
        "omur_sn": 300,
        "mod": "biri",
        "kesin": [

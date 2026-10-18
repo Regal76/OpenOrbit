@@ -92,6 +92,11 @@ def active(now=None):
     return {k for k in EVENTS if is_active(k, now)}
 
 
+def has_type(t, now=None):
+    """Etkinlik türü (EventModule.type, ör. CandyCargo) şu an etkin mi."""
+    return t in ALWAYS or any(t in EVENTS[k].get('turler', []) for k in active(now))
+
+
 def time_left(key, now=None):
     """Kalan saniye (zorla açılmış etkinlikte 30 gün)."""
     p = period(key, now)

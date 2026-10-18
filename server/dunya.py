@@ -7,7 +7,8 @@ Mesaj akışları gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md, 
   roket   AttackRocketRequest -> "0|v|<saldıran>|<hedef>|H|1|0|0" + 4 sn bekleme, ~0,8 sn sonra AttackHitCommand(attackType 0)
   ölüm    AttackHitCommand(hp 0) + ShipDestroyedCommand + ShipDeselectionCommand + ShipRemoveCommand
   ödül    "0|LM|ST|EP|<kazanç>|<toplam>|<seviye>", HON, CRE (+ InventoryItemUpdatedCommand), URI
-  kutu    AddBoxCommand(FROM_SHIP) ölüm yerinde; CollectBoxRequest -> RemoveCollectableCommand(collected) + cevher günlüğü
+  kutu    AddBoxCommand(FROM_SHIP) ölüm yerinde (CandyCargo etkinliğinde, Halloween, CANDY_CARGO: aynı kutu, şekerli görünüm; kayıt);
+          CollectBoxRequest -> RemoveCollectableCommand(collected) + cevher günlüğü. Etkinliğin 'kargo_yok' uzaylıları düşürmez
   cevher  AddOreCommand (kümeler hâlinde); HarvestRequest -> ~0,5 sn sonra InventoryItemPack + MapEventOreCommand(1) +
           AttributeOreCountUpdateCommand + RemoveCollectableCommand(collected); kargo doluysa MapEventOreCommand(2)
   satış   istasyon rafinerisine yaklaşınca MapAssetActionAvailableCommand; TradeRequest -> OreTradeInfoCommand;
@@ -32,6 +33,7 @@ import parcacik as PC
 import rutbe as RT
 import uzayli as UZ
 import etkinlik_harita as ETK  # noqa: E402
+import takvim as TKV          # noqa: E402
 import ganimet as GN
 import ayar as AY
 import yukseltme as YK
@@ -97,6 +99,7 @@ def range_exceeded(uid, max_range, kind):
 
 # cephane bitince otomatik geçiş sırası (sıradan cephaneler; özel cephaneye kendiliğinden geçilmez)
 AUTO_AMMO = ['ammunition_laser_ucb-100', 'ammunition_laser_mcb-50', 'ammunition_laser_mcb-25', 'ammunition_laser_lcb-10']
+CARGO_BOXES = ('FROM_SHIP', 'CANDY_CARGO')     # uzaylının kargo kutusu (CANDY_CARGO: Halloween'in CandyCargo'sunda, kayıt)
 AUTO_REFINE = (4, 5, 6)       # otomatik arıtmanın ürünleri (laboratuvar tarifleri, bu sırayla): Prometid, Duranium, Promerium
 
 
@@ -1361,16 +1364,17 @@ class World:
             boost = 1 + (self.pet.proto('kutu') if self.pet and self.pet.active else 0)
             m = self.p.mods()          # pilot yetenekleri: Tractor Beam I/II (kargo/bonus kutusu), Luck (bonus kutusu uridyumu)
             pre = []
-            if b['tip'] == 'FROM_SHIP':                         # önce otomatik arıtma (ayar açıksa): yer açılır
+            cargo_box = b['tip'] in CARGO_BOXES
+            if cargo_box:                                       # önce otomatik arıtma (ayar açıksa): yer açılır
                 pre = self.auto_refine()
-            if b['tip'] == 'FROM_SHIP' and self.p.cargo_free() < 1:
+            if cargo_box and self.p.cargo_free() < 1:
                 self.send(pre + [legacy('0|A|STM|loadfull')] + self.p.hint(IP.FULL_CARGO))     # kargo dolu: kutu yerinde kalır
                 return False
             if b['tip'] in GN.BOXES and not b.get('etk'):
                 return False if by_pet else self.open_booty(h, b)
             del self.boxes[h]
             msgs = pre + [legacy('0|A|SLA|0|%d' % self.hid), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
-            if b['tip'] == 'FROM_SHIP':
+            if cargo_box:
                 ores, free = {}, self.p.cargo_free()
                 for k, v in sorted(b['icerik'].items()):
                     take = min(int(v * boost * (1 + m.get('kargo_kutusu', 0))), free)
@@ -1691,9 +1695,10 @@ class World:
             self.log('   %s yok edildi: +%d EP, +%d onur, +%d kredi, +%d uridyum (seviye %d)' % (
                 n.d['ad'], o['ep'], o['onur'], o['kredi'], o['uridyum'], tot['seviye']))
         self.later(0.3, reward)
-        cargo = self.cargo_of(n)
+        cargo = {} if ETK.no_cargo(n) else self.cargo_of(n)        # Curcubitor: yalnız sandığı (etkinlik_harita)
         if cargo:
-            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_box('FROM_SHIP', x, y, cargo, SAVAS['kutu_omur_sn']))
+            kind = 'CANDY_CARGO' if TKV.has_type('CandyCargo') else 'FROM_SHIP'
+            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_box(kind, x, y, cargo, SAVAS['kutu_omur_sn']))
         for sp in n.davranis.get('olunce_dogur', []):       # ölünce doğanlar (Lordakium sporları …): yeniden doğmazlar
             for k in range(sp.get('adet', 1)):
                 a = 2 * math.pi * k / max(1, sp.get('adet', 1))

@@ -8,7 +8,10 @@ Takvimde etkin bir etkinliğin harita bölümü bu haritanın sınıfını (X-2 
   - gösterge ('bilgi'): NpcEventInfoCommand / AgatusEventInfoCommand {textKey (istemcinin metinleri: curcubitor, agatusbreach,
     npc_valentine, npc_chaos-protegit), npcID, bossInfo {bossCount, leftToKill}, timeInfo {timeToNextSpawn, timeToEndSpawn sn}}
   - düşmeler ('dusme': tür -> {lootId: [en az, en çok]}; etkinlik parası kaynak deposuna, ganimet günlüğünde) ve Curcubitor'un
-    "Trick"i ('hile': olasılık; DDM-01 uzaylı mayını, 2 sn sonra canın %20'si)
+    "Trick or Treat"i: ölünce ya Trick ('hile': olasılık; toplanamayan DDM-01 uzaylı mayını, kurulunca yakındaysan canın %20'si) ya da
+    Treat (kutu_dusme'deki sandık), ikisi birden değil. 2026-10-18'e dek ikisi bağımsızdı: mayın sandığın altında kalıyor, sandığı
+    toplarken patlıyordu (kullanıcı bildirimi)
+  - kargo kutusu olmayan uzaylılar ('kargo_yok': temel türler; Curcubitor ve Boss Curcubitor yalnız sandıklarını düşürür) -> no_cargo
   - çağıranlar ('cagir' ya da patronun 'cagir'ı): canlıyken aralıkla yanına uzaylı çağırır (Agatus -> Spinel, Ice Meteoroid -> Icy)
   - av kutuları ('kutular': istemcinin kutu türü, adet, içerik, yeniden doğma) ve uzaylının düşürdüğü kutular ('kutu_dusme': tür ->
     {kutu türü, olasılık, içerik}; etkinlik türleri ve haritanın sıradan uzaylıları, ör. Empyrian'da Luminium); anahtarsız, P.E.T. de
@@ -59,6 +62,13 @@ def roll(spec):
 
 
 ROVER = {}                         # etkinlik -> gezgin uzaylının rotasının başlangıcı (öldürülünce bekleme sonrası)
+NO_CARGO = {b for e in TK.EVENTS.values() for s in ([e['harita']] if 'harita' in e else []) + e.get('harita_ek', [])
+            for b in s.get('kargo_yok', [])}          # etkinlik bitse de: o türün uzaylısı hiç kargo kutusu düşürmez
+
+
+def no_cargo(n):
+    """Bu uzaylı kargo kutusu düşürmez mi (etkinlik verisinin 'kargo_yok'u; Curcubitor yalnız sandığını düşürür)."""
+    return base(n.tip) in NO_CARGO
 
 
 def route_at(k, g, now):
@@ -169,9 +179,13 @@ class HaritaEtkinlik:
             self.w.boxes[h]['etk'] = kt
         now = time.time() if now is None else now
         w, b, msgs = self.w, base(n.tip), []
+        trick = (n.tip.startswith('etk_') and w.items is not None
+                 and random.random() < max([s.get('hile', {}).get(b, 0) for k, s in self.here(now)] or [0]))
+        if trick:                                                       # Trick: sandık yerine toplanamayan mayın
+            w.items.alien_mine(TRICK_MINE, x, y, n.id, now)
         for k, s in self.here(now):
             kd = s.get('kutu_dusme', {}).get(b)
-            if kd and random.random() < AY.chance('dusme', kd.get('olasilik', 1.0)):     # uzaylının kutusu (Treat, patron, Luminium)
+            if kd and not trick and random.random() < AY.chance('dusme', kd.get('olasilik', 1.0)):    # uzaylının kutusu (Treat …)
                 h = w.drop_box(kd['tur'], x, y, None, kd.get('omur_sn', 300))
                 w.boxes[h]['etk'] = kd
         for k in sorted(TK.active(now)):
@@ -187,8 +201,6 @@ class HaritaEtkinlik:
             drops = s.get('dusme', {}).get(b)
             if drops:
                 msgs += w.extra_loot(n, drops)
-            if random.random() < s.get('hile', {}).get(b, 0) and w.items:
-                w.items.alien_mine(TRICK_MINE, x, y, n.id, now)          # Trick: 2 sn sonra yakındaysa canın %20'si
             if n.id in st['patron']:
                 st['patron'].remove(n.id)
                 if not st['patron']:
