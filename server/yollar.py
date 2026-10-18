@@ -6,6 +6,8 @@
   save/kayitlar/<kimlik>/yedek/          yedekler (panel)
   save/panel.json                        panel ayarları: etkin yuva, istemci klasörü, görüntü, yedekleme …
   save/ayarlar.json                      oyun ayarları (ayar.py)
+Giriş şablonları (giris.json, haritalar.json, yanitlar.json): kendi kaydından çıkarılanlar data/'da (git'e girmez), yoksa depodaki
+paylaşılabilir kopya data/varsayilan/'da (tools/sablon_paylas.py; hesap ve oyuncu kimlikleri takma): sablon().
 Etkin yuva panel.json'un 'aktif_kayit'ı. Eski düzen (save/profil.json) panel ilk açılınca 'ana' yuvasına taşınır; taşınmadıysa ya da
 etkin yuva yoksa profil yolu eski dosyadır (game.py / web.py --profil olmadan çalışınca).
 Yalnız standart kitaplık: web.py, game.py ve panel birlikte kullanır.
@@ -20,6 +22,18 @@ PANEL = os.path.join(SAVE, 'panel.json')
 AYARLAR = os.path.join(SAVE, 'ayarlar.json')
 ESKI_PROFIL = os.path.join(SAVE, 'profil.json')
 LOGS = os.environ.get('DO_GUNLUK_KLASORU') or os.path.join(HERE, 'logs')
+DATA = os.path.join(HERE, 'data')
+SABLONLAR = ('giris.json', 'haritalar.json', 'yanitlar.json')
+VARSAYILAN_SABLON = os.path.join(DATA, 'varsayilan')
+
+
+def sablon(name):
+    """Giriş şablonunun yolu: kendi kaydından çıkarılan (data/<ad>) varsa o, yoksa paylaşılabilir kopya (data/varsayilan/<ad>);
+    ikisi de yoksa None."""
+    for p in (os.path.join(DATA, name), os.path.join(VARSAYILAN_SABLON, name)):
+        if os.path.isfile(p):
+            return p
+    return None
 
 
 def panel_config(path=PANEL):

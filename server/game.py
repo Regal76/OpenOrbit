@@ -32,6 +32,7 @@ import os, sys, socket, threading, time, json, math
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import protocol as P       # noqa: E402
+import yollar as YOL       # noqa: E402
 from profil import Profil  # noqa: E402
 from dunya import World    # noqa: E402
 from magaza import Magaza  # noqa: E402
@@ -91,12 +92,13 @@ def log(text):
 
 
 def _load(name, default):
-    p = os.path.join(DATA, name)
-    return json.load(open(p, encoding='utf8')) if os.path.exists(p) else default
+    p = YOL.sablon(name) if name in YOL.SABLONLAR else os.path.join(DATA, name)     # şablon: kendi kaydın, yoksa paylaşılabilir kopya
+    return json.load(open(p, encoding='utf8')) if p and os.path.exists(p) else default
 
 
 class Sablonlar:
-    """Kayıttan çıkarılmış giriş demetleri, harita dünyası ve istek yanıtları."""
+    """Kayıttan çıkarılmış giriş demetleri, harita dünyası ve istek yanıtları (kendi kaydın yoksa data/varsayilan/'daki paylaşılabilir
+    kopya; yollar.sablon)."""
 
     def __init__(self):
         self.giris = _load('giris.json', {})

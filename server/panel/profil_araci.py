@@ -22,8 +22,9 @@ HOME_MAP = {1: 1, 2: 5, 3: 9}             # game.py HOME_MAP: firma -> X-1
 
 
 def _load(name):
-    p = os.path.join(DATA, name)
-    return json.load(open(p, encoding='utf8')) if os.path.exists(p) else {}
+    import yollar as YOL
+    p = YOL.sablon(name) if name in YOL.SABLONLAR else os.path.join(DATA, name)     # şablon: kendi kaydın, yoksa paylaşılabilir kopya
+    return json.load(open(p, encoding='utf8')) if p and os.path.exists(p) else {}
 
 
 def station_pos(map_id):

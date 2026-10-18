@@ -271,7 +271,7 @@ def warnings():
                     'sayfa': 'istemci'})
     elif not c['uyumlu']:
         out.append({'tur': 'uyari', 'metin': c['sorunlar'][-1], 'sayfa': 'istemci'})
-    missing = [n for n in ('giris.json', 'haritalar.json', 'yanitlar.json') if not os.path.isfile(os.path.join(SERVER, 'data', n))]
+    missing = [n for n in YOL.SABLONLAR if not YOL.sablon(n)]       # kendi kaydın ya da paylaşılabilir kopya (data/varsayilan)
     if missing:
         out.append({'tur': 'uyari', 'metin': _('Giriş şablonları eksik (%s): oyun en küçük girişle açılır, bazı pencereler ve mağaza '
                                                'boş kalabilir.', ', '.join(missing)), 'sayfa': 'sunucu'})

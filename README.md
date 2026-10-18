@@ -87,9 +87,6 @@ All of these are created on first run and stay on your computer.
   compatibility. Start the game from the panel.
 - The server is written for client version 1.1.114. For another version the panel warns you and can adapt the protocol
   from the new client's code (Client page; needs `capstone`).
-- The login templates (`server/data/giris.json`, `haritalar.json`, `yanitlar.json`) are not part of this repository.
-  Without them the game starts with a minimal login, and some windows and the shop may be empty; the panel shows a
-  warning in that case.
 - Bot players are not in yet: missions that need other players don't progress.
 
 ### Legal
@@ -179,8 +176,6 @@ Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
   Oyunu panelden başlat.
 - Sunucu 1.1.114 istemcisi için yazıldı. Başka bir sürümde panel uyarır ve protokolü yeni istemcinin kodundan uyarlayabilir
   (İstemci sayfası; `capstone` gerekir).
-- Giriş şablonları (`server/data/giris.json`, `haritalar.json`, `yanitlar.json`) bu depoda yok. Onlar olmadan oyun en
-  küçük girişle açılır; bazı pencereler ve mağaza boş kalabilir, panel bu durumda uyarır.
 - Bot oyuncular henüz yok: başka oyuncu gerektiren görevler ilerlemez.
 
 ### Yasal not

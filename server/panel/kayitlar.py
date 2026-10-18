@@ -28,7 +28,8 @@ _TR = str.maketrans('çğıöşüÇĞİÖŞÜâîû', 'cgiosuCGIOSUaiu')
 
 def default_key_bindings():
     """Oyunun varsayılan tuş atamaları: giriş şablonunun tohumu (profil.py yeni profilde de bunu kullanır)."""
-    t = _read_json(os.path.join(SERVER, 'data', 'giris.json')).get('tohum') or {}
+    p = YOL.sablon('giris.json')                 # kendi kaydın, yoksa paylaşılabilir kopya
+    t = (_read_json(p).get('tohum') if p else None) or {}
     return list((t.get('UserKeyBindingsUpdate') or {}).get('changedKeyBindings', []))
 
 

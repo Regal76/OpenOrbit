@@ -2,7 +2,8 @@
 server/save/
 server/logs/
 
-# Login templates (account data) / Giriş şablonları (hesap verisi)
+# Personal login templates; the repository ships shareable ones in server/data/varsayilan/
+# Kişisel giriş şablonları; depodaki paylaşılabilir kopyalar server/data/varsayilan/ altında
 server/data/giris.json
 server/data/haritalar.json
 server/data/yanitlar.json
