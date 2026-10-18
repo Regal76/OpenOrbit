@@ -40,8 +40,6 @@ class YeniSistemler:
         self.nova.at_station = world.in_station
         self.otopilot.laser_range = world.laser_range
         self.otopilot.maps = world.omega_maps                   # seçim listeleri: harita -> orada çıkan uzaylılar
-        self.otopilot.pencere = False                           # yeni harita: pencere kapanmış sayılır
-        world.omega_view = self.otopilot.reveal                 # pencere açıkken ve otomatik pilot çalışırken haritanın tümü
 
     def handle(self, name, f):
         if name in AU.REQUESTS:

@@ -16,9 +16,9 @@ Seçili uzaylılar ve kutular (2026-10-18, kullanıcı bildirimi: harita değiş
     kutu süzgeci de anahtarı doğrudan okuyor (UnitComponentSystem.GetCollectables). Sunucu seçimi haritadan bağımsız tutar (secim) ve
     her haritanın anahtarıyla gönderir: kutular her haritada aynı, uzaylılardan o haritada çıkanlar (npc.json'un tablosu, haritada
     yaşayanlar, o haritada seçilmişler). Kayıtta her anahtar istemcinin elindekiyle karşılaştırılır; eklenen seçilir, çıkarılan bırakılır.
-  - Sağdaki listeleri istemci yalnız tanıdığı birimlerden ve kutulardan kuruyor (GetNPCIDList, GetBoxList; saniyede bir). Pencere
-    açıldıktan sonra (elle uçulana dek) ve otomatik pilot çalışırken haritanın bütün uzaylıları ve kutuları bildirilir (reveal; dunya.py
-    in_view): listede haritanın tümü çıkar, otomatik pilot uzaktaki hedefe de gider.
+  - Sağdaki listeleri istemci yalnız tanıdığı birimlerden ve kutulardan kuruyor (GetNPCIDList, GetBoxList; saniyede bir): görüş
+    mesafesindekiler. Haritanın tümünü listelemek için hepsini bildirmek gerekiyordu; pencere açıkken ve otomatik pilot çalışırken
+    bildiren sürüm (4878be2a) kaldırıldı: menü açılınca oyun çok donuyordu (kullanıcı, 2026-10-18).
 """
 import json, os, time
 
@@ -27,7 +27,8 @@ D = json.load(open(os.path.join(HERE, 'data', 'yeni_sistemler.json'), encoding='
 START, STOP = 0, 1
 REQUESTS = {'AutopilotInfoRequest', 'AutopilotInfoSaveRequest', 'AutopilotStatus'}
 NPC_LIST, BOX_LIST = 'NPCSelectedList', 'CollectSelectedList'     # AssistantData: harita -> NpcData {Name, NpcID, NpcType} / "box_<tür>"
-SINIR = 40000              # gönderilen JSON'un üst sınırı (protokolde metin en çok 65.535 bayt; istemci kaydederken aynısını yollar)
+SINIR = 8000               # gönderilen JSON'un üst sınırı: otomatik pilot ayarları her okumada PlayerPrefs'ten yeniden çözüyor
+                           # (HangUpAI.get_Data); kayıttaki gerçek ayarlar ~0,7 KB
 
 
 def _maps(v):
@@ -52,7 +53,6 @@ class Otopilot:
         self.p, self.log = profil, log
         self.laser_range = lambda: D['lazer_menzil']      # oturum bağlar: dünyanın lazer menzili
         self.maps = lambda: (None, {})                    # oturum bağlar: (bulunulan harita, harita -> orada çıkan uzaylıların adları)
-        self.pencere = False                              # pencere açıldı, elle uçulmadı: haritanın tümü bildirilir (reveal)
         with profil.lock:
             self.d = profil.d.setdefault('otopilot', {'ayar': '', 'durum': STOP, 'baslangic': 0, 'toplam_sn': 0, 'oturum': 0})
             self.d['durum'] = STOP                        # yeni oturum: istemci girişte STOP bildirir
@@ -97,8 +97,8 @@ class Otopilot:
                         s['npc_harita'][k].append(mid)
 
     def info_json(self, cur=None, names=None):
-        """İstemciye gidecek ayarlar: kaydedilenler, seçim listeleri her haritanın anahtarıyla (bulunulan harita cur önce; sınıra
-        dek). names: harita -> orada çıkan uzaylıların adları. Hiç ayar yoksa boş (istemci kendi varsayılanını kurar)."""
+        """İstemciye gidecek ayarlar: kaydedilenler, seçim listeleri her haritanın anahtarıyla (bulunulan harita cur, sonra seçim
+        yapılanlar, sonra ötekiler; sınıra dek). names: harita -> orada çıkan uzaylıların adları. Hiç ayar yoksa boş (istemci kendi varsayılanını kurar)."""
         names = names or {}
         text = self.d.get('ayar') or ''
         s = self.selection()
@@ -109,9 +109,9 @@ class Otopilot:
         except ValueError:
             base = {}
         base = base if isinstance(base, dict) else {}
-        here = {m for ms in s['npc_harita'].values() for m in ms} | set(names) | set(_maps(base.get(NPC_LIST))) | \
-            set(_maps(base.get(BOX_LIST)))
-        order = ([cur] if cur else []) + sorted(here - {cur}, key=_num)
+        mine = {m for ms in s['npc_harita'].values() for m in ms}           # seçim yapılan haritalar önce
+        rest = set(names) | set(_maps(base.get(NPC_LIST))) | set(_maps(base.get(BOX_LIST)))
+        order = ([cur] if cur else []) + sorted(mine - {cur}, key=_num) + sorted(rest - mine - {cur}, key=_num)
         npcs, boxes = {}, {}
         base[NPC_LIST], base[BOX_LIST] = npcs, boxes
         size = len(json.dumps(base, separators=(',', ':')))
@@ -121,7 +121,7 @@ class Otopilot:
             row = [e for e in s['npc'] if _npc_key(e) in seen]
             cost = len(json.dumps(row, separators=(',', ':'))) + box_cost + 2 * len(mid) + 8
             if size + cost > SINIR and mid != cur:
-                break
+                continue
             npcs[mid], boxes[mid] = row, list(s['kutu'])
             size += cost
         return json.dumps(base, separators=(',', ':'))
@@ -139,21 +139,9 @@ class Otopilot:
         return 'AutopilotInfoCommand', dict(remainingSeconds=D['premium_sn'] if premium else 0, laserRange=int(self.laser_range()),
                                             result=premium, autopilotInfos=text)
 
-    # ------------------------------------------------------------ haritanın tümü
-    def reveal(self):
-        """Haritanın bütün uzaylıları ve kutuları istemciye bildirilsin mi: pencere açıldıktan sonra (elle uçulana dek) ya da otomatik
-        pilot çalışırken (dunya.py in_view okur)."""
-        return self.pencere or self.d.get('durum') == START
-
-    def manual_move(self):
-        """Oyuncunun hareket isteği: otomatik pilot çalışmıyorsa elle uçuyor, pencere kapanmış sayılır."""
-        if self.d.get('durum') != START:
-            self.pencere = False
-
     def handle(self, name, f, now=None):
         now = now or time.time()
         if name == 'AutopilotInfoRequest':
-            self.pencere = True
             return [self.info_cmd()]
         if name == 'AutopilotInfoSaveRequest':
             text = f.get('autopilotInfos') or ''
@@ -185,7 +173,6 @@ class Otopilot:
                 elif st == STOP and self.d['durum'] == START:
                     dt = max(0, int(now - self.d.get('baslangic', now)))
                     self.d.update(durum=STOP, toplam_sn=self.d.get('toplam_sn', 0) + dt)
-                    self.pencere = False                  # elle uçuldu (istemci hareket edince durdurur)
                     self.log('   otomatik pilot durdu (%d sn)' % dt)
                 self.p.dirty = True
             return []

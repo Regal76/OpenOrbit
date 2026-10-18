@@ -770,7 +770,6 @@ class Session:
             PROFIL.apply(name, f)
             if w:
                 w.on_move(f)
-            self.yeni.otopilot.manual_move()     # otomatik pilot çalışmıyorsa elle uçuluyor: haritanın tümü bildirilmez (otopilot.py)
             # yanıt yok: gerçek sunucu oyuncunun kendi hareketine MoveCommand göndermiyor (kayıt: 876 isteğe 0). Gönderilen
             # MoveCommand istemcinin "hedefe varınca" işini (cevhere varınca HarvestRequest) kesiyordu.
         elif name == 'AttackAbortLaserRequest' and w:

@@ -297,7 +297,6 @@ class World:
         self.session_tick = None       # oturumun zamanlı sistemleri (Assembly, Dispatch, Skylab; game.Session.tick)
         self.visible = set()           # istemcinin bildiği NPC'ler (görüş mesafesi; kayıt: ~2.000 birimde gösterilir)
         self.seen_items = set()        # istemcinin bildiği kutu ve cevherler (kayıt: ~1.000 birimde)
-        self.omega_view = lambda: False  # Omega AutoTactic penceresi ya da otomatik pilot: haritanın tümü bildirilir (otopilot.reveal)
         self.next_booster = 0.0        # booster süreleri saniyede bir
         self.radiation_since = None    # harita dışında (radyasyon) ne zamandan beri
         self.ach_next, self.ach_pos, self.ach_dist, self.ach_secs = 0.0, None, 0.0, 0     # başarım sayaçları (ach_tick)
@@ -513,8 +512,6 @@ class World:
         return (it['x'], it['y']) if it else None
 
     def item_in_view(self, h, hx, hy):
-        if h in self.boxes and self.omega_view():     # Omega AutoTactic: pencerenin kutu listesi ve otomatik pilot haritanın tümünü görür
-            return True
         p = self.item_pos(h)
         lim = SAVAS['kutu_birakma' if h in self.seen_items else 'kutu_gorus']
         return bool(p) and math.hypot(p[0] - hx, p[1] - hy) <= lim
@@ -541,11 +538,7 @@ class World:
         return ('AddBoxCommand', dict(hash=h, boxType=b['tip'], x=b['x'], y=b['y']))
 
     def in_view(self, n, now, hx=None, hy=None):
-        """NPC görüş mesafesinde mi (gösterilmişse bırakma uzaklığına dek görünür kalır). Omega AutoTactic'in penceresi açıkken ve
-        otomatik pilot çalışırken haritanın bütün uzaylıları görünür (istemci pencerenin listesini ve hedeflerini yalnız tanıdığı
-        birimlerden kuruyor; otopilot.py); gizli komando ve adsız işaret birimleri hariç."""
-        if self.omega_view() and n.d.get('ad') and not getattr(n, 'gizli', False):
-            return True
+        """NPC görüş mesafesinde mi (gösterilmişse bırakma uzaklığına dek görünür kalır)."""
         if hx is None:
             hx, hy = self.hero_pos(now)
         nx, ny = n.mover.pos(now)
