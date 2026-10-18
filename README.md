@@ -12,8 +12,9 @@ Orijinal DarkOrbit Unity istemcisi için tek oyunculu, çevrimdışı sunucu ve 
 ### What it is
 
 DarkOrbit Server Emulator runs a local server on your computer and starts the **original DarkOrbit client** against it.
-You play alone and offline: the client never connects to the official servers, its files are never changed, and no
-internet connection is needed. A management panel starts the game and handles your saves, game settings and events.
+You play alone and offline: the client never connects to the official servers and its files are never changed. Internet
+is needed only once, if the panel downloads the game for you. A management panel starts the game and handles your
+saves, game settings and events.
 
 ### Features
 
@@ -32,22 +33,25 @@ internet connection is needed. A management panel starts the game and handles yo
 
 ### The management panel
 
-- **First-run setup wizard:** language (English or Turkish), game folder, your first pilot and game settings.
+- **First-run setup wizard:** language (English or Turkish), game folder (downloaded for you if it isn't on your
+  computer), your first pilot and game settings.
 - **Play:** your active save, the PLAY button, launch steps, warnings and live status while you play.
 - **Saves:** several save slots; create, rename, copy, export and import (.zip), edit (credits, uridium, give items,
   repair the ship …), and automatic or manual backups that you can restore.
 - **Game Settings:** multipliers and rules (damage, rewards, drop chances, alien and box counts, prices, cooldowns …),
   presets such as Relaxed, Fast progress and Hard, and your own templates. Most settings apply while you play.
 - **Events:** each event by calendar, or on / off by hand.
-- **Client:** game folder, version check, window mode, resolution and display.
+- **Client:** game folder, game download, version check, window mode, resolution and display.
 - **Server:** processes, ports, behavior and live logs.
 
 ### Requirements
 
 - Windows 10 or 11.
 - [Python](https://www.python.org/downloads/windows/) 3.10 or newer. Nothing else is needed to play.
-- The **original DarkOrbit Unity client**, version **1.1.114** (not included). The folder must contain `DarkOrbit.exe`
-  and `DarkOrbit_Data`.
+- The **original DarkOrbit Unity client**, version **1.1.114** (not included). If the panel doesn't find it on your
+  computer, the setup wizard downloads it from the game's official download server and installs it into the project
+  folder: about 3.5 GB to download and 4.4 GB of free disk space. A stopped download resumes where it left off. If you
+  install it yourself, the folder must contain `DarkOrbit.exe` and `DarkOrbit_Data`.
 - Microsoft Edge or Google Chrome for the panel window (otherwise your default browser opens it).
 - Optional: `pip install capstone`, only if you want to adapt the server to a newer client version (Client page).
 
@@ -56,7 +60,7 @@ internet connection is needed. A management panel starts the game and handles yo
 1. Download this repository (Code > Download ZIP) and extract it, or clone it.
 2. Double-click **`DarkOrbit Panel.pyw`**. The panel opens in its own window; no console window appears.
 3. Follow the setup wizard: choose a language, pick the DarkOrbit game folder (it is found automatically in the usual
-   places), create your first pilot and choose a preset.
+   places; if the game isn't on your computer, the wizard downloads it), create your first pilot and choose a preset.
 4. Press **PLAY**. The servers start and the game opens. On the client's login screen press START.
 
 You can run the wizard again at any time from the **Panel** page, where you can also switch the language and put a
@@ -78,6 +82,7 @@ desktop shortcut on your desktop.
 | `server/save/ayarlar.json` | Game settings and event choices |
 | `server/save/panel.json` | Panel settings (language, game folder, display, backups) |
 | `server/logs/` | Server, client and panel logs |
+| `DarkOrbit_Version1.1.114/` | The game client, if the panel downloaded it (`istemci_indiriliyor/` while downloading) |
 
 All of these are created on first run and stay on your computer.
 
@@ -102,8 +107,9 @@ Don't use it to connect to or harm the official servers.
 ### Nedir
 
 DarkOrbit Server Emulator bilgisayarında yerel bir sunucu çalıştırır ve **orijinal DarkOrbit istemcisini** ona bağlar.
-Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, dosyaları değiştirilmez, internet gerekmez. Bir
-yönetim paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
+Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, dosyaları değiştirilmez. İnternet yalnız bir kez,
+panel oyunu senin için indirirse gerekir. Bir yönetim paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikleri
+yönetir.
 
 ### Özellikler
 
@@ -121,22 +127,24 @@ yönetim paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikl
 
 ### Yönetim paneli
 
-- **İlk açılışta kurulum sihirbazı:** dil (Türkçe ya da İngilizce), oyun klasörü, ilk pilotun ve oyun ayarları.
+- **İlk açılışta kurulum sihirbazı:** dil (Türkçe ya da İngilizce), oyun klasörü (bilgisayarında yoksa indirilir), ilk
+  pilotun ve oyun ayarları.
 - **Oyna:** etkin kaydın, OYNA düğmesi, başlatma adımları, uyarılar ve oynarken canlı durum.
 - **Kayıtlar:** birden çok kayıt yuvası; oluştur, yeniden adlandır, kopyala, dışa ve içe aktar (.zip), düzenle (kredi,
   uridyum, eşya ver, gemiyi onar …), otomatik ya da elle yedekler ve geri yükleme.
 - **Oyun Ayarları:** çarpanlar ve kurallar (hasar, ödüller, düşme şansı, uzaylı ve kutu sayısı, fiyatlar, beklemeler …),
   Rahat, Hızlı ilerleme, Zorlu gibi hazır ayarlar ve kendi şablonların. Çoğu ayar oynarken uygulanır.
 - **Etkinlikler:** her etkinlik takvime göre ya da elle açık / kapalı.
-- **İstemci:** oyun klasörü, sürüm denetimi, pencere kipi, çözünürlük ve ekran.
+- **İstemci:** oyun klasörü, oyunu indirme, sürüm denetimi, pencere kipi, çözünürlük ve ekran.
 - **Sunucu:** süreçler, portlar, davranış ve canlı günlükler.
 
 ### Gereksinimler
 
 - Windows 10 ya da 11.
 - [Python](https://www.python.org/downloads/windows/) 3.10 ya da daha yenisi. Oynamak için başka bir şey gerekmez.
-- **Orijinal DarkOrbit Unity istemcisi**, sürüm **1.1.114** (depoda yok). Klasörde `DarkOrbit.exe` ve `DarkOrbit_Data`
-  olmalı.
+- **Orijinal DarkOrbit Unity istemcisi**, sürüm **1.1.114** (depoda yok). Panel onu bilgisayarında bulamazsa kurulum
+  sihirbazı oyunun resmî indirme sunucusundan indirip proje klasörüne kurar: yaklaşık 3,5 GB indirme ve 4,4 GB boş disk
+  alanı. Durdurulan indirme kaldığı yerden sürer. Kendin kurarsan klasörde `DarkOrbit.exe` ve `DarkOrbit_Data` olmalı.
 - Panel penceresi için Microsoft Edge ya da Google Chrome (yoksa varsayılan tarayıcın açar).
 - İsteğe bağlı: `pip install capstone`; yalnız sunucuyu daha yeni bir istemci sürümüne uyarlamak istersen (İstemci sayfası).
 
@@ -144,8 +152,8 @@ yönetim paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikl
 
 1. Bu depoyu indir (Code > Download ZIP) ve aç ya da klonla.
 2. **`DarkOrbit Panel.pyw`** dosyasına çift tıkla. Panel kendi penceresinde açılır; konsol penceresi çıkmaz.
-3. Kurulum sihirbazını izle: dili seç, DarkOrbit oyun klasörünü seç (bilinen yerlerde kendiliğinden bulunur), ilk pilotunu
-   oluştur ve bir hazır ayar seç.
+3. Kurulum sihirbazını izle: dili seç, DarkOrbit oyun klasörünü seç (bilinen yerlerde kendiliğinden bulunur; oyun
+   bilgisayarında yoksa sihirbaz indirir), ilk pilotunu oluştur ve bir hazır ayar seç.
 4. **OYNA**'ya bas. Sunucular başlar, oyun açılır. İstemcinin giriş ekranında START'a bas.
 
 Sihirbazı istediğin zaman **Panel** sayfasından yeniden açabilirsin; dili değiştirmek ve masaüstüne kısayol koymak da
@@ -167,6 +175,7 @@ orada.
 | `server/save/ayarlar.json` | Oyun ayarları ve etkinlik seçimleri |
 | `server/save/panel.json` | Panel ayarları (dil, oyun klasörü, görüntü, yedekleme) |
 | `server/logs/` | Sunucu, istemci ve panel günlükleri |
+| `DarkOrbit_Version1.1.114/` | Oyun istemcisi, panel indirdiyse (inerken `istemci_indiriliyor/`) |
 
 Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 

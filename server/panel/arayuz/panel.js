@@ -1,6 +1,7 @@
 /* DarkOrbit yerel sunucu paneli — arayüz (panel.py'nin /api/... uçları). Dış kitaplık yok.
    Dil: metinler Türkçe yazılır, T() seçili dildeki hâlini verir (İngilizcesi en.json; Python tarafıyla ortak, dil.py).
-   İlk açılışta kurulum sihirbazı: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). */
+   İlk açılışta kurulum sihirbazı: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun
+   bilgisayarda bulunamazsa oyun klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). */
 'use strict';
 const TOKEN = document.querySelector('meta[name="panel-token"]').content;
 const $ = (s, r = document) => r.querySelector(s);
@@ -117,7 +118,8 @@ function fmtWhen(str) {
   if (diff < 7 * 86400) return T('{0} gün önce', Math.floor(diff / 86400));
   return d.toLocaleDateString(LOC(), { day: 'numeric', month: 'short', year: 'numeric' });
 }
-const fmtBytes = b => b == null ? '—' : b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(1) + ' MB';
+const fmtBytes = b => b == null ? '—' : b < 1024 ? b + ' B' : b < 1048576 ? (b / 1024).toFixed(1) + ' KB'
+  : b < 1073741824 ? (b / 1048576).toFixed(1) + ' MB' : (b / 1073741824).toFixed(2) + ' GB';
 const firmaCls = f => ({ MMO: 'mmo', EIC: 'eic', VRU: 'vru' }[f] || '');
 const lvl = v => T('Sv') + ' ' + (v ?? '?');
 
@@ -739,9 +741,59 @@ function resolutionList(r) {
   return { res, scr };
 }
 
+// ---- oyunu indirme (indirme.py, /api/istemci/indirme): sihirbazın oyun klasörü adımı ve İstemci sayfası
+const DL_ACTIVE = st => st.calisiyor || st.yarim || ['hata', 'durdu', 'bitti'].includes(st.durum);
+const dlPct = st => st.toplam ? Math.floor(100 * st.alinan / st.toplam) : 0;
+function dlBox(st, refresh, { haveClient = false } = {}) {      // haveClient: geçerli istemci var, yarım dosyalar yalnız silinir
+  const pct = dlPct(st), run = st.calisiyor;
+  const call = (path, msg) => act(() => api(path, {}), msg).then(x => { if (x) refresh(x); });
+  const discard = async () => {
+    if (await confirmBox(T('Yarım indirme silinsin mi?'), T('İndirilen dosyalar (proje klasöründeki istemci_indiriliyor) silinir; sonra baştan iner.'), { ok: T('Sil'), danger: true }))
+      call('/api/istemci/indir_sil', T('Yarım indirme silindi.'));
+  };
+  const head = { hazirlaniyor: T('İndirme hazırlanıyor…'), indiriliyor: T('Oyun indiriliyor: %{0}', pct), dogrulaniyor: T('Dosyalar doğrulanıyor…'),
+    bitti: T('Oyun indirildi ve kuruldu.'), hata: T('İndirme durdu.'), durdu: T('İndirme durduruldu (%{0}).', pct) }[st.durum]
+    || (st.yarim ? T('Önceki indirme yarım kaldı.') : T('Oyunu indir'));
+  const info = st.durum === 'indiriliyor'
+    ? [`${fmtBytes(st.alinan)} / ${fmtBytes(st.toplam)}`, st.hiz ? `${fmtBytes(st.hiz)}/${T('sn')}` : null,
+      st.kalan_sn != null && st.hiz ? T('kalan {0}', fmtDur(st.kalan_sn)) : null, T('dosya {0}/{1}', st.biten_dosya, st.dosya_sayisi)].filter(Boolean).join(' · ')
+    : st.durum === 'bitti' ? st.hedef
+    : st.durum === 'hata' ? st.hata
+    : haveClient && st.yarim ? T('Seçili istemci kullanılıyor; yarım kalan dosyaları silebilirsin.')
+    : st.durum === 'durdu' || st.yarim ? T('Sürdürünce yalnız eksik dosyalar iner.')
+    : st.durum === 'bos' ? T('DarkOrbit {0} istemcisi oyunun resmî indirme sunucusundan alınıp proje klasörüne kurulur: yaklaşık 3,5 GB indirme, diskte 4,3 GB. İstemci dosyaları değiştirilmez.', '1.1.114')
+    : '';
+  const btns = run ? [btn(T('Durdur'), () => call('/api/istemci/indir_durdur', T('İndirme durduruluyor…')), 'ghost sm', 'stop')]
+    : st.durum === 'bitti' ? []
+    : [haveClient ? null : btn(st.durum === 'hata' ? T('Yeniden dene') : st.durum === 'durdu' || st.yarim ? T('Sürdür') : T('İndir ve kur'), () => call('/api/istemci/indir'), 'primary sm', 'download'),
+      st.yarim ? btn(T('Yarım indirmeyi sil'), discard, 'ghost sm', 'trash') : null];
+  return h('div', { class: 'dl-box ' + (st.durum === 'hata' ? 'err' : st.durum === 'bitti' ? 'ok' : '') },
+    h('b', null, head),
+    run || st.durum === 'durdu' ? h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } }))) : null,
+    info ? h('div', { class: 'small muted dl-info', title: st.dosya || '' }, info) : null,
+    btns.some(Boolean) ? h('div', { class: 'row wrap' }, btns) : null);
+}
+// kutuyu saniyede bir yeniler; iş bitince (bitti) onDone. -> setInterval kimliği
+function dlWatch(wrap, st, onDone, opts) {
+  let sig = JSON.stringify(st);
+  const draw = s => wrap.replaceChildren(dlBox(s, x => { draw(x); sig = JSON.stringify(x); }, opts));
+  draw(st);
+  const id = setInterval(async () => {
+    if (!wrap.isConnected) { clearInterval(id); return; }
+    let s; try { s = await api('/api/istemci/indirme'); } catch (e) { return; }
+    const was = JSON.parse(sig);
+    const n = JSON.stringify(s);
+    if (n === sig) return;
+    sig = n; draw(s);
+    if (s.durum === 'bitti' && was.durum !== 'bitti' && onDone) onDone(s);
+  }, 1000);
+  return id;
+}
+
 async function renderIstemci(data) {
   const r = data || await act(() => api('/api/istemci')); if (!r || S.page !== 'istemci') return;
   const c = r.kontrol, cfg = r.ayarlar;
+  const dlWrap = !c.gecerli || DL_ACTIVE(r.indirme) ? h('div', { class: 'dl-wrap' }) : null;
   const saveCfg = (vals, msg = T('Kaydedildi.')) => act(() => api('/api/panel_ayarlari', { degerler: vals }), msg).then(x => x && renderIstemci(x));
   const folderCard = h('div', { class: 'card' }, h('h2', null, icon('folder'), T('İstemci klasörü')),
     h('p', { class: 'desc' }, T('Orijinal DarkOrbit Unity istemcisinin klasörü (içinde DarkOrbit.exe ve DarkOrbit_Data olan). Güncelleme gelirse ya da klasörü taşırsan buradan seç.')),
@@ -750,7 +802,8 @@ async function renderIstemci(data) {
     h('div', { class: 'check-list' },
       checkRow(c.exe, 'DarkOrbit.exe'), checkRow(c.veri, T('DarkOrbit_Data klasörü')),
       c.gecerli ? checkRow(c.uyumlu, versionText(c, r.desteklenen), !c.uyumlu) : null),
-    c.sorunlar.length && !c.gecerli ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, c.sorunlar.join(' '))) : null,
+    c.sorunlar.length && !c.gecerli && !r.indirme.calisiyor ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, c.sorunlar.join(' '))) : null,
+    dlWrap ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('Oyunu indir')), dlWrap] : null,
     h('div', { id: 'proto-box' }),
     h('div', { class: 'row wrap', style: { marginTop: '12px' } },
       btn(T('Klasör seç…'), () => act(() => api('/api/istemci/sec', {}), x => x.iptal ? T('İptal edildi.') : T('İstemci klasörü kaydedildi.')).then(x => x && renderIstemci(x)), 'primary', 'folder'),
@@ -787,6 +840,7 @@ async function renderIstemci(data) {
     T("Klasördeki DarkorbitLauncher.exe'yi çalıştırma: istemciyi resmî sunucudan güncelleyip yerel sunucuyla uyumu bozabilir. Panel istemci dosyalarını hiç değiştirmez; yalnız yerel giriş adresiyle başlatır.")));
   $('#content').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'grid g2' }, folderCard, dispCard), warn));
   S.sig = S.sig || {}; S.proto = null; S.protoClient = c;
+  if (dlWrap) S.timers.push(dlWatch(dlWrap, r.indirme, () => { toast(T('Oyun indirildi ve kuruldu.'), 'ok'); renderIstemci(); }, { haveClient: c.gecerli }));
   protoTick(true);
   S.timers.push(setInterval(() => protoTick(), 1000));
 }
@@ -991,17 +1045,18 @@ const WZ = { step: 0, draw: 0 };
 function openWizard(step = 0) {
   closeWizard();
   Object.assign(WZ, { step, newPilot: false, created: null, preset: undefined, presetStart: undefined, display: null,
-    shortcut: !S.panelCfg?.kurulum_tamam });
+    shortcut: !S.panelCfg?.kurulum_tamam, dlAuto: false });
   document.body.append(h('div', { class: 'wizard', id: 'wizard', role: 'dialog', 'aria-modal': 'true' }));
   drawWizard();
 }
-function closeWizard() { const w = $('#wizard'); if (w) w.remove(); }
+function closeWizard() { clearInterval(WZ.timer); const w = $('#wizard'); if (w) w.remove(); }
 const wzGo = n => { WZ.step = Math.max(0, Math.min(WZ_STEPS.length - 1, n)); drawWizard(); };
 
 async function drawWizard() {
   const root = $('#wizard'); if (!root) return;
   const token = ++WZ.draw;
   const [id] = WZ_STEPS[WZ.step];
+  clearInterval(WZ.timer);
   root.classList.add('busy');                      // yüklenirken düğmeler kilitli (çift tıklama adım atlamasın)
   root.querySelectorAll('.wz-foot button, .wz-body button').forEach(b => { b.disabled = true; });
   let p;
@@ -1029,6 +1084,7 @@ async function drawWizard() {
       h('div', null, h('div', { class: 'wz-brand' }, 'DARKORBIT SERVER EMULATOR'), h('div', { class: 'wz-kicker' }, WZ.step === 0 ? 'Kurulum · Setup' : T('Kurulum'))), steps),
     h('div', { class: 'wz-body' }, h('h2', null, p.title), p.sub ? h('div', { class: 'wz-sub' }, p.sub) : null, p.content),
     foot));
+  if (p.after) p.after();
   const f = root.querySelector('.wz-body input:not([type=checkbox])'); if (f) f.focus();
 }
 
@@ -1073,7 +1129,7 @@ const WZ_PAGES = {
     title: T("DarkOrbit Server Emulator'a hoş geldin"),
     sub: T('Tek oyunculu, çevrimdışı DarkOrbit: orijinal oyun istemcisi bilgisayarındaki yerel sunucuya bağlanır.'),
     content: h('div', { class: 'stack' },
-      h('div', { class: 'wz-list' }, [['folder', T('Oyun klasörünü seç'), T('Orijinal DarkOrbit istemcisinin kurulu olduğu klasör.')],
+      h('div', { class: 'wz-list' }, [['folder', T('Oyun klasörünü seç'), T('Orijinal DarkOrbit istemcisinin kurulu olduğu klasör; bilgisayarında yoksa panel indirir.')],
         ['ship', T('İlk pilotunu oluştur'), T('Pilot adı ve firma: MMO, EIC ya da VRU.')],
         ['sliders', T('Oyun ayarlarını seç'), T('Hazır bir zorluk ve oyun penceresinin görüntüsü.')]].map(([ic, a, b], i) =>
         h('div', { class: 'wz-item' }, h('span', { class: 'wz-num' }, String(i + 1)), icon(ic), h('div', null, h('b', null, a), h('div', { class: 'muted small' }, b))))),
@@ -1084,8 +1140,20 @@ const WZ_PAGES = {
   klasor: async () => {
     const r = await api('/api/istemci');
     const c = r.kontrol;
-    const use = p => act(() => api('/api/istemci/kullan', { yol: p })).then(x => { if (x) drawWizard(); });
-    const browse = () => act(() => api('/api/istemci/sec', {}), x => x.iptal ? T('İptal edildi.') : T('Oyun klasörü seçildi.')).then(x => { if (x) drawWizard(); });
+    let dl = r.indirme;
+    const none = !c.gecerli && !r.adaylar.length;
+    if (none && dl.durum === 'bos' && !WZ.dlAuto) {     // oyun bulunamadı: indirmeye kendiliğinden başla (yarım kaldıysa sürdür)
+      WZ.dlAuto = true;
+      dl = await act(() => api('/api/istemci/indir', {})) || dl;
+    }
+    if (c.gecerli && c.uyumlu && dl.calisiyor) {      // indirme sürerken uyumlu istemci bulundu ya da seçildi: indirme durur
+      dl = await act(() => api('/api/istemci/indir_durdur', {}), T('İndirme durduruldu: bulunan istemci kullanılıyor.')) || dl;
+    }
+    const dlWrap = (!c.gecerli && (none || DL_ACTIVE(dl))) || (c.gecerli && (dl.calisiyor || dl.yarim)) ? h('div', { class: 'dl-wrap' }) : null;
+    const bg = !c.gecerli && dl.calisiyor;
+    const chosen = x => { if (x) drawWizard(); };
+    const use = p => act(() => api('/api/istemci/kullan', { yol: p })).then(chosen);
+    const browse = () => act(() => api('/api/istemci/sec', {}), x => x.iptal ? T('İptal edildi.') : T('Oyun klasörü seçildi.')).then(chosen);
     const rows = r.adaylar.map(a => h('button', { class: 'wz-opt' + (a.yol === c.yol ? ' on' : ''), type: 'button', onclick: () => use(a.yol) },
       h('span', { class: 'wz-radio' }), h('span', { class: 'mono' }, a.yol), badge(a.surum || '?', a.uyumlu ? 'ok' : 'warn')));
     return {
@@ -1093,13 +1161,16 @@ const WZ_PAGES = {
       sub: T('Orijinal DarkOrbit istemcisinin klasörü: içinde DarkOrbit.exe ve DarkOrbit_Data olmalı. Panel istemci dosyalarını değiştirmez.'),
       content: [
         rows.length ? field(T('Bulunan klasörler'), h('div', { class: 'wz-opts' }, rows))
-          : h('div', { class: 'alert uyari' }, icon('alert'), h('div', null, T('Bilgisayarında bir DarkOrbit istemcisi bulunamadı. Kurduğun klasörü seç (içinde DarkOrbit.exe ve DarkOrbit_Data olan).'))),
-        field(T('Seçili klasör'), h('div', { class: 'path' }, c.yol || T('Seçilmedi'))),
+          : c.gecerli ? null : h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Bilgisayarında DarkOrbit bulunamadı, bu yüzden oyun indirilip proje klasörüne kuruluyor. Kurulu bir oyunun varsa klasörünü seç.'))),
+        dlWrap,
+        bg ? h('div', { class: 'small muted' }, T('İndirme arka planda sürer: bu arada pilotunu oluşturabilirsin.')) : null,
+        dlWrap ? null : field(T('Seçili klasör'), h('div', { class: 'path' }, c.yol || T('Seçilmedi'))),
         c.yol ? h('div', { class: 'check-list', style: { margin: 0 } }, checkRow(c.exe, 'DarkOrbit.exe'), checkRow(c.veri, T('DarkOrbit_Data klasörü')),
           c.gecerli ? checkRow(c.uyumlu, versionText(c, r.desteklenen), !c.uyumlu) : null) : null,
         c.gecerli && !c.uyumlu ? h('div', { class: 'alert uyari' }, icon('alert'), h('div', null, T('Bu istemci sunucunun protokolünden farklı bir sürüm. Oyun yine açılabilir; sorun olursa İstemci sayfasından yeni istemciyi uyarla.'))) : null,
-        h('div', { class: 'row wrap' }, btn(T('Klasör seç…'), browse, rows.length ? '' : 'primary', 'folder'), btn(T('Yeniden ara'), () => drawWizard(), 'ghost', 'search'))],
-      next: { disabled: !c.gecerli }, skip: !c.gecerli,
+        h('div', { class: 'row wrap' }, btn(T('Klasör seç…'), browse, rows.length || dlWrap ? '' : 'primary', 'folder'), btn(T('Yeniden ara'), () => drawWizard(), 'ghost', 'search'))],
+      next: { disabled: !c.gecerli && !bg }, skip: !c.gecerli && !bg,
+      after: dlWrap ? () => { WZ.timer = dlWatch(dlWrap, dl, () => drawWizard(), { haveClient: c.gecerli }); } : null,
     };
   },
   // ---- 4. ilk pilot
@@ -1166,16 +1237,17 @@ const WZ_PAGES = {
     const [d, c, a] = await Promise.all([api('/api/durum'), api('/api/istemci'), api('/api/ayarlar')]);
     const k = c.kontrol, cfg = c.ayarlar, pre = currentPreset(a);
     const canPlay = !!d.aktif && k.gecerli;
+    const dlRun = !k.gecerli && c.indirme.calisiyor;
     const mode = (WINDOW_MODES.find(([x]) => x === cfg.pencere_modu) || [, cfg.pencere_modu])[1];
     const rows = [[true, T('Dil'), DIL_ADLARI[I18N.lang]],
-      [k.gecerli, T('Oyun klasörü'), k.gecerli ? k.yol + (k.surum ? ' · ' + k.surum : '') : T('Seçilmedi: İstemci sayfasından seç.')],
+      [k.gecerli, T('Oyun klasörü'), k.gecerli ? k.yol + (k.surum ? ' · ' + k.surum : '') : dlRun ? T('İndiriliyor: %{0} (İstemci sayfasında izleyebilirsin)', dlPct(c.indirme)) : T('Seçilmedi: İstemci sayfasından seç.')],
       [!!d.aktif, T('Pilot'), d.aktif ? `${d.aktif.pilot} · ${d.aktif.firma}` : T('Oluşturulmadı: Kayıtlar sayfasından oluştur.')],
       [true, T('Oyun ayarları'), pre ? a.hazir[pre].ad : T('Özel')],
       [true, T('Oyun penceresi'), `${T(mode)} · ${cfg.genislik}×${cfg.yukseklik}`]];
     const sc = h('input', { type: 'checkbox', checked: WZ.shortcut, onchange: e => { WZ.shortcut = e.target.checked; } });
     return {
       title: canPlay ? T('Her şey hazır') : T('Neredeyse hazır'),
-      sub: canPlay ? T("OYNA'ya basınca sunucular başlar ve oyun açılır.") : T('Eksik adımları sonra panelden tamamlayabilirsin.'),
+      sub: canPlay ? T("OYNA'ya basınca sunucular başlar ve oyun açılır.") : dlRun ? T('Oyun inince Oyna sayfasından başlatabilirsin.') : T('Eksik adımları sonra panelden tamamlayabilirsin.'),
       content: [h('div', { class: 'wz-summary' }, rows.map(([ok, t, v]) => h('div', { class: ok ? 'ok' : 'wr' }, icon(ok ? 'check' : 'alert'), h('span', null, t), h('b', { title: v }, v)))),
         h('label', { class: 'row small' }, h('span', { class: 'switch' }, sc, h('span')), T('Masaüstüne DarkOrbit kısayolu koy'))],
       extra: canPlay ? btn(T('Yalnız bitir'), () => finishWizard(false), '') : null,

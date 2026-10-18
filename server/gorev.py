@@ -12,11 +12,15 @@ Süre sınırlı görev ("sure_sn"; tanımda HASTE koşulu, değeri geçen ms): 
 firmanın oyuncusunu vurmak) QuestFailedCommand {id} (istemci "q2_failed_quest" iletisiyle görevi kaldırır) + QuestListCommand; görev
 yeniden alınabilir. Süre gerçek zamanla (oyundan çıkınca da) işler.
 Liste durumları (istemcinin AcceptabilityType'ı): 0 kabul edilemez (eksik seviye/önceki görev), 1 alınabilir, 2 sürüyor, 3 tamamlandı.
+Görev sınırı: listenin maxQuests'i toplam değil boş slot sayısıdır (kayıt: görev yokken 5, biri sürerken 4). İstemci onu
+QuestComponent.MaxAcceptedQuests'te tutar, penceresinde "n görev slotu boş" (label_questslots_free_s) olarak gösterir ve 0 olunca
+kabulü kapatır (QuestComponentSystem.IsQuestSlotLimitReached). Sınır panelin 'en_cok_gorev' ayarı (oyunun değeri MAX_QUESTS).
 Profilde: gorevler.aktif {görev: {koşul: değer}}, gorevler.tamam [görev].
 """
 import copy, json, os, time
 import rutbe as RT
 import booster as BOOSTER
+import ayar as AY
 
 import harita as H
 import kapi as KAPI
@@ -24,7 +28,7 @@ import kapi as KAPI
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = json.load(open(os.path.join(HERE, 'data', 'gorevler.json'), encoding='utf8'))
 QUESTS = {int(k): v for k, v in DATA['gorevler'].items()}
-MAX_QUESTS = DATA.get('en_cok_gorev', 4)
+MAX_QUESTS = DATA.get('en_cok_gorev', 5)      # oyunun sınırı (kayıttaki en büyük maxQuests); oyunda panel ayarı geçerli
 
 KILL_NPC, CARGO, COLLECT_BONUS_BOX, COLLECT_LOOT, SELL_ORE, VISIT_MAP, VISIT_QUEST_GIVER, ON_MAP = 6, 51, 55, 67, 52, 34, 62, 77
 KILL_PLAYERS = 28            # PvP görevleri: olay "kill_player" (ileride bot oyuncular gönderecek)
@@ -138,9 +142,16 @@ class Gorevler:
                    acceptabilityStatus=mod('QuestAcceptabilityStatusModule', type=s), missingAcceptRequirements=miss,
                    textKeyFoundation='', portraitId='', star=0)
 
+    def running(self):
+        """Slot tutan görevler (oynanabilen etkin görevler)."""
+        return sum(1 for q in self.st['aktif'] if int(q) in QUESTS)
+
+    def free_slots(self):
+        return max(0, AY.get('en_cok_gorev') - self.running())
+
     def list_cmd(self):
-        return ('QuestListCommand', {'list': [self.slim(q) for q in sorted(QUESTS)], 'onlyStarter': False, 'maxQuests': MAX_QUESTS,
-                                     'maxEventQuests': 1})
+        return ('QuestListCommand', {'list': [self.slim(q) for q in sorted(QUESTS)], 'onlyStarter': False,
+                                     'maxQuests': self.free_slots(), 'maxEventQuests': 1})
 
     def definition(self, qid):
         q = QUESTS[qid]
@@ -200,8 +211,8 @@ class Gorevler:
     # ------------------------------------------------------------ istekler
     def accept(self, qid):
         s = self.status(qid)[0] if qid in QUESTS else None
-        if s != NOT_STARTED or len(self.st['aktif']) >= MAX_QUESTS:
-            self.log('   görev alınamadı: %s (durum %s, etkin %d)' % (qid, s, len(self.st['aktif'])))
+        if s != NOT_STARTED or not self.free_slots():
+            self.log('   görev alınamadı: %s (durum %s, etkin %d/%d)' % (qid, s, self.running(), AY.get('en_cok_gorev')))
             return [self.list_cmd()]
         with self.p.lock:
             self.st['aktif'][str(qid)] = {START: time.time()} if QUESTS[qid].get('sure_sn') else {}

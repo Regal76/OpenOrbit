@@ -82,6 +82,9 @@ SCHEMA = [
        uygulama='harita', hi=5.0),
     _c('npc_yenilenme', 'Uzaylıların yeniden doğma süresi', 'dunya', 'Ölen uzaylının yerine yenisinin gelme süresi. '
        'Düşük değer: daha çabuk.', lo=0.1, hi=5.0),
+    _n('en_cok_gorev', 'Aynı anda alınabilen görev', 'dunya', 'Görev penceresinde aynı anda sürdürebileceğin görev sayısı (oyunun '
+       'değeri 5). Dolunca yeni görev alınamaz; biri bitince ya da iptal edilince yer açılır. Düşürülürse süren görevler iptal '
+       'edilmez.', lo=1, hi=10, varsayilan=5, birim='görev'),
     # ---------------------------------------------------------------- ekonomi
     _c('magaza_fiyat', 'Mağaza fiyatları', 'ekonomi', 'Mağazada kredi ve uridyumla satılan her şeyin fiyatı.', lo=0.0,
        hi=5.0),
@@ -117,7 +120,7 @@ SCHEMA = [
        've seviye atladıkça yeni özellikleri anlatan ipucu pencereleri, süren etkinliğin açıklaması. Her biri bir kez; kapattığın '
        'ipuçları açılmaz, ipucu arşivinden yeniden okunabilir.', varsayilan=True),
     _b('seri_oldurme', 'Seri öldürme duyuruları', 'arayuz', 'Kısa aralıklarla art arda uzaylı yok edince ekranda "Triple Kill", '
-       '"Unstoppable", "Godlike", "Like a Boss" duyurusu ve sesi (3, 6, 10, 15 öldürme; aralık en çok 10 sn).', varsayilan=True),
+       '"Unstoppable", "Godlike", "Like a Boss" duyurusu ve sesi (3, 6, 10, 15 öldürme; aralık en çok 10 sn).'),
     _b('reklamsiz', 'Açılış pencerelerini gösterme', 'arayuz', 'Girişte kendiliğinden açılan günlük bonus, ipucu ve Season Pass '
        'pencereleri gönderilmez (menülerden açılabilirler).', uygulama='giriş'),
     # ---------------------------------------------------------------- geliştirici

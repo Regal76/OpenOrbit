@@ -1,13 +1,15 @@
 """Oyun istemcisi (orijinal Unity istemcisi): klasör doğrulama, kendiliğinden bulma, sürüm, başlatma argümanları.
 
 Klasör: içinde DarkOrbit.exe ve DarkOrbit_Data/ olan klasör (DarkOrbit_Version1.1.114 gibi). Panel ayarı boşsa proje kökündeki
-en yeni sürüm klasörü kullanılır; güncelleme gelirse ya da klasör taşınırsa panelden seçilir. Sunucu 1.1.114'ün protokolüyle
+en yeni sürüm klasörü kullanılır; güncelleme gelirse ya da klasör taşınırsa panelden seçilir. Bilgisayarda yoksa panel indirir
+(indirme.py; yarım indirmenin geçici klasörü aday sayılmaz). Sunucu 1.1.114'ün protokolüyle
 yazıldı (data/protocol*.json istemcinin kodundan): başka sürümde panel uyarır.
 İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090).
 """
 import glob, os, re, subprocess
 
 from dil import t as _
+from indirme import GECICI
 
 PANEL_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVER = os.path.dirname(PANEL_DIR)
@@ -92,7 +94,7 @@ def candidates():
         for d in glob.glob(pat):
             d = os.path.normpath(d)
             key = d.lower()
-            if key in seen or not os.path.isdir(d):
+            if key in seen or not os.path.isdir(d) or GECICI.lower() in key.split(os.sep):
                 continue
             seen.add(key)
             c = check(d)

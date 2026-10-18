@@ -8,7 +8,8 @@ API: /api/... (JSON). İstekler sayfadaki belirteci (X-Panel-Belirteci) taşıma
 göndermesini engeller. Yalnız 127.0.0.1'e bağlanır.
 Yollar: yollar.py (save/kayitlar, save/panel.json, save/ayarlar.json, logs/).
 Dil: Türkçe ya da İngilizce (dil.py; metinler Türkçe yazılır, İngilizceleri arayuz/en.json). İlk açılışta arayüz kurulum sihirbazını
-açar: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam').
+açar: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun bilgisayarda bulunamazsa sihirbazın oyun
+klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da).
 """
 import datetime, json, os, re, secrets, shutil, subprocess, sys, threading, time, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -30,6 +31,7 @@ from kayitlar import Kayitlar, KayitHatasi, FIRMALAR  # noqa: E402
 from yapilandirma import PanelConfig  # noqa: E402
 from testler import Testler  # noqa: E402
 from protokol import Uyarlayici  # noqa: E402
+from indirme import Indirici, IndirmeHatasi  # noqa: E402
 
 SURUM = '1.0'
 PORT = 8077
@@ -116,6 +118,21 @@ def game_settings():
 
 def client_folder():
     return IST.resolve(CFG.get('istemci_klasoru'))
+
+
+def _downloaded(path):
+    """İndirme bitti: kullanılan istemci geçersizse yeni klasör kullanılsın (kendiliğinden bulunuyorsa ayar boş kalır)."""
+    if not IST.check(client_folder())['gecerli']:
+        auto = IST.resolve(None)
+        same = auto and os.path.normcase(os.path.normpath(auto)) == os.path.normcase(os.path.normpath(path))
+        CFG.update({'istemci_klasoru': None if same else path})
+
+
+DL = Indirici(ROOT, IST.check, log, on_done=_downloaded)       # oyun istemcisini indirme (indirme.py)
+
+
+def _dl_pct(st):
+    return int(100 * st['alinan'] / st['toplam']) if st['toplam'] else 0
 
 
 _dialog_lock = threading.Lock()
@@ -266,9 +283,12 @@ def warnings():
     if not slot:
         out.append({'tur': 'hata', 'metin': _('Henüz kayıt yok: Kayıtlar sayfasından yeni bir kayıt oluşturun.'), 'sayfa': 'kayitlar'})
     c = IST.check(client_folder())
-    if not c['gecerli']:
-        out.append({'tur': 'hata', 'metin': _('Oyun istemcisi bulunamadı: %s İstemci sayfasından klasörü seçin.', ' '.join(c['sorunlar'])),
+    if not c['gecerli'] and DL.running():
+        out.append({'tur': 'uyari', 'metin': _('Oyun istemcisi indiriliyor: %%%d. Bitince oynayabilirsin.', _dl_pct(DL.state())),
                     'sayfa': 'istemci'})
+    elif not c['gecerli']:
+        out.append({'tur': 'hata', 'metin': _('Oyun istemcisi bulunamadı: %s İstemci sayfasından klasörü seçin ya da oyunu indirin.',
+                                              ' '.join(c['sorunlar'])), 'sayfa': 'istemci'})
     elif not c['uyumlu']:
         out.append({'tur': 'uyari', 'metin': c['sorunlar'][-1], 'sayfa': 'istemci'})
     missing = [n for n in YOL.SABLONLAR if not YOL.sablon(n)]       # kendi kaydın ya da paylaşılabilir kopya (data/varsayilan)
@@ -327,6 +347,8 @@ def launch(sadece_sunucu=False):
         folder = client_folder()
         if not sadece_sunucu:
             c = IST.check(folder)
+            if not c['gecerli'] and DL.running():
+                raise Hata(_('Oyun istemcisi henüz iniyor (%%%d). Bitince oynayabilirsin.', _dl_pct(DL.state())))
             if not c['gecerli']:
                 raise Hata(_('İstemci klasörü geçersiz: %s', ' '.join(c['sorunlar'])))
             if YON.client_alive():
@@ -409,6 +431,7 @@ def shutdown():
     STATE['kapaniyor'] = True
     log('panel kapanıyor')
     try:
+        DL.cancel()                                   # indirme: açılmış dosyalar kalır, sonra kaldığı yerden
         if not YON.client_alive():
             YON.stop_servers()
         w = STATE.get('pencere')
@@ -505,7 +528,7 @@ def api_client():
     return {'secili': sel, 'kullanilan': used, 'kontrol': IST.check(used), 'adaylar': IST.candidates(),
             'cozunurlukler': IST.COZUNURLUKLER, 'ekran': screen_size(), 'ayarlar': CFG.all(),
             'komut': ['DarkOrbit.exe'] + IST.args(CFG, 'logs\\client.log'), 'desteklenen': IST.supported(),
-            'protokol': UYAR.state()}
+            'protokol': UYAR.state(), 'indirme': DL.state()}
 
 
 def slot_arg(q):
@@ -556,6 +579,8 @@ def h_get(path, q):
                                                        if os.path.isfile(os.path.join(YOL.LOGS, g)) else None} for g in GUNLUKLER]}
     if path == '/api/testler':
         return TEST.state()
+    if path == '/api/istemci/indirme':              # istemci indirmenin durumu (indirme.py)
+        return DL.state()
     if path == '/api/protokol':                     # protokol uyarlamasının durumu (protokol.py)
         return dict(UYAR.state(), etkin=IST.supported())
     if path == '/api/esya_listesi':                 # kayıt düzenleyicinin "eşya ver" listesi
@@ -734,6 +759,15 @@ def h_post(path, b):
     if path == '/api/istemci/otomatik':
         CFG.update({'istemci_klasoru': None})
         return api_client()
+    if path == '/api/istemci/indir':                # oyunu indir ve proje köküne aç (sürer, kaldığı yerden)
+        return DL.start()
+    if path == '/api/istemci/indir_durdur':
+        return DL.cancel()
+    if path == '/api/istemci/indir_sil':            # yarım indirmenin geçici klasörü
+        try:
+            return DL.discard()
+        except IndirmeHatasi as e:
+            raise Hata(str(e))
     if path == '/api/protokol/uret':                # yeni istemciden protokol üret ve farkı raporla (etkin dosyalara dokunmaz)
         try:
             return UYAR.generate(os.path.normpath(b.get('yol') or client_folder() or ''))

@@ -411,6 +411,13 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rg
 .wz-step.done i { background: var(--ok-soft); border-color: rgba(61, 220, 151, .4); color: var(--ok); }
 .wizard.busy .wz-body { opacity: .55; transition: opacity .2s .15s; }
 .wizard.busy .wz-box { cursor: progress; }
+/* oyunu indirme kutusu (sihirbaz ve İstemci sayfası) */
+.dl-wrap { margin-top: 10px; }
+.dl-box { display: flex; flex-direction: column; gap: 8px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: rgba(6, 10, 19, .45); }
+.dl-box.err { border-color: rgba(255, 93, 108, .35); background: var(--err-soft); }
+.dl-box.ok { border-color: rgba(56, 196, 255, .3); background: var(--accent-soft); }
+.dl-box .meter-bar { height: 9px; margin-top: 0; }
+.dl-info { overflow-wrap: anywhere; }
 .wz-body { padding: 24px 26px; overflow: auto; display: grid; gap: 16px; align-content: start; min-height: 340px; }
 .wz-body h2 { margin: 0; font-size: 22px; font-weight: 750; }
 .wz-sub { color: var(--muted); margin-top: -8px; }
