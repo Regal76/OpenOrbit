@@ -5,7 +5,8 @@ PetActivationCommand, PetStatusCommand) ve istemcinin kodundan (UIPetSystem, Pet
 yuva adları, game.xml P.E.T. gemi türleri):
   giriş     PetInitializationCommand {hasPet, hasFuel, petIsAlive}: P.E.T. penceresinin düğmeleri
   başlat    PetRequest LAUNCH (pencere) / TOGGLE_ACTIVATION (kısayol) -> PetHeroActivationCommand + PetStatusCommand +
-            dişli başına PetGearAddCommand + PetGearSelectCommand (+ bulucu dişlilerin hedef listesi)
+            dişli başına PetGearAddCommand + PetGearSelectCommand (+ bulucu dişlilerin hedef listesi: düşman NPC'lerin istemci
+            kimlikleri ya da cevher türleri; haritadakiler değiştikçe 5 sn'de bir yenilenir)
   durdur    PetRequest DEACTIVATE -> PetDeactivationCommand
   dişli     PetGearActivationRequest {gearTypeToActivate, optParam} -> PetGearSelectCommand
   hareket   MoveCommand (P.E.T. kimliğiyle): gemiyi izler; toplayıcı dişlilerle kutuya/cevhere gider
@@ -122,6 +123,17 @@ def px_bonus(loot, lv):
     return HEAT['px01'][lv - 1] if lv >= 1 and loot.endswith('-px01') else 0.0
 
 
+def locator_id(n):
+    """Düşman bulucunun NPC için kullandığı değer: istemcinin NPC kimliği (npc.json npc_kimlik) ya da 0 (listede yok). İstemci
+    değeri NPC kimliği olarak adlandırır (UIPetSystem.SubMenuItemRender -> GameDefineSystem.GetNpcName/GetNpcIcon: NpcNames,
+    game.xml ShipPatternsByNpcId); gemi modeli kimliği başka bir gemi gösterir (Streuner'in modeli 84 = "Saturn Vengeance",
+    Lordakia'nın 71 = "Hooligan"). Dost gemiler (eşlik ve koruma gemileri, Vortex'in görünmez tahliye çapası) ve istemci kimliği
+    olmayanlar (sahte Emperor'lar, kimliği bilinmeyen etkinlik uzaylıları) düşman sayılmaz."""
+    if not n.alive or n.d.get('dost'):
+        return 0
+    return int(n.d.get('npc_kimlik') or 0)
+
+
 def new_pet(profil):
     """Satın alınan P.E.T. (seviye 0, 10.000 yakıt, boş iki config)."""
     return {'kimlik': 7001, 'ad': PET['ad'], 'seviye': 0, 'ep': 0, 'can': PET['can'], 'kalkan': 0, 'yakit': PET['baslangic_yakit'],
@@ -142,7 +154,8 @@ class Pet:
         self.next_shot = self.next_follow = self.next_second = self.next_locate = 0.0
         self.fuel_clock = 0.0        # harcanmamış yakıt (birim)
         self.tick_t = time.time()
-        self.locate = {}             # bulucu dişli -> seçilen hedef (NPC gemi türü / cevher türü)
+        self.locate = {}             # bulucu dişli -> seçilen hedef (istemcinin NPC kimliği / cevher türü)
+        self.targets_sent = {}       # bulucu dişli -> istemciye gönderilen hedef listesi
         self.trading = False         # kargo tüccarı seçili: rafineri penceresi uzayda açık
         self.trade_ready = 0.0
         self.fuel_sent, self.next_fuel_msg = 0, 0.0
@@ -419,10 +432,22 @@ class Pet:
 
     def gear_msgs(self):
         msgs = [('PetGearAddCommand', dict(gearType=gear_type(t), level=lv, amount=0, enabled=ok)) for t, lv, ok in self.gear_list()]
+        self.targets_sent = {}
+        return msgs + self.locator_msgs() + [self.select_msg()]
+
+    def locator_msgs(self, changed=False):
+        """Takılı bulucu dişlilerin hedef listeleri (PetLocatorGearInitializationCommand; istemci listeyi değiştirir:
+        PetUIInfo.AssembleGearTargetsList). changed: yalnız son gönderilenden farklı olanlar (kapı dalgaları, doğan/biten türler)."""
+        msgs = []
         for t in (ENEMY_LOCATOR, RESOURCE_LOCATOR):
-            if t in self.installed_gears():
-                msgs.append(('PetLocatorGearInitializationCommand', dict(locatorType=gear_type(t), possibleTargetValues=self.targets(t))))
-        return msgs + [self.select_msg()]
+            if t not in self.installed_gears():
+                continue
+            values = self.targets(t)
+            if changed and values == self.targets_sent.get(t):
+                continue
+            self.targets_sent[t] = values
+            msgs.append(('PetLocatorGearInitializationCommand', dict(locatorType=gear_type(t), possibleTargetValues=values)))
+        return msgs
 
     def select_msg(self):
         t = self.d.get('disli', GUARD)
@@ -844,6 +869,9 @@ class Pet:
             spot = self.locate_target(g, self.locate[g])
             if spot:
                 msgs.append(('PetGearLocatorUpdate', dict(x=int(spot[0]), y=int(spot[1]))))
+        if now >= self.next_locate:
+            self.next_locate = now + 5
+            msgs += self.locator_msgs(changed=True)
         self.send(msgs)
 
     def follow(self, now):
@@ -964,12 +992,12 @@ class Pet:
         self.select(GUARD)
 
     def targets(self, g):
-        """Bulucu dişlinin seçilebilir hedefleri: haritadaki NPC gemi türleri ya da cevher türleri."""
+        """Bulucu dişlinin seçilebilir hedefleri: haritadaki düşman NPC'lerin istemci kimlikleri (locator_id) ya da cevher türleri."""
         w = self.w
         if not w:
             return []
         if g == ENEMY_LOCATOR:
-            return sorted({int(n.model) for n in w.npcs.values()})
+            return sorted({k for k in map(locator_id, w.npcs.values()) if k})
         return sorted({o['tip'] for o in w.ores.values()})
 
     def locate_target(self, g, value):
@@ -978,7 +1006,7 @@ class Pet:
         hx, hy = w.hero_pos(now)
         rng = self.gear(g).get('menzil', 0) * self.range_bonus()
         if g == ENEMY_LOCATOR:
-            spots = [n.mover.pos(now) for n in w.npcs.values() if n.alive and int(n.model) == value]
+            spots = [n.mover.pos(now) for n in w.npcs.values() if locator_id(n) == value]
         else:
             spots = [(o['x'], o['y']) for o in w.ores.values() if o['tip'] == value]
         spots = [s for s in spots if math.hypot(s[0] - hx, s[1] - hy) <= rng]

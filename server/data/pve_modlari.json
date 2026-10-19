@@ -14131,7 +14131,7 @@
   "pm_ebl_uberprotegit": {
    "ad": "-=[ Uber Protegit ]=-",
    "model": "81",
-   "npc_kimlik": null,
+   "npc_kimlik": 53,
    "hp": 400000,
    "kalkan": 320000,
    "hasar": 12000,
