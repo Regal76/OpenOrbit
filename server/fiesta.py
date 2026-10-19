@@ -91,7 +91,7 @@ class Fiesta:
                 self.st['alinan'].append(l)
                 self.p.dirty = True
             for loot, n in row['esyalar']:
-                msgs += self.m.reward(loot, n)
+                msgs += self.m.prize(loot, n)
         if todo:
             self.log('   Fiesta Gate ödül çizgisi: %s' % todo)
         return [self.point_cmd(False)] + msgs + self.m.money_msgs()

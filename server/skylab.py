@@ -105,7 +105,8 @@ class Skylab:
         return row(self.level('SOLAR_MODULE'))['gunes']
 
     def capacity(self, ore):
-        return row(self.level('STORAGE_MODULE'))['depo'][ORES[ore][1]]
+        v = row(self.level('STORAGE_MODULE'))['depo'][ORES[ore][1]]
+        return v if AY.carpan('skylab_depo') == 1.0 else min(AY.I32, int(v * AY.carpan('skylab_depo')))    # panel: depo
 
     def amount(self, ore):
         return int(self.st['depo'].get(ore, 0))
@@ -121,12 +122,13 @@ class Skylab:
         lv = self.level(key)
         if lv <= 0:
             return 0
+        k = AY.carpan('skylab_uretim')                     # panel: Skylab üretimi
         if key in COLLECTORS:
-            return int(row(lv)['uretim']['ham'] * self.efficiency(key) / 100)
+            return int(row(lv)['uretim']['ham'] * self.efficiency(key) / 100 * k)
         if key in REFINERIES:
-            return row(lv)['uretim'][REFINERIES[key][2]]
+            return int(row(lv)['uretim'][REFINERIES[key][2]] * k)
         if key == 'XENO_MODULE':
-            return row(lv)['uretim'][XENO['sutun']]
+            return int(row(lv)['uretim'][XENO['sutun']] * k)
         return 0
 
     # ------------------------------------------------------------ zaman
@@ -271,7 +273,9 @@ class Skylab:
         g, lv = MODULES[key]['grup'], self.level(key)
         if not g or lv >= MODULES[key]['azami']:
             return None
-        return COSTS[g][lv]
+        c = COSTS[g][lv]
+        f = lambda n: AY.fiyat('hizmet_fiyat', n)          # panel: hizmet ücretleri (kredi ve uridyum; kaynaklar aynı)
+        return dict(c, kredi=f(c['kredi']), uridyum=f(c['uridyum']))
 
     def ore_info(self, ore, n, cap=None):
         return mod('SkylabStorageOreCommand', current=int(n), oreId=int(ore), capacity=int(self.capacity(ore) if cap is None else cap),
@@ -329,7 +333,8 @@ class Skylab:
         if not m.get('yukseltme'):
             return 0
         c = COSTS[MODULES[key]['grup']][m['seviye']]
-        return max(1, int(math.ceil(c['uridyum'] * (m['yukseltme'] - now) / max(1, AY.sure(c['sure_sn'])))))
+        u = AY.fiyat('hizmet_fiyat', c['uridyum'])
+        return max(1 if u else 0, int(math.ceil(u * (m['yukseltme'] - now) / max(1, AY.sure(c['sure_sn'])))))
 
     def busy(self):
         return next((k for k, m in self.st['moduller'].items() if m.get('yukseltme')), None)
@@ -429,7 +434,7 @@ class Skylab:
     # ------------------------------------------------------------ taşıma
     def transport(self, f, now):
         mode, st = f.get('transportMode') or '', self.st
-        price = TRANSPORT['hizli_uridyum']
+        price = AY.fiyat('hizmet_fiyat', TRANSPORT['hizli_uridyum'])      # panel
         if mode == 'instantFinish':
             if not st.get('tasima'):
                 return [22], [], []
@@ -478,6 +483,7 @@ class Skylab:
         if key not in COLLECTORS or kind not in ('1', '2'):
             return []
         cur, price = ROBOTS[kind]['fiyat']
+        price = AY.fiyat('hizmet_fiyat', price)                         # panel
         loot = 'currency_' + cur
         if INV.missing(self.p, {loot: price}):
             self.log('   Skylab: robot için %s yetmiyor' % cur)

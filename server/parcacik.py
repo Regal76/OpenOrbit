@@ -22,6 +22,7 @@ Kırıcı ve merceklerin savunması oyuncu silahlarına karşı (bot oyuncularla
 """
 import json, math, os, random, time
 
+import ayar as AY
 import envanter as INV
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -378,6 +379,7 @@ class Atis:
 
     def cool(self, group, sec, now):
         import savas_esya as SE
+        sec *= AY.carpan('yetenek_bekleme')                 # panel: yetenek ve eşya beklemeleri (top ve sürücü de)
         with self.p.lock:
             self.p.d.setdefault(SE.TIMERS, {})[str(group)] = [now + sec, int(sec * 1000)]
             self.p.dirty = True

@@ -568,6 +568,8 @@ def _schema_row(s):
     out = dict(s, ad=_(s['ad']), aciklama=_(s['aciklama']))
     if s.get('secenekler'):
         out['secenekler'] = [_(x) for x in s['secenekler']]
+    if s.get('secenek_aciklama'):
+        out['secenek_aciklama'] = [_(x) for x in s['secenek_aciklama']]
     if s.get('birim'):
         out['birim'] = _(s['birim'])
     return out
@@ -740,7 +742,8 @@ def h_post(path, b):
         return set_events(b)
     # ---- kayıtlar
     if path == '/api/kayitlar/yeni':
-        sid = KAY.create(b.get('ad'), b.get('pilot'), b.get('firma'), b.get('kredi'), b.get('uridyum'))
+        sid = KAY.create(b.get('ad'), b.get('pilot'), b.get('firma'), b.get('kredi'), b.get('uridyum'), b.get('seviye'), b.get('onur'),
+                         b.get('lazer'), b.get('roket'))
         if b.get('aktif_yap', True):
             KAY.set_active(sid)
         log('yeni kayıt: %s' % sid)

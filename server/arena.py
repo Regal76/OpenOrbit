@@ -19,6 +19,7 @@ Profilde: pve {voyagers|trinity: {gun, girisler {X-1: n}, bonus, acik (Voyagers)
 """
 import datetime, json, math, os, random, time
 
+import ayar as AY
 import gecis as GC
 import harita as H
 import kapi as KAPI
@@ -65,6 +66,8 @@ class Arena:
         return self.D['ucretsiz'] + (self.D['vip_ek'] if self.vip() else 0)
 
     def free_used(self, where):
+        if AY.get('giris_siniri_yok'):                  # panel: ücretsiz girişler tükenmez
+            return 0
         return self.st['girisler'].get(where, 0)
 
     def free_left(self, where):

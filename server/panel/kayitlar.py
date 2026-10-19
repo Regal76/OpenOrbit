@@ -268,7 +268,9 @@ class Kayitlar:
             raise KayitHatasi(out.get('hata') or _('Profil aracı başarısız.'))
         return out
 
-    def create(self, ad, pilot, firma, kredi=None, uridyum=None):
+    def create(self, ad, pilot, firma, kredi=None, uridyum=None, seviye=None, onur=None, lazer=None, roket=None):
+        """Yeni kayıt (profil_araci.py yeni). Başlangıç değerleri isteğe bağlı (boş: tohumdaki): kredi, uridyum, seviye (1-50),
+        onur, LCB-10 lazer cephanesi ve R-310 roketi adedi; sınırlara kırpılır."""
         ad, pilot = (ad or '').strip(), (pilot or '').strip()
         if not re.fullmatch(r'[\w\-\.\[\]\(\) ]{3,20}', pilot, re.UNICODE):
             raise KayitHatasi(_('Pilot adı 3-20 karakter olmalı (harf, rakam, boşluk, - _ . [ ] ( ) ).'))
@@ -277,15 +279,20 @@ class Kayitlar:
         firma = int(firma)
         if firma not in FIRMALAR:
             raise KayitHatasi(_('Firma seçin (MMO, EIC ya da VRU).'))
+        try:
+            kredi, uridyum, seviye, onur, lazer, roket = [None if v in (None, '') else int(float(v))
+                                                          for v in (kredi, uridyum, seviye, onur, lazer, roket)]
+        except (TypeError, ValueError, OverflowError):
+            raise KayitHatasi(_('Başlangıç değerleri sayı olmalı.'))
         with self.lock:
             sid = self.new_id(ad)
             d = os.path.join(self.root, sid)
             os.makedirs(os.path.join(d, 'yedek'), exist_ok=True)
             args = ['yeni', os.path.join(d, 'profil.json'), pilot, str(firma)]
-            if kredi not in (None, ''):
-                args += ['--kredi=%d' % max(0, int(kredi))]
-            if uridyum not in (None, ''):
-                args += ['--uridyum=%d' % max(0, int(uridyum))]
+            for key, v, lo, hi in (('kredi', kredi, 0, 10 ** 12), ('uridyum', uridyum, 0, 10 ** 12), ('seviye', seviye, 1, 50),
+                                   ('onur', onur, 0, 10 ** 12), ('lazer', lazer, 0, 10 ** 9), ('roket', roket, 0, 10 ** 9)):
+                if v not in (None, ''):
+                    args += ['--%s=%d' % (key, min(hi, max(lo, v)))]
             try:
                 self.run_tool(*args)
             except Exception:

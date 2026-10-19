@@ -54,11 +54,12 @@ def active(p, now=None):
 def values(p, now=None):
     """Tür -> yüzde (etkin boosterların toplamı, türün üst sınırıyla)."""
     out = {}
+    k = AY.carpan('booster_guc')                    # panel: boosterların etkisi (üst sınırları da)
     for loot in active(p, now):
         for a, v in B['turler'].get(loot, {}).items():
             if a in ATTRS:
-                out[a] = out.get(a, 0) + v
-    return {a: min(v, B['tavan'].get(a, v)) for a, v in out.items()}
+                out[a] = out.get(a, 0) + v * k
+    return {a: min(v, B['tavan'][a] * k) if a in B['tavan'] else v for a, v in out.items()}
 
 
 def mods(p, now=None):

@@ -155,6 +155,7 @@ ASSEMBLY_PARTS = {l for r in json.load(open(os.path.join(HERE, 'data', 'tarifler
 STAT_TABLES = (('lazerler', 'hasar'), ('kalkan_jeneratorleri', 'kalkan'), ('hiz_jeneratorleri', 'hiz'))
 PAY_CURRENCY = {'currency_uridium': ('uridium', 'URI'), 'currency_credits': ('credits', 'CRE'), 'currency_experience': ('ep', 'EP'),
                 'currency_honour': ('honourPoints', 'HON')}
+PRIZE_CURRENCY = {'currency_uridium': 'uridyum', 'currency_credits': 'kredi', 'currency_experience': 'ep', 'currency_honour': 'onur'}
 
 
 def design_base(loot):
@@ -793,6 +794,17 @@ class Magaza:
         return [('PetPurchasedCommand', {}), self.pet.init_msg(), self.p.generate('@arayuz'),    # çubukta P.E.T. simgesi
                 legacy('0|LM|ST|LOT|%s|1' % PET_LOOT)]
 
+    def prize(self, loot, n):
+        """Görev, kapı, mod, etkinlik ve Dispatch ödülü: reward()'ın panelli yolu. Kredi, uridyum, EP ve onur kendi çarpanlarıyla;
+        yığılan eşyalar (cephane, kaynak, anahtar, teknoloji eşyası) 'mod_odul' çarpanıyla; tek eşyalar (gemi, lazer, tasarım,
+        booster, P.E.T., bilet) aynen. Mağaza, paket, takas ve GM yolları reward()'ı kullanır (ölçeklenmez)."""
+        key = PRIZE_CURRENCY.get(loot)
+        if key:
+            n = AY.miktar(key, n)
+        elif loot.startswith(('ammunition_', 'resource_', 'tech_')) and loot not in PASS_ITEMS:
+            n = AY.miktar('mod_odul', n)
+        return self.reward(loot, n) if n > 0 else []
+
     def reward(self, loot, n):
         msgs = self._reward(loot, n)
         if loot in (GM.SHARD, GM.CHIP) or PC.restabilizable(loot):
@@ -1191,7 +1203,7 @@ class Magaza:
         form = self.p.mods()                                # formasyon + dron tasarımları
         lab = active and self.p.lab_bonus(2)              # motor yükseltmesi (Duranium, Promerium)
         if ship:
-            display = int(display * (1 + form.get('hiz', 0)) * (1 + (lab or 0)))
+            display = int(display * (1 + form.get('hiz', 0)) * (1 + (lab or 0)) * AY.carpan('gemi_hiz'))     # panel: geminin hızı
             if 'ust_hiz' in form:                           # Speed Burst (teknoloji.py): en az bu hız
                 display = max(display, int(form['ust_hiz']))
             if 'sabit_hiz' in form:                         # gemi yetenekleri: Travel 450, Fortify 0 (kıpırdamaz)
@@ -1217,9 +1229,12 @@ class Magaza:
         absorb = max(0.0, min(1.0, absorb + form.get('emme', 0)))
         hp = ESYA['gemiler'].get(self.p.ship(sid)['lootId'], {}).get('hp')
         total *= 1 + ((active and self.p.lab_bonus(3)) or 0)     # kalkan yükseltmesi (Duranium, Promerium, Seprom, Osmium)
-        return dict(display=display, speed=speed, shield_max=int(total * (1 + form.get('kalkan', 0))), absorb=absorb,
+        # panelin geminin canı ve kalkanı çarpanları; kalkan istemciye 32 bitle gider (AttributeShieldUpdateCommand)
+        shield_max = min(AY.I32, int(total * (1 + form.get('kalkan', 0)) * AY.carpan('gemi_kalkan')))
+        hp_max = max(1, int(hp * (1 + form.get('can', 0)) * AY.carpan('gemi_can') + form.get('can_mutlak', 0))) if hp else None
+        return dict(display=display, speed=speed, shield_max=shield_max, absorb=absorb,
                     lasers=len(eq.get('laser', [])), speed_gens=sum(1 for g in gens if g in ESYA['hiz_jeneratorleri']),
-                    shield_gens=ship_gens, hp_max=int(hp * (1 + form.get('can', 0)) + form.get('can_mutlak', 0)) if hp else None)
+                    shield_gens=ship_gens, hp_max=hp_max)
 
     def detail_cmd(self, sid=None):
         t = copy(self.detail_tpl)

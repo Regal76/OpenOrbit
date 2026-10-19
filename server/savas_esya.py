@@ -507,7 +507,7 @@ class Esyalar:
         self.send([legacy('0|n|MIN|%s' % h)])
         self.log('   mayın patladı: %s' % m['loot'])
         self.blast(m['x'], m['y'], S['mayin']['patlama'], MINES[m['loot']], m['sahip'], now, m['loot'],
-                   self_hit=S['mayin'].get('kendine_hasar', False))
+                   self_hit=S['mayin'].get('kendine_hasar', False) and AY.get('kendi_mayin'))       # panel: kendi mayının
 
     def blast(self, x, y, radius, cfg, owner, now, source, self_hit=False):
         """Patlama: yarıçaptaki uzaylılara (sahibi oyuncuysa) ve oyuncuya (uzaylının mayınıysa ya da self_hit) mayın etkisi."""
@@ -731,7 +731,8 @@ class Esyalar:
         p.use_ammo(sel, add)
         n += add
         self.store(sel, n)
-        self.next_load = now + S['fircatici']['dolum_sn'] * max(0.1, 1 + p.mods().get('fircatici_bekleme', 0))   # Star +%33 …
+        self.next_load = now + (S['fircatici']['dolum_sn'] * max(0.1, 1 + p.mods().get('fircatici_bekleme', 0))   # Star +%33 …
+                                * AY.carpan('roket_bekleme'))                                               # panel
         self.send(msgs + w.ammo_msgs(sel) + self.status(S['fircatici']['menu'])
                   + [legacy('0|RL|S|%d|%d|%d' % (launcher_type(p), LAUNCHER_AMMO.get(sel, {}).get('kimlik', 7), n))])
 
@@ -760,7 +761,7 @@ class Esyalar:
         cfg = LAUNCHER_AMMO[ammo]
         hit = random.random() < cfg.get('isabet', 1.0)
         self.store(ammo, 0)
-        self.next_load = now + S['fircatici']['dolum_sn']
+        self.next_load = now + S['fircatici']['dolum_sn'] * AY.carpan('roket_bekleme')
         p.ach('shot', silah='ROCKET_LAUNCHER')
         self.send([('HellstormAttackCommand', dict(attackerId=w.hid, targetId=n.id, hit=hit, currentLoad=cnt,
                                                    rocketType=mod('AmmunitionTypeModule', typeValue=cfg['tur']))),
@@ -910,7 +911,8 @@ class Esyalar:
         for n in w.npcs.values():
             n.engaged = False
         dest, pos = j['hedef'], 'istasyon'
-        if j['cpu'] != 'ajp' and int(w.map_id) != 42 and random.random() < S['atlama_cpu'].get('mezarlik_sansi', 0):
+        if (j['cpu'] != 'ajp' and int(w.map_id) != 42 and AY.get('atlama_sapma')                 # panel: kapatılabilir
+                and random.random() < S['atlama_cpu'].get('mezarlik_sansi', 0)):
             dest, pos = 42, None                      # Cubikon Mezarlığı (wiki: "her 1.000 atlamada bir"; tek oyunculu oran)
             self.log('   atlama CPU\'su Cubikon Mezarlığı\'na saptı')
         if w.on_jump:

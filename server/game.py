@@ -673,7 +673,7 @@ class Session:
             n = AY.miktar(cur[loot], n)                    # panelin ödül çarpanları
             tot = PROFIL.gain(neden='quest_won', **{cur[loot]: n})
             return self.world.reward_msgs(tot, **{cur[loot]: n}) if self.world else []
-        return self.magaza.reward(loot, n)
+        return self.magaza.prize(loot, n)                  # eşya ödülü: panelin mod/görev ödülü çarpanı
 
     def respawn_home(self):
         """İstasyonsuz haritada istasyonda tamir: firmanın ana haritasında (X-1) istasyonda doğ (gerçek oyundaki gibi)."""

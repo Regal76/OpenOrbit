@@ -264,7 +264,7 @@ class Mimesis:
             row = next((r for r in D['sefer_kademeleri'] if score >= r['den'] and (r['e'] is None or score <= r['e'])), None)
             if row:
                 for loot, n in row['oduller']:
-                    msgs += self.m.reward(loot, n)
+                    msgs += self.m.prize(loot, n)
                 msgs.append(KAPI.screen('Escort reward tier: %d+ points' % row['den'], big=True))
         msgs.append(('PayloadEscortScoreCommand', dict(totalScore=self.total(), runScore=int(score))))
         self.log('   Mimesis Mutiny seferi bitti: %d puan (%s), toplam %d' % (score, 'başarılı' if success else 'başarısız', self.total()))
@@ -279,7 +279,7 @@ class Mimesis:
         if total > 0:                             # etkinlik sonu sıralama ödülü (tek oyunculu: 1.)
             r = SR.TABLES[RANK_TYPE]['araliklar'][0]
             for loot, n in r['esyalar']:
-                msgs += self.m.reward(loot, n)
+                msgs += self.m.prize(loot, n)
             if r.get('unvan') and self.titles:
                 msgs += self.titles(r['unvan'])
             self.log('   Mimesis Mutiny bitti: toplam %d, 1. sıra ödülü' % total)

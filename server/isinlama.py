@@ -11,6 +11,7 @@ haritalarında, Cubikon Mezarlığı ve LoW'da ("msg_swnotallowed_map") ışınl
 ("msg_swblocked", ShipWarpCanceledCommand).
 Uyarlamalar (kaynak vermediği için): uridyum fiyatı (AJP-01'in kuponsuz atlaması gibi 1.000 U), geri sayım 5 sn.
 """
+import ayar as AY
 import harita as H
 from eski_protokol import legacy, stm
 
@@ -47,7 +48,7 @@ class Isinlama:
             return [legacy('0|A|STM|msg_swnoactiveships'), ('ShipWarpNotAllowedCommand', {})]
         home = self.p.d['konum'].get('mapId', 1)
         near = bool(w and w.in_station())
-        pay = 0 if near else URIDYUM
+        pay = 0 if near else AY.fiyat('hizmet_fiyat', URIDYUM)          # panel: hizmet ücretleri
         ships = []
         for sid in sids:
             s = self.p.ship(sid)
@@ -77,7 +78,7 @@ class Isinlama:
         elif self.p.resource(KUPON):
             pay = {KUPON: 1}
         else:
-            pay = {'currency_uridium': URIDYUM}
+            pay = {'currency_uridium': AY.fiyat('hizmet_fiyat', URIDYUM)}
         import envanter as INV
         if INV.missing(self.p, pay):
             return [stm('ttip_currency_missing', '%CURRENCY%', 'Uridium'), ('ShipWarpNotAllowedCommand', {})]

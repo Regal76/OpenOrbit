@@ -13,6 +13,7 @@ Profilde: pve.ebl {kapi, kosu {dalga, puan, secenek [3], agirlik {tur: çarpan},
 """
 import json, math, os, random, time
 
+import ayar as AY
 import kapi as KAPI
 import siralama as SR
 import pve_ortak as PO
@@ -182,9 +183,9 @@ class Ebl:
         tier = next((t for t in D['olum_odulu'] if t['en_az'] <= done <= t['en_cok']), None)
         msgs = []
         if tier and done:
-            msgs += self.m.reward(D['parca'], tier['parca'])
-            if tier['iac'] and random.random() < D['iac'][2]:
-                msgs += self.m.reward(D['iac'][0], D['iac'][1])
+            msgs += self.m.prize(D['parca'], tier['parca'])
+            if tier['iac'] and random.random() < AY.chance('dusme', D['iac'][2]):
+                msgs += self.m.prize(D['iac'][0], D['iac'][1])
         with self.p.lock:
             self.st['kosu'] = None
             self.p.dirty = True

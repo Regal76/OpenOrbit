@@ -316,7 +316,7 @@ class UnvanAvi:
         r = next((r for r in t.get('araliklar', []) if r['den'] <= rank <= r['e']), None)
         if r and self.st['puan'] > 0:
             for loot, n in r['esyalar']:
-                msgs += self.m.reward(loot, n)
+                msgs += self.m.prize(loot, n)
             if r.get('unvan'):
                 msgs += self.grant_title(r['unvan'])
             self.log('   Pursuit of Prestige bitti: %d. sıra (%.1f dk), ödül %s' % (rank, self.st['puan'], r['esyalar']))

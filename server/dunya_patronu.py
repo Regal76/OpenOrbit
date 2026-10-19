@@ -230,7 +230,7 @@ class DunyaPatronu:
                 self.p.dirty = True
             row = D['kademe'][k - 1]
             for loot, n in row['oduller']:
-                msgs += self.m.reward(loot, n)
+                msgs += self.m.prize(loot, n)
             if row.get('unvan') and self.titles:
                 msgs += self.titles(row['unvan'])
             msgs += legacy_line('log_msg_worldboss_tier_increase', BOSSNAME='Dreadfyre Fortress', TIER=k)
@@ -484,7 +484,7 @@ class WbKosu:
                 st['alinan'][str(k)] = st['alinan'].get(str(k), 0) + 1
                 self.m.p.dirty = True
             for loot, n in r['oduller']:
-                msgs += self.m.m.reward(loot, n)
+                msgs += self.m.m.prize(loot, n)
             msgs.append(KAPI.screen('Progress reward %d received!' % k))
         left = self.fortress_left()
         if self.phase == 2 and left <= 0.5:
@@ -687,7 +687,7 @@ class WbKosu:
             self.phase, self.ended = 'bitti', 'olum'
             self.close_at = min(self.end, time.time() + D['kapanis_sn'])
             for loot, n in D['son_vurus']['oduller']:
-                msgs += self.m.m.reward(loot, n)
+                msgs += self.m.m.prize(loot, n)
             if self.m.titles:
                 msgs += self.m.titles(D['son_vurus']['unvan'])
             msgs.append(legacy('0|A|STM|log_msg_worldboss_boss_killed|%%USERNAME%%|%s' % self.m.p.d['pilot'].get('userName', '')))
@@ -704,7 +704,7 @@ class WbKosu:
         msgs = []
         if row:
             for loot, n in row['oduller']:
-                msgs += self.m.m.reward(loot, n)
+                msgs += self.m.m.prize(loot, n)
             for key in row.get('unvanlar') or []:
                 if 'rank_1_' in key and self.ended != 'olum':
                     continue                           # 1. sıranın unvanı yalnız Fortress yenildiyse

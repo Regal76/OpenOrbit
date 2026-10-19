@@ -1,7 +1,9 @@
 """Profil aracı (panel ayrı süreçte çalıştırır; sunucu modüllerini panelin sürecine yüklememek için).
 
-  python -I profil_araci.py yeni <profil.json> <pilot adı> <firma 1|2|3> [--kredi=N] [--uridyum=N]
-      tohumdan (data/giris.json, yoksa varsayılan pilot) yeni profil: pilot adı, firma, firmanın ana haritasında (X-1) istasyon
+  python -I profil_araci.py yeni <profil.json> <pilot adı> <firma 1|2|3> [--kredi=N] [--uridyum=N] [--seviye=N] [--onur=N]
+                                 [--lazer=N] [--roket=N]
+      tohumdan (data/giris.json, yoksa varsayılan pilot) yeni profil: pilot adı, firma, firmanın ana haritasında (X-1) istasyon;
+      isteğe bağlı başlangıç: kredi, uridyum, seviye (EP'si seviyenin eşiği, data/seviyeler.json), onur, LCB-10 ve R-310 adedi
   python -I profil_araci.py ana_us <profil.json>
       gemiyi firmasının ana istasyonuna taşı (bozuk ya da takılı kalınan haritadan kurtarma)
   python -I profil_araci.py ver <profil.json> <JSON [[lootId, adet], ...]>
@@ -19,6 +21,7 @@ SERVER = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, SERVER)
 DATA = os.path.join(SERVER, 'data')
 HOME_MAP = {1: 1, 2: 5, 3: 9}             # game.py HOME_MAP: firma -> X-1
+START_AMMO = {'lazer': 'ammunition_laser_lcb-10', 'roket': 'ammunition_rocket_r-310'}     # yeni kaydın başlangıç cephanesi (tohumda da)
 
 
 def _load(name):
@@ -40,7 +43,14 @@ def station_pos(map_id):
     return None
 
 
-def yeni(path, pilot, firma, kredi=None, uridyum=None):
+def level_ep(level):
+    """Seviyenin EP eşiği (data/seviyeler.json; en büyük seviyeye kırpılır) -> (seviye, EP)."""
+    table = _load('seviyeler.json').get('seviyeler') or [[1, 0]]
+    lv = max(table[0][0], min(int(level), table[-1][0]))
+    return lv, next(need for l, need in table if l == lv)
+
+
+def yeni(path, pilot, firma, kredi=None, uridyum=None, seviye=None, onur=None, lazer=None, roket=None):
     if os.path.exists(path):
         raise ValueError('Bu yolda zaten bir profil var.')
     from profil import Profil
@@ -53,6 +63,13 @@ def yeni(path, pilot, firma, kredi=None, uridyum=None):
         pl['credits'] = kredi
     if uridyum is not None:
         pl['uridium'] = uridyum
+    if seviye is not None:                                  # seviye EP'den hesaplanır (oyun da öyle): EP seviyenin eşiği
+        pl['level'], pl['ep'] = level_ep(seviye)
+    if onur is not None:
+        pl['honourPoints'] = onur
+    for key, n in (('lazer', lazer), ('roket', roket)):
+        if n is not None:
+            pr.d['cephane'][START_AMMO[key]] = n
     mid = HOME_MAP[firma]
     pos = station_pos(mid)
     if pos:
@@ -149,8 +166,8 @@ def main(argv):
     opts = {a.split('=', 1)[0][2:]: a.split('=', 1)[1] for a in argv if a.startswith('--') and '=' in a}
     args = [a for a in argv if not a.startswith('--')]
     if args[:1] == ['yeni'] and len(args) == 4:
-        return yeni(args[1], args[2], args[3], int(opts['kredi']) if 'kredi' in opts else None,
-                    int(opts['uridyum']) if 'uridyum' in opts else None)
+        num = {k: int(opts[k]) for k in ('kredi', 'uridyum', 'seviye', 'onur', 'lazer', 'roket') if k in opts}
+        return yeni(args[1], args[2], args[3], **num)
     if args[:1] == ['ana_us'] and len(args) == 2:
         return ana_us(args[1])
     if args[:1] == ['ver'] and len(args) == 3:

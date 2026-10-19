@@ -118,6 +118,8 @@ class EtkinlikKapilari:
         if g.get('etkinlik') and not TK.is_active(g['etkinlik'], now):
             return False, 'etkinlik yok'
         kural = g.get('kural', {})
+        if AY.get('giris_siniri_yok'):                       # panel: günlük/yıllık/bir kez ve bekleme süresi yok
+            kural = {k: v for k, v in kural.items() if k not in ('bir_kez', 'gunluk', 'yillik', 'bekleme_sn')}
         if kural.get('cpu'):
             return False, 'CPU ile açılır'            # Quarantine Zone: Immunizer CPU kapıyı kurar (pve_modlari.py)
         if kural.get('seviye') and self.p.d['pilot'].get('level', 1) < kural['seviye']:
@@ -198,9 +200,10 @@ class EtkinlikKapilari:
                 random.shuffle(rest)
                 sira += rest + [i for i in part if waves[i].get('sabit')]
         with self.p.lock:
-            G.update(hazir=True, dalga=0, can=g['can'], sira=sira, bas=now, son_gun=today(now), son_yil=today(now)[:4])
+            G.update(hazir=True, dalga=0, can=AY.adet('kapi_can', g['can']), sira=sira, bas=now, son_gun=today(now),
+                     son_yil=today(now)[:4])                   # panel: kapı canı
             self.p.dirty = True
-        self.log('   %s kuruldu (%d dalga, %d can)' % (g['ad'], len(sira), g['can']))
+        self.log('   %s kuruldu (%d dalga, %d can)' % (g['ad'], len(sira), G['can']))
 
     def order(self, key):
         G = self.gate(key)
@@ -238,13 +241,13 @@ class EtkinlikKapilari:
         for loot, n in o.get('esyalar', []):
             n = random.randint(*n) if isinstance(n, list) else n          # aralık (Indoctrine Oil 0-20)
             if n > 0 and self.m:
-                msgs += self.m.reward(loot, n)
+                msgs += self.m.prize(loot, n)                # panel: kapı/mod ödülü çarpanı
         if o.get('biri') and self.m:                       # olasılık ağırlıklı biri (Quarantine Box'ın mühimmat paketi)
             loot, n, _ = random.choices(o['biri'], weights=[w for _, _, w in o['biri']])[0]
-            msgs += self.m.reward(loot, random.randint(*n) if isinstance(n, list) else n)
+            msgs += self.m.prize(loot, random.randint(*n) if isinstance(n, list) else n)
         for loot, n, chance in o.get('sans', []):          # şanslı ödül (Quarantine Box'ın LF-4'ü)
-            if random.random() < chance and self.m:
-                msgs += self.m.reward(loot, n)
+            if random.random() < AY.chance('dusme', chance) and self.m:
+                msgs += self.m.prize(loot, n)
         secs = int(now - G.get('bas', now))
         best = G.get('en_iyi_sn')
         with self.p.lock:
@@ -328,7 +331,7 @@ class Kosu(KAPI.Kosu):
             world.add_gate(ekapi.next_portal(key, self.map, self.cur_map()))
             world.add_gate(ekapi.exit_portal(key, self.map, side=True))
         else:
-            self.phase, self.t = 'intro', now + KAPI.K['giris_bekleme_sn']
+            self.phase, self.t = 'intro', now + KAPI.pace('giris_bekleme_sn')
             world.send(self.say('devam' if G['dalga'] else 'giris') + self.k.plutus_cmds(key, now))
         world.log('   %s: dalga %d/%d, can %d (%s)' % (self.g['ad'], G['dalga'] + 1, self.wave_count(), G['can'], self.phase))
 
@@ -377,6 +380,8 @@ class Kosu(KAPI.Kosu):
             ang, dist = random.uniform(0, 2 * math.pi), random.uniform(*KAPI.K['dogma_uzaklik'])
             cx = min(max(hx + math.cos(ang) * dist, 500), w.map_w - 500)
             cy = min(max(hy + math.sin(ang) * dist, 500), w.map_h - 500)
+            if not a.get('kalici'):
+                count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı
             for x, y in KAPI.spread(cx, cy, count, w.map_w, w.map_h):
                 n = w.spawn_npc_at(npc_type(self.key, idx, i), x, y)
                 n.gate, n.engaged = True, True
@@ -421,8 +426,8 @@ class Kosu(KAPI.Kosu):
             return
         self.counted = None
         self.w.add_gate(self.k.exit_portal(self.key, self.map))
-        self.w.send(self.say('dalga_bitti', dalga=G['dalga'], sn=KAPI.K['dalga_molasi_sn']) + self.k.plutus_cmds(self.key))
-        self.phase, self.t = 'break', now + KAPI.K['dalga_molasi_sn']
+        self.w.send(self.say('dalga_bitti', dalga=G['dalga'], sn=KAPI.pace('dalga_molasi_sn')) + self.k.plutus_cmds(self.key))
+        self.phase, self.t = 'break', now + KAPI.pace('dalga_molasi_sn')
         self.w.log('   %s: dalga %s bitti' % (self.g['ad'], label))
 
     def complete(self):
@@ -439,7 +444,8 @@ class Kosu(KAPI.Kosu):
             return None
         k, G = self.k, self.k.gate(self.key)
         with k.p.lock:
-            G['can'] = max(0, G['can'] - 1)
+            if not AY.get('sonsuz_can'):                    # panel: kapıda can harcanmaz
+                G['can'] = max(0, G['can'] - 1)
             left = G['can']
             k.p.dirty = True
         if left <= 0:

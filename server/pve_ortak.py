@@ -13,6 +13,7 @@ Kalıcı uzaylı ('kalici' grup satırında üçüncü öğe True): diğerleri y
 """
 import math, random, time
 
+import ayar as AY
 import kapi as KAPI
 
 
@@ -51,10 +52,11 @@ class Kosu:
         self.sub = 0
         self.npcs, self.keep = set(), set()
         self.exposed = False
-        self.break_sn, self.sub_sn = break_sn, sub_sn
+        k = AY.carpan('dalga_bekleme')                      # panel: dalga beklemeleri
+        self.break_sn, self.sub_sn = break_sn * k, sub_sn * k
         self.counted = None
         self.left = None
-        self.phase, self.t = 'intro', time.time() + intro_sn
+        self.phase, self.t = 'intro', time.time() + intro_sn * k
         self.started = None                 # dalganın başladığı an (süre ölçümü)
 
     # kapi.Kosu ile uyum (dunya.py, uzayli.py: k.npcs, k.key, on_death, revive)
@@ -129,6 +131,8 @@ class Kosu:
             ang, dist = random.uniform(0, 2 * math.pi), random.uniform(1100, 1500)
             cx = min(max(hx + math.cos(ang) * dist, 500), w.map_w - 500)
             cy = min(max(hy + math.sin(ang) * dist, 500), w.map_h - 500)
+            if not keep:
+                count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyucu bir tane)
             for x, y in KAPI.spread(cx, cy, count, w.map_w, w.map_h):
                 n = w.spawn_npc_at(tip, x, y, prep=lambda n: self.m.scale(n, self.i, self.wave()))   # güçlendirilip bildirilir
                 n.gate, n.engaged = True, True

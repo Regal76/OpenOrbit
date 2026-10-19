@@ -18,6 +18,7 @@ Profilde: pve.astral {kapi, kosu {gemi, sid, rift, tur, cilgin, puan, atlas, env
 """
 import json, math, os, random, time
 
+import ayar as AY
 import kapi as KAPI
 import siralama as SR
 import pve_ortak as PO
@@ -190,15 +191,15 @@ class Astral:
         row = next((x for x in D['odul'] if x['en_az'] <= reached <= x['en_cok']), D['odul'][0])
         msgs, got = [], []
         give = [('resource_collectable_astralite', row['astralite'])]
-        if random.random() < SALVAGE_CHANCE:
+        if random.random() < AY.chance('dusme', SALVAGE_CHANCE):     # panel: düşme şansı
             give.append(('resource_collectable_salvage-core', row['kurtarma']))
-        keys = sum(1 for _ in range(row['anahtar']) if random.random() < KEY_CHANCE)
+        keys = sum(1 for _ in range(row['anahtar']) if random.random() < AY.chance('dusme', KEY_CHANCE))
         if keys:
             give.append(('resource_booty-key-astral', keys))
         if r['atlas']:
             give.append(('resource_collectable_atlas-shard', r['atlas']))
         for loot, n in give:
-            msgs += self.m.reward(loot, n)
+            msgs += self.m.prize(loot, n)
             got.append('%s x%d' % (loot, n))
         self.log('   Astral bitti: rift %d, puan %d; %s' % (reached, r['puan'], ', '.join(got)))
         msgs.append(KAPI.screen('Astral Ascension ended at rift %d. Score: %d' % (min(reached, 15), r['puan']), big=True))

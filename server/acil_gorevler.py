@@ -183,7 +183,7 @@ class AcilGorevler:
                 q['durum'] = COMPLETED
                 self.p.dirty = True
             for loot, n in q['oduller']:
-                msgs += self.m.reward(loot, n)
+                msgs += self.m.prize(loot, n)
             msgs += [legacy('0|A|STM|diminishing_quest_completed'),
                      ('DiminishingQuestRemoveQuestCommand', {'acceptabilityStatus': status(COMPLETED)})] + self.m.money_msgs()
             self.log('   Urgent Mission tamamlandı: %s' % q['hedefler'])

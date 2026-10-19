@@ -21,6 +21,7 @@ Profilde: sezon {donem, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, d
 """
 import datetime, json, os, random, time
 
+import ayar as AY
 import gorev_takip as GT
 from eski_protokol import legacy
 
@@ -305,7 +306,7 @@ class Sezon:
         locked = MISSIONS[qid]['gold'] and not st.get('gold')
         if not locked:
             bonus = self.p.mods().get('sezon_puani', 0)                     # N.O.V.A. Bonus Hunter / Bonus Slayer (nova.py)
-            msgs += self.add_points(int(round(points_of(qid) * (1 + bonus))))
+            msgs += self.add_points(int(round(points_of(qid) * (1 + bonus) * AY.carpan('sezon_puani'))))      # panel
         if qt == DAILY and self.m:                                          # günlük görev: Armory Token (Aşama 9; armory.py)
             import armory as AU
             msgs += self.m.reward(AU.TOKEN, AU.D['gunluk_gorev_jetonu'])

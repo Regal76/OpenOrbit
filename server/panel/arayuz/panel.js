@@ -479,8 +479,9 @@ function pilotForm({ start = true } = {}) {
   const st = { firma: 2 };
   const ad = h('input', { class: 'input', placeholder: T('ör. Ana kayıt, Hızlı deneme…') });
   const pilot = h('input', { class: 'input', placeholder: T('3-20 karakter'), maxlength: 20 });
-  const kredi = h('input', { class: 'input', type: 'number', min: 0, placeholder: T('şablondaki') });
-  const uri = h('input', { class: 'input', type: 'number', min: 0, placeholder: T('şablondaki') });
+  // başlangıç değerleri (isteğe bağlı; boş: şablondaki): kredi, uridyum, seviye (EP'si seviyenin eşiği), onur, cephane
+  const num = (min, max) => h('input', { class: 'input', type: 'number', min, max, step: 1, placeholder: T('şablondaki') });
+  const kredi = num(0), uri = num(0), seviye = num(1, 50), onur = num(0), lazer = num(0), roket = num(0);
   const cards = FIRMS.map(([id, k, n, c, m]) => {
     const el = h('div', { class: 'radio-card' + (id === st.firma ? ' on' : ''), style: { '--c': c }, onclick: () => {
       st.firma = id; el.parentNode.querySelectorAll('.radio-card').forEach(x => x.classList.remove('on')); el.classList.add('on');
@@ -489,9 +490,12 @@ function pilotForm({ start = true } = {}) {
   });
   const el = [field(T('Pilot adı (oyunda görünür)'), pilot), field(T('Firma'), h('div', { class: 'radio-cards' }, cards)),
     field(T('Kayıt adı (isteğe bağlı)'), ad),
-    start ? h('div', { class: 'grid g2' }, field(T('Başlangıç kredisi (isteğe bağlı)'), kredi), field(T('Başlangıç uridyumu (isteğe bağlı)'), uri)) : null];
+    start ? h('div', { class: 'grid g2' }, field(T('Başlangıç kredisi (isteğe bağlı)'), kredi), field(T('Başlangıç uridyumu (isteğe bağlı)'), uri),
+      field(T('Başlangıç seviyesi (1-50, isteğe bağlı)'), seviye), field(T('Başlangıç onuru (isteğe bağlı)'), onur),
+      field(T('LCB-10 lazer cephanesi (isteğe bağlı)'), lazer), field(T('R-310 roketi (isteğe bağlı)'), roket)) : null];
+  const v = x => start ? x.value : '';
   return { el, pilot, values: () => ({ ad: ad.value.trim() || pilot.value.trim(), pilot: pilot.value.trim(), firma: st.firma,
-    kredi: start ? kredi.value : '', uridyum: start ? uri.value : '' }) };
+    kredi: v(kredi), uridyum: v(uri), seviye: v(seviye), onur: v(onur), lazer: v(lazer), roket: v(roket) }) };
 }
 
 function newSaveModal() {
@@ -601,9 +605,6 @@ async function backupsModal(id) {
 // ================================================================== OYUN AYARLARI
 const CARPAN_DEGERLERI = [0, 0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5, 6, 7.5, 10, 12.5, 15, 20, 25, 30, 40, 50];
 const UYGULAMA = { 'anında': ['an', N('Anında')], 'harita': ['harita', N('Harita değişince')], 'giriş': ['giris', N('Yeniden girişte')], 'başlatma': ['baslatma', N('Sunucu yeniden başlayınca')] };
-const RAKIP_ACIKLAMA = [N('Rakip yok: teklifleri yalnız sen verirsin.'), N('Arada bir küçük teklifler verirler; seni hiç geçmezler, teklif verdiğin lot senin.'),
-  N('Daha sık ve biraz daha yüksek teklifler; seni yine geçmezler.'), N('Geçtiğinde bir süre sonra karşılık verirler. Bütçelerini aşarsan lot senin; kaybedersen kredin geri gelir.'),
-  N('Çok sık, yüksek bütçeli ve hızlı karşılık verirler. Kaptırmamak için iyi teklif ver.')];
 let saveTimer = null, pending = {};
 function queueSave(key, value) {
   pending[key] = value;
@@ -625,6 +626,11 @@ function markChanged() {
     const k = row.dataset.key, v = r.degerler[k] ?? r.varsayilan[k];
     row.classList.toggle('changed', v !== r.varsayilan[k]);
   });
+  document.querySelectorAll('.set-group').forEach(card => {         // grup başlığında değişen ayar sayısı
+    const n = card.querySelectorAll('.set-row.changed').length;
+    card.querySelector('.grp-count').textContent = n ? ' · ' + T('{0} değişiklik', n) : '';
+  });
+  if (S.ayarFiltre && document.querySelector('.set-tools')) S.ayarFiltre(true);
 }
 
 async function renderAyarlar() {
@@ -655,9 +661,40 @@ async function renderAyarlar() {
   const groups = r.gruplar.map(g => {
     const items = r.sema.filter(s => s.grup === g.anahtar);
     if (!items.length) return null;
-    return h('div', { class: 'card' }, h('h2', null, g.ad), items.map(s => settingRow(s, val(s.anahtar), r.varsayilan[s.anahtar])));
-  });
-  $('#content').replaceChildren(h('div', { class: 'stack' }, presetCard, info, ...groups.filter(Boolean)));
+    return h('div', { class: 'card set-group', 'data-grup': g.anahtar }, h('h2', null, g.ad, h('span', { class: 'muted small grp-count' })),
+      items.map(s => settingRow(s, val(s.anahtar), r.varsayilan[s.anahtar])));
+  }).filter(Boolean);
+  // arama, yalnız değişenler, grup kısayolları (seçimler sayfa yenilenince de kalır)
+  const q = h('input', { class: 'input', type: 'search', placeholder: T('Ayar ara (ad ya da açıklama)…'), value: S.ayarAra || '' });
+  const only = h('input', { type: 'checkbox', checked: !!S.ayarDegisen });
+  const none = h('div', { class: 'card muted', hidden: true }, T('Aramaya uyan ayar yok.'));
+  // keep: kayıttan sonra (markChanged) yalnız gösterir, görünen satırı gizlemez (varsayılana dönen satır düzenlerken kaybolmasın)
+  const apply = (keep = false) => {
+    S.ayarAra = q.value; S.ayarDegisen = only.checked;
+    const words = q.value.toLocaleLowerCase(LOC()).split(/\s+/).filter(Boolean);
+    let shown = 0;
+    groups.forEach(card => {
+      let n = 0;
+      card.querySelectorAll('.set-row[data-key]').forEach(row => {
+        const text = row.textContent.toLocaleLowerCase(LOC());
+        const ok = (keep && !row.hidden) || (words.every(w => text.includes(w)) && (!only.checked || row.classList.contains('changed')));
+        row.hidden = !ok; n += ok;
+      });
+      card.hidden = !n; shown += n;
+    });
+    none.hidden = !!shown;
+  };
+  S.ayarFiltre = apply;
+  q.addEventListener('input', () => apply()); only.addEventListener('change', () => apply());
+  const jump = h('div', { class: 'chips' }, groups.map(card => h('button', { class: 'chip link', type: 'button',
+    onclick: () => { if (card.hidden) { q.value = ''; only.checked = false; apply(); } card.scrollIntoView({ behavior: 'smooth', block: 'start' }); } },
+    card.querySelector('h2').firstChild.textContent)));
+  const tools = h('div', { class: 'card compact set-tools' },
+    h('div', { class: 'row wrap' }, h('span', { class: 'search-box' }, icon('search'), q),
+      h('label', { class: 'row', style: { gap: '8px' } }, h('span', { class: 'switch' }, only, h('span')), T('Yalnız değişenler'))),
+    h('div', { style: { marginTop: '10px' } }, jump));
+  $('#content').replaceChildren(h('div', { class: 'stack' }, presetCard, info, tools, none, ...groups));
+  apply();
   markChanged();
 }
 
@@ -665,35 +702,44 @@ function settingRow(s, v, def) {
   const [tc, tt] = UYGULAMA[s.uygulama] || ['', s.uygulama];
   const head = h('div', null, h('div', { class: 'name' }, s.ad, h('span', { class: 'tag ' + tc }, T(tt))), h('div', { class: 'help' }, s.aciklama));
   let ctl;
+  // sürgü önerilen aralıkta (min..max); sayı kutusuna elle sinir'e dek her değer yazılır (ayar.py), aralığın dışı "elle" işaretli
+  const top = s.sinir ?? s.max;
+  const over = h('span', { class: 'tag elle', title: T('Önerilen aralığın ({0} – {1}) dışında; elle yazılabilen en büyük değer {2}.', fmtMult(s.min ?? 0), fmtMult(s.max ?? 0), fmtMult(top)) }, T('Elle'));
+  const markOver = x => { over.hidden = !(x > s.max); };
   if (s.tur === 'carpan') {
     const vals = CARPAN_DEGERLERI.filter(x => x >= s.min && x <= s.max);
+    if (!vals.includes(s.max)) vals.push(s.max);
     const near = x => vals.reduce((bi, y, i) => Math.abs(y - x) < Math.abs(vals[bi] - x) ? i : bi, 0);
     const lab = h('span', { class: 'mult' }, '×' + fmtMult(v));
     const range = h('input', { type: 'range', min: 0, max: vals.length - 1, step: 1, value: near(v) });
-    const num = h('input', { class: 'input num', type: 'number', min: s.min, max: s.max, step: 0.05, value: v });
+    const num = h('input', { class: 'input num', type: 'number', min: s.min, max: top, step: 'any', value: v, title: T('En çok {0}', fmtMult(top)) });
     const paint = () => range.style.setProperty('--p', (range.value / (vals.length - 1) * 100) + '%');
-    range.addEventListener('input', () => { const x = vals[+range.value]; num.value = x; lab.textContent = '×' + fmtMult(x); paint(); });
+    const show = x => { num.value = x; lab.textContent = '×' + fmtMult(x); markOver(x); };
+    range.addEventListener('input', () => { show(vals[+range.value]); paint(); });
     range.addEventListener('change', () => queueSave(s.anahtar, vals[+range.value]));
     num.addEventListener('change', () => {
-      let x = Math.min(s.max, Math.max(s.min, parseFloat(String(num.value).replace(',', '.')) || 0));
-      num.value = x; range.value = near(x); lab.textContent = '×' + fmtMult(x); paint(); queueSave(s.anahtar, x);
+      const x = Math.min(top, Math.max(s.min, parseFloat(String(num.value).replace(',', '.')) || 0));
+      show(x); range.value = near(x); paint(); queueSave(s.anahtar, x);
     });
-    const reset = btn('', () => { num.value = def; range.value = near(def); lab.textContent = '×' + fmtMult(def); paint(); queueSave(s.anahtar, def); }, 'ghost sm icon', 'undo', { title: T('Varsayılan (×{0})', fmtMult(def)) });
-    paint();
-    ctl = h('div', { class: 'ctl' }, h('div', { style: { flex: 1, minWidth: '140px' } }, range), lab, num, reset);
+    const reset = btn('', () => { show(def); range.value = near(def); paint(); queueSave(s.anahtar, def); }, 'ghost sm icon', 'undo', { title: T('Varsayılan (×{0})', fmtMult(def)) });
+    paint(); markOver(v);
+    ctl = h('div', { class: 'ctl' }, h('div', { style: { flex: 1, minWidth: '140px' } }, range), over, lab, num, reset);
   } else if (s.tur === 'sayi') {
-    const num = h('input', { class: 'input num', type: 'number', min: s.min, max: s.max, step: 1, value: v });
-    const fix = x => Math.min(s.max, Math.max(s.min, Math.round(parseFloat(String(x).replace(',', '.')) || 0)));
-    num.addEventListener('change', () => { const x = fix(num.value); num.value = x; queueSave(s.anahtar, x); });
-    const reset = btn('', () => { num.value = def; queueSave(s.anahtar, def); }, 'ghost sm icon', 'undo', { title: T('Varsayılan ({0})', def) });
-    ctl = h('div', { class: 'ctl' }, num, s.birim ? h('span', { class: 'mult' }, s.birim) : null, reset);
+    const num = h('input', { class: 'input num', type: 'number', min: s.min, max: top, step: 1, value: v, title: T('En çok {0}', fmtMult(top)) });
+    const fix = x => Math.min(top, Math.max(s.min, Math.round(parseFloat(String(x).replace(',', '.')) || 0)));
+    num.addEventListener('change', () => { const x = fix(num.value); num.value = x; markOver(x); queueSave(s.anahtar, x); });
+    const reset = btn('', () => { num.value = def; markOver(def); queueSave(s.anahtar, def); }, 'ghost sm icon', 'undo', { title: T('Varsayılan ({0})', def) });
+    markOver(v);
+    ctl = h('div', { class: 'ctl' }, over, num, s.birim ? h('span', { class: 'mult' }, s.birim) : null, reset);
   } else if (s.tur === 'bool') {
     const cb = h('input', { type: 'checkbox', checked: v, onchange: e => queueSave(s.anahtar, e.target.checked) });
     ctl = h('div', { class: 'ctl' }, h('label', { class: 'switch' }, cb, h('span')));
   } else if (s.tur === 'seviye') {
-    const desc = h('div', { class: 'level-desc' }, RAKIP_ACIKLAMA[v] ? T(RAKIP_ACIKLAMA[v]) : '');
-    const seg = h('div', { class: 'seg' }, s.secenekler.map((name, i) => h('button', { class: (i === v ? 'on ' : '') + (i === 0 ? '' : i < 3 ? 'ok' : i === 3 ? 'info' : 'err'), onclick: e => {
-      seg.querySelectorAll('button').forEach(b => b.classList.remove('on')); e.currentTarget.classList.add('on'); desc.textContent = RAKIP_ACIKLAMA[i] ? T(RAKIP_ACIKLAMA[i]) : ''; queueSave(s.anahtar, i);
+    // seçeneklerin açıklaması ve rengi şemadan (ayar.py: secenek_aciklama, renkler; panel dilinde gelir)
+    const say = i => (s.secenek_aciklama || [])[i] || '';
+    const desc = h('div', { class: 'level-desc' }, say(v));
+    const seg = h('div', { class: 'seg' }, s.secenekler.map((name, i) => h('button', { class: (i === v ? 'on ' : '') + ((s.renkler || [])[i] || ''), onclick: e => {
+      seg.querySelectorAll('button').forEach(b => b.classList.remove('on')); e.currentTarget.classList.add('on'); desc.textContent = say(i); queueSave(s.anahtar, i);
     } }, name)));
     ctl = h('div', { class: 'ctl', style: { flexDirection: 'column', alignItems: 'flex-end' } }, seg);
     head.append(desc);

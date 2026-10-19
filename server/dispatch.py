@@ -128,7 +128,7 @@ class Dispatch:
         msgs = []
         for l, n in items.items():
             if self.m:
-                msgs += self.m.reward(l, n)
+                msgs += self.m.prize(l, n)               # panelin ödül çarpanları
             else:
                 self.p.add_resource(l, n)
         return msgs

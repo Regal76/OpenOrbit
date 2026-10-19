@@ -225,7 +225,7 @@ class GalaxyTrek:
                                    planetPct=100 if st['gezegen'] != planet or st['tamam'] >= PLANETS else st['yuzde']))
         msgs = self.m.resource_msgs(KEY, self.keys(), -count)
         for l, n in sorted(got.items()):
-            msgs += self.m.reward(l, n)
+            msgs += self.m.prize(l, n)
         self.log('   Galaxy Trek: %d keşif, gezegen %d (%%%d), tamam %d' % (count, st['gezegen'], st['yuzde'], st['tamam']))
         return [('SpaceSearchEventsCommand', dict(rewards=[mod('RewardModule', lootId=l, amount=n) for l, n in sorted(got.items())],
                                                   eventIds=events, planets=planets)),
@@ -242,7 +242,7 @@ class GalaxyTrek:
             self.p.dirty = True
         msgs = []
         for l, n in t['esyalar']:
-            msgs += self.m.reward(l, n)
+            msgs += self.m.prize(l, n)
         if t.get('unvan') and self.titles:
             msgs += self.titles(t['unvan'])
         self.log('   Galaxy Trek ödülü %d: %s %s' % (tier, t['esyalar'], t.get('unvan') or ''))
@@ -267,7 +267,7 @@ class GalaxyTrek:
                     st['biten'].append(qid)
                     self.p.dirty = True
                 for r in q['tanim']['rewards']:
-                    msgs += self.m.reward(r['lootId'], r['amount'])
+                    msgs += self.m.prize(r['lootId'], r['amount'])
                 self.log('   Galaxy Trek görevi bitti: %s' % q['ad'])
         if msgs:
             msgs.append(self.key_cmd())                 # liste (SpaceSearchMissionListCommand) pencereyi açar: yalnız istekle

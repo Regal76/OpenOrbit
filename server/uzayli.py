@@ -19,6 +19,8 @@ Yetenekler (veri alanları uzayli_yetenekleri.json'un açıklamasında):
 """
 import json, math, os, random, time
 
+import ayar as AY
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 Y = json.load(open(os.path.join(HERE, 'data', 'uzayli_yetenekleri.json'), encoding='utf8'))
 ABILITIES = {int(k): v for k, v in Y['yetenekler'].items()}
@@ -190,7 +192,7 @@ class Yetenekler:
     def after_shot(self, n, now, hit):
         """Uzaylının lazeri oyuncuya isabet etti: yavaşlatan atış."""
         s = n.davranis.get('yavaslatan_atis')
-        if not s or not hit or self.w.hero_dead:
+        if not s or not hit or self.w.hero_dead or not AY.get('yavaslatan_atis'):          # panel: kapatılabilir
             return
         if s.get('menzil') and self.dist(n, now) > s['menzil']:
             return

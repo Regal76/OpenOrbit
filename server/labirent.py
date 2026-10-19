@@ -15,6 +15,7 @@ Iceterion (öldürülemez, mayın bırakır) yok: değerleri bilinmiyor.
 """
 import math, random, time
 
+import ayar as AY
 import harita as H
 import kapi as KAPI
 import takvim as TK
@@ -114,7 +115,7 @@ class Labirent:
             for name, n in MAPS[self.map]['bolgeler'][z]['nufus']:
                 tip = self.type_of(name)
                 have = sum(1 for x in world.npcs.values() if x.tip == tip and zone_of(self.map, *x.mover.pos(now)) == z)
-                for _ in range(max(0, n - have)):
+                for _ in range(max(0, AY.adet('npc_sayi', n) - have)):      # panel: uzaylı sayısı
                     self.spawn(tip, z)
         self.synk_id = next((x.id for x in world.npcs.values() if x.tip == SYNK), None)
         self.synk_check(time.time())
@@ -169,7 +170,7 @@ class Labirent:
             msgs += self.synk_killed(time.time())
         elif n.tip != SKOLL:
             z = zone_of(self.map, x, y)
-            delay = n.d.get('yeniden_sn') or random.uniform(45, 90)
+            delay = (n.d.get('yeniden_sn') or random.uniform(45, 90)) * AY.carpan('npc_yenilenme')      # panel
             w.later(delay, lambda: self.respawn(n.tip, z))
         return msgs
 

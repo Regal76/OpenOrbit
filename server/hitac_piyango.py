@@ -17,6 +17,7 @@ Profilde: hitac_piyango {harfler: [toplanan sıra numaraları], gecmis: [{tarih,
 """
 import json, os, random, time
 
+import ayar as AY
 import takvim as TK
 from kapi import screen
 
@@ -108,14 +109,14 @@ class HitacPiyango:
             return []
         if npc.tip == MINION:
             b = D.get('minion_kutusu', {'tur': 'HITAC_MINION', 'icerik': [['ammunition_laser_mcb-50', 300]], 'harf': 0.5})
-            rows = [[l, a] for l, a in b['icerik']] + ([[LETTER, 1]] if random.random() < b.get('harf', 0.5) else [])
+            rows = [[l, a] for l, a in b['icerik']] + ([[LETTER, 1]] if random.random() < AY.chance('dusme', b.get('harf', 0.5)) else [])
             self.drop(w, b['tur'], x, y, rows, b.get('omur_sn', 300))
         elif npc.tip == MOTHERSHIP:
             b = D.get('ana_gemi_kutusu', {'tur': 'HITAC', 'kapsul': 1})
             self.drop(w, b['tur'], x, y, [[CAPSULE, b['kapsul']]])
         else:
             for prefix, (kind, chance) in (D.get('harf_ek') or {}).items():
-                if npc.tip.startswith(prefix) and random.random() < chance:
+                if npc.tip.startswith(prefix) and random.random() < AY.chance('dusme', chance):      # panel: düşme şansı
                     self.drop(w, kind, x, y, [[LETTER, 1]])
         return []
 

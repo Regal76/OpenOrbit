@@ -278,7 +278,8 @@ class Pet:
         """Bir sonraki yuvanın uridyum fiyatı; en çok yuvaya ulaşıldıysa 0. HEAT yuvalarının ilki de ücretli (wiki 20.000)."""
         n = self.open_slots(slot)
         prices = PET['yuva_fiyatlari'].get(slot, [])
-        return prices[n] if n < min(PET['azami_yuva'].get(slot, 0), len(prices)) else 0
+        # panel: hizmet ücretleri (en az 1: 0 "en çok yuva" demek)
+        return max(1, AY.fiyat('hizmet_fiyat', prices[n])) if n < min(PET['azami_yuva'].get(slot, 0), len(prices)) else 0
 
     def gear_list(self):
         """Pencerenin dişli listesi: (tür, seviye, kullanılabilir). Pasif ve koruma her zaman; diğerleri takılıysa."""
@@ -442,7 +443,7 @@ class Pet:
         return ('PetUIRepairButtonCommand', dict(enabled=self.owned and self.d['yikik'], repairCosts=self.repair_cost()))
 
     def repair_cost(self):
-        return self.row()['tamir_uridyum'] if self.owned else 0
+        return AY.fiyat('hizmet_fiyat', self.row()['tamir_uridyum']) if self.owned else 0       # panel: hizmet ücretleri
 
     def login_msgs(self):
         """Harita yüklendikten sonra: yok edilmişse tamir düğmesi; harita değiştiyse etkin P.E.T. yeniden çıkar."""
@@ -713,6 +714,7 @@ class Pet:
         f = dict(PET['yakit_satin'])
         if amount:
             f.update(kredi=f['kredi'] * amount // f['adet'], adet=amount)
+        f['kredi'] = AY.fiyat('hizmet_fiyat', f['kredi'])     # panel: hizmet ücretleri
         pl = self.p.d['pilot']
         if not self.active:
             self.send([legacy('0|A|STM|log_msg_bought_fuel_hotkey_inactive')])
@@ -937,7 +939,7 @@ class Pet:
         w.send(w.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.pid, targetId=n.id,
                                                                    laserColor=ESYA['lazer_renkleri']['cephane'].get(ammo, 0),
                                                                    isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
-        if random.random() < SAVAS['lazer_isabet'] * (1 + self.proto('isabet')):
+        if random.random() < AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + self.proto('isabet'))):      # panel
             base = self.laser_damage()                                   # LF-PX01: HEAT seviyesine göre
             base *= 1 + self.row()['hasar'] + self.proto('lazer') + self.proto('uzayli')
             a = ESYA['lazer_cephane'].get(ammo, {'carpan': 1})
@@ -996,7 +998,7 @@ class Pet:
         w.last_combat = now
         msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.pid, laserColor=0, isDiminishedBySkillShield=False,
                                                skilledLaser=False, visualType=0))]
-        if random.random() >= SAVAS['npc_isabet'] * (1 - self.proto('kacinma')):
+        if random.random() >= AY.chance('npc_isabet', SAVAS['npc_isabet']) * (1 - self.proto('kacinma')):        # panel
             msgs.append(('AttackMissedCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=1), targetUserId=self.pid,
                                                      skillColorId=0)))
             w.send(msgs)
@@ -1053,7 +1055,7 @@ class Pet:
         """Oyuncunun kazandığı EP'nin %5'i (wiki). Etkin değilken kazanmaz. Seviye atlayınca görünüm ve yuvalar değişir."""
         if not self.active or ep <= 0:
             return []
-        add = int(ep * PET['ep_payi'] * (1 + self.p.mods().get('pet_ep', 0)))     # P-EP booster (günlük ödül)
+        add = int(ep * PET['ep_payi'] * (1 + self.p.mods().get('pet_ep', 0)) * AY.carpan('pet_ep'))     # P-EP booster; panel
         if not add:
             return []
         d = self.d
