@@ -106,6 +106,19 @@ def module_msg(p, iid):
                shipDesigns=list(rec['gemiler']), itemId=int(iid), lootId=loot)
 
 
+def ship_ids(loots):
+    """Hangar ipucunun gemi listesi (HangarShipEquipmentInventoryItem.ships): istemci (TooltipPreparerFactory.ReturnShips) ','
+    ile böler, her parçayı sayıya çevirip gemiyi kimliğiyle bulur (GetItemByShipId). Gemi adları (ship_goliath) 0 okunuyordu."""
+    return ','.join(str(ITEMS[l]['kimlik']) for l in loots if (ITEMS.get(l) or {}).get('kimlik') is not None)
+
+
+def modifiers_str(p, iid):
+    """Kararsız modülün hangar ipucu nitelikleri: "AD,yüzde;…" (TooltipPreparerFactory.ReturnModifiers: değer tam sayı, metin
+    items_equipment_shipupgrade_modifiertype_<ad>). Boşken ipucunun "Tür:" satırı boş kalıyordu (kullanıcı 2026-10-19)."""
+    rec = state(p, iid) or {}
+    return ';'.join('%s,%d' % (a.upper(), max(1, int(round(v * 100)))) for a, v in rec.get('nitelik', []) if v > 0)
+
+
 def shard_cmd(p):
     return mod('UnstableModulesShardCommand', chipLeft=p.resource(CHIP), shardsLeft=p.resource(SHARD))
 

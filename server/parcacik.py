@@ -161,7 +161,8 @@ def hangar_fields(p, iid, loot):
     if loot in CANNONS:
         f['extAttributes'] = [mod('TupleTwoModule', param0='baseDamage', param1=str(int(base_damage(p, iid))))]
         if CANNONS[loot]['gemi']:
-            f['ships'] = CANNONS[loot]['gemi']
+            import gemi_modul as GM                           # ipucunun gemisi sayısal kimlikle (ReturnShips)
+            f['ships'] = GM.ship_ids([CANNONS[loot]['gemi']])
     return f
 
 

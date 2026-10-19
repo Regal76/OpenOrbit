@@ -423,7 +423,8 @@ class Magaza:
         it.update(itemid=iid, lootId=loot, itemCount=count, hangarId=hangar, lootType=loot_type(loot))
         if GM.unstable(loot) and str(iid) in self.p.d['esyalar']:
             it['isUnstableShipUpgrade'] = True                          # kararsız modül (gemi_modul.py)
-            it['ships'] = ','.join(GM.state(self.p, iid)['gemiler'])
+            it['ships'] = GM.ship_ids(GM.state(self.p, iid)['gemiler'])   # ipucu: "+%5 hasar için Goliath, …"
+            it['modifiers'] = GM.modifiers_str(self.p, iid)
         if PC.is_item(loot) and str(iid) in self.p.d['esyalar']:
             it.update(PC.hangar_fields(self.p, iid, loot))              # top: temel hasar, nitelikler, yıldız, UL'nin gemisi
         elif RZ.is_item(loot) and str(iid) in self.p.d['esyalar']:
