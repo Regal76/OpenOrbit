@@ -151,6 +151,7 @@ class Pet:
         self.mover = None
         self.task = None             # ('box' | 'ore', hash): toplayıcı dişlinin hedefi
         self.shooting = None         # ateş edilen NPC
+        self.shot_by = set()         # son lazer salvosu P.E.T.'e giden NPC'ler (P.E.T. kalkınca salvoları durdurulur)
         self.next_shot = self.next_follow = self.next_second = self.next_locate = 0.0
         self.fuel_clock = 0.0        # harcanmamış yakıt (birim)
         self.tick_t = time.time()
@@ -616,7 +617,7 @@ class Pet:
             self.end_release(now, notify=False)
         self.active, self.task, self.trading = False, None, False
         self.stop_heat(now)                      # soğuma gecikmesi başlar
-        msgs = [('PetLaserAttackStopCommand', {'petId': self.pid})] if self.shooting else []
+        msgs = (self.abort_msgs() if self.shooting else []) + self.attackers_abort()
         self.shooting = None
         if notify:
             # istemci: PetDeactivationCommand birimi yalnız gizler; pencere P.E.T. birimi varken "etkin" görünür (UIPetSystem.RefPet).
@@ -661,7 +662,7 @@ class Pet:
         self.task = None if t not in (AUTO_LOOT, AUTO_RESOURCE) else self.task
         msgs = [self.select_msg()]
         if self.shooting and t not in FIGHTING:
-            msgs.append(('PetLaserAttackStopCommand', {'petId': self.pid}))
+            msgs += self.abort_msgs()
             self.shooting = None
         self.trading = t == TRADE_POD
         if self.trading:
@@ -766,7 +767,7 @@ class Pet:
         if was:
             self.stop_heat(time.time())          # geçişte soğumaz (gecikme yeniden çıkışa kadar sürer)
             self.release_end = 0.0
-        self.w, self.active, self.task, self.shooting = world, False, None, None
+        self.w, self.active, self.task, self.shooting, self.shot_by = world, False, None, None, set()
         self.relaunch = self.relaunch or was
 
     def on_ready(self):
@@ -781,7 +782,7 @@ class Pet:
         if self.active:
             self.stop_heat(time.time())
             self.release_end = 0.0
-            self.active, self.task, self.shooting = False, None, None
+            self.active, self.task, self.shooting, self.shot_by = False, None, None, set()     # istemci haritayı temizler
             self.relaunch = True
 
     def pos(self, now):
@@ -908,6 +909,7 @@ class Pet:
                     w.take_box(h, by_pet=True)
                 else:
                     target['busy'] = True
+                    w.send([w.beam_msg(by_pet=True)])     # toplama ışını P.E.T.'ten
                     w.later(ORE_DELAY, lambda: w.finish_harvest(h))
             return True
         rng = self.gear(g).get('menzil', 0) * self.range_bonus()
@@ -983,7 +985,26 @@ class Pet:
 
     def stop_shooting(self):
         self.shooting = None
-        self.w.send([('PetLaserAttackStopCommand', {'petId': self.pid})])
+        self.w.send(self.abort_msgs())
+
+    def abort_msgs(self):
+        """P.E.T.'in lazeri durur. İstemci AttackLaserRunCommand'ın salvosunu durdurulana dek sürdürür; PetLaserAttackStopCommand'ın
+        istemcide işleyicisi yok, salvo AttackAbortLaserCommand {uid} ile biter. Yalnız o gidiyordu: hedef ölünce P.E.T. ölü (ya da
+        yeniden kullanılan) birime, harita dışına ateş ediyordu (kullanıcı 2026-10-19)."""
+        return [('PetLaserAttackStopCommand', {'petId': self.pid}), ('AttackAbortLaserCommand', {'uid': self.pid})]
+
+    def attackers_abort(self):
+        """P.E.T. haritadan kalkıyor: ona ateş eden NPC'lerin salvoları durur (yoksa olmayan birime ateş sürerdi)."""
+        w, ids, self.shot_by = self.w, self.shot_by, set()
+        return [('AttackAbortLaserCommand', {'uid': i}) for i in sorted(ids) if w and i in w.npcs]
+
+    def npc_gone(self, nid):
+        """Uzaylı öldü ya da çekildi (dünya, kilit altında) -> mesajlar: P.E.T. ona ateş ediyorsa lazeri durur."""
+        self.shot_by.discard(nid)
+        if self.shooting == nid:
+            self.shooting = None
+            return self.abort_msgs()
+        return []
 
     def trade_used(self, now):
         """Kargo tüccarıyla satış yapıldı: dişli bekleme süresine girer (wiki: 300 sn), P.E.T. korumaya döner."""
@@ -1024,6 +1045,7 @@ class Pet:
             return False
         n.next_shot = now + SAVAS['npc_saldiri_aralik_sn']
         w.last_combat = now
+        self.shot_by.add(n.id)
         msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.pid, laserColor=0, isDiminishedBySkillShield=False,
                                                skilledLaser=False, visualType=0))]
         if random.random() >= AY.chance('npc_isabet', SAVAS['npc_isabet']) * (1 - self.proto('kacinma')):        # panel

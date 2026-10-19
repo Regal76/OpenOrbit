@@ -14,7 +14,8 @@ Akış (kayıtta giriş listesi var; üretim istekleri istemcinin kodundan):
 Hangi tarifler: kayıttaki listede o gün açık olanlar (ALWAYS_VISIBLE ve takvimdeki ON_SCHEDULE; tek oyunculu: hepsi sürekli açık, süreli
 olanlar da süresiz) ve ONLY_WHEN_OWNED olup tarifin kendisi depoda olanlar. Kullanım: ALWAYS_USABLE sınırsız, USABLE_ONCE bir kez,
 USABLE_ONCE_PER_SCHEDULE / USABLE_LIMIT_PER_SCHEDULE günde bir / en_cok kez (tek oyunculu: takvim günü). CostScalingFactor: aynı gün
-her üretimde malzemeler bu oranla artar. Gemi isteyen tarifler (Plus gemileri) Aşama 6'da.
+her üretimde malzemeler bu oranla artar. Gemi isteyen tarifler (Plus gemileri): taban gemi etkin olmayanlardan harcanır; istemcinin
+sayacına etkin olan da sayılır (envanter.client_count), yalnız etkin gemiyle üretimde oyunun "ship in use" uyarısı.
 Profilde: assembly {uretim: {tarif: {adet, bitis, onceki}}, sayac: {tarif: toplam}, gunluk: {tarif: [gün, adet]}, gorulen: [tarif],
 suzgec: {}}.
 """
@@ -24,6 +25,7 @@ import envanter as INV
 import ayar as AY
 import teknoloji as TK
 import yukseltme as YK
+from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 T = json.load(open(os.path.join(HERE, 'data', 'tarifler.json'), encoding='utf8'))['tarifler']
@@ -150,7 +152,10 @@ class Assembly:
         miss = INV.missing(self.p, need)
         if miss:
             self.log('   Assembly: malzeme yetmiyor %s x%d (eksik %s)' % (key, amount, miss))
-            return [self.update(key)]
+            in_use = [l for l in miss if l.startswith('ship_') and INV.client_count(self.p, l) >= need[l]]
+            # taban gemi var ama etkin: oyunun kuralı ve metni ("You cannot upgrade a ship that is currently in use. Please change ships
+            # before upgrading."); istemcinin bu uyarıyı gösteren kodu (AssemblyViewSystem.PromptShipChange) hiç çağrılmıyor
+            return ([legacy('0|A|STM|assembly_warning_ship_in_use')] if in_use else []) + [self.update(key)]
         removed = INV.spend(self.p, need, reason='buy_SPECIAL', detail=key)
         now = time.time()
         with self.p.lock:

@@ -754,6 +754,7 @@ class Magaza:
             elif g.startswith('ship_'):
                 sid = self.p.add_ship(g)
                 msgs.append(legacy('0|LM|ST|LOT|%s|1' % g))
+                msgs += self.ship_count_msgs([g])          # Plus tarifinin taban gemisi (Assembly sayacı)
                 self.log('   yeni gemi: %s (shipId %d, hangarId %d)' % (g, sid, self.p.ship(sid)['hangarId']))
             elif g in DRONES:                              # paketteki dronlar (Stellar: 8 Iris) hepsi, yer kadar (package_fit)
                 for _ in range(n):
@@ -922,7 +923,7 @@ class Magaza:
             if loot not in {s['lootId'] for s in self.p.d['gemiler'].values()}:
                 self.p.add_ship(loot)
                 msgs.append(legacy('0|LM|ST|LOT|%s|1' % loot))
-                msgs += self.pending_designs(loot)
+                msgs += self.pending_designs(loot) + self.ship_count_msgs([loot])
                 if self.ships_tpl:
                     msgs.append(self.ships_cmd())              # hangar listesinde yeni gemi (Assembly, kapı, kutu)
         elif design_base(loot) and self.grant_design(loot):
@@ -1385,9 +1386,9 @@ class Magaza:
         loots = ['currency_credits', 'currency_uridium'] + sorted((ASM.INGREDIENTS | held) - {'currency_credits', 'currency_uridium'})
         out = []
         for loot in loots:
-            if loot.startswith(('ship_', 'equipment_', 'drone_', 'recipe_')):
+            if loot.startswith(('equipment_', 'drone_', 'recipe_')):
                 continue                        # örnekli eşyalar hangar envanterinden (HangarShipsCommand)
-            n = INV.count(self.p, loot)
+            n = INV.client_count(self.p, loot)  # gemiler (Plus tariflerinin taban gemisi) dahil
             if n > 0 or loot.startswith('currency_'):
                 out.append(self.inv_item(self.item_id(loot), loot, n))
         # eşya örnekleri (seviye, takılı olduğu hangar): Assembly'nin Upgrade/Disassembly sekmeleri yalnız bunları tanıyor (H38)
@@ -1396,6 +1397,12 @@ class Magaza:
             if loot.startswith(('equipment_', 'drone_designs_', 'pet_designs_')):
                 out.append(self.inv_item(int(iid), loot, 1, hm.get(int(iid), 0)))
         return out
+
+    def ship_count_msgs(self, loots):
+        """Gemi kazanılınca/harcanınca Assembly sayacı (yalnız tariflerde taban gemi olanlar; envanter.client_count)."""
+        import assembly as ASM
+        import envanter as INV
+        return [self.inv_item(self.item_id(l), l, INV.client_count(self.p, l)) for l in sorted(set(loots)) if l in ASM.INGREDIENTS]
 
     def change_formation(self, loot):
         """Kısayol çubuğundan formasyon (MenuActionRequest drone_formation_*): DroneFormationChangeCommand, çubukta seçili öğe,

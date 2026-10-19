@@ -926,9 +926,8 @@ class World:
                                                              hash=h)), legacy('0|A|STM|loadfull')] + self.p.hint(IP.FULL_CARGO))
                 self.log('   kargo dolu')
                 return
-            if pre:
-                self.send(pre)
             o['busy'] = True
+            self.send(pre + [self.beam_msg()])           # toplama ışını (kayıt: HarvestRequest'ten hemen sonra SLA)
             self.later(ORE['toplama_sn'], lambda: self.finish_harvest(h))
 
     def finish_harvest(self, h):
@@ -1356,6 +1355,14 @@ class World:
             self.collect_wish = None
             self.take_box(h)
 
+    def beam_msg(self, by_pet=False):
+        """Toplama ışını: 0|A|SLA|kip|birim (istemci: SetAttributeAssemblyHelper.AssembleCollectionBeamActive). Işın birimden
+        çıkar; kip 0 oyuncunun tıkladığı nesnenin sesini (Hero.LastCollectedSoundId; kayıtta hep 0|oyuncu), 1 toplama ışını sesini
+        (beam0, ses 3) çalar. P.E.T. toplarken de 0|gemi gidiyordu: ışın gemiden çıkıyor, son ses (çoğu kez 0 = lazer) çalıyordu."""
+        if by_pet and self.pet:
+            return legacy('0|A|SLA|1|%d' % self.pet.pid)
+        return legacy('0|A|SLA|0|%d' % self.hid)
+
     def box_near(self, h, now=None):
         b = self.boxes.get(h)
         hx, hy = self.hero_pos(now)
@@ -1389,7 +1396,7 @@ class World:
             if b['tip'] in GN.BOXES and not b.get('etk'):
                 return False if by_pet else self.open_booty(h, b)
             del self.boxes[h]
-            msgs = pre + [legacy('0|A|SLA|0|%d' % self.hid), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
+            msgs = pre + [self.beam_msg(by_pet), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
             if cargo_box:
                 ores, free = {}, self.p.cargo_free()
                 for k, v in sorted(b['icerik'].items()):
@@ -1469,7 +1476,7 @@ class World:
             RT.note(self.p, box['defter'])                              # seyir defteri: "… booty key used"
         loot, n = GN.pick(self.p, kind)
         n = AY.miktar('uridyum' if loot == 'currency_uridium' else 'toplama', n)       # panelin çarpanları
-        msgs += [legacy('0|A|SLA|0|%d' % self.hid), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
+        msgs += [self.beam_msg(), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
         if GN.key_line(self.p, kind):
             msgs.append(legacy(GN.key_line(self.p, kind)))
         if loot == 'currency_uridium':
@@ -1661,7 +1668,7 @@ class World:
         """Uzaylı ödülsüz ve patlamadan çekilir (kaçan Infiltration komandosu) -> mesajlar (kilit altında)."""
         n.alive = False
         self.npcs.pop(n.id, None)
-        msgs = []
+        msgs = self.pet.npc_gone(n.id) if self.pet else []
         if self.target == n.id:
             self.target, self.attacking = None, False
             msgs.append(('ShipDeselectionCommand', {}))
@@ -1675,6 +1682,7 @@ class World:
         del self.npcs[n.id]
         x, y = n.mover.pos(time.time())
         msgs = []
+        pet_stop = self.pet.npc_gone(n.id) if self.pet else []     # P.E.T. ona ateş ediyorsa lazeri durur
         if n.d.get('sayilmaz'):                 # sahte Emperor Lordakium: ödülsüz, kutusuz, yeniden doğmaz; patlar
             if n.id in self.visible:
                 self.visible.discard(n.id)
@@ -1682,7 +1690,7 @@ class World:
             if self.target == n.id:
                 self.target, self.attacking = None, False
                 msgs.append(('ShipDeselectionCommand', {}))
-            return msgs + self.alien.on_kill(n, x, y)
+            return pet_stop + msgs + self.alien.on_kill(n, x, y)
         if n.id in self.visible:
             self.visible.discard(n.id)
             msgs.append(('ShipDestroyedCommand', dict(destroyedUserId=n.id, explosionTypeId=0)))
@@ -1691,6 +1699,7 @@ class World:
             msgs.append(('ShipDeselectionCommand', {}))
         if msgs and msgs[0][0] == 'ShipDestroyedCommand':
             msgs.append(('ShipRemoveCommand', {'userId': n.id}))
+        msgs = pet_stop + msgs
         self.ofke.kill(self.lasers(), time.time())          # Asmodeus Fervor
         o = dict(n.d['odul'])
         k = getattr(n, 'odul_carpani', 1)                          # tek uzaylının çarpanı (Infiltration komandosu: sizma.py)
@@ -2325,11 +2334,14 @@ class World:
             self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': mx})])
 
     def npc_shoot(self, n, now):
+        if self.pet:
+            self.pet.shot_by.discard(n.id)      # yeni salvo öncekinin yerine geçer; P.E.T.'e giderse take_shot yeniden ekler
         if self.ally and self.ally.take_shot(n, now):
             return                              # atış dost gemiye gitti (echoes.py)
         if self.alien.extra_target(n, now):
             if self.pet:
                 self.pet.take_shot(n, now, force=True)     # birden çok hedef (Mindfire Behemoth): P.E.T.'e de
+                self.pet.shot_by.discard(n.id)             # ardından gemiye: son salvo gemide
         elif self.pet and self.pet.take_shot(n, now):
             return                              # atış P.E.T.'e gitti
         n.next_shot = now + n.d.get('atis_aralik_sn', SAVAS['npc_saldiri_aralik_sn'])

@@ -33,6 +33,8 @@ def client_item_ok(loot):
     if loot.startswith('resource_ore_'):
         return False
     c = _CLIENT.get(loot)
+    if loot.startswith('ship_') and c:           # Assembly'nin taban gemi sayacı: özellik listesi (traits) olan gemiler (hepsinde slotable)
+        return any(k in c for k in ('yuvalar', 'satis', 'takilir', 'yigin'))
     return not (c and loot.startswith('resource_') and c.get('sinif') == 'ItemType' and 'yigin' not in c)
 
 
@@ -70,6 +72,15 @@ def count(p, loot):
 def spare_ships(p, loot):
     """Harcanabilecek gemiler: bu türden, etkin olmayan (shipId listesi)."""
     return [sid for sid, s in p.d['gemiler'].items() if s['lootId'] == loot and sid != str(p.d['aktif_gemi'])]
+
+
+def client_count(p, loot):
+    """İstemcinin Assembly sayacına giden adet. Gemiler etkin olan dahil: istemci tarifin taban gemisini yalnız bu sayaçtan biliyor
+    (gemileri eşya listesine kendisi eklemiyor); hiç gönderilmiyordu, Plus tariflerinde sahip olunan gemi "yok" görünüyordu
+    (kullanıcı 2026-10-19: Solaris Plus). Etkin gemi harcanmaz: üretimde oyunun uyarısı (assembly.build)."""
+    if loot.startswith('ship_'):
+        return sum(1 for s in p.d['gemiler'].values() if s['lootId'] == loot)
+    return count(p, loot)
 
 
 def spendable(loot):
@@ -128,6 +139,7 @@ def update_msgs(m, p, loots, removed=()):
         msgs += m.money_msgs()
     if any(l.startswith('ship_') for l in loots):
         msgs.append(m.ships_cmd())                        # harcanan gemi hangar listesinden düşer
+        msgs += m.ship_count_msgs([l for l in loots if l.startswith('ship_')])     # Assembly sayacı
     ores = sorted(ORES[l] for l in loots if l in ORES)
     if ores:
         msgs += [('AttributeOreCountUpdateCommand', {'oreCountList': p.d['madenler']}), m.ore_pack(ores)]
