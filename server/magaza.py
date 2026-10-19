@@ -11,6 +11,8 @@ Satın alma (kayıt: LCB-10 ve MCB-25 alımları, belgeler/istemci/kayit_analizi
   gönderir (istemci kodu: UIShopSystem.SendHangarShipMoveItemsRequest).
 Tek oyunculu: gerçek parayla satılan ("Payment") eşyalar uridyumla satılır (fiyatlar esyalar.json odeme_fiyatlari).
   Paketlerin içeriği odeme_paketleri tablosundan verilir (gemi paketleri dahil); içeriği sunucuda olmayan eşya listede gösterilmez.
+  Paketin verilemeyen parçaları (sahip olunan gemi, P.E.T., formasyon; dronlar boş yer kadar) atlanır, gerisi verilir, ekranda
+  "Already owned, not given: …" (package_fit); hepsi zaten varsa alım olmaz. Fiyat değişmez.
 Hızlı alım: kısayol çubuğundaki buy_<lootId> (MenuActionRequest actionType 0); adet öğenin sayacı (lazer 1000, roket 100).
 Hangar:
   HangarShipEquipmentRequest -> HangarShipEquipmentCommand (iki config'in eşya kimlikleri profilden)
@@ -442,12 +444,47 @@ class Magaza:
         return self.pack([self.hangar_item(self.item_id(ORES[t]), ORES[t], self.p.ore_count(t)) for t in types if t in ORES])
 
     # ------------------------------------------------------------ mağaza
-    def drone_room(self, loot):
-        """Yeni dron alınabilir mi: Flax/Iris en çok dron_azami (8); Apis ve Zeus birer tane, sınırın dışında (wiki: en çok 10)."""
+    def drone_slots(self, loot):
+        """Bu türden kaç dron daha alınabilir: Flax/Iris birlikte en çok dron_azami (8); Apis ve Zeus birer tane, sınırın dışında
+        (wiki: en çok 10)."""
         ds = self.p.d['dronlar']
         if DRONES[loot].get('tek'):
-            return not any(x['lootId'] == loot for x in ds)
-        return sum(1 for x in ds if not DRONES[x['lootId']].get('tek')) < ESYA['dron_azami']
+            return 0 if any(x['lootId'] == loot for x in ds) else 1
+        return max(0, ESYA['dron_azami'] - sum(1 for x in ds if not DRONES[x['lootId']].get('tek')))
+
+    def drone_room(self, loot):
+        return self.drone_slots(loot) > 0
+
+    def package_fit(self, grants, owned):
+        """Paket içeriğinden şimdi verilebilenler: sahip olunan gemi, P.E.T. ve formasyon atlanır, dronlar boş yer kadar verilir
+        -> (verilecekler, [(lootId, atlanan adet, hata anahtarı)])."""
+        fit, skipped, taken = [], [], 0             # taken: bu pakette sayılan Flax/Iris (ortak sınır)
+        for g, n in grants:
+            if g.startswith('ship_') and not design_base(g) and g in owned:
+                skipped.append((g, 1, 'items_shop_error_ship_contains_ship'))
+            elif g == PET_LOOT and self.pet.owned:
+                skipped.append((g, 1, 'eqt_error_generic'))
+            elif g in FORMS and (g == 'drone_formation_default' or g in self.p.d['formasyonlar']):
+                skipped.append((g, 1, 'items_drone_formation_already_in_use'))
+            elif g in DRONES:
+                tek = DRONES[g].get('tek')
+                k = max(0, min(n, self.drone_slots(g) - (0 if tek else taken)))
+                taken += 0 if tek else k
+                if k:
+                    fit.append((g, k))
+                if k < n:
+                    skipped.append((g, n - k, 'drone_have_max'))
+            else:
+                fit.append((g, n))
+        return fit, skipped
+
+    @staticmethod
+    def skipped_msg(skipped):
+        """Paketten verilemeyenlerin ekran mesajı (ör. "Already owned, not given: P.E.T., 8x Iris")."""
+        import kapi as KAPI
+        name = lambda g: 'P.E.T.' if g == PET_LOOT else g.rsplit('_', 1)[-1].title()
+        return KAPI.screen('Already owned, not given: ' + ', '.join(('%dx %s' % (n, name(g))) if n > 1 else name(g)
+                                                                  for g, n, key in skipped))
 
     def drone_price(self, loot):
         """Flax/Iris: aynı türden kaçıncı dron olduğuna göre (wiki: Flax 100.000 C'den ikiye katlanır, Iris 15.000 U'dan artar)."""
@@ -653,14 +690,16 @@ class Magaza:
             self.log('   satın alma yok: %s (%s)' % (loot, 'mağazada değil' if not pr else 'içeriği sunucuda henüz yok'))
             return fail('shop_item_not_found')
         owned = {s['lootId'] for s in self.p.d['gemiler'].values()}
-        if loot.startswith('package_'):             # paket (S-OS-01 = Yamato + Defcom): sahip olunan gemi atlanır, gerisi verilir
-            rest = [(g, n) for g, n in grants if not (g.startswith('ship_') and not design_base(g) and g in owned)]
-            if rest:
-                grants = rest
+        pkg = loot.startswith(('package_', 'deal_'))
+        skipped = []
+        if pkg:      # paket (S-OS-01 = Yamato + Defcom, Stellar): sahip olunan gemi, P.E.T., formasyon ve dron yeri atlanır, gerisi verilir
+            grants, skipped = self.package_fit(grants, owned)
+            if not grants:
+                self.log('   satın alma yok: %s (içeriğinin hepsi zaten var)' % loot)
+                return fail(skipped[0][2])
         if any(g in owned for g, n in grants if g.startswith('ship_') and not design_base(g)):
             self.log('   satın alma yok: %s (bu gemi zaten var)' % loot)
             return fail('items_shop_error_ship_contains_ship')        # oyunun kuralı: her gemi türünden bir tane
-        pkg = loot.startswith(('package_', 'deal_'))
         for g, n in ([] if pkg else grants):
             base = design_base(g)
             if base and base not in owned:
@@ -714,11 +753,12 @@ class Magaza:
                 sid = self.p.add_ship(g)
                 msgs.append(legacy('0|LM|ST|LOT|%s|1' % g))
                 self.log('   yeni gemi: %s (shipId %d, hangarId %d)' % (g, sid, self.p.ship(sid)['hangarId']))
-            elif g in DRONES:
-                did = self.p.add_drone(g)
-                msgs += [legacy('0|LM|ST|LOT|%s|1' % g)] + self.drone_msgs()
+            elif g in DRONES:                              # paketteki dronlar (Stellar: 8 Iris) hepsi, yer kadar (package_fit)
+                for _ in range(n):
+                    did = self.p.add_drone(g)
+                msgs += [legacy('0|LM|ST|LOT|%s|%d' % (g, n))] + self.drone_msgs()
                 self.p.ach('formation', dron=len(self.p.d['dronlar']))
-                self.log('   yeni dron: %s (kimlik %d, toplam %d)' % (g, did, len(self.p.d['dronlar'])))
+                self.log('   yeni dron: %s x%d (kimlik %d, toplam %d)' % (g, n, did, len(self.p.d['dronlar'])))
             elif g in FORMS:
                 with self.p.lock:
                     self.p.d['formasyonlar'].append(g)
@@ -768,6 +808,9 @@ class Magaza:
                 EK.recharge(self.p, g, n)                  # atlama/gizlenme CPU'su: yeni hak
                 msgs.append(legacy('0|LM|ST|LOT|%s|%d' % (g, n)))
         self.log('   satın alındı: %s x%d = %d %s (kalan %d)' % (loot, amount, cost, cur, self.p.d['pilot'][cur]))
+        if skipped:
+            self.log('   paketten verilmedi (zaten var): %s' % ', '.join('%s x%d' % (g, n) for g, n, key in skipped))
+            msgs.append(self.skipped_msg(skipped))
         for cb in self.on_bought:                      # Ö7 dükkânları (dukkanlar.py)
             msgs += cb(loot, amount) or []
         for g, n in grants:                            # ipucu (bir kez): ikinci gemi -> gemi ışınlama, ilk ekipman -> hangarda tak
