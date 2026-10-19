@@ -82,6 +82,7 @@ DESIGNS = ESYA['dron_tasarimlari']
 DESIGN_TYPES = {'design': 'net.bigpoint.darkorbit.asset.drone.design.DroneDesignType',
                 'visual': 'net.bigpoint.darkorbit.asset.drone.design.DroneCustomizationType'}
 PET_LOOT = ESYA['pet']['loot']
+PACK_MAX = 255             # bayt sayaçlı liste (InventoryItemPack.items): en çok bu kadar eşya
 NEW_RESOURCES = ('resource_collectable_evocation-chip', 'resource_collectable_calling-chip',          # N.O.V.A. (nova.py)
                  'resource_collectable_luminaflux-alloy', 'resource_collectable_armory-token',       # Hyperforge (qfc.py), Armory
                  'resource_collectable_armory-token-mega', 'resource_collectable_optigrad-chip',       # Restabilize (parcacik.py)
@@ -1228,7 +1229,11 @@ class Magaza:
         t['ships'] = [mod('HangarShipBriefCommand', isActive=sid == self.p.d['aktif_gemi'], lootId=self.p.ship(sid)['lootId'],
                           shipId=int(sid), isFavorite=bool(self.p.ship(sid).get('favori'))) for sid in sids]
         t['allDesignPack'] = [mod('ShipDesignPack', designList=self.designs(sid)) for sid in sids]
-        t['items'] = [mod('InventoryItemPack', items=self.inventory_items())]
+        # InventoryItemPack.items sayısı bayt (en çok 255): envanter 255'lik paketlere bölünür. İstemci hepsini okur
+        # (InventoryItemData.RefreshItems: paketler üstünde foreach); 268 eşyalı envanterde liste kodlanamıyordu (canlı 2026-10-19)
+        items = self.inventory_items()
+        t['items'] = [mod('InventoryItemPack', items=items[i:i + PACK_MAX]) for i in range(0, len(items), PACK_MAX)] or \
+            [mod('InventoryItemPack', items=[])]
         t['drones'] = self.drone_views()
         t['petView'] = self.pet.view()
         return ('HangarShipsCommand', t)
