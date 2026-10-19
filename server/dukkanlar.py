@@ -14,7 +14,8 @@ süresince birer kez.
   Pre-Prometheus Day Sales (pre_prometheus): alınan farklı Pre-BF paketi sayısı (yalnız bilgi penceresi).
   Return of Hero (return_of_hero): dönen oyuncu (TRUE / INVITEE); herhangi bir kod sanal bir veterana bağlar; 13 tekrarsız ve günde 5
       görev (Season Pass havuzundan) Returnee Key verir; Exchange sekmesinde anahtarla takas (BattlePassKeyExchange*, exchangeType 2).
-  Stellar Pathfinder: paketler mağazada seviye 5-14 iken hesap başına bir kez (pencerenin _claim düğmesi istemci içi: karşılığı yok).
+  Stellar Pathfinder: paketler mağazada seviye 5'ten başlayarak hesap başına bir kez (pencerenin _claim düğmesi istemci içi: karşılığı
+      yok). Oyunda 5-14; tek oyunculuda Solaris'in tek yolu olduğu için üst sınır yok (EP çarpanıyla aralık hızla geçiliyor).
 Profilde 'dukkanlar': mileage {donem, indirim {paket: adım}, alinan []}, vip {donem, paket, takas {ödül: n}}, returnee {baslangic,
   hosgeldin, gun, son_gun, kapali, son_kampanya}, pre_bf {donem, alinan []}, rehero {donem, bagli, veteran, deger, tamam, alinan,
   gun_gorevleri, takas}, tek_sefer [paket].
@@ -97,8 +98,8 @@ class Dukkanlar:
         elif ev and not TK.is_active(ev):
             return False
         if loot in SP_PKG:
-            lv = self.p.d['pilot'].get('level', 1)
-            if not SP['seviye'][0] <= lv <= SP['seviye'][1]:
+            lv, (lo, hi) = self.p.d['pilot'].get('level', 1), SP['seviye']     # hi None: üst sınır yok
+            if lv < lo or (hi is not None and lv > hi):
                 return False
         if (entry and entry.get('bir_kez')) or loot in SP_PKG:
             return loot not in self.bought_set(ev)

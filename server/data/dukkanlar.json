@@ -4606,7 +4606,7 @@
  "stellar": {
   "seviye": [
    5,
-   14
+   null
   ],
   "paketler": [
    {
@@ -4818,6 +4818,6 @@
     ]
    }
   ],
-  "_uyarlama": "hesap başına bir kez, seviye 5-14 (istemcinin düğme kuralı); fiyat uyarlama; Forerunner/Warden EP 327.680.000 -> 32.768.000 (tek oyunculu)"
+  "_uyarlama": "hesap başına bir kez, seviye 5 ve üstü (istemcinin düğme kuralı 5-14; tek oyunculuda Solaris'in tek yolu, üst sınır yok); fiyat uyarlama; Forerunner/Warden EP 327.680.000 -> 32.768.000 (tek oyunculu)"
  }
 }
