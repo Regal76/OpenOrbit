@@ -1,5 +1,5 @@
 {
- "_aciklama": "Gemi modülleri (equipment_shipupgrade_*) -> server/data/gemi_modulleri.json (yol haritası Aşama 6).\n\n145 modülün türü (DAMAGE, HP, SHIELD, SPECIAL) istemcinin eşya verisinden (data/istemci_esyalari.json); etkileri ve takılabildiği\ngemiler istemcinin kendi açıklamasından: \"5% increased laser damage and 15% increased rocket damage if equipped on your ship. This\nship upgrade module can be used on the following ships: Cyborg, Hecate, Hecate Plus, Tempest.\" Etki adları sunucunun bonus\nanahtarlarına çevrilir (lazer, roket, npc, kalkan, can, hiz, kacinma, isabet, roket_isabet, kalkan_delme, ep, pvp).\nKararsız modüller (X1/X2/X3, XA01, XV03 … \"series unstable module\"): istemcinin açıklamasındaki en az artış (\"at least a 5%\nboost\") ve öncelikli gemiler (\"higher chance of affecting the …\"); değerleri Restabilize ile rastgele belirlenir (gemi_modul.py).\nGemi adları istemcinin gemi adlarıyla (items_ship_*_fullname) ve kısaltmalarla eşlenir.\nÜreten: tools/gemi_modulleri.py.",
+ "_aciklama": "Gemi modülleri (equipment_shipupgrade_*) -> server/data/gemi_modulleri.json (yol haritası Aşama 6).\n\n145 modülün türü (DAMAGE, HP, SHIELD, SPECIAL) istemcinin eşya verisinden (data/istemci_esyalari.json); etkileri ve takılabildiği\ngemiler istemcinin kendi açıklamasından: \"5% increased laser damage and 15% increased rocket damage if equipped on your ship. This\nship upgrade module can be used on the following ships: Cyborg, Hecate, Hecate Plus, Tempest.\" Etki adları sunucunun bonus\nanahtarlarına çevrilir (lazer, roket, npc, kalkan, can, hiz, kacinma, isabet (lazer ve roket), lazer_isabet, roket_isabet, kalkan_delme, ep, pvp).\nKararsız modüller (X1/X2/X3, XA01, XV03 … \"series unstable module\"): istemcinin açıklamasındaki en az artış (\"at least a 5%\nboost\") ve öncelikli gemiler (\"higher chance of affecting the …\"); değerleri Restabilize ile rastgele belirlenir (gemi_modul.py).\nGemi adları istemcinin gemi adlarıyla (items_ship_*_fullname) ve kısaltmalarla eşlenir.\nÜreten: tools/gemi_modulleri.py.",
  "moduller": {
   "equipment_shipupgrade_dmg-a01": {
    "tur": "DAMAGE",
@@ -65,7 +65,7 @@
   "equipment_shipupgrade_dmg-leo01": {
    "tur": "DAMAGE",
    "etkiler": {
-    "isabet": 0.2,
+    "lazer_isabet": 0.2,
     "roket": 0.3
    },
    "gemiler": [
@@ -1207,8 +1207,7 @@
   "equipment_shipupgrade_spc-c01": {
    "tur": "SPECIAL",
    "etkiler": {
-    "isabet": 0.05,
-    "roket_isabet": 0.05
+    "isabet": 0.05
    },
    "gemiler": [
     "ship_citadel",
@@ -1221,7 +1220,6 @@
    "tur": "SPECIAL",
    "etkiler": {
     "isabet": 0.1,
-    "roket_isabet": 0.1,
     "can": -0.05
    },
    "gemiler": [
@@ -1298,7 +1296,7 @@
    "tur": "SPECIAL",
    "etkiler": {
     "hiz": 0.07,
-    "isabet": 0.07
+    "lazer_isabet": 0.07
    },
    "gemiler": [
     "ship_sentinel",
@@ -1326,7 +1324,6 @@
    "tur": "SPECIAL",
    "etkiler": {
     "isabet": 0.05,
-    "roket_isabet": 0.05,
     "kalkan": -0.05
    },
    "gemiler": [

@@ -17,7 +17,7 @@ modüllerin enerjisi güneş modülünün verdiğini geçemez; yükseltmedeki mo
 verimle (robot bonusu) ve depo sınırıyla; rafineriler girdileri depodan harcar (Prometid / Duranium -> Promerium -> Seprom).
 Süreler oyun kapalıyken de işler (girişte ve saniyede bir kaldığı yerden hesaplanır).
 Uyarlamalar: süreli yükseltmede harcanan kaynaklar Skylab deposundan; Xeno modülü Xenomit sağlar (data/skylab.json _xeno);
-normal taşıma 1 saat, anında gönderme / bitirme kayıttaki transportPrice (1.250 U).
+anında gönderme / bitirme kayıttaki transportPrice (1.250 U). Normal taşıma cevher başına 7,2 sn, Premium 3,6 sn (wikiwiki).
 Profilde: skylab {moduller: {tür: {seviye, etkin, yukseltme: bitiş | yok}}, depo: {cevher kimliği: miktar}, robotlar: {tür: [[tip,
 bitiş]]}, yedek: {tür: [tip]}, tasima: {bitis, yuk} | yok, son}.
 """
@@ -318,7 +318,7 @@ class Skylab:
         elif key == 'TRANSPORT_MODULE':
             tr = self.st.get('tasima')
             if tr:
-                info = mod('SkylabCollectorInfoCommand', production=int(sum(tr['yuk'].values())), maxTime=AY.sure(TRANSPORT['normal_sn']),
+                info = mod('SkylabCollectorInfoCommand', production=int(sum(tr['yuk'].values())), maxTime=self.transport_time(tr['yuk']),
                            leftTime=max(0, int(tr['bitis'] - now)))
                 ores = [self.ore_info(o, n) for o, n in sorted(tr['yuk'].items(), key=lambda kv: ORE_ORDER.index(kv[0]))]
         return ('SkylabViewModuleBackCommand', dict(collectorInfo=info, upgrade=upgrade, productivity=prod, xenoInfo=xeno,
@@ -432,6 +432,11 @@ class Skylab:
         return [], [38 if on else 37]
 
     # ------------------------------------------------------------ taşıma
+    def transport_time(self, load):
+        """Normal taşımanın süresi: cevher başına birim_sn (Premium premium_birim_sn)."""
+        per = TRANSPORT['premium_birim_sn' if self.p.premium else 'birim_sn']
+        return AY.sure(int(math.ceil(sum(load.values()) * per)))
+
     def transport(self, f, now):
         mode, st = f.get('transportMode') or '', self.st
         price = AY.fiyat('hizmet_fiyat', TRANSPORT['hizli_uridyum'])      # panel
@@ -471,7 +476,7 @@ class Skylab:
             if mode == 'fast':
                 msgs = [x for x in self.deliver(load) if x[0] != '_receipt']
             else:
-                st['tasima'] = {'bitis': now + AY.sure(TRANSPORT['normal_sn']), 'yuk': load}
+                st['tasima'] = {'bitis': now + self.transport_time(load), 'yuk': load}
                 msgs = []
             self.p.dirty = True
         self.log('   Skylab: taşıma %s %s' % ('anında' if mode == 'fast' else 'başladı', load))

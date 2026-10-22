@@ -9158,7 +9158,7 @@
         "hp": 800,
         "kalkan": 400,
         "hasar": 20,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 400,
@@ -9199,7 +9199,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -9626,7 +9626,7 @@
         "hp": 800,
         "kalkan": 400,
         "hasar": 20,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 400,
@@ -9671,7 +9671,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -9803,7 +9803,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -10579,7 +10579,7 @@
         "hp": 800,
         "kalkan": 400,
         "hasar": 20,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 400,
@@ -10620,7 +10620,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -11047,7 +11047,7 @@
         "hp": 800,
         "kalkan": 400,
         "hasar": 20,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 400,
@@ -11092,7 +11092,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -11224,7 +11224,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -12000,7 +12000,7 @@
         "hp": 800,
         "kalkan": 400,
         "hasar": 20,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 400,
@@ -12041,7 +12041,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -12468,7 +12468,7 @@
         "hp": 800,
         "kalkan": 400,
         "hasar": 20,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 400,
@@ -12513,7 +12513,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -12645,7 +12645,7 @@
         "hp": 2000,
         "kalkan": 2000,
         "hasar": 80,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 800,
@@ -13421,7 +13421,7 @@
         "hp": 1600,
         "kalkan": 800,
         "hasar": 40,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 600,
@@ -13462,7 +13462,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -13889,7 +13889,7 @@
         "hp": 1600,
         "kalkan": 800,
         "hasar": 40,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 600,
@@ -13934,7 +13934,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -14066,7 +14066,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -14842,7 +14842,7 @@
         "hp": 1600,
         "kalkan": 800,
         "hasar": 40,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 600,
@@ -14883,7 +14883,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -15310,7 +15310,7 @@
         "hp": 1600,
         "kalkan": 800,
         "hasar": 40,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 600,
@@ -15355,7 +15355,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -15487,7 +15487,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -16263,7 +16263,7 @@
         "hp": 1600,
         "kalkan": 800,
         "hasar": 40,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 600,
@@ -16304,7 +16304,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -16731,7 +16731,7 @@
         "hp": 1600,
         "kalkan": 800,
         "hasar": 40,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 600,
@@ -16776,7 +16776,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -16908,7 +16908,7 @@
         "hp": 4000,
         "kalkan": 4000,
         "hasar": 160,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1200,
@@ -17684,7 +17684,7 @@
         "hp": 2400,
         "kalkan": 1200,
         "hasar": 60,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 800,
@@ -17725,7 +17725,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -18152,7 +18152,7 @@
         "hp": 2400,
         "kalkan": 1200,
         "hasar": 60,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 800,
@@ -18197,7 +18197,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -18329,7 +18329,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -19105,7 +19105,7 @@
         "hp": 2400,
         "kalkan": 1200,
         "hasar": 60,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 800,
@@ -19146,7 +19146,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -19573,7 +19573,7 @@
         "hp": 2400,
         "kalkan": 1200,
         "hasar": 60,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 800,
@@ -19618,7 +19618,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -19750,7 +19750,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -20526,7 +20526,7 @@
         "hp": 2400,
         "kalkan": 1200,
         "hasar": 60,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 800,
@@ -20567,7 +20567,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -20994,7 +20994,7 @@
         "hp": 2400,
         "kalkan": 1200,
         "hasar": 60,
-        "hiz": 200,
+        "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
          "ep": 800,
@@ -21039,7 +21039,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,
@@ -21171,7 +21171,7 @@
         "hp": 6000,
         "kalkan": 6000,
         "hasar": 240,
-        "hiz": 260,
+        "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
          "ep": 1600,

@@ -94,6 +94,7 @@ class Teknoloji:
         self.waiting = {}          # beklemesi süren -> hazır anı (READY bildirimi)
         self.next_tick = 0.0
         self.charges = []          # Burning Trail yükleri: {x, y, bitis}
+        self.trail_n = 0           # Burning Trail'in geçen saniyeleri (aralik_sn'de bir yük)
         self.nuke = None           # NPC Nuke: {hedef, sonraki}
         self.started = False
         now = time.time()
@@ -208,7 +209,7 @@ class Teknoloji:
         if item == 'tech_speed-burst':
             w.hero_effect('hizlanma', c['sure_sn'], c['hiz'], source=item)
         if item == 'tech_burning-trail':
-            self.charges = []
+            self.charges, self.trail_n = [], 0
         return self.visual(item, True)
 
     # ------------------------------------------------------------ döngü
@@ -251,8 +252,10 @@ class Teknoloji:
                     w.npc_effect(n, 'yavas', 1.5, c['yavas'], source=item)
                     w.hit_npc(n.id, c['hasar_sn'], 1)
         if item == 'tech_burning-trail':
-            x, y = w.hero_pos(now)
-            self.charges.append(dict(x=x, y=y, bitis=now + c['omur_sn']))
+            if self.trail_n % c['aralik_sn'] == 0:
+                x, y = w.hero_pos(now)
+                self.charges.append(dict(x=x, y=y, bitis=now + c['omur_sn']))
+            self.trail_n += 1
 
     def trail_tick(self, now):
         if not self.charges:

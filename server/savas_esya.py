@@ -160,6 +160,13 @@ def jump_allowed(loot, map_id):
     return not any(H.name(map_id).startswith(s) for s in cfg.get('yasak', []))
 
 
+def gate_map(map_id):
+    """Galaksi Kapısı haritası (üreticideki kapılar): Smart Bomb atılmaz (istemci ttip_inactive_smb_galaxy_gate "You can't drop
+    Smartbombs in a Galaxy Gate!"). Mayının kapı kuralı çelişkili (N.O.V.A. Explosive Firepower A/B/G'de mayını güçlendiriyor)."""
+    import kapi
+    return int(map_id) in kapi.BY_MAP
+
+
 def launchers(p):
     return [l for l in p.d.get('ekipman', {}).get('rocket', []) if l in LAUNCHERS]
 
@@ -223,10 +230,13 @@ def menu_status(p, menu_id, st):
         cfg = S['akilli_bomba' if smb else 'aninda_kalkan']
         owned = EK.has(p, 'akilli_bomba' if smb else 'aninda_kalkan')
         n = mine_uses(p, cfg) if owned else 0
-        blocked = smb and start_map             # kayıt: ttip_inactive_smb_start_map
+        in_gate = smb and gate_map(p.d['konum'].get('mapId', 0))
+        blocked = smb and (start_map or in_gate)   # kayıt: ttip_inactive_smb_start_map
         st.update(visible=owned, counterValue=n, available=owned and n > 0 and not blocked, activatable=owned and n > 0 and not blocked)
         if owned and not blocked:
             _explosive(st, menu_id, n)
+        elif owned and in_gate:
+            _tips(st, [_line('ttip_inactive_smb_galaxy_gate')])
         return st
     if menu_id == S['atlama_cpu']['menu']:
         loot = jump_loot(p)
@@ -476,7 +486,7 @@ class Esyalar:
         p.use_ammo(loot, 1)
         self.seq += 1
         h = 'M%d_%d' % (w.hid, self.seq)
-        self.mines[h] = dict(loot=loot, x=x, y=y, sahip=w.hid, kurulma=now + M['kurulma_sn'],
+        self.mines[h] = dict(loot=loot, x=x, y=y, sahip=w.hid, kurulma=now + cfg.get('kurulma_sn', M['kurulma_sn']),   # SLM-01 1 sn
                              bitis=now + cfg.get('omur_sn', M['omur_sn']))
         p.ach('shot', silah='MINE')
         self.send(w.ammo_msgs(loot) + [('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=cfg['tip'], maxSkill1=False,
@@ -489,7 +499,8 @@ class Esyalar:
         M = S['mayin']
         self.seq += 1
         h = 'U%d_%d' % (owner, self.seq)
-        self.mines[h] = dict(loot=loot, x=x, y=y, sahip=owner, kurulma=now + M['kurulma_sn'], bitis=now + M['omur_sn'])
+        self.mines[h] = dict(loot=loot, x=x, y=y, sahip=owner, kurulma=now + MINES[loot].get('kurulma_sn', M['kurulma_sn']),
+                             bitis=now + M['omur_sn'])
         self.send([('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=MINES[loot]['tip'], maxSkill1=False, maxSkill5b=False))])
 
     def mine_tick(self, now):
@@ -613,7 +624,7 @@ class Esyalar:
     # ------------------------------------------------------------ Smart Bomb, Insta-Shield, EMP
     def smart_bomb(self, now):
         w, c = self.w, S['akilli_bomba']
-        if (not EK.has(self.p, 'akilli_bomba') or self.start_map() or w.hero_dead or w.jumping
+        if (not EK.has(self.p, 'akilli_bomba') or self.start_map() or gate_map(w.map_id) or w.hero_dead or w.jumping
                 or not self.ready(c['bekleme_grubu'], now)):
             return
         paid = self.pay_mines(c)
@@ -815,7 +826,10 @@ class Esyalar:
         cfg = LAUNCHER_AMMO[ammo]
         hit = random.random() < cfg.get('isabet', 1.0)
         self.store(ammo, 0)
-        self.next_load = now + S['fircatici']['dolum_sn'] * AY.carpan('roket_bekleme')
+        if random.random() < p.ship_row().get('ek_roket_sans', 0):
+            cnt += 1                                    # Tartarus Plus: "1 in 5 chance of firing an extra rocket" (cephanesiz)
+        self.next_load = now + (S['fircatici']['dolum_sn'] * max(0.1, 1 + p.mods().get('fircatici_bekleme', 0))   # Star +%33 …
+                                * AY.carpan('roket_bekleme'))                                               # panel
         p.ach('shot', silah='ROCKET_LAUNCHER')
         self.send([('HellstormAttackCommand', dict(attackerId=w.hid, targetId=n.id, hit=hit, currentLoad=cnt,
                                                    rocketType=mod('AmmunitionTypeModule', typeValue=cfg['tur']))),
@@ -825,7 +839,8 @@ class Esyalar:
             return
         mods = p.mods()
         dmg = sum(cfg.get('hasar', 0) * random.uniform(0.85, 1.0) for _ in range(cnt))
-        dmg = int(dmg * (1 + mods.get('roket', 0) + mods.get('npc', 0)) * (1 + p.lab_bonus(1)) * launcher_upgrade(p))
+        dmg = int(dmg * (1 + mods.get('roket', 0) + mods.get('npc', 0) + mods.get('fircatici_hasar', 0))     # Rapid Fire Plus +%20
+                  * (1 + p.lab_bonus(1)) * launcher_upgrade(p))
         drain = cfg.get('kalkan_cek', 0) * cnt
         uid = n.id
 

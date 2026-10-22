@@ -147,6 +147,10 @@ DEFAULT_SHIP_INIT = dict(userId=1, userName='Pilot', typeId='ship_goliath', spee
 
 
 class Profil:
+    # tek oyunculu kural: herkes Premium (kayıttaki hesap değildi; H72). Avantajları istemcinin metinlerinden: roket beklemesi yarı ve
+    # onarım robotu x2 (dunya), P.E.T. tamiri ücretsiz (pet), çıkış 5 sn (game.LOGOUT_SN). Gemi tamiri panelin tamir ücretiyle.
+    premium = True
+
     def __init__(self, tohum=None, path=None):
         self.path = path = path or YOL.profile_path()
         self.lock = threading.Lock()
@@ -300,7 +304,7 @@ class Profil:
         f = dict(DEFAULT_SHIP_INIT)
         f.update(self.tohum.get('ShipInitializationCommand') or {})
         f.update(self.d['pilot']); f.update(self.d['gemi']); f.update(self.d['konum'])
-        f['premium'] = True      # tek oyunculu kural: herkes Premium (kayıttaki hesap değildi; H72). Profile yazılmaz
+        f['premium'] = self.premium      # Profile yazılmaz
         if getattr(self, 'captain_energy', None):
             f.update(self.captain_energy())                  # takılı N.O.V.A.'nın enerjisi (nova.py)
         f['refreshMap'] = True   # ilk girişte gemiyi kur ve haritaya geç
@@ -633,7 +637,8 @@ class Profil:
 
     def design_mods(self):
         """Dron tasarımlarının bonusları: dron başına olanlar toplanır; sahip olunan bütün dronlar aynı tasarımı taşıyorsa takım
-        bonusu da (wiki: Havoc +%10 lazer, Hercules +%20 can …; istemcinin Havoc metni: "If all of the drones are equipped")."""
+        bonusu da (istemci metinleri: Havoc +%10 dron lazeri (dron_lazer), Hercules +%20 can …; Havoc: "If all of the drones are
+        equipped")."""
         designs = esya()['dron_tasarimlari']
         looks = [self.drone_design(x, 'design') for x in self.d.get('dronlar', [])]
         out = {}
@@ -662,8 +667,8 @@ class Profil:
         return out
 
     def ship_mods(self):
-        """Etkin geminin kalıcı bonusu (tasarım türevleri: G-Enforcer +%5 hasar …; giyilen tasarımınki: Lava Cyborg +%10 hasar …,
-        Solaris Plus Ullrin modül başına) ve Leonov'un X-1..X-4 bonusu (esyalar.json)."""
+        """Etkin geminin kalıcı bonusu (pasifler: Cyborg +%10 hasar, Solaris Plus modül başına …; tasarım türevleri: G-Enforcer +%5
+        hasar …; giyilen tasarımınki: Tyrannos), Orcus'un modül çarpanı ve Leonov'un kendi X-1..X-4'ündeki bonusu (esyalar.json)."""
         row = self.ship_row()
         out = dict(row.get('bonus', {}))
         n = min(len(self.config().get('upgrades', [])), row.get('modul_azami', 0))
@@ -672,13 +677,19 @@ class Profil:
         hp = LAZER.hp_bonus(self.d.get('ekipman', {}).get('laser', []))      # LF-4 Hyperplasmoid: lazer başına can +%0,5
         if hp:
             out['can'] = out.get('can', 0) + hp
+        kj = esya()['kalkan_jeneratorleri']                                  # Fusion Shield: takılı başına kalkan yenilenmesi +%6,25
+        gens = self.d.get('ekipman', {}).get('generators', []) + [g for _, loots in self.d.get('dron_ekipman', []) for g in loots]
+        reg = sum(kj.get(g, {}).get('yenilenme', 0) for g in gens)
+        if reg:
+            out['kalkan_yenilenme'] = out.get('kalkan_yenilenme', 0) + reg
         launchers = esya()['savas_esyalari']['fircatici']['turler']         # Plus fırlatıcılar: Hydra can/kalkan, Neptune hasar …
         for l in self.d.get('ekipman', {}).get('rocket', []):
             for k, v in launchers.get(l, {}).get('bonus', {}).items():
                 out[k] = out.get(k, 0) + v
         import gemi_modul as GM                                              # gemi modülleri (normal ve kararsız)
+        mk = row.get('modul_carpani', 1)                                     # Orcus: modül nitelikleri x1,75 (eksiler de)
         for k, v in GM.mods(self, self.ship()['lootId'], self.config().get('upgrades', []), self.d['pilot'].get('level')).items():
-            out[k] = out.get(k, 0) + v
+            out[k] = out.get(k, 0) + v * mk
         import qfc as QF                                                      # Quantum Fluid Core'lar (bağlı oldukları gemide)
         for k, v in QF.mods(self, self.ship()['lootId'], self.config().get(QF.SLOT, [])).items():
             out[k] = out.get(k, 0) + v
@@ -686,7 +697,8 @@ class Profil:
         for k, v in PC.mods(self, self.ship()['lootId'], self.config()).items():
             out[k] = out.get(k, 0) + v
         hb = row.get('harita_bonusu')
-        if hb and H.map_class(self.d['konum'].get('mapId', 0)) in hb['haritalar']:
+        m = self.d['konum'].get('mapId', 0)
+        if hb and H.map_class(m) in hb['haritalar'] and H.company(m) == self.d['pilot'].get('factionId'):    # Leonov: kendi firmasında
             for k, v in hb['bonus'].items():
                 out[k] = out.get(k, 0) + v
         return out

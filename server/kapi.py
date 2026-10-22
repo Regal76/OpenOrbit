@@ -10,7 +10,7 @@ Kayıttaki akış (oturum başında ve üretici penceresinde):
 Kayıtta olmayanlar istemcinin koduna ve metinlerine göre (GalaxyGateComponentSystem, UIGalaxyGatesSystem, galaxygates_* metinleri):
   GalaxyGateBuilderSetupGateRequest -> GalaxyGateBuilderSetupGateCommand {livesLeft, lifePrice}; kapı X-1'de üssün yanında belirir
   GalaxyGateBuilderBuyLifeRequest   -> GalaxyGateBuilderBuyLifeCommand (can fiyatı her alımda iki katı, wiki)
-  kapı haritasında GalaxyGateBuilderGateWaveUpdateCommand (dalga), GateLifeLostCommand (ölüm), GateCompleteCommand (bitiş)
+  kapı haritasında GalaxyGateBuilderGateWaveUpdateCommand (alt dalga sayacı), GateLifeLostCommand (ölüm), GateCompleteCommand (bitiş)
   ekran mesajları MessageCommand ile (istemci: MessageCommandHandler; BIG = büyük bildirim + günlük, NORMAL = üstteki kısa mesaj).
   Kayıtta kapı oynanmadığı için gerçek sunucunun metinleri bilinmiyor: istemcinin kendi metinleri (atk_wave_started,
   log_galaxygate_wave_name, log_msg_gg_completed_*) ve data/kapilar.json "mesajlar" (geri sayım, dalga bitti …). İstemcinin
@@ -86,13 +86,16 @@ def npc_type(key, wave, i):
 
 
 def register_npcs(tipler):
-    """Kapı uzaylılarını NPC türleri olarak ekler: ad, görünüm (istemcinin gemi türü), hız ve npcId kapilar.json'dan."""
+    """Kapı uzaylılarını NPC türleri olarak ekler: ad, görünüm (istemcinin gemi türü), hız ve npcId kapilar.json'dan; kapıya özgü
+    davranış (Kronos'un roketleri, Kappa Annihilator'ın kapalı fırlatıcısı: uzayli.of) varsa."""
     for key, g in KAPI.items():
         for n, w in enumerate(g['dalgalar']):
             for i, a in enumerate(w['uzaylilar']):
                 tipler[npc_type(key, n, i)] = dict(
                     ad=a['gorunen_ad'], model=a['tur'], hp=a['hp'], kalkan=a['kalkan'], hasar=a['hasar'], hiz=a['hiz'],
                     saldirgan=True, odul=dict(a['odul']), kargo=dict(a['kargo']), npc_kimlik=a['npc_kimlik'], kapi=key)
+                if a.get('davranis'):
+                    tipler[npc_type(key, n, i)]['davranis'] = dict(a['davranis'])
 
 
 def spread(cx, cy, count, map_w, map_h):
@@ -113,6 +116,12 @@ def spread(cx, cy, count, map_w, map_h):
 def center(map_id):
     w, h = SIZES.get(int(map_id), (MAP_W, MAP_H))
     return w // 2, h // 2
+
+
+def sub_waves(g, n):
+    """İlk n ana dalganın alt dalga sayısı: istemcinin dalga sayacının birimi (GetGateTotalWaves: Alpha 40 … Hades 12; Hades'in
+    aşaması bundan, dörtte bir). Kalıcı uzaylı (Zeta Devourer) kendi alt dalgası (istemci Zeta 46)."""
+    return sum(len(w['gruplar']) + any(a.get('kalici') for a in w['uzaylilar']) for w in g['dalgalar'][:n])
 
 
 def wave_map(g, n):
@@ -224,10 +233,11 @@ class Kapilar:
         return FINISHED if self.built(key) and not self.gate(key)['hazir'] else IN_PROGRESS
 
     def energy_price(self):
-        """Enerji fiyatı: Premium -%5 (tek oyunculuda herkes premium; galaxy_gates.md), hafta sonu -%15."""
+        """Enerji fiyatı: Premium -%5 (tek oyunculuda herkes premium; galaxy_gates.md), hafta sonu -%15; indirimler toplanır (wiki:
+        en düşük 55 = 100 - 25 - 5 - 15)."""
         import takvim as TK
         sale = TK.is_active('kapi_hafta_sonu')    # cumartesi-pazar (takvim.py)
-        f = (1 - K.get('premium_indirim', 0)) * ((1 - K['hafta_sonu_indirim']) if sale else 1) * AY.carpan('kapi_fiyat')     # panel
+        f = (1 - K.get('premium_indirim', 0) - (K['hafta_sonu_indirim'] if sale else 0)) * AY.carpan('kapi_fiyat')     # panel
         return int(round(K['enerji_fiyati'] * f)), sale
 
     def life_price(self, key):
@@ -282,7 +292,7 @@ class Kapilar:
             pct = percentages()
             out['probabilityModules'] = [dict(m, percentage=pct.get(m.get('category'), m.get('percentage', 0)))
                                          for m in out['probabilityModules']]
-        out.update(currPart=len(G['parcalar']), currWave=G['dalga'], state=self.state(key),
+        out.update(currPart=len(G['parcalar']), currWave=sub_waves(g, G['dalga']), state=self.state(key),
                    livesLeft=G['can'] if G['hazir'] else -1, lifePrice=self.life_price(key), multiplier=self.d['carpan'], mode=key,
                    id=g['kimlik'], bonusGGRewardModules=self.bonus_modules(key))
         if 'kaynaklar' in g:
@@ -355,7 +365,7 @@ class Kapilar:
             if not was_built and self.built(key):
                 break                          # kapı bu çekilişlerde kuruldu: kalan enerji harcanmaz
             used += 1
-            results.append(self.draw(key, f.get('useMultiplier'), grants))
+            results += self.draw(key, f.get('useMultiplier'), grants)
         free = min(used, self.d['enerji'])
         cost = (used - free) * price
         with self.p.lock:
@@ -375,7 +385,9 @@ class Kapilar:
         return reply(ERR_NONE, items, msgs)
 
     def draw(self, key, use_mult, grants):
-        """Bir çekiliş -> sonuç kaydı. Kopya parça çarpan olur (en çok 5 = x6; 5'e ulaşınca bir sonraki ödülde kendiliğinden kullanılır)."""
+        """Bir çekiliş -> sonuç kayıtları. Kopya parça çarpan olur (en çok 5 = x6; 5'e ulaşınca bir sonraki ödülde kendiliğinden
+        kullanılır). Çarpanla parça çıkarsa çarpan kadar farklı eksik parça; eksik kalmadıysa artanı cephane (istemci SSS
+        galaxygates_multiplier_multilpier_on_parts_p: "you'll win new parts for the gate")."""
         d, G, g = self.d, self.gate(key), KAPI[key]
         wts = weights()
         r, cat = random.uniform(0, sum(w for c, w in wts)), CAT_AMMO
@@ -384,6 +396,23 @@ class Kapilar:
             if r < 0:
                 cat = c
                 break
+        if cat == CAT_PART and d['carpan'] and (use_mult or d['carpan'] >= K['azami_carpan']):
+            mult = d['carpan'] + 1
+            missing = [i for i in range(1, g['parca'] + 1) if i not in G['parcalar']]
+            new = random.sample(missing, min(mult, len(missing)))
+            with self.p.lock:
+                d['carpan'] = 0
+                G['parcalar'] += new
+                self.p.dirty = True
+            have = len(G['parcalar']) - len(new)
+            out = [dict(type=PART, part_id=pid, duplicate=False, current=have + i + 1, gate_id=g['kimlik'], mult=mult)
+                   for i, pid in enumerate(new)]
+            left = mult - len(new)
+            if left:                                       # gerekenden fazlası cephane
+                loot, iid, amount = random.choice(K['cephane'])
+                grants[loot] = grants.get(loot, 0) + amount * left
+                out.append(dict(type=BATTERY, item_id=iid, amount=amount * left, mult=left))
+            return out
         if cat == CAT_PART:
             pid = random.randint(1, g['parca'])
             missing = [i for i in range(1, g['parca'] + 1) if i not in G['parcalar']]
@@ -396,27 +425,27 @@ class Kapilar:
                 else:
                     G['parcalar'].append(pid)
                 self.p.dirty = True
-            return dict(type=PART, part_id=pid, duplicate=dup, current=len(G['parcalar']), gate_id=g['kimlik'])
+            return [dict(type=PART, part_id=pid, duplicate=dup, current=len(G['parcalar']), gate_id=g['kimlik'])]
         mult = 1
         if d['carpan'] and (use_mult or d['carpan'] >= K['azami_carpan']):
             mult, d['carpan'] = d['carpan'] + 1, 0
         if cat == CAT_AMMO:
             loot, iid, amount = random.choice(K['cephane'])
             grants[loot] = grants.get(loot, 0) + amount * mult
-            return dict(type=BATTERY, item_id=iid, amount=amount * mult, mult=mult)
+            return [dict(type=BATTERY, item_id=iid, amount=amount * mult, mult=mult)]
         if cat == CAT_RES:
             amount = random.randint(*K['xenomit']) * mult
             grants['xenomit'] = grants.get('xenomit', 0) + amount
-            return dict(type=ORE, item_id=XENOMIT_ITEM, amount=amount, mult=mult)
+            return [dict(type=ORE, item_id=XENOMIT_ITEM, amount=amount, mult=mult)]
         if cat == CAT_VOUCHER:
             grants['kupon'] = grants.get('kupon', 0) + mult
-            return dict(type=VOUCHER, item_id=1, amount=mult, mult=mult)
+            return [dict(type=VOUCHER, item_id=1, amount=mult, mult=mult)]
         if cat == CAT_SPECIAL:
             amount = random.randint(*K['nano_govde']) // 1000 * 1000 * mult
             grants['nano'] = grants.get('nano', 0) + amount
-            return dict(type=HITPOINTS, item_id=1, amount=amount, mult=mult)
+            return [dict(type=HITPOINTS, item_id=1, amount=amount, mult=mult)]
         grants['log_disk'] = grants.get('log_disk', 0) + mult
-        return dict(type=LOGFILE, item_id=1, amount=mult, mult=mult)
+        return [dict(type=LOGFILE, item_id=1, amount=mult, mult=mult)]
 
     def merge(self, results):
         """Sonuçları istemcinin günlük satırlarına çevirir: aynı ödüller toplanır (spins), parçalar tek tek."""
@@ -429,7 +458,8 @@ class Kapilar:
                 # pencere yeniden açılana dek kapalı kaldı)
                 done = r['current'] >= KAPI[key]['parca'] and not self.gate(key)['hazir']
                 out.append(mod('GalaxyGateBuilderPartItemModule', type=PART, date=now, livesLeft=-1, gate_id=r['gate_id'],
-                               state=FINISHED if done else IN_PROGRESS, multiplier_used=0, current=r['current'], part_id=r['part_id'],
+                               state=FINISHED if done else IN_PROGRESS, multiplier_used=r.get('mult', 1) - 1, current=r['current'],
+                               part_id=r['part_id'],
                                duplicate=r['duplicate'], lifePrice=-1))
                 continue
             k = (r['type'], r['item_id'], r['mult'])
@@ -577,16 +607,18 @@ class Kapilar:
         self.log('   Kronos parçası: %s +%d (%d/%d)' % (KAPI[key]['ad'], got, len(G['parcalar']), g['parca']))
         return got, len(G['parcalar'])
 
-    def finish(self, key, reward_msgs=None):
+    def finish(self, key, reward_msgs=None, dispatch=False):
         """Kapı tamamlandı (kapı haritasında son dalga ya da Dispatch'in kapı gönderimi): ödüller (wiki; şanslı ödüller olasılığıyla),
         Kronos parçası, kapı sıfırlanır (ödüldeki parça yeni kapının ilk parçası). reward_msgs: dünyanın ödül mesajları (yoksa para
-        güncellemesi) -> (mesajlar, {yeni, kronos, sans})."""
+        güncellemesi). dispatch: görevler saymaz, N.O.V.A. bonusu yok (darkorbitwiki dispatch-gate: "boosters don't apply and missions
+        don't count"; başarım sayılır) -> (mesajlar, {yeni, kronos, sans})."""
+        import takvim as TK
         g, R = KAPI[key], KAPI[key]['odul']
         rm = reward_msgs or (lambda tot, **kw: self.m.money_msgs() if self.m else [])
-        self.p.ach('gate', tur='%s_GATE' % key.upper())      # istemcinin GalaxyGateType'ı (STREUNER_GATE …)
+        self.p.ach('gate', tur='%s_GATE' % key.upper(), dispatch=dispatch)      # istemcinin GalaxyGateType'ı (STREUNER_GATE …)
         with self.p.lock:
             self.p.d['gemi']['galaxyGatesDone'] = self.p.d['gemi'].get('galaxyGatesDone', 0) + 1    # ShipInitializationCommand
-        ep = int(R['ep'] * (1 + self.p.mods().get('kapi_ep', 0)))          # N.O.V.A. Field Intelligence (nova.py)
+        ep = int(R['ep'] * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0))))      # N.O.V.A. Field Intelligence (nova.py)
         ep, onur, uri = AY.miktar('ep', ep), AY.miktar('onur', R['onur']), AY.miktar('uridyum', R['uridyum'])    # panelin çarpanları
         tot = self.p.gain(ep=ep, onur=onur, uridyum=uri, neden='galaxy_gate_done')
         msgs = rm(tot, ep=ep, onur=onur, uridyum=uri)
@@ -594,6 +626,8 @@ class Kapilar:
         grants = {k: q(v) for k, v in R['cephane'].items()}
         grants.update(xenomit=q(R['xenomit']), kupon=q(R['kupon']), log_disk=q(R['log_disk']), enerji=q(R['enerji']),
                       ganimet={k: q(v) for k, v in (R['ganimet'] or {}).items()})
+        if key in K.get('schism', {}) and 'AllGatesSchism' in TK.ALWAYS:       # Schism'li kapılar (giriş bayrağı; wiki aralığı)
+            grants['ganimet']['schism'] = q(random.randint(*K['schism'][key]))
         msgs += self.give(grants)
         got = []
         for s in [s for s in R['sans'] if random.random() < AY.chance('dusme', s['olasilik'])]:
@@ -606,7 +640,6 @@ class Kapilar:
                 msgs += rm(tot, uridyum=u)
             elif self.m:
                 msgs += self.m.prize(loot, s['adet'])
-        import takvim as TK
         for loot, n, chance in TK.gate_rewards(key):          # etkinliğin kapı ödülü (Empyrian / Prosperous Fragment, Lucent Key)
             if random.random() < AY.chance('dusme', chance) and self.m:
                 msgs += self.m.prize(loot, n)
@@ -628,7 +661,7 @@ class Kapilar:
 
     def dispatch_complete(self, key):
         """Dispatch'in kapı gönderimi bitti: tamamlama ödülleri ve ganimet iletisi (DispatchLootMessageCommand)."""
-        msgs, info = self.finish(key)
+        msgs, info = self.finish(key, dispatch=True)
         P = info['para']                                   # verilen (panelin çarpanlarıyla), iletide de o
         loots = [mod('LootModule', lootId=l, amount=n, modifier='') for l, n in
                  (('currency_experience', P['ep']), ('currency_honour', P['onur']), ('currency_uridium', P['uridyum'])) if n]
@@ -645,6 +678,7 @@ class Kapilar:
 class Kosu:
     """Kapı haritasında dalgalar (dünya döngüsünden, kilit altında). phase: intro/break (geri sayım), next (alt dalgalar arası),
     fight, move (çok haritalı kapıda sonraki haritanın portalı açık), done, void (kapı yok ya da başka haritada), dead."""
+    cleared = 0                      # bu ana dalgada temizlenen alt dalgalar (istemcinin sayacı alt dalga sayar)
 
     def __init__(self, kapilar, world, key):
         self.k, self.w, self.key = kapilar, world, key
@@ -699,6 +733,10 @@ class Kosu:
     def wave_msgs(self):
         return [self.wave_msg()]
 
+    def sub_msgs(self):
+        """Alt dalga temizlendi: pencerenin dalga sayacı (etkinlik kapıları göndermez)."""
+        return [self.wave_msg()]
+
     def wave_count(self):
         return len(self.g['dalgalar'])
 
@@ -710,8 +748,10 @@ class Kosu:
             self.w.send(self.say('geri_sayim', sn=left))
 
     def wave_msg(self):
+        """Dalga sayacı alt dalga biriminde (istemci "Wave: {0} / {1}", toplam GetGateTotalWaves; Hades'te aşama bundan)."""
         G = self.k.gate(self.key)
-        return ('GalaxyGateBuilderGateWaveUpdateCommand', dict(gateId=self.g['kimlik'], currWave=G['dalga']))
+        return ('GalaxyGateBuilderGateWaveUpdateCommand', dict(gateId=self.g['kimlik'],
+                                                               currWave=sub_waves(self.g, G['dalga']) + self.cleared))
 
     def tick(self, now):
         w, G = self.w, self.k.gate(self.key)
@@ -724,16 +764,17 @@ class Kosu:
                     self.left = alive
                     w.send(self.say('kalan', kalan=alive))
                 return
+            self.cleared = self.sub + 1
             if self.sub + 1 < len(self.wave()['gruplar']):
                 self.sub += 1
                 self.phase, self.t = 'next', now + pace('alt_dalga_bekleme_sn')
-                w.send(self.say('grup_bitti', grup=self.sub, sn=pace('alt_dalga_bekleme_sn')))
+                w.send(self.sub_msgs() + self.say('grup_bitti', grup=self.sub, sn=pace('alt_dalga_bekleme_sn')))
                 return
             boss = [w.npcs[i] for i in self.keep if i in w.npcs]
             if boss:
                 if not self.exposed:              # diğerleri bitti: kalıcı uzaylı artık hasar alır
                     self.exposed = True
-                    w.send(self.say('koruma_bitti', ad=self.boss))
+                    w.send(self.sub_msgs() + self.say('koruma_bitti', ad=self.boss))
                 return
             self.wave_done(now)
             return
@@ -742,7 +783,7 @@ class Kosu:
                 self.countdown(now)
             return
         if self.phase in ('intro', 'break'):
-            self.sub, self.counted, self.exposed = 0, None, False
+            self.sub, self.counted, self.exposed, self.cleared = 0, None, False, 0
             self.npcs.clear()
             self.keep.clear()
             w.remove_gate(self.k.exit_portal(self.key, self.map)['gateId'])
@@ -795,6 +836,7 @@ class Kosu:
         with self.k.p.lock:
             G['dalga'] += 1
             self.k.p.dirty = True
+        self.cleared = 0
         self.npcs.clear()
         self.keep.clear()
         if G['dalga'] >= len(self.g['dalgalar']):

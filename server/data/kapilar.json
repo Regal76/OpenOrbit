@@ -26,7 +26,7 @@
        "hp": 800,
        "kalkan": 400,
        "hasar": 20,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
         "ep": 400,
@@ -80,7 +80,7 @@
        "hp": 2000,
        "kalkan": 2000,
        "hasar": 80,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 1600,
@@ -602,7 +602,13 @@
      "abr": 2
     },
     "parca": 1,
-    "sans": []
+    "sans": [
+     {
+      "esya": "ship_pusat_design_pusat-sandstorm",
+      "adet": 1,
+      "olasilik": 0.1
+     }
+    ]
    }
   },
   "beta": {
@@ -630,11 +636,11 @@
        "hp": 1600,
        "kalkan": 800,
        "hasar": 40,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
         "ep": 800,
-        "onur": 8,
+        "onur": 4,
         "kredi": 800,
         "uridyum": 2
        },
@@ -642,7 +648,7 @@
         "0": 20,
         "2": 20
        },
-       "_odul_kaynagi": "wiki kapı"
+       "_odul_kaynagi": "düzeltme (tools/kapilar.py ODUL_DUZELTME)"
       }
      ],
      "gruplar": [
@@ -684,7 +690,7 @@
        "hp": 4000,
        "kalkan": 4000,
        "hasar": 160,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 3200,
@@ -1206,7 +1212,13 @@
      "abr": 2
     },
     "parca": 1,
-    "sans": []
+    "sans": [
+     {
+      "esya": "ship_pusat_design_pusat-sandstorm",
+      "adet": 1,
+      "olasilik": 0.1
+     }
+    ]
    }
   },
   "gamma": {
@@ -1234,7 +1246,7 @@
        "hp": 2400,
        "kalkan": 1200,
        "hasar": 60,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
         "ep": 1200,
@@ -1288,7 +1300,7 @@
        "hp": 6000,
        "kalkan": 6000,
        "hasar": 240,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 4800,
@@ -1810,7 +1822,13 @@
      "abr": 3
     },
     "parca": 1,
-    "sans": []
+    "sans": [
+     {
+      "esya": "ship_pusat_design_pusat-sandstorm",
+      "adet": 1,
+      "olasilik": 0.1
+     }
+    ]
    }
   },
   "delta": {
@@ -1838,7 +1856,7 @@
        "hp": 4000,
        "kalkan": 4000,
        "hasar": 160,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 1600,
@@ -1937,7 +1955,7 @@
        "hp": 1600,
        "kalkan": 800,
        "hasar": 40,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
         "ep": 800,
@@ -2108,7 +2126,7 @@
        "hp": 4000,
        "kalkan": 4000,
        "hasar": 160,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 1600,
@@ -4279,7 +4297,7 @@
        "hp": 1600,
        "kalkan": 800,
        "hasar": 40,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
         "ep": 400,
@@ -4403,7 +4421,7 @@
        "hp": 2000,
        "kalkan": 2000,
        "hasar": 80,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 800,
@@ -4882,19 +4900,22 @@
        "hp": 1600,
        "kalkan": 800,
        "hasar": 40,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
-        "ep": 400,
-        "onur": 2,
-        "kredi": 400,
+        "ep": 125,
+        "onur": 1,
+        "kredi": 1248,
         "uridyum": 1
        },
        "kargo": {
         "0": 10,
         "2": 10
        },
-       "_odul_kaynagi": "aliens.md streuner"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "94",
@@ -4907,10 +4928,10 @@
        "hiz": 300,
        "npc_kimlik": 42,
        "odul": {
-        "ep": 4000,
-        "onur": 4,
-        "kredi": 15000,
-        "uridyum": 8
+        "ep": 4170,
+        "onur": 27,
+        "kredi": 41597,
+        "uridyum": 19
        },
        "kargo": {
         "0": 50,
@@ -4920,7 +4941,10 @@
         "5": 4,
         "3": 1
        },
-       "_odul_kaynagi": "aliens.md vagrant_epsilon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "100",
@@ -4933,10 +4957,10 @@
        "hiz": 320,
        "npc_kimlik": 63,
        "odul": {
-        "ep": 8000,
-        "onur": 4,
-        "kredi": 25000,
-        "uridyum": 16
+        "ep": 5733,
+        "onur": 37,
+        "kredi": 57195,
+        "uridyum": 26
        },
        "kargo": {
         "0": 100,
@@ -4947,7 +4971,10 @@
         "6": 2,
         "7": 1
        },
-       "_odul_kaynagi": "aliens.md infernal"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -4986,10 +5013,10 @@
        "hiz": 300,
        "npc_kimlik": 43,
        "odul": {
-        "ep": 8000,
-        "onur": 8,
-        "kredi": 30000,
-        "uridyum": 16
+        "ep": 7297,
+        "onur": 47,
+        "kredi": 72794,
+        "uridyum": 34
        },
        "kargo": {
         "0": 75,
@@ -4999,7 +5026,10 @@
         "5": 8,
         "3": 2
        },
-       "_odul_kaynagi": "aliens.md marauder_epsilon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "99",
@@ -5012,10 +5042,10 @@
        "hiz": 280,
        "npc_kimlik": 64,
        "odul": {
-        "ep": 16500,
-        "onur": 8,
-        "kredi": 150000,
-        "uridyum": 32
+        "ep": 20848,
+        "onur": 135,
+        "kredi": 207983,
+        "uridyum": 96
        },
        "kargo": {
         "0": 200,
@@ -5026,7 +5056,10 @@
         "6": 4,
         "7": 2
        },
-       "_odul_kaynagi": "aliens.md scorcher"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "31",
@@ -5039,10 +5072,10 @@
        "hiz": 180,
        "npc_kimlik": 16,
        "odul": {
-        "ep": 12800,
-        "onur": 64,
-        "kredi": 25600,
-        "uridyum": 32
+        "ep": 6254,
+        "onur": 40,
+        "kredi": 62395,
+        "uridyum": 29
        },
        "kargo": {
         "0": 320,
@@ -5053,7 +5086,10 @@
         "6": 8,
         "3": 8
        },
-       "_odul_kaynagi": "aliens.md boss_mordon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5092,10 +5128,10 @@
        "hiz": 280,
        "npc_kimlik": 44,
        "odul": {
-        "ep": 9000,
-        "onur": 12,
-        "kredi": 50000,
-        "uridyum": 24
+        "ep": 11988,
+        "onur": 78,
+        "kredi": 119590,
+        "uridyum": 55
        },
        "kargo": {
         "0": 100,
@@ -5107,7 +5143,10 @@
         "7": 1,
         "3": 4
        },
-       "_odul_kaynagi": "aliens.md outcast_epsilon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "72",
@@ -5120,10 +5159,10 @@
        "hiz": 150,
        "npc_kimlik": 3,
        "odul": {
-        "ep": 6400,
-        "onur": 32,
-        "kredi": 51200,
-        "uridyum": 16
+        "ep": 10424,
+        "onur": 67,
+        "kredi": 103991,
+        "uridyum": 48
        },
        "kargo": {
         "0": 100,
@@ -5133,7 +5172,10 @@
         "5": 16,
         "6": 2
        },
-       "_odul_kaynagi": "aliens.md devolarium"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "103",
@@ -5146,10 +5188,10 @@
        "hiz": 250,
        "npc_kimlik": 56,
        "odul": {
-        "ep": 6400,
-        "onur": 32,
-        "kredi": 12800,
-        "uridyum": 16
+        "ep": 9382,
+        "onur": 61,
+        "kredi": 93592,
+        "uridyum": 43
        },
        "kargo": {
         "0": 100,
@@ -5159,7 +5201,10 @@
         "5": 16,
         "6": 2
        },
-       "_odul_kaynagi": "aliens.md icy"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5198,10 +5243,10 @@
        "hiz": 280,
        "npc_kimlik": 19,
        "odul": {
-        "ep": 12800,
-        "onur": 64,
-        "kredi": 102400,
-        "uridyum": 48
+        "ep": 16678,
+        "onur": 108,
+        "kredi": 166386,
+        "uridyum": 77
        },
        "kargo": {
         "0": 400,
@@ -5212,7 +5257,10 @@
         "6": 4,
         "3": 8
        },
-       "_odul_kaynagi": "aliens.md boss_sibelonit"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "91",
@@ -5225,10 +5273,10 @@
        "hiz": 300,
        "npc_kimlik": 45,
        "odul": {
-        "ep": 15000,
-        "onur": 16,
-        "kredi": 80000,
-        "uridyum": 32
+        "ep": 16678,
+        "onur": 108,
+        "kredi": 166386,
+        "uridyum": 77
        },
        "kargo": {
         "0": 150,
@@ -5240,7 +5288,10 @@
         "7": 2,
         "3": 8
        },
-       "_odul_kaynagi": "aliens.md corsair_epsilon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "99",
@@ -5253,10 +5304,10 @@
        "hiz": 280,
        "npc_kimlik": 64,
        "odul": {
-        "ep": 16500,
-        "onur": 8,
-        "kredi": 150000,
-        "uridyum": 32
+        "ep": 20848,
+        "onur": 135,
+        "kredi": 207983,
+        "uridyum": 96
        },
        "kargo": {
         "0": 200,
@@ -5267,7 +5318,10 @@
         "6": 4,
         "7": 2
        },
-       "_odul_kaynagi": "aliens.md scorcher"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5306,10 +5360,10 @@
        "hiz": 280,
        "npc_kimlik": 46,
        "odul": {
-        "ep": 20000,
-        "onur": 32,
-        "kredi": 125000,
-        "uridyum": 64
+        "ep": 23454,
+        "onur": 152,
+        "kredi": 233981,
+        "uridyum": 108
        },
        "kargo": {
         "0": 200,
@@ -5321,7 +5375,10 @@
         "7": 4,
         "3": 12
        },
-       "_odul_kaynagi": "aliens.md hooligan_epsilon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "78",
@@ -5334,10 +5391,10 @@
        "hiz": 300,
        "npc_kimlik": 9,
        "odul": {
-        "ep": 6400,
-        "onur": 32,
-        "kredi": 12800,
-        "uridyum": 16
+        "ep": 4691,
+        "onur": 30,
+        "kredi": 46796,
+        "uridyum": 22
        },
        "kargo": {
         "0": 100,
@@ -5347,7 +5404,10 @@
         "5": 16,
         "6": 1
        },
-       "_odul_kaynagi": "aliens.md kristallin"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "102",
@@ -5360,10 +5420,10 @@
        "hiz": 240,
        "npc_kimlik": 65,
        "odul": {
-        "ep": 55000,
-        "onur": 12,
-        "kredi": 400000,
-        "uridyum": 256
+        "ep": 36484,
+        "onur": 236,
+        "kredi": 363970,
+        "uridyum": 169
        },
        "kargo": {
         "0": 300,
@@ -5374,7 +5434,10 @@
         "6": 16,
         "7": 8
        },
-       "_odul_kaynagi": "aliens.md melter"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5413,10 +5476,10 @@
        "hiz": 320,
        "npc_kimlik": 58,
        "odul": {
-        "ep": 7500,
-        "onur": 40,
-        "kredi": 25000,
-        "uridyum": 20
+        "ep": 5212,
+        "onur": 34,
+        "kredi": 51996,
+        "uridyum": 24
        },
        "kargo": {
         "0": 100,
@@ -5426,7 +5489,10 @@
         "5": 18,
         "6": 2
        },
-       "_odul_kaynagi": "aliens.md interceptor"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "112",
@@ -5439,10 +5505,10 @@
        "hiz": 280,
        "npc_kimlik": 59,
        "odul": {
-        "ep": 15000,
-        "onur": 56,
-        "kredi": 90000,
-        "uridyum": 25
+        "ep": 14594,
+        "onur": 94,
+        "kredi": 145588,
+        "uridyum": 67
        },
        "kargo": {
         "0": 200,
@@ -5452,7 +5518,10 @@
         "5": 24,
         "6": 4
        },
-       "_odul_kaynagi": "aliens.md barracuda"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "114",
@@ -5465,10 +5534,10 @@
        "hiz": 240,
        "npc_kimlik": 61,
        "odul": {
-        "ep": 75000,
-        "onur": 128,
-        "kredi": 250000,
-        "uridyum": 65
+        "ep": 26060,
+        "onur": 169,
+        "kredi": 259979,
+        "uridyum": 120
        },
        "kargo": {
         "0": 300,
@@ -5479,7 +5548,13 @@
         "6": 12,
         "3": 3
        },
-       "_odul_kaynagi": "aliens.md annihilator"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": null
+       },
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5518,10 +5593,10 @@
        "hiz": 180,
        "npc_kimlik": 21,
        "odul": {
-        "ep": 102400,
-        "onur": 512,
-        "kredi": 819200,
-        "uridyum": 256
+        "ep": 104240,
+        "onur": 674,
+        "kredi": 1039915,
+        "uridyum": 482
        },
        "kargo": {
         "0": 1200,
@@ -5532,7 +5607,10 @@
         "6": 32,
         "3": 32
        },
-       "_odul_kaynagi": "aliens.md boss_lordakium"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "81",
@@ -5545,10 +5623,10 @@
        "hiz": 300,
        "npc_kimlik": 12,
        "odul": {
-        "ep": 6400,
-        "onur": 32,
-        "kredi": 12800,
-        "uridyum": 16
+        "ep": 4691,
+        "onur": 30,
+        "kredi": 46796,
+        "uridyum": 22
        },
        "kargo": {
         "0": 100,
@@ -5558,7 +5636,10 @@
         "5": 16,
         "6": 2
        },
-       "_odul_kaynagi": "aliens.md protegit"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "46",
@@ -5571,10 +5652,10 @@
        "hiz": 140,
        "npc_kimlik": 20,
        "odul": {
-        "ep": 51000,
-        "onur": 256,
-        "kredi": 409600,
-        "uridyum": 128
+        "ep": 83392,
+        "onur": 539,
+        "kredi": 831932,
+        "uridyum": 385
        },
        "kargo": {
         "0": 800,
@@ -5585,7 +5666,10 @@
         "6": 16,
         "3": 32
        },
-       "_odul_kaynagi": "aliens.md boss_sibelon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5624,10 +5708,10 @@
        "hiz": 200,
        "npc_kimlik": 40,
        "odul": {
-        "ep": 204800,
-        "onur": 1024,
-        "kredi": 6000000,
-        "uridyum": 512
+        "ep": 72968,
+        "onur": 472,
+        "kredi": 727940,
+        "uridyum": 337
        },
        "kargo": {
         "0": 1200,
@@ -5638,7 +5722,10 @@
         "6": 64,
         "3": 256
        },
-       "_odul_kaynagi": "aliens.md kucurbium_invasion_x1"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "38",
@@ -5651,10 +5738,10 @@
        "hiz": 250,
        "npc_kimlik": 31,
        "odul": {
-        "ep": 12800,
-        "onur": 64,
-        "kredi": 12800,
-        "uridyum": 16
+        "ep": 3753,
+        "onur": 24,
+        "kredi": 37437,
+        "uridyum": 17
        },
        "kargo": {
         "0": 320,
@@ -5665,7 +5752,10 @@
         "6": 2,
         "3": 4
        },
-       "_odul_kaynagi": "aliens.md uber_saimon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5704,10 +5794,10 @@
        "hiz": 260,
        "npc_kimlik": 48,
        "odul": {
-        "ep": 30000,
-        "onur": 100,
-        "kredi": 220000,
-        "uridyum": 150
+        "ep": 31272,
+        "onur": 202,
+        "kredi": 311974,
+        "uridyum": 145
        },
        "kargo": {
         "0": 400,
@@ -5719,7 +5809,10 @@
         "7": 16,
         "3": 24
        },
-       "_odul_kaynagi": "aliens.md convict_epsilon"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "29",
@@ -5732,10 +5825,10 @@
        "hiz": 280,
        "npc_kimlik": 22,
        "odul": {
-        "ep": 25600,
-        "onur": 128,
-        "kredi": 51200,
-        "uridyum": 64
+        "ep": 18763,
+        "onur": 121,
+        "kredi": 187185,
+        "uridyum": 87
        },
        "kargo": {
         "0": 400,
@@ -5746,7 +5839,10 @@
         "6": 4,
         "3": 6
        },
-       "_odul_kaynagi": "aliens.md boss_kristallin"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       },
       {
        "tur": "11",
@@ -5765,10 +5861,7 @@
         "uridyum": 256
        },
        "kargo": {},
-       "_odul_kaynagi": "düzeltme (tools/kapilar.py ODUL_DUZELTME)",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "düzeltme (tools/kapilar.py ODUL_DUZELTME)"
       }
      ],
      "gruplar": [
@@ -5807,10 +5900,10 @@
        "hiz": 180,
        "npc_kimlik": 41,
        "odul": {
-        "ep": 819200,
-        "onur": 4096,
-        "kredi": 13017200,
-        "uridyum": 2048
+        "ep": 72968,
+        "onur": 472,
+        "kredi": 727940,
+        "uridyum": 337
        },
        "kargo": {
         "0": 4800,
@@ -5821,7 +5914,10 @@
         "6": 256,
         "3": 1024
        },
-       "_odul_kaynagi": "aliens.md boss_kucurbium_invasion_x1"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -5848,10 +5944,10 @@
        "hiz": 250,
        "npc_kimlik": 49,
        "odul": {
-        "ep": 1000000,
-        "onur": 5000,
-        "kredi": 1000000,
-        "uridyum": 5000
+        "ep": 72968,
+        "onur": 472,
+        "kredi": 727940,
+        "uridyum": 337
        },
        "kargo": {
         "0": 1,
@@ -5862,7 +5958,10 @@
         "6": 1,
         "3": 1
        },
-       "_odul_kaynagi": "aliens.md century_falcon_kappa"
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_tahmin": [
+        "ödül"
+       ]
       }
      ],
      "gruplar": [
@@ -6524,6 +6623,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6546,6 +6651,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1500,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6594,6 +6705,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1500,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6616,6 +6733,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1500,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6670,6 +6793,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1500,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6692,6 +6821,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1500,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6701,7 +6836,13 @@
       [
        [
         0,
-        20
+        10
+       ]
+      ],
+      [
+       [
+        0,
+        10
        ]
       ],
       [
@@ -6740,6 +6881,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6794,6 +6941,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6816,6 +6969,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6870,6 +7029,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6924,6 +7089,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6946,6 +7117,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6968,6 +7145,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -6990,6 +7173,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7012,6 +7201,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7072,6 +7267,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7094,6 +7295,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7154,6 +7361,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7176,6 +7389,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7236,6 +7455,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7258,6 +7483,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7306,6 +7537,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7328,6 +7565,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7350,6 +7593,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7372,6 +7621,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7426,6 +7681,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7448,6 +7709,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7470,6 +7737,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -7518,6 +7791,12 @@
        },
        "kargo": {},
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 1000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "ödül"
        ]
@@ -8124,10 +8403,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -8138,7 +8417,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8235,10 +8520,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -8249,7 +8534,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8266,10 +8557,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8280,7 +8571,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8322,10 +8613,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8336,7 +8627,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8397,10 +8688,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8411,7 +8702,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8428,13 +8719,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -8450,10 +8741,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8464,7 +8755,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8481,10 +8772,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -8495,7 +8786,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8539,10 +8836,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8553,7 +8850,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8570,13 +8867,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -8592,10 +8889,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8606,7 +8903,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8623,13 +8920,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -8645,10 +8942,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -8659,7 +8956,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8744,10 +9047,10 @@
        "hiz": 0,
        "npc_kimlik": 148,
        "odul": {
-        "ep": 34286,
-        "onur": 171,
-        "kredi": 68571,
-        "uridyum": 86
+        "ep": 19708,
+        "onur": 67,
+        "kredi": 168218,
+        "uridyum": 209
        },
        "kargo": {
         "0": 914,
@@ -8758,7 +9061,7 @@
         "6": 6,
         "3": 23
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8775,10 +9078,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8789,7 +9092,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8806,13 +9109,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -8828,10 +9131,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -8842,7 +9145,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8886,10 +9195,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8900,7 +9209,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8917,13 +9226,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -8939,10 +9248,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -8953,7 +9262,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -8970,10 +9285,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -8984,7 +9299,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9001,13 +9316,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -9023,10 +9338,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -9037,7 +9352,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9054,13 +9369,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -9076,10 +9391,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -9090,7 +9405,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9107,10 +9428,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -9121,7 +9442,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9138,13 +9459,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -9276,10 +9597,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -9290,7 +9611,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9307,10 +9634,10 @@
        "hiz": 220,
        "npc_kimlik": 147,
        "odul": {
-        "ep": 300000,
-        "onur": 1500,
-        "kredi": 600000,
-        "uridyum": 750
+        "ep": 172444,
+        "onur": 584,
+        "kredi": 1471909,
+        "uridyum": 1829
        },
        "kargo": {
         "0": 8000,
@@ -9321,7 +9648,7 @@
         "6": 50,
         "3": 200
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9338,10 +9665,10 @@
        "hiz": 0,
        "npc_kimlik": 148,
        "odul": {
-        "ep": 34286,
-        "onur": 171,
-        "kredi": 68571,
-        "uridyum": 86
+        "ep": 19708,
+        "onur": 67,
+        "kredi": 168218,
+        "uridyum": 209
        },
        "kargo": {
         "0": 914,
@@ -9352,7 +9679,7 @@
         "6": 6,
         "3": 23
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9369,10 +9696,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -9383,7 +9710,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9400,13 +9727,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -9422,10 +9749,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -9436,7 +9763,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9480,10 +9813,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -9494,7 +9827,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9511,13 +9844,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -9533,10 +9866,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -9547,7 +9880,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9564,10 +9903,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -9578,7 +9917,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9595,13 +9934,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -9617,10 +9956,10 @@
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 17143,
-        "onur": 86,
-        "kredi": 34286,
-        "uridyum": 43
+        "ep": 9854,
+        "onur": 33,
+        "kredi": 84109,
+        "uridyum": 105
        },
        "kargo": {
         "0": 457,
@@ -9631,7 +9970,13 @@
         "6": 3,
         "3": 11
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "davranis": {
+        "roket": {
+         "hasar": 3000,
+         "bekleme_sn": 6
+        }
+       },
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9648,10 +9993,10 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 12000,
-        "onur": 60,
-        "kredi": 24000,
-        "uridyum": 30
+        "ep": 6898,
+        "onur": 23,
+        "kredi": 58876,
+        "uridyum": 73
        },
        "kargo": {
         "0": 320,
@@ -9662,7 +10007,7 @@
         "6": 2,
         "3": 8
        },
-       "_odul_kaynagi": "StreuneR oranı",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "can/kalkan/hasar",
         "ödül"
@@ -9679,13 +10024,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 51429,
-        "onur": 257,
-        "kredi": 102857,
-        "uridyum": 129
+        "ep": 29562,
+        "onur": 100,
+        "kredi": 252327,
+        "uridyum": 314
        },
        "kargo": {},
-       "_odul_kaynagi": "Streuner Soldier oranı (can+kalkan); dağıtım 1 XP veriyordu",
+       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
        ]
@@ -9920,6 +10265,53 @@
  "grup_aralik": 140,
  "portal_uzaklik": 2200,
  "bonus_kutusu_enerji": 1,
+ "schism": {
+  "alpha": [
+   5,
+   10
+  ],
+  "beta": [
+   5,
+   10
+  ],
+  "gamma": [
+   8,
+   16
+  ],
+  "delta": [
+   10,
+   15
+  ],
+  "epsilon": [
+   10,
+   15
+  ],
+  "zeta": [
+   10,
+   15
+  ],
+  "kappa": [
+   10,
+   15
+  ],
+  "lambda": [
+   10,
+   15
+  ],
+  "kronos": [
+   25,
+   30
+  ],
+  "hades": [
+   25,
+   30
+  ],
+  "streuner": [
+   25,
+   30
+  ]
+ },
+ "_schism": "Giriş bayrağı AllGatesSchism (gerçek trafikte süresiz açık; istemci haberi \"guaranteed rewards for all GGs (Schism)\"): her tamamlamada aralıktan Schism (wiki Booty günü miktarları); Delta, Kronos ve Kuiper'in sabit Schism'inin yerine (üstüne mi yerine mi doğrulanmadı).",
  "geri_sayim": [
   30,
   20,

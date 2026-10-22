@@ -754,7 +754,7 @@
     25
    ],
    "birim": "percent",
-   "etki": "isabet",
+   "etki": "lazer_isabet",
    "maliyet": [
     {
      "kredi": 1000000,

@@ -6,7 +6,7 @@
    "hp": 800,
    "kalkan": 400,
    "hasar": 20,
-   "hiz": 200,
+   "hiz": 172,
    "saldirgan": false,
    "odul": {
     "ep": 400,
@@ -18,7 +18,7 @@
     "0": 10,
     "1": 10
    },
-   "_kaynak": "wiki; ödül ve kargo kayıtla doğrulandı (400/2/400/1, Prometium 10 + Endurium 10); hız ve pasiflik uyarlama",
+   "_kaynak": "wiki; ödül ve kargo kayıtla doğrulandı (400/2/400/1, Prometium 10 + Endurium 10); hız kayıttan (172: 364 MoveCommand, ör. 508 birim / 2.955 ms); pasiflik kayıtla doğrulandı (8 Streuner'in 6'sı yalnız vurulunca ateş etti)",
    "npc_kimlik": 1
   },
   "152": {
@@ -46,7 +46,7 @@
    "hp": 1500,
    "kalkan": 1000,
    "hasar": 70,
-   "hiz": 220,
+   "hiz": 212,
    "saldirgan": false,
    "odul": {
     "ep": 700,
@@ -58,7 +58,7 @@
     "0": 15,
     "2": 15
    },
-   "_kaynak": "wiki; hız uyarlama",
+   "_kaynak": "wiki; hız kayıttan (478 birim / 2.250 ms = 212)",
    "npc_kimlik": 153
   },
   "71": {
@@ -66,7 +66,7 @@
    "hp": 2000,
    "kalkan": 2000,
    "hasar": 80,
-   "hiz": 260,
+   "hiz": 242,
    "saldirgan": true,
    "odul": {
     "ep": 800,
@@ -79,7 +79,7 @@
     "2": 20,
     "1": 20
    },
-   "_kaynak": "wiki; hız ve saldırganlık uyarlama",
+   "_kaynak": "wiki; hız kayıttan (395 birim / 1.633 ms = 242; fandom 320 diyor, kayıt çürütüyor); saldırganlık uyarlama",
    "npc_kimlik": 2,
    "ek_odul": {
     "resource_collectable_mucosum": 2
@@ -105,7 +105,7 @@
     "4": 10,
     "3": 1
    },
-   "_kaynak": "wiki; hız ve saldırganlık uyarlama",
+   "_kaynak": "wiki; hız kayıtla doğrulandı (489 birim / 2.020 ms = 242); saldırganlık uyarlama",
    "npc_kimlik": 15,
    "ek_odul": {
     "resource_collectable_mucosum": 6
@@ -741,7 +741,7 @@
     "6": 2,
     "3": 2
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakia); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakia); hız fandom (250); saldırganlık uyarlama",
    "npc_kimlik": 29,
    "ek_odul": {
     "resource_collectable_mucosum": 10
@@ -1019,7 +1019,7 @@
     "5": 18,
     "6": 2
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: interceptor); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: interceptor); hız darkorbitwiki Vortex of Greed (base_stats_normal_version); saldırganlık uyarlama",
    "npc_kimlik": 58,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -1047,7 +1047,7 @@
     "5": 24,
     "6": 4
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: barracuda); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: barracuda); hız darkorbitwiki Vortex of Greed (base_stats_normal_version); saldırganlık uyarlama",
    "npc_kimlik": 59,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -1075,7 +1075,7 @@
     "5": 32,
     "6": 8
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: saboteur); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: saboteur); hız darkorbitwiki Vortex of Greed (base_stats_normal_version); saldırganlık uyarlama",
    "npc_kimlik": 60,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -1154,7 +1154,7 @@
     "uridyum": 265
    },
    "kargo": {},
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: deadly_battleray); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: deadly_battleray); hız darkorbitwiki Vortex of Greed (base_stats_normal_version); saldırganlık uyarlama",
    "npc_kimlik": 121,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -6155,7 +6155,7 @@
   "roket_ucus_sn": 0.8,
   "roket_menzil": 900,
   "roket_isabet": 0.8,
-  "_roket_isabet": "roketin isabet şansı (uyarlama: wiki taban değer vermiyor, lazerinkiyle aynı); Heat-Seeking Missiles yeteneği (roket_isabet) ve DMG-H01 boosterı (isabet) artırır, PLD-8 gibi etkiler düşürür; BDR-1211 %100 (esyalar.json isabet)",
+  "_roket_isabet": "roketin kendi isabeti yoksa taban (esyalar.json roketler.<id>.isabet: R-310 %70, PLT-2026 %80, PLT-2021 %90, PLT-3030 %65, BDR-1211 %100; özel cephane bu taban, uyarlama); Heat-Seeking Missiles yeteneği (roket_isabet) ve DMG-H01 boosterı (isabet) artırır, PLD-8 gibi etkiler düşürür",
   "npc_kalkan_emme": 0.7,
   "npc_isabet": 0.6,
   "npc_menzil": 600,
@@ -6169,9 +6169,9 @@
   "toplama_mesafe": 250,
   "npc_fark_mesafe": 1000,
   "_npc_fark_mesafe": "uyarlama: saldırgan NPC oyuncuyu bu mesafede fark edip kovalar (önceden 500; güvenli bölgede fark etmez)",
-  "gorus_mesafesi": 2000,
-  "gorus_birakma": 2200,
-  "_gorus_mesafesi": "Kayıt: gerçek sunucu NPC'leri kahramana 1.500-2.000 birim kala ShipCreateCommand ile gösteriyor, uzaklaşınca ShipRemoveCommand ile kaldırıyor (88 create, 84 ölümsüz remove). Bırakma uzaklığı uyarlama (sınırda titremesin).",
+  "gorus_mesafesi": 1800,
+  "gorus_birakma": 1800,
+  "_gorus_mesafesi": "Kayıt: gerçek sunucu NPC'leri kahramana ~1.800 birimde ShipCreateCommand ile gösteriyor (23 olay, 1.223-1.907, ortanca ~1.730), uzaklaşınca ShipRemoveCommand ile kaldırıyor (15 olay, 1.519-1.783); belirgin gecikme payı yok, bırakma da 1.800 (kahraman konumu MoveRequest'ten ±150).",
   "radyasyon_yuzde": [
    0.01,
    0.05

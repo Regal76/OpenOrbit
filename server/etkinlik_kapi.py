@@ -369,6 +369,9 @@ class Kosu(KAPI.Kosu):
     def wave_msgs(self):
         return self.k.plutus_cmds(self.key)
 
+    def sub_msgs(self):
+        return []
+
     def spawn(self):
         """kapi.Kosu.spawn'ın etkinlik kapısı türleriyle (eg_*) olanı."""
         w, G = self.w, self.k.gate(self.key)

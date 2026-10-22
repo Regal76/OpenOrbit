@@ -4,7 +4,8 @@
 sırayla), boostedDetailsUpdate: [BoosterPlayerDetailModule {lootId, secondsLeft}], boostedDetailsRemove: [BoosterDetailModule
 {lootId}]}. Kayıttaki oyuncunun boosterı yoktu (hepsi 0); değer yüzde sayısı (istemcinin metinleri "+%BOOSTERVALUE%%"), canlıda
 doğrulanmadı. Uzaylıdan düşen booster: BoosterFoundOnMapCommand {lootId, hours}.
-Kurallar (wiki, belgeler/wiki/extras_cpu_tech.md): mağaza boosterı alındığı andan 10 saat sürer, çevrimdışı da işler; uzaylıdan düşenler
+Kurallar (wiki, belgeler/wiki/extras_cpu_tech.md): mağaza boosterı alındığı andan istemcinin saat tablosu kadar sürer (B01/B02 10, DLB
+1, KAPPA 5, EP-50 24 …; esyalar.json boosterlar.saat), çevrimdışı da işler; uzaylıdan düşenler
 1-10 saat, çevrimdışı durur. Aynı türdekiler toplanır, tür başına üst sınır (hasar %35, can %30, kalkan %80 …). Aynı boosterdan
 birkaç tane alınca süreler eklenir.
 """
@@ -86,7 +87,8 @@ def add(p, loot, n=1, seconds=None, hours=None):
     with p.lock:
         e = state(p).setdefault(loot, {'bitis': 0, 'kalan': 0})
         if seconds is None:
-            sure = hours * 3600 if hours else B['sure_sn']
+            h = hours or B['saat'].get(loot)
+            sure = h * 3600 if h else B['sure_sn']
             e['bitis'] = max(e.get('bitis', 0), now) + n * sure * AY.carpan('booster_sure')     # panel: booster süresi
         else:
             e['kalan'] = e.get('kalan', 0) + seconds * AY.carpan('booster_sure')

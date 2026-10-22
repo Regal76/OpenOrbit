@@ -889,7 +889,7 @@
  },
  "surucu_ortak": {
   "menzil": 600,
-  "alan": 150,
+  "alan": 600,
   "sure_sn": 8,
   "bekleme_sn": 10,
   "isabet": 0.85,
@@ -949,7 +949,7 @@
     156
    ]
   },
-  "_uyarlama": "alan 8 sn boyunca saniyede bir vurur (her vuruşta sürücülerin toplam hasarı); sürücü hasarına seviye başına %0,5"
+  "_uyarlama": "alan istemci items_package_event-deal-voyagers-igni-l_description \"AOE damage within a 600-radius zone for 8s\", Apex/Prime \"900-radius zone when 6 units are equipped\" (set: [adet, çarpan, alan]); ateş menzili (menzil) uyarlama; alan 8 sn boyunca saniyede bir vurur (her vuruşta sürücülerin toplam hasarı); sürücü hasarına seviye başına %0,5"
  },
  "mercekler": {
   "equipment_lens_gl-chron": {

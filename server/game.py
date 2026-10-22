@@ -202,7 +202,8 @@ KONTROL = '--kontrol' in sys.argv        # canlı test kontrol kanalı (kontrol.
 CURRENT = None               # son bağlanan istemcinin oturumu (kontrol kanalı bunu yönetir)
 PROFIL_YOLU = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--profil=')), None)
 DURDUR = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--durdur=')), None)    # panel: belirince kaydet ve çık
-LOGOUT_SN = 19.2             # kayıt: çıkış düğmesinden 19,2 sn sonra 0|l, bağlantı kapanır
+# kayıt (Premium'suz hesap): çıkış düğmesinden 19,2 sn sonra 0|l, bağlantı kapanır; Premium'da istemci "Log out ... in just five seconds"
+LOGOUT_SN = 5.0 if Profil.premium else 19.2
 
 SABLON = Sablonlar()
 PROFIL = Profil(SABLON.giris.get('tohum'), **({'path': PROFIL_YOLU} if PROFIL_YOLU else {}))
@@ -396,7 +397,7 @@ class Session:
     def ach_event(self, kind, **kw):
         """Oyun olayları: rütbe sayaçları (rutbe.py), Pass görevleri ve başarımlar (basarim.py)."""
         RT.event(PROFIL, kind, **kw)
-        if kind != 'map':                         # harita ziyareti görev olayından gelir (çift sayılmasın)
+        if kind != 'map' and not kw.get('dispatch'):     # harita ziyareti görev olayından gelir; Dispatch'in kapısı görev saymaz
             self.pass_event(kind, **kw)
             msgs = self.ek.event(kind, kw)        # Ö3'ün etkinlik görevleri (Galaxy Trek)
             if msgs:

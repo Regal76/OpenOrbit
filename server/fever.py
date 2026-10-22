@@ -21,7 +21,7 @@ D = (json.load(open(_PATH, encoding='utf8')) if os.path.exists(_PATH) else {}).g
 EVENT = 'fever'
 # istemcinin etki adı -> profil.mods() anahtarı (uzaylıya hasar: 'npc'; bekleme azalması 'bekleme')
 MODS = {'SHIELD': 'kalkan', 'SPEED': 'hiz', 'EVASION': 'kacinma', 'HITPOINTS': 'can', 'DAMAGE_NPC': 'npc', 'DAMAGE': 'npc',
-        'ABILITY_COOLDOWN_TIME': 'bekleme', 'EXPERIENCE_POINTS': 'ep', 'HONOUR_POINTS': 'onur', 'LASER_HIT_CHANCE': 'isabet',
+        'ABILITY_COOLDOWN_TIME': 'bekleme', 'EXPERIENCE_POINTS': 'ep', 'HONOUR_POINTS': 'onur', 'LASER_HIT_CHANCE': 'lazer_isabet',
         'ROCKET_DAMAGE': 'roket', 'LASER_DAMAGE_PLAYER': 'lazer'}
 
 

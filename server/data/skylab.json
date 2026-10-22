@@ -1252,7 +1252,8 @@
  "_robotlar": "wiki: 250 kredi (+%1) ya da 50 uridyum (+%4), toplayıcı başına en çok 12, 48 saat yaşar",
  "tasima": {
   "hizli_uridyum": 1250,
-  "normal_sn": 3600
+  "birim_sn": 7.2,
+  "premium_birim_sn": 3.6
  },
- "_tasima": "anında gönderme (transportMode fast) ve yoldaki taşımayı bitirme (instantFinish) fiyatı kayıttaki SkylabUnifiedReceiptCommand.transportPrice; normal taşımanın süresi uyarlama (1 saat)"
+ "_tasima": "anında gönderme (transportMode fast) ve yoldaki taşımayı bitirme (instantFinish) fiyatı kayıttaki SkylabUnifiedReceiptCommand.transportPrice; normal taşıma cevher başına 7,2 sn (Premium 3,6 sn): wikiwiki 輸送モジュール \"資源１個あたり7.2秒（500個で１時間）\""
 }

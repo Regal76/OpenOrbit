@@ -24,11 +24,12 @@ OVERDRIVE_SN = 5.0
 
 
 def name_match(table, target):
-    """{ad: çarpan} tablosunda hedefin adına uyan ilk çarpan (kelime sınırıyla: Sibelon, Sibelonit'e uymaz) ya da None."""
+    """{ad: çarpan} tablosunda hedefin adına uyan ilk çarpan (kelime sınırıyla: Sibelon, Sibelonit'e uymaz; büyük/küçük harf
+    ayrımsız: Demaner, demaNeR'e uyar) ya da None."""
     if target is None:
         return None
     for ad, c in table.items():
-        if re.search(r'(?<![A-Za-z])%s(?![A-Za-z])' % re.escape(ad), target.d['ad']):
+        if re.search(r'(?<![A-Za-z])%s(?![A-Za-z])' % re.escape(ad), target.d['ad'], re.I):
             return c
     return None
 

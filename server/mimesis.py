@@ -379,7 +379,7 @@ class MmKosu:
         if math.hypot(ax - nx, ay - ny) > w.npc_range(n) + 200:
             return False
         n.next_shot = now + n.d.get('atis_aralik_sn', dunya.SAVAS['npc_saldiri_aralik_sn'])
-        dmg = int(n.d['hasar'] * random.uniform(0.7, 1.0) * AY.carpan('npc_hasar'))
+        dmg = int(n.d['hasar'] * random.uniform(0.8, 1.0) * AY.carpan('npc_hasar'))
         a.hp = max(0, a.hp - dmg)
         w.send([('AttackLaserRunCommand', dict(attackerId=n.id, targetId=a.id, laserColor=0, isDiminishedBySkillShield=False,
                                                skilledLaser=False, visualType=0)),

@@ -243,7 +243,7 @@ class Echoes:
         import dunya
         n.next_shot = now + n.d.get('atis_aralik_sn', dunya.SAVAS['npc_saldiri_aralik_sn'])
         import ayar as AY
-        dmg = int(n.d['hasar'] * random.uniform(0.7, 1.0) * AY.carpan('npc_hasar'))      # panelin hasar çarpanı
+        dmg = int(n.d['hasar'] * random.uniform(0.8, 1.0) * AY.carpan('npc_hasar'))      # panelin hasar çarpanı
         to_shield = min(int(a.shield), int(dmg * 0.7))
         a.shield -= to_shield
         a.hp = max(0, a.hp - (dmg - to_shield))

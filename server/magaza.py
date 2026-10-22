@@ -591,15 +591,18 @@ class Magaza:
                 # adet ile maxAmount'un küçüğü (3 ise hepsi). Kayıttaki maxAmount 1'di (hesapta P.E.T. yoktu), sunucu değiştirmiyordu:
                 # P.E.T. seviyesi ne olursa olsun yalnız 1. seviye seçiliyordu (kullanıcı 2026-10-18). maxAmount = P.E.T.'in izin verdiği
                 # en yüksek seviye (wiki: 2. seviye P.E.T. 4, 3. seviye 8); sunucunun bilmediği "3X" kademesi gösterilmez
+                # Protokollerin 4. seviyesi (P.E.T. seviyesi 20): kayıttaki LevelDataList'in 4. kademesi, levelGrades kayıttaki gibi
+                # [1,2,3]; maxAmount 4 istemcide 4. düğmeyi açıyor mu canlıda doğrulanmadı
                 lv = self.pet.d['seviye'] if self.pet.owned else 0
                 top = max(n for n in range(1, len(prices) + 1) if lv >= PETM.level_need(n))
-                it.update(maxAmount=top, maxlevel=top, levelGrades='[%s]' % ','.join(str(n) for n in range(1, len(prices) + 1)))
+                it.update(maxAmount=top, maxlevel=top, levelGrades='[%s]' % ','.join(str(n) for n in range(1, min(len(prices), 3) + 1)))
             if prices and it.get('LevelDataList'):
                 # seviye düğmesinin fiyatı ve metni (ClickToggle: LevelDataList[seviye]) alınanla aynı: kayıttakiler kaldı, G-HR1'de
                 # 15.000 / 32.000 görünüp 32.000 / 55.000 alınıyordu; panelin çarpanı da burada
                 rows = it['LevelDataList'] = [dict(r) for r in it['LevelDataList']]
                 for r, u in zip(rows, it['price']):
-                    r.update(price=int(u), cost='{:,} U.'.format(int(u)))
+                    if u:                                  # 0: mağazada satılmaz (kayıttaki satır kalır)
+                        r.update(price=int(u), cost='{:,} U.'.format(int(u)))
         if category == 'ammunition':
             for it in t['itemList']:
                 pr = self.buy_price(it['lootId'])
@@ -703,13 +706,18 @@ class Magaza:
     def buy(self, loot, amount, category='', buy_category='', quick=False, pet_name='', level=1):
         amount = max(1, int(amount or 1))
         try:
-            level = max(1, min(3, int(level)))
+            level = max(1, int(level))
         except (TypeError, ValueError):
             level = 1
         if not PETM.has_levels(loot):
             level = 1
+        elif level > len(PETM.level_prices(loot)) or not PETM.level_prices(loot)[level - 1]:
+            # mağazada olmayan kademe: dişlilerin 3X'i, protokollerin AI-ECO dışındaki 4. seviyesi (kayıt; istemci metni "You can't
+            # purchase this P.E.T. Gear level from the shop")
+            self.log('   satın alma yok: %s seviye %d (mağazada satılmaz)' % (loot, level))
+            return [] if quick else [self.buy_cmd(loot, category, buy_category, 0, error=stack_msg('pet_gear_shop_level_limit'))]
         elif level > 1 and (not self.pet.owned or self.pet.d['seviye'] < PETM.level_need(level)):
-            # wiki: 2. seviye dişli/protokol için P.E.T. seviyesi 4, 3. seviye için 8 (istemci: pet_gear_shop_level_limit)
+            # wiki: 2. seviye dişli/protokol için P.E.T. seviyesi 4, 3. seviye için 8, 4. seviye 20 (istemci: pet_gear_shop_level_limit)
             self.log('   satın alma yok: %s seviye %d (P.E.T. seviyesi %d gerekir)' % (loot, level, PETM.level_need(level)))
             return [] if quick else [self.buy_cmd(loot, category, buy_category, 0, error=stack_msg('pet_gear_shop_level_limit'))]
         if not self.gate_ok(loot):                  # Ö7: etkinlik dışı, alınmış (bir kez) ya da seviye dışı paket
@@ -1008,10 +1016,14 @@ class Magaza:
                 self.p.dirty = True
             msgs.append(legacy('0|LM|ST|LOT|%s|%d' % (loot, n)))
         elif loot == 'resource_pet-fuel' and self.pet and self.pet.owned:
+            add = max(0, min(n, PETM.PET['azami_yakit'] - self.p.d['pet'].get('yakit', 0)))
             with self.p.lock:
-                self.p.d['pet']['yakit'] = min(PETM.PET['azami_yakit'], self.p.d['pet'].get('yakit', 0) + n)
+                self.p.d['pet']['yakit'] = self.p.d['pet'].get('yakit', 0) + add
                 self.p.dirty = True
-            msgs.append(legacy('0|LM|ST|LOT|%s|%d' % (loot, n)))
+            if add:
+                msgs.append(legacy('0|LM|ST|LOT|%s|%d' % (loot, add)))
+            if add < n:                                # depo doldu: istemci log_msg_not_gather_pet_fuel ("cargo is full")
+                msgs.append(('PetFuelCargoFullMessage', {}))
         elif loot == 'resource_logfile' and self.kapilar:
             with self.p.lock:                          # log diski: pilot puanına çevrilir (yetenek.py)
                 self.kapilar.d['log_disk'] += n
@@ -1334,7 +1346,8 @@ class Magaza:
         form = self.p.mods()                                # formasyon + dron tasarımları
         lab = active and self.p.lab_bonus(2)              # motor yükseltmesi (Duranium, Promerium)
         if ship:
-            display = int(display * (1 + form.get('hiz', 0)) * (1 + (lab or 0)) * AY.carpan('gemi_hiz'))     # panel: geminin hızı
+            display = int((display + form.get('hiz_mutlak', 0))                                       # Leonov +20
+                          * (1 + form.get('hiz', 0)) * (1 + (lab or 0)) * AY.carpan('gemi_hiz'))     # panel: geminin hızı
             if 'ust_hiz' in form:                           # Speed Burst (teknoloji.py): en az bu hız
                 display = max(display, int(form['ust_hiz']))
             if 'sabit_hiz' in form:                         # gemi yetenekleri: Travel 450, Fortify 0 (kıpırdamaz)
@@ -1412,7 +1425,7 @@ class Magaza:
                 msgs.append(('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g['shieldMax']}))
             self.p.d['kalkan_emme'] = s['absorb']
             # kargo alanı: geminin kargosu + Logistics yeteneği (yetenek.py); ShipInitializationCommand'da görünür
-            base = self.p.ship_row().get('kargo')
+            base = self.p.ship_row().get('kargo', 0) + self.p.mods().get('kargo_mutlak', 0)      # Leonov +500
             if base:
                 cargo = int(base * (1 + self.p.mods().get('kargo_alani', 0)) * EK.cargo_factor(self.p)    # + kargo CPU'su
                             * (1 + (self.pet.proto('kargo') if self.pet.owned else 0))      # + AI-CR (P.E.T. uzayda olmasa da)

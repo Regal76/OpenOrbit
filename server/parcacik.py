@@ -15,9 +15,10 @@ Uçuşta (Atis, dünyanın döngüsünde):
       attackedId} + AttackHitCommand (attackType CANNON 21, cannonType, strike). Helios: 5 hedefe 275 içinde %40 sıçrama
       (PlayVisualEffectCommand 8); Nidhogg: 20 sn %5 aşındırma zaafı, 5 kat (VisualModifierCommand 146); Indra: 7 hedefe zincir, her
       atlamada -%15 (PlayVisualEffectCommand 9).
-  GSP (kısayol çubuğu 'drives'): takılı sürücü sayısı kadar cephane, bekleme 10 sn; ana hedefin çevresinde 150 birimlik alan 8 sn
+  GSP (kısayol çubuğu 'drives'): takılı sürücü sayısı kadar cephane, bekleme 10 sn; ana hedefin çevresinde 600 birimlik alan 8 sn
       saniyede bir vurur (AttackHitCommand DRIVE 22; görsel DA_SHOT 17-19, alan DA_OUTER_FRIENDLY 152/154/156). Apex ve Prime set
-      çarpanı (3-10 sürücü), 6 Prime'dan sonra menzil 900. AGS-X açıkken lazer saldırısında kendiliğinden.
+      çarpanı (3-10 sürücü), 6 Apex/Prime'dan sonra alan 900 (istemcinin paket açıklamaları). AGS-X açıkken lazer saldırısında
+      kendiliğinden.
 Kırıcı ve merceklerin savunması oyuncu silahlarına karşı (bot oyuncularla, Aşama 11).
 """
 import json, math, os, random, time
@@ -344,22 +345,20 @@ def lock_reroll(p, iid, locks, rng=random):
 
 # ---------------------------------------------------------------- uçuş
 def drive_power(p, ids):
-    """Takılı sürücülerin toplam hasarı (seviye, alt nitelik, set çarpanı), menzil ve en iyi sürücünün görsel kademesi."""
+    """Takılı sürücülerin toplam hasarı (seviye, alt nitelik, set çarpanı), alan yarıçapı (Apex ve Prime seti) ve en iyi sürücünün
+    görsel kademesi."""
     rows = [(i, p.d['esyalar'][str(i)]) for i in ids]
     big = [l for i, l in rows if DRIVES[l]['atis'] >= 2]
-    primes = sum(1 for i, l in rows if DRIVES[l]['atis'] == 3)
-    mult, rng = 1.0, DR['menzil']
+    mult, area = 1.0, DR['alan']
     for n, m, r in DR['set']:
         if len(big) >= n:
-            mult = m
-        if primes >= n:
-            rng = r
+            mult, area = m, r
     total = 0.0
     for i, l in rows:
         a = attrs(p, i)
         d = DRIVES[l]['hasar'] * (1 + 0.005 * (level(p, i) - 1)) * (1 + (a.get('drive_damage', 0) + a.get('drive_damage_npc', 0)) / 100.0)
         total += d * (mult if DRIVES[l]['atis'] >= 2 else 1.0)
-    return total, rng, max((DRIVES[l]['atis'] for i, l in rows), default=1)
+    return total, area, max((DRIVES[l]['atis'] for i, l in rows), default=1)
 
 
 class Atis:
@@ -454,9 +453,9 @@ class Atis:
         row = CANNONS[loot]
         a = attrs(p, iid)
         e = row['element']
-        self.cool(COOLDOWN_CANNON, C['aralik_sn'], now)
+        self.cool(COOLDOWN_CANNON, C['aralik_sn'] * max(0.1, 1 + p.mods().get('top_bekleme', 0)), now)    # Supercharge Plus -%50
         w.last_combat = now
-        hit = random.random() < C['isabet'] * (1 + a.get('cannon_hit_chance_' + e, 0) / 100.0)
+        hit = random.random() < C['isabet'] * (1 + a.get('cannon_hit_chance_' + e, 0) / 100.0 + p.mods().get('top_isabet', 0))   # Lepus
         msgs = w.ammo_msgs(slug) + [('CannonAttackCommand', dict(cannonType=row['cannonType'], hit=hit, attackerId=w.hid, attackedId=n.id))]
         w.send(msgs)
         p.ach('shot', silah='CANNON')
@@ -516,7 +515,7 @@ class Atis:
         if not gsp or gsp not in GSP or w.hero_dead or w.jumping:
             return False
         ids = equipped(p, 'drive')
-        power, rng, best = drive_power(p, ids) if ids else (0, DR['menzil'], 1)
+        power, area, best = drive_power(p, ids) if ids else (0, DR['alan'], 1)
         why = None
         if not ids:
             why = 'takılı sürücü yok'
@@ -526,7 +525,7 @@ class Atis:
             why = 'GSP yetmiyor'
         elif w.in_peace(*w.hero_pos(now)):
             why = 'güvenli bölge'
-        elif not self.in_range(n, now, rng):
+        elif not self.in_range(n, now, DR['menzil']):
             why = 'menzil dışı'
         if why:
             if not auto:
@@ -537,8 +536,10 @@ class Atis:
         w.last_combat = now
         shot, vm = DR['efekt'][str(best)]
         x, y = n.mover.pos(now)
-        zone = self.resonate({'x': x, 'y': y, 'bitis': now + DR['sure_sn'], 'sonraki': now, 'hasar': power * GSP[gsp], 'hedef': n.id,
-                              'vm': vm, 'alan': DR['alan']}, now)
+        import gemi_yetenek as GY
+        bonus = GY.take(p, 'sonraki_gsp')                 # Hyperion Quantum Amplifier: bu atışa +%10
+        zone = self.resonate({'x': x, 'y': y, 'bitis': now + DR['sure_sn'], 'sonraki': now, 'hasar': power * GSP[gsp] * (1 + bonus), 'hedef': n.id,
+                              'vm': vm, 'alan': area}, now)
         self.zones.append(zone)
         w.send(w.ammo_msgs(gsp) + [('PlayVisualEffectCommand', dict(activatorId=w.hid, targetIds=[n.id], visualEffect=shot)),
                                    ('VisualModifierCommand', dict(userId=n.id, modifier=vm, attribute=0, additionalAttribute='', count=0,
@@ -560,7 +561,7 @@ class Atis:
         elif 'evernight' in a:
             sure, total = sure * 1.25, total * (1 + a['evernight'] / 100.0)
         per = z['hasar'] * total * DR['sure_sn'] / sure
-        z.update(bitis=now + sure, hasar=per, alan=DR['alan'] * (1 + a.get('expansion', 0) / 100.0), rezonator=a)
+        z.update(bitis=now + sure, hasar=per, alan=z['alan'] * (1 + a.get('expansion', 0) / 100.0), rezonator=a)
         if 'aftershock' in a:                       # %75 alan süresince, %25 bitişte (yarıçap +x)
             z['artci'] = per * 0.25 * sure
             z['hasar'] = per * 0.75

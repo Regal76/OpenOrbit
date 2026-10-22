@@ -38,10 +38,11 @@ def mod(name, **f):
 
 
 def of(d):
-    """NPC türünün yetenekleri: npcId'nin yetenekleri + türün kendi "davranis"ı (ikincisi öncelikli); not alanları ('_') atılır."""
+    """NPC türünün yetenekleri: npcId'nin yetenekleri + türün kendi "davranis"ı (ikincisi öncelikli; None o yeteneği kapatır: Kappa
+    Annihilator'ın fırlatıcısı); not alanları ('_') atılır."""
     out = {k: v for k, v in ABILITIES.get(d.get('npc_kimlik'), {}).items() if not k.startswith('_')}
     out.update(d.get('davranis') or {})
-    return out
+    return {k: v for k, v in out.items() if v is not None}
 
 
 def asset_create(aid, kind, x, y, name='', design=0):

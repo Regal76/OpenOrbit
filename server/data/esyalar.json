@@ -5,8 +5,8 @@
    "hasar": 65
   },
   "equipment_weapon_laser_mp-1": {
-   "hasar": 60,
-   "_not": "uzaylılara 60, oyunculara 70",
+   "hasar": 75,
+   "_not": "istemci: \"up to 75\" ve Equipment verisi 75; oyunculara 70 (wiki, bot oyuncularla)",
    "pvp_hasar": 70
   },
   "equipment_weapon_laser_lf-2": {
@@ -70,8 +70,8 @@
    "_not": "LF-5 Anchorlock: 3/10/15 adette isabette yavaşlatma; PvP set bonusu bot oyuncularla"
   },
   "equipment_weapon_laser_lf-5-mf": {
-   "hasar": 245,
-   "_not": "wiki 452 yazıyor, kendisi de yazım hatası olabilir diyor; LF-5 değeri kullanıldı",
+   "hasar": 452,
+   "_not": "istemcinin Equipment verisi 452 (wiki de 452); set bonusu ayrıca",
    "set_bonus": [
     0,
     0,
@@ -176,8 +176,8 @@
    "pvp_hasar": 85
   },
   "equipment_weapon_laser_sll-02": {
-   "hasar": 145,
-   "_not": "SLL-02: uzaylılara 145, oyunculara 90",
+   "hasar": 165,
+   "_not": "SLL-02, istemci: uzaylılara 165, oyunculara 90",
    "pvp_hasar": 90
   },
   "equipment_weapon_laser_sll-03": {
@@ -2846,7 +2846,9 @@
    "_not": "uzaylılara x3.5"
   },
   "ammunition_laser_cbo-100": {
-   "carpan": 3
+   "carpan": 3,
+   "kalkan_carpan": 1,
+   "_not": "istemci: MCB-50 hasarı ve SAB-50'nin Shield Leech'inin yarısı (\"x3 / Shield Leech x1\")"
   },
   "ammunition_laser_sab-50": {
    "carpan": 0,
@@ -2856,7 +2858,10 @@
   "ammunition_laser_sbl-100": {
    "carpan": 4,
    "hedef_carpan": {
-    "Sibelon": 8
+    "Sibelon": 8,
+    "Sibelonit": 8,
+    "UberSibelon": 8,
+    "UberSibelonit": 8
    }
   },
   "ammunition_laser_a-bl": {
@@ -2872,14 +2877,15 @@
   "ammunition_laser_rb-214": {
    "carpan": 4,
    "hedef_carpan": {
-    "DemaNeR": 8
+    "Demaner": 8
    }
   },
   "ammunition_laser_vb-142": {
    "carpan": 4,
    "hedef_carpan": {
     "Styxus": 7,
-    "Charopos": 7
+    "Charopos": 7,
+    "Lanatum": 7
    }
   },
   "ammunition_laser_emaa-20": {
@@ -2960,19 +2966,23 @@
  "roketler": {
   "ammunition_rocket_r-310": {
    "hasar": 1000,
-   "kimlik": 1
+   "kimlik": 1,
+   "isabet": 0.7
   },
   "ammunition_rocket_plt-2026": {
    "hasar": 2000,
-   "kimlik": 2
+   "kimlik": 2,
+   "isabet": 0.8
   },
   "ammunition_rocket_plt-2021": {
    "hasar": 4000,
-   "kimlik": 3
+   "kimlik": 3,
+   "isabet": 0.9
   },
   "ammunition_rocket_plt-3030": {
    "hasar": 6000,
-   "kimlik": 4
+   "kimlik": 4,
+   "isabet": 0.65
   },
   "ammunition_rocket_bdr-1211": {
    "hasar": 7500,
@@ -3146,8 +3156,9 @@
    "emme": 0.4
   },
   "equipment_generator_shield_sg3n-a02": {
-   "kalkan": 5000,
-   "emme": 0.5
+   "kalkan": 2000,
+   "emme": 0.5,
+   "_not": "istemcinin Equipment verisi ve metni 2.000"
   },
   "equipment_generator_shield_sg3n-a03": {
    "kalkan": 5000,
@@ -3176,20 +3187,24 @@
   },
   "equipment_generator_shield_fs-01": {
    "kalkan": 3200,
-   "emme": 0.7
+   "emme": 0.7,
+   "yenilenme": 0.0625
   },
   "equipment_generator_shield_fs-02": {
    "kalkan": 5600,
-   "emme": 0.75
+   "emme": 0.75,
+   "yenilenme": 0.0625
   },
   "equipment_generator_shield_fs-03": {
    "kalkan": 8000,
-   "emme": 0.8
+   "emme": 0.8,
+   "yenilenme": 0.0625
   },
   "equipment_generator_shield_fs-04": {
    "kalkan": 11400,
    "emme": 0.8,
-   "_not": "generators.md; kalkan yenilenmesi +%6,25 uygulanmadı"
+   "_not": "istemci: kalkan yenilenmesi +%6,25 (FS-01…04; yenilenme: gemide ve dronlarda takılı başına, profil.ship_mods)",
+   "yenilenme": 0.0625
   },
   "equipment_generator_shield_sg3n-p01": {
    "kalkan": 11900,
@@ -3327,7 +3342,11 @@
    "extra": 3,
    "rocket": 1,
    "kargo": 1600,
-   "temel_hiz": 300
+   "temel_hiz": 300,
+   "bonus": {
+    "lazer": 0.05,
+    "roket": 0.05
+   }
   },
   "ship_g-bastion": {
    "hp": 356000,
@@ -3527,7 +3546,9 @@
      "can_mutlak": 96000,
      "lazer": 0.5,
      "roket": 1.0,
-     "kalkan": 1.0
+     "kalkan": 1.0,
+     "hiz_mutlak": 20,
+     "kargo_mutlak": 500
     }
    }
   },
@@ -3582,7 +3603,7 @@
    "generators": 12,
    "extra": 3,
    "rocket": 1,
-   "kargo": 500,
+   "kargo": 1000,
    "temel_hiz": 370
   },
   "ship_s-elite": {
@@ -3620,7 +3641,10 @@
    "extra": 3,
    "rocket": 1,
    "kargo": 1600,
-   "temel_hiz": 300
+   "temel_hiz": 300,
+   "bonus": {
+    "kalkan": 0.1
+   }
   },
   "ship_solace": {
    "hp": 356000,
@@ -3628,8 +3652,11 @@
    "generators": 15,
    "extra": 3,
    "rocket": 1,
-   "kargo": 1500,
-   "temel_hiz": 300
+   "kargo": 1600,
+   "temel_hiz": 300,
+   "bonus": {
+    "kalkan": 0.1
+   }
   },
   "ship_spearhead": {
    "hp": 200000,
@@ -3646,8 +3673,11 @@
    "generators": 15,
    "extra": 3,
    "rocket": 1,
-   "kargo": 1500,
-   "temel_hiz": 300
+   "kargo": 1600,
+   "temel_hiz": 300,
+   "bonus": {
+    "kalkan": 0.25
+   }
   },
   "ship_tartarus": {
    "hp": 360000,
@@ -3703,7 +3733,7 @@
    "generators": 10,
    "extra": 2,
    "rocket": 1,
-   "kargo": 1000,
+   "kargo": 1100,
    "temel_hiz": 380,
    "taban": "ship_vengeance",
    "bonus": {
@@ -3741,7 +3771,11 @@
    "extra": 3,
    "rocket": 1,
    "kargo": 1600,
-   "temel_hiz": 300
+   "temel_hiz": 300,
+   "bonus": {
+    "lazer": 0.05,
+    "roket": 0.05
+   }
   },
   "ship_yamato": {
    "hp": 260000,
@@ -3823,7 +3857,11 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 300,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "lazer": 0.1,
+    "roket": 0.1
+   }
   },
   "ship_disruptor": {
    "hp": 356000,
@@ -3843,7 +3881,13 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 300,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "lazer": 0.06,
+    "roket": 0.06,
+    "onur": 0.06,
+    "ep": 0.06
+   }
   },
   "ship_goliath-plus": {
    "hp": 356000,
@@ -3853,7 +3897,8 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 330,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "isi_basina": 0.01
   },
   "ship_goliath-x": {
    "hp": 356000,
@@ -3863,7 +3908,11 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 300,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "lazer": 0.02,
+    "ep": 0.02
+   }
   },
   "ship_hammerclaw": {
    "hp": 377500,
@@ -3873,7 +3922,10 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 310,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "can": 0.25
+   }
   },
   "ship_hammerclaw-plus": {
    "hp": 377500,
@@ -3883,7 +3935,10 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 310,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "can": 0.25
+   }
   },
   "ship_hecate": {
    "hp": 377500,
@@ -3893,7 +3948,12 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 300,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "lazer": 0.07,
+    "roket": 0.07,
+    "kalkan": 0.1
+   }
   },
   "ship_hecate-plus": {
    "hp": 377500,
@@ -3903,7 +3963,12 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 300,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "lazer": 0.07,
+    "roket": 0.07,
+    "kalkan": 0.1
+   }
   },
   "ship_holo": {
    "hp": 400000,
@@ -3953,7 +4018,11 @@
    "rocket": 2,
    "kargo": 1500,
    "temel_hiz": 300,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "kalkan": 0.1,
+    "kalkan_delme": 0.05
+   }
   },
   "ship_n-diplomat": {
    "hp": 240000,
@@ -3983,7 +4052,8 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 280,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "modul_carpani": 1.75
   },
   "ship_paladin": {
    "hp": 325000,
@@ -4003,7 +4073,11 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 400,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "stim_bariyer": {
+    "sans": 0.05,
+    "oran": 0.1
+   }
   },
   "ship_retiarus": {
    "hp": 386000,
@@ -4033,7 +4107,10 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 310,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "kalkan": 0.15
+   }
   },
   "ship_solaris": {
    "hp": 377500,
@@ -4053,7 +4130,12 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 310,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "modul_basina": {
+    "lazer": 0.03,
+    "roket": 0.03
+   },
+   "modul_azami": 4
   },
   "ship_spearhead-plus": {
    "hp": 350000,
@@ -4063,7 +4145,10 @@
    "rocket": 1,
    "kargo": 1500,
    "temel_hiz": 370,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "kacinma": 0.05
+   }
   },
   "ship_spectrum-plus": {
    "hp": 377500,
@@ -4073,7 +4158,10 @@
    "rocket": 1,
    "kargo": 1600,
    "temel_hiz": 320,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "bonus": {
+    "kalkan": 0.25
+   }
   },
   "ship_tartarus-plus": {
    "hp": 377500,
@@ -4083,7 +4171,8 @@
    "rocket": 2,
    "kargo": 1500,
    "temel_hiz": 250,
-   "kaynak": "istemci"
+   "kaynak": "istemci",
+   "ek_roket_sans": 0.2
   },
   "ship_tempest": {
    "hp": 300000,
@@ -4386,8 +4475,7 @@
    "id": 1,
    "kalkan": 0.1,
    "lazer": -0.075,
-   "roket": -0.075,
-   "mayin": -0.075
+   "roket": -0.075
   },
   "drone_formation_f-02-ar": {
    "id": 2,
@@ -5105,6 +5193,11 @@
      300,
      120,
      30
+    ],
+    "ticaret_bonusu": [
+     0.05,
+     0.15,
+     0.3
     ]
    },
    "equipment_petgear_g-rep1": {
@@ -5137,7 +5230,12 @@
      350,
      450
     ],
-    "esik": 0.2
+    "esik": 0.2,
+    "bekleme_sn": [
+     120,
+     60,
+     30
+    ]
    },
    "equipment_petgear_g-fs1": {
     "tur": 14,
@@ -5165,7 +5263,7 @@
      0.75,
      0.85
     ],
-    "ek_yakit_dk": [
+    "ek_yakit": [
      200,
      400,
      750
@@ -5189,8 +5287,8 @@
     "tur": 20,
     "fiyat": [
      10000,
-     32000,
-     55000
+     15000,
+     32000
     ],
     "hasar_sn": [
      6250,
@@ -5254,139 +5352,162 @@
     "fiyat": [
      3000,
      7500,
-     25000
+     25000,
+     0
     ],
     "kargo": [
      0.03,
      0.06,
-     0.12
+     0.12,
+     0.15
     ]
    },
    "equipment_aiprotocol_ai-r1": {
     "fiyat": [
      3000,
      7500,
-     25000
+     25000,
+     0
     ],
     "menzil": [
      0.03,
      0.06,
-     0.12
+     0.12,
+     0.15
     ]
    },
    "equipment_aiprotocol_ai-s1": {
     "fiyat": [
      5000,
      12500,
-     45000
+     45000,
+     0
     ],
     "kutu": [
      0.01,
      0.02,
-     0.03
+     0.03,
+     0.04
     ]
    },
    "equipment_aiprotocol_ai-sm1": {
     "fiyat": [
      5000,
      12500,
-     45000
+     45000,
+     0
     ],
     "kalkan": [
      0.01,
      0.02,
-     0.04
+     0.04,
+     0.06
     ]
    },
    "equipment_aiprotocol_ai-lm1": {
     "fiyat": [
      5000,
      12500,
-     45000
+     45000,
+     0
     ],
     "lazer": [
      0.01,
      0.02,
-     0.04
+     0.04,
+     0.06
     ]
    },
    "equipment_aiprotocol_ai-aim1": {
     "fiyat": [
      3000,
      7500,
-     25000
+     25000,
+     0
     ],
     "isabet": [
      0.01,
      0.02,
-     0.04
+     0.04,
+     0.06
     ]
    },
    "equipment_aiprotocol_ai-e1": {
     "fiyat": [
      5000,
      12500,
-     45000
+     45000,
+     0
     ],
     "kacinma": [
      0.01,
      0.02,
-     0.03
+     0.03,
+     0.04
     ]
    },
    "equipment_aiprotocol_ai-hp1": {
     "fiyat": [
      5000,
      12500,
-     45000
+     45000,
+     0
     ],
     "can": [
      0.01,
      0.02,
-     0.04
+     0.04,
+     0.05
     ]
    },
    "equipment_aiprotocol_ai-al1": {
     "fiyat": [
      3000,
      7500,
-     25000
+     25000,
+     0
     ],
     "uzayli": [
      0.01,
      0.03,
-     0.06
+     0.06,
+     0.08
     ]
    },
    "equipment_aiprotocol_ai-eco1": {
     "fiyat": [
      5000,
      12500,
-     45000
+     45000,
+     105000
     ],
     "yakit": [
      -0.03,
      -0.035,
-     -0.04
+     -0.04,
+     -0.06
     ]
    },
    "equipment_aiprotocol_ai-ah1": {
     "fiyat": [
      5000,
      15000,
-     50000
+     50000,
+     0
     ],
     "isi": [
      0.01,
      0.02,
-     0.03
+     0.03,
+     0.04
     ]
    }
   },
   "esya_seviye_sarti": [
    0,
    4,
-   8
+   8,
+   20
   ],
   "tasarimlar": {
    "pet_designs_berserker-ace": 304,
@@ -5575,7 +5696,7 @@
     0.04,
     0.08
    ],
-   "_kaynak": "wiki (P.E.T. HEAT): eşikler 150/300/450/600 ve 5. seviye 750 (wiki \"100\" yazım hatası), bonuslar birikir, soğuma gecikmeleri 12 sa/24 sa/24 sa/15 dk/5 dk, 7 HEAT yuvası (lazer ya da kalkan jeneratörü) 4. seviyeden etkin, LF-PX01/SG3N-PX01 HEAT seviyesine göre +%0,5/1/2/4/8. Uyarlama (wiki ısınma hızını vermiyor): etkin P.E.T. dakikada 1 puan, savaşta (son 5 sn) saniyede +0,1; AI-AH protokolü kazancı artırır; gecikme bitince saniyede 0,5 puan soğur, bir alt seviyeye inince o seviyenin gecikmesi başlar. Bonuslar P.E.T. uzaydayken gemiye."
+   "_kaynak": "wiki (P.E.T. HEAT): eşikler 150/300/450/600 ve 5. seviye 750 (wiki \"100\" yazım hatası), bonuslar birikir, soğuma gecikmeleri 12 sa/24 sa/24 sa/15 dk/5 dk, 7 HEAT yuvası (lazer ya da kalkan jeneratörü) 4. seviyeden etkin, LF-PX01/SG3N-PX01 HEAT seviyesine göre +%0,5/1/2/4/8. Uyarlama (wiki ısınma hızını vermiyor): etkin P.E.T. dakikada 1 puan, savaşta (son 5 sn) saniyede +0,1; AI-AH protokolü kazancı artırır; gecikme bitince saniyede 0,5 puan soğur, bir alt seviyeye inince o seviyenin gecikmesi başlar. Bonuslar P.E.T. uzaydayken gemiye; can bonusu P.E.T.'in kendi canına (kayıt: seviye 20 P.E.T.'lerin azami canı (50.000 + G-HP1) x1,10 / x1,20, AI-HP'yle x1,14; E5)."
   },
   "can_yukseltme": {
    "loot": "pet_upgrade-g-hp1",
@@ -5605,13 +5726,13 @@
    "_kaynak": "wiki (P.E.T. seviye tablosu MAX HP / HP UPGRADE): her yükseltme +10.000 can; P.E.T. seviyesi kadar yükseltme (seviye 20: 250.000); n. yükseltmenin fiyatı tablonun n. satırı. Mağazada G-HP1 (istemci: pet_upgrade-g-hp1, buy_pet_hull)."
   }
  },
- "_pet_kaynak": "belgeler/wiki/drones_pet.md (wiki). Mağazada P.E.T.-10 50.000 U (kayıttaki ShopItemListCommand 'pet'). Can 50.000: kayıttaki seviye 13 P.E.T.'in en çok canı 55.000 (wiki'deki 250.000'e kadar can satın alınan yükseltmelerle; sunucuda yok). En çok yakıt 100.000 ve seviye eşikleri (petExperiencePointsUntilNextLevel = sonraki seviyenin toplam EP'si) kayıttan. Gemi türü seviyeye göre istemcinin game.xml'i (12: 1-3, 13: 4-6, 14: 7-9, 15: 10-12, 22: 13-15). Yakıt kullanımı dakika başına (wiki birim vermiyor; kayıtta seviye 13 P.E.T. dakikada ~44 harcıyor). Seviye bonusları (hasar/kalkan) wiki'deki çift/tek seviye etkileri, birikimli değil son değer. Yuvalar: seviye tablosundaki kadar açık; fazlası hangarda yuva numarasına göre uridyumla açılır (wiki fiyatları). Hotkey yakıt 1.000 birim (istemcinin log_msg_bought_fuel_hotkey metni), fiyatı uyarlama. NPC atışının P.E.T.'e gitme olasılığı, kamikaze eşiği uyarlama. Dişli ve protokoller 3 seviye: fiyat ve etkiler seviye listesi (wiki); seviye 2 için P.E.T. seviye 4, seviye 3 için 8 gerekir. Hangar eşyasında level = seviye - 1 (istemci 1. seviyeyi \"Level: 0\" gösterir). Koruma modunda P.E.T. hedefin yakin_mesafe kadar yanına gider; gemiden savas_mesafe uzaktaki NPC ile savaşmaz (uyarlama).",
+ "_pet_kaynak": "belgeler/wiki/drones_pet.md (wiki). Mağazada P.E.T.-10 50.000 U (kayıttaki ShopItemListCommand 'pet'). Can 50.000: kayıttaki seviye 13 P.E.T.'in en çok canı 55.000 (wiki'deki 250.000'e kadar can satın alınan yükseltmelerle; sunucuda yok). En çok yakıt 100.000 ve seviye eşikleri (petExperiencePointsUntilNextLevel = sonraki seviyenin toplam EP'si) kayıttan. Gemi türü seviyeye göre istemcinin game.xml'i (12: 1-3, 13: 4-6, 14: 7-9, 15: 10-12, 22: 13-15). Yakıt kullanımı dakika başına (wiki birim vermiyor; kayıtta seviye 13 P.E.T. dakikada ~44 harcıyor). Seviye bonusları (hasar/kalkan) wiki'deki çift/tek seviye etkileri, birikimli değil son değer. Yuvalar: seviye tablosundaki kadar açık; fazlası hangarda yuva numarasına göre uridyumla açılır (wiki fiyatları). Hotkey yakıt 1.000 birim (istemcinin log_msg_bought_fuel_hotkey metni), fiyatı uyarlama. NPC atışının P.E.T.'e gitme olasılığı, kamikaze eşiği uyarlama. Dişli ve protokoller 3 seviye: fiyat ve etkiler seviye listesi (wiki); seviye 2 için P.E.T. seviye 4, seviye 3 için 8 gerekir. Hangar eşyasında level = seviye - 1 (istemci 1. seviyeyi \"Level: 0\" gösterir). Koruma modunda P.E.T. hedefin yakin_mesafe kadar yanına gider; gemiden savas_mesafe uzaktaki NPC ile savaşmaz (uyarlama). E5: protokollerin 4. seviyesi (wiki) P.E.T. seviyesi 20 ister (wiki \"Access to fourth level equipment\"); kayıttaki LevelDataList'in 4. kademesinde yalnız AI-ECO 105.000 U, ötekiler 0 (istemci pet_gear_shop_level_limit: mağazadan alınmaz). G-HR1 fiyatı kayıttan (10.000 / 15.000 / 32.000). G-KK1 beklemesi 120/60/30 sn (wiki), başlangıç haritalarında seçilmez (istemci iletisi); eşik 0,2 uyarlama, geminin canı da tetikler (istemci \"your P.E.T. or ship\"). G-TRA1 satış bonusu +%5/15/30 (wiki, istemci \"Trade bonus\"); ticaretin yakıt bedelinin miktarı yok (doğrulanmadı, uygulanmadı). C-SR2'nin ek yakıtı onarım başına (istemci \"Uses extra fuel for each repair\"; wiki 200/400/750).",
  "dron_tasarimlari": {
   "drone_designs_havoc": {
    "id": 1,
    "yuva": "design",
    "takim": {
-    "lazer": 0.1
+    "dron_lazer": 0.1
    }
   },
   "drone_designs_hercules": {
@@ -5650,7 +5771,10 @@
     "can": 0.02
    },
    "takim": {
-    "roket_bekleme": -0.1
+    "bekleme": 0.1,
+    "mayin_bekleme": -0.1,
+    "roket_bekleme": -0.1,
+    "fircatici_bekleme": -0.1
    }
   },
   "drone_designs_spartan": {
@@ -5672,7 +5796,8 @@
     "npc": 0.01
    },
    "takim": {
-    "kacinma": 0.1
+    "kacinma": 0.1,
+    "dron_lazer": 0.05
    }
   },
   "drone_designs_cerberus-inferno": {
@@ -5682,7 +5807,9 @@
     "npc": 0.015
    },
    "takim": {
+    "dron_lazer": 0.08,
     "isabet": 0.1,
+    "bekleme": 0.1,
     "roket_bekleme": -0.1
    }
   },
@@ -5703,7 +5830,8 @@
     "npc": 0.01
    },
    "takim": {
-    "kalkan": 0.1
+    "kalkan": 0.1,
+    "bekleme": 0.08
    }
   },
   "drone_designs_lepus": {
@@ -5712,6 +5840,10 @@
    "dron_basina": {
     "npc": 0.01,
     "can": 0.015
+   },
+   "takim": {
+    "top": 0.1,
+    "top_isabet": 0.05
    }
   },
   "drone_designs_bat-silver": {
@@ -6363,7 +6495,7 @@
    "yuva": "visual"
   }
  },
- "_dron_tasarimlari_kaynak": "Kimlikler istemcinin game.xml <drones><designs> listesi (uzaydaki '0|n|d|…|tür|seviye|tasarım|görünüm' alanları). Yuva istemcinin DroneItem kodundan: DroneDesignType 'design' (bonuslu), DroneCustomizationType 'visual' (yalnız görünüm). Bonuslar wiki (belgeler/wiki/drones_pet.md): dron_basina her tasarımlı drona, takim sahip olunan bütün dronlar aynı tasarımı taşıyınca (istemcinin Havoc metni: 'If all of the drones are equipped'; wiki 10 dron der). npc = NPC'lere hasar (lazer ve roket). Champion ülke tasarımları (drone-champion-*) ve Champion yalnız görünüm (wiki: Visual drone designs kozmetiktir; Aşama 5).",
+ "_dron_tasarimlari_kaynak": "Kimlikler istemcinin game.xml <drones><designs> listesi (uzaydaki '0|n|d|…|tür|seviye|tasarım|görünüm' alanları). Yuva istemcinin DroneItem kodundan: DroneDesignType 'design' (bonuslu), DroneCustomizationType 'visual' (yalnız görünüm). Bonuslar wiki (belgeler/wiki/drones_pet.md): dron_basina her tasarımlı drona, takim sahip olunan bütün dronlar aynı tasarımı taşıyınca (istemcinin Havoc metni: 'If all of the drones are equipped'; wiki 10 dron der). npc = NPC'lere hasar (lazer ve roket). Champion ülke tasarımları (drone-champion-*) ve Champion yalnız görünüm (wiki: Visual drone designs kozmetiktir; Aşama 5). E5: takım bonusları istemcinin metinlerinden: dron_lazer yalnız dronların lazerine (Havoc \"all of the drones will profit from a laser cannon efficiency bonus\" %10, Cerberus %5, Inferno Cerberus \"Laser Efficiency\" %8), bekleme gemi yeteneklerinin beklemesi (Archeron %8, Inferno Cerberus %10, Hermes %10), Hermes mayın, roket ve Hellstorm beklemesi -%10, Lepus top hasarı +%10 ve top isabeti +%5 (top, top_isabet). Hermes'in dron başına bonusu (istemci anmıyor) ve Spartan'ın \"damage and HP\" kapsamı (sunucu yalnız lazer) wiki'den, doğrulanmadı.",
  "ek_magaza": {
   "_aciklama": "Kayıttaki mağazada olmayan, tek oyunculuda başka yoldan alınamayan eşyalar (galaksi kapıları yok). Uridyum fiyatı uyarlama; Demon tasarımı mağazada 100.000 U.",
   "customization": [
@@ -6415,6 +6547,273 @@
     "uridyum": 150000,
     "sablon": "package_event-deal-trinity-token",
     "_arac": "pve_modlari"
+   },
+   {
+    "lootId": "resource_attack-adhesion",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_attack-aftershock",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_attack-collapse",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_attack-evernight",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_attack-expansion",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_attack-stagnation",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_defensive-detachment",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_defensive-entry-buffer",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_defensive-grav-tolerance",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_defensive-slowing-resistance",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "resource_defensive-zone-adaptation",
+    "uridyum": 2000,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "_arac": "esyalar_o6"
+   },
+   {
+    "lootId": "package_event-deal-mileage-coin-starter",
+    "uridyum": 15000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "mileage_market",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-mileage-coin-s",
+    "uridyum": 20000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "mileage_market",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-mileage-coin-m",
+    "uridyum": 40000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "mileage_market",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-mileage-coin-l",
+    "uridyum": 80000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "mileage_market",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-mileage-coin-xl",
+    "uridyum": 140000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "mileage_market",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-mileage-coin-xxl",
+    "uridyum": 180000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "mileage_market",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-mileage-coin-xxxl",
+    "uridyum": 240000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "mileage_market",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-salvage-core-xl",
+    "uridyum": 100000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "vip_merchant",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-unstable-shard-xl",
+    "uridyum": 100000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "vip_merchant",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-permit-l",
+    "uridyum": 40000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "vip_merchant",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-permit-xl",
+    "uridyum": 60000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "vip_merchant",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-permit-ultimate",
+    "uridyum": 120000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "vip_merchant",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-returnee-s",
+    "uridyum": 30000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "returnee",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-returnee-m",
+    "uridyum": 70000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "returnee",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-returnee-l",
+    "uridyum": 130000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "returnee",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-returnee-xl",
+    "uridyum": 250000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "returnee",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-pre-bf-1",
+    "uridyum": 25000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "pre_prometheus",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-pre-bf-2",
+    "uridyum": 50000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "pre_prometheus",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-pre-bf-3",
+    "uridyum": 90000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "pre_prometheus",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-pre-bf-4",
+    "uridyum": 180000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "pre_prometheus",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "package_event-deal-pre-bf-5",
+    "uridyum": 400000,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "pre_prometheus",
+    "bir_kez": true,
+    "_arac": "dukkanlar_o7"
+   },
+   {
+    "lootId": "resource_ftl-key",
+    "uridyum": 8300,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "takvim": "galaxy_trek",
+    "_arac": "market_dengesi"
+   },
+   {
+    "lootId": "resource_collectable_galaxy-coupon",
+    "uridyum": 600,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "takvim": "fiesta",
+    "_arac": "market_dengesi"
+   },
+   {
+    "lootId": "resource_lottery-capsule",
+    "uridyum": 6900,
+    "sablon": "resource_collectable_luminaflux-alloy",
+    "takvim": "hitac",
+    "_arac": "market_dengesi"
+   },
+   {
+    "lootId": "equipment_extra_repbot_rep-s",
+    "uridyum": 500,
+    "sablon": "equipment_extra_repbot_rep-1",
+    "_arac": "e4"
+   },
+   {
+    "lootId": "tech_explosive-charging-blob",
+    "uridyum": 2000,
+    "sablon": "equipment_extra_repbot_rep-1",
+    "_arac": "e4"
    },
    {
     "lootId": "resource_collectable_energy-helios-citadel-plus",
@@ -6721,300 +7120,9 @@
     "uridyum": 250,
     "sablon": "resource_collectable_luminaflux-alloy",
     "_arac": "parcacik"
-   },
-   {
-    "lootId": "resource_attack-adhesion",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_attack-aftershock",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_attack-collapse",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_attack-evernight",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_attack-expansion",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_attack-stagnation",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_defensive-detachment",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_defensive-entry-buffer",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_defensive-grav-tolerance",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_defensive-slowing-resistance",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "resource_defensive-zone-adaptation",
-    "uridyum": 2000,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "_arac": "esyalar_o6"
-   },
-   {
-    "lootId": "package_event-deal-mileage-coin-starter",
-    "uridyum": 15000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "mileage_market",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-mileage-coin-s",
-    "uridyum": 20000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "mileage_market",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-mileage-coin-m",
-    "uridyum": 40000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "mileage_market",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-mileage-coin-l",
-    "uridyum": 80000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "mileage_market",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-mileage-coin-xl",
-    "uridyum": 140000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "mileage_market",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-mileage-coin-xxl",
-    "uridyum": 180000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "mileage_market",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-mileage-coin-xxxl",
-    "uridyum": 240000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "mileage_market",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-salvage-core-xl",
-    "uridyum": 100000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "vip_merchant",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-unstable-shard-xl",
-    "uridyum": 100000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "vip_merchant",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-permit-l",
-    "uridyum": 40000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "vip_merchant",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-permit-xl",
-    "uridyum": 60000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "vip_merchant",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-permit-ultimate",
-    "uridyum": 120000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "vip_merchant",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-returnee-s",
-    "uridyum": 30000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "returnee",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-returnee-m",
-    "uridyum": 70000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "returnee",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-returnee-l",
-    "uridyum": 130000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "returnee",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-returnee-xl",
-    "uridyum": 250000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "returnee",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-pre-bf-1",
-    "uridyum": 25000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "pre_prometheus",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-pre-bf-2",
-    "uridyum": 50000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "pre_prometheus",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-pre-bf-3",
-    "uridyum": 90000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "pre_prometheus",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-pre-bf-4",
-    "uridyum": 180000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "pre_prometheus",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "package_event-deal-pre-bf-5",
-    "uridyum": 400000,
-    "sablon": "package_event-deal-stellar2022-1",
-    "takvim": "pre_prometheus",
-    "bir_kez": true,
-    "_arac": "dukkanlar_o7"
-   },
-   {
-    "lootId": "resource_ftl-key",
-    "uridyum": 8300,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "takvim": "galaxy_trek",
-    "_arac": "market_dengesi"
-   },
-   {
-    "lootId": "resource_collectable_galaxy-coupon",
-    "uridyum": 600,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "takvim": "fiesta",
-    "_arac": "market_dengesi"
-   },
-   {
-    "lootId": "resource_lottery-capsule",
-    "uridyum": 6900,
-    "sablon": "resource_collectable_luminaflux-alloy",
-    "takvim": "hitac",
-    "_arac": "market_dengesi"
-   },
-   {
-    "lootId": "equipment_extra_repbot_rep-s",
-    "uridyum": 500,
-    "sablon": "equipment_extra_repbot_rep-1",
-    "_arac": "e4"
-   },
-   {
-    "lootId": "tech_explosive-charging-blob",
-    "uridyum": 2000,
-    "sablon": "equipment_extra_repbot_rep-1",
-    "_arac": "e4"
    }
   ],
   "ammunition": [
-   {
-    "lootId": "ammunition_spool_gsp-300",
-    "uridyum": 20,
-    "sablon": "ammunition_spool_gsp-150",
-    "_arac": "parcacik"
-   },
-   {
-    "lootId": "ammunition_slug_ths-a04",
-    "uridyum": 300,
-    "sablon": "ammunition_spool_gsp-150",
-    "_arac": "parcacik"
-   },
-   {
-    "lootId": "ammunition_slug_cos-a04",
-    "uridyum": 300,
-    "sablon": "ammunition_spool_gsp-150",
-    "_arac": "parcacik"
-   },
-   {
-    "lootId": "ammunition_slug_els-a04",
-    "uridyum": 300,
-    "sablon": "ammunition_spool_gsp-150",
-    "_arac": "parcacik"
-   },
    {
     "lootId": "ammunition_specialammo_emote_alien-angry",
     "uridyum": 50,
@@ -7224,6 +7332,30 @@
     "uridyum": 500,
     "sablon": "ammunition_specialammo_emp-01",
     "_arac": "e4"
+   },
+   {
+    "lootId": "ammunition_spool_gsp-300",
+    "uridyum": 20,
+    "sablon": "ammunition_spool_gsp-150",
+    "_arac": "parcacik"
+   },
+   {
+    "lootId": "ammunition_slug_ths-a04",
+    "uridyum": 300,
+    "sablon": "ammunition_spool_gsp-150",
+    "_arac": "parcacik"
+   },
+   {
+    "lootId": "ammunition_slug_cos-a04",
+    "uridyum": 300,
+    "sablon": "ammunition_spool_gsp-150",
+    "_arac": "parcacik"
+   },
+   {
+    "lootId": "ammunition_slug_els-a04",
+    "uridyum": 300,
+    "sablon": "ammunition_spool_gsp-150",
+    "_arac": "parcacik"
    }
   ],
   "booster": [
@@ -7634,7 +7766,7 @@
     "SHIELD": 25
    },
    "booster_sreg-b01": {
-    "SHIELD_REGENERATION": 10
+    "SHIELD_REGENERATION": 25
    },
    "booster_sreg-b02": {
     "SHIELD_REGENERATION": 25
@@ -7674,13 +7806,14 @@
     "isabet": 8
    },
    "booster_dmg-pvp01": {
-    "pvp_hasar": 1
+    "DAMAGE": 1,
+    "pvp_hasar": 5
    },
    "booster_ep-dlb": {
     "EXPERIENCE_POINTS": 25
    },
    "booster_hon-dlb": {
-    "HONOUR_POINTS": 25
+    "HONOUR_POINTS": 10
    },
    "booster_dmg-dlb": {
     "DAMAGE": 5
@@ -7701,7 +7834,7 @@
     "npc": 10
    },
    "booster_p-ep-b01": {
-    "pet_ep": 10
+    "pet_ep": 5
    },
    "booster_prc-b00": {
     "ozel_sans": 20
@@ -7758,6 +7891,34 @@
    "ABILITY_COOLDOWN_TIME": 55
   },
   "sure_sn": 36000,
+  "saat": {
+   "booster_cd-dlb": 1,
+   "booster_dmg-dlb": 1,
+   "booster_dmg-dlb2": 1,
+   "booster_ep-dlb": 1,
+   "booster_hon-dlb": 1,
+   "booster_hp-dlb": 1,
+   "booster_shd-dlb": 1,
+   "booster_prc-b00": 1,
+   "booster_prm-b00": 1,
+   "booster_rc-b00": 1,
+   "booster_rm-b00": 1,
+   "booster_as-b01": 3,
+   "booster_dropch-b01": 3,
+   "booster_prc-b01": 3,
+   "booster_prm-b01": 3,
+   "booster_rc-b01": 3,
+   "booster_rm-b01": 3,
+   "booster_rwrddbl-b01": 3,
+   "booster_kappa-b01": 5,
+   "booster_ep-50": 24,
+   "booster_hon-50": 24,
+   "booster_ephon-1": 24,
+   "booster_rep-s01": 24,
+   "booster_bb-01": 72,
+   "booster_qr-01": 72
+  },
+  "_saat": "mağazadan / ödülle gelen boosterın süresi, istemcinin Booster verisinin Hours alanı (açıklamalardaki %HOURS%; E5, MEK-7); listede olmayanlar (B01/B02 ailesi, DMG-H01, DMG-PVP01, NPC, P-EP-B01) sure_sn: 10 saat",
   "dusme": {
    "olasilik": {
     "boss": 0.03,
@@ -7778,20 +7939,20 @@
     "booster_res-b01"
    ]
   },
-  "_dmg_pvp01": "DMG-PVP01 yalnız oyunculara karşı (bot oyuncularla); uzaylılara etkisi yok",
+  "_dmg_pvp01": "DMG-PVP01, istemcinin Booster verisi: DAMAGE 1 (uzaylılara da), DAMAGE_PVP 5 ve DAMAGE_FACTIONS 4 (oyunculara: bot oyuncularla)",
   "ozel_sans_kaynaklar": [
    "resource_collectable_hybrid-alloy",
    "resource_collectable_indoctrineoil"
   ],
-  "_ozel_sans": "PRC-B00 / PRC-B01 (istemcinin metni): Hybrid Alloy ve Indoctrine Oil düşme olasılığı %20 / %50 artar (uzaylının ek ödülündeki olasılık çarpılır; dunya.extra_loot). Mağazadaki PRC-B00 gerçek zamanla 10 saat.",
+  "_ozel_sans": "PRC-B00 / PRC-B01 (istemcinin metni): Hybrid Alloy ve Indoctrine Oil düşme olasılığı %20 / %50 artar (uzaylının ek ödülündeki olasılık çarpılır; dunya.extra_loot). Mağazadaki PRC-B00 gerçek zamanla 1 saat (saat).",
   "_dlb2_ephon": "Assembly tariflerinin boosterları (istemcinin metinleri): DMG-DLB2 DMG-DLB ile aynı hasar bonusu; EPHON-1 \"Boosts the Experience and Honor you gain by 100%\". Önceden tanınmayıp görünmez depoya düşüyordu (2026-10-22).",
   "_istemci_dokuz": "istemcinin Booster verisi (E4, 2026-10-22 eksik taraması MEK-6): KAPPA-B01 hasar/EP/kalkan 5, EP-50 ve HON-50 50, REP-S01 onarım 10; RC-B01 / RM-B01 etkinlik puanı olasılığı 30 / miktarı 100 ve PRM-B00 Hybrid Alloy / Indoctrine Oil miktarı 100 (RC-B00 / RM-B00 / PRM-B01'in anahtarları); AS-B01 Agate Splinter miktarı +%100 (dunya.extra_loot); DROPCH-B01 Proxium olasılığı +%25 (Proxium sunucuda yok: etki noktası yok, RWRDDBL-B01 gibi)"
  },
  "_boosterlar_kaynak": "belgeler/wiki/extras_cpu_tech.md (darkorbitwiki Extras/Boosters): B01 hasar/can/onarım/EP/onur +%10, kalkan +%25, kalkan yenilenmesi +%10, uzaylı kaynağı +%25, yetenek beklemesi -%20; B02 (paylaşımlı) aynı, kalkan yenilenmesi +%25, bekleme -%30 (paylaşım tek oyunculu oyunda yok); DMG-H01 hasar +%2 ve isabet +%8; DMG-PVP01 NPC'ye hasar +%1. 10 saat, mağazada 10.000 U. Tür üst sınırları wiki tablosundan (hasar %35, can %30, kalkan %80, kalkan yenilenmesi %50, onarım %30, EP %200, onur %180, kaynak %100, bekleme %55). Boss/Uber uzaylıdan 1-10 saatlik booster düşer (wiki); olasılık (Boss %3, Uber %6) ve türler uyarlama. PRC-B00 bilinmiyor (satılmaz). ABILITY_COOLDOWN_TIME gemi yetenekleri yokken yalnız gösterilir. Günlük ödül ve uzaylı boosterları (wiki): EP-DLB +%25, HON-DLB +%25, DMG-DLB +%5, SHD-DLB +%25, HP-DLB +%10, CD-DLB -%5, NPC-B01/B02 uzaylılara hasar +%10, P-EP-B01 P.E.T. EP +%10 (gösterge türü yok: yalnız etki).",
  "satis_orani": 0.1,
  "_satis_orani_kaynak": "Hangarda satış (HangarShipSellItemRequest, HangarShipSellDroneRequest): fiyatın %10'u aynı para biriminde. Uyarlama: kayıtta satış yok, istemci fiyat göstermiyor, wiki fiyat vermiyor. Takılı eşya satılmaz.",
- "_hedef_carpan": "lazer_cephane hedef_carpan: adı geçen uzaylıya karşı normal çarpanın yerine (belgeler/wiki/lasers_ammo.md: SBL-100 x8 Sibelon, A-BL x8 Invoke/Behemoth, RB-214 x8 DemaNeR, VB-142 x7 Styxus/Charopos, EMMA-20 x7 Mimesis)",
- "_gemi_bonuslari": "gemiler.bonus: tasarım gemilerinin kalıcı bonusları (ships.md: G-/V-/A-/C-/S- türevleri, BB-Solemn; pvp_hasar bot oyuncularla); Leonov harita_bonusu X-1..X-4'te +96.000 can, +%50 hasar, +%100 roket, +%100 kalkan (hız +20 ve kargo +500 uygulanmadı). Citadel 2 roket yuvası (ships.md). G-Saturn +%20 can (ships.md; Kronos kapısının şanslı ödülü, mağazada yok).",
+ "_hedef_carpan": "lazer_cephane hedef_carpan: adı geçen uzaylıya karşı normal çarpanın yerine (büyük/küçük harf ayrımsız, kelime sınırıyla; istemcinin metinleri: SBL-100 x8 Sibelon/Sibelonit ve Boss/Uber sürümleri, A-BL x8 Invoke/Behemoth, RB-214 x8 Demaner, VB-142 x7 Styxus/Charopos/Lanatum, EMAA-20 x7 Mimesis). kalkan_carpan: yalnız kalkanı vuran ve çektiğini oyuncuya veren kısım (Shield Leech: SAB-50 x2, CBO-100 x1)",
+ "_gemi_bonuslari": "gemiler.bonus: geminin kalıcı pasifi. İstemcinin açıklamalarından (items_ship_*_description; E5): Solace/Sentinel kalkan +%10, Spectrum +%25, Diminisher/Venom hasar +%5, Cyborg +%10, Hammerclaw can +%25, Mimesis kalkan +%10 ve kalkan delme +%5, Goliath-X lazer ve EP +%2, G-Surgeon hasar/onur/EP +%6. Yalnız wiki (ships.md; istemci sayı vermiyor, doğrulanmadı): Solace Plus kalkan +%15, Spectrum Plus +%25, Hecate ve Hecate Plus hasar +%7 ve kalkan +%10, Hammerclaw Plus can +%25, Spearhead Plus kaçınma +%5, Solaris Plus takılı modül başına hasar +%3 (modul_basina, en çok 4). Tasarım türevleri (G-/V-/A-/C-/S-, BB-Solemn) ships.md'den; pvp_hasar bot oyuncularla. modul_carpani: takılı gemi modüllerinin nitelikleri (Orcus \"boosted by 1.75x\", eksiler de). stim_bariyer (Pusat Plus): sans olasılıkla gövde hasarının oran'ı alınmaz ve cana eklenir (wiki: 1.000 -> 900 alınır, 100 onarılır; msg_stim_barrier_activated). ek_roket_sans (Tartarus Plus): fırlatıcı salvosunda +1 roket (\"1 in 5 chance\"). Leonov harita_bonusu kendi firmasının X-1..X-4'ünde (istemci \"in your Company's sectors\"): +96.000 can, +%50 hasar, +%100 roket, +%100 kalkan, +20 hız (hiz_mutlak), +500 kargo (kargo_mutlak). Kargo istemcinin gemi verisinden (Pusat 1.000, Solace/Spectrum 1.600, V-Lightning 1.100). Citadel 2 roket yuvası (ships.md). G-Saturn +%20 can (ships.md; Kronos kapısının şanslı ödülü, mağazada yok). Holo'nun Black Shield'ı (modül başına can) oranı kaynaksız: yok. Goliath Plus isi_basina: P.E.T.'in her HEAT bonusu HEAT seviyesi başına +%1 (wiki; istemci \"improves its own P.E.T.10 HEAT abilities as well as its own stats modifiers\" sayı vermiyor, doğrulanmadı).",
  "ekstralar": {
   "equipment_extra_cpu_sle-01": {
    "ek_yuva": 2
@@ -7965,21 +8126,21 @@
   }
  },
  "_ekstralar": "Ekstralar ve CPU'lar (belgeler/wiki/extras_cpu_tech.md; ekstra.py). Etkin CPU'lar (Jump, gizlenme, AIM, AROL-X, RL-LB, Smart Bomb, Insta-Shield) aynı tabloda kisayol alanıyla.",
- "_formasyon_anahtarlari": "formasyonlar (belgeler/wiki/drones_pet.md): lazer, roket, npc (uzaylılara lazer+roket), npc_lazer (uzaylılara lazer), pvp_lazer (oyunculara; bot oyuncular gelince), mayin, kalkan, can, hiz, emme (kalkan emme; 3D Drill \"Shield Spread\" da), kacinma, kalkan_delme (uzaylının kalkan emmesini düşürür: Moth +%20, Double Arrow +%10, Pincer -%10), kalkan_dolum_sn (saniyede azami kalkanın oranı kadar dolum, savaşta da; kalkan_dolum_azami sınırı: Diamond %1 en çok 5.000, 3D Dome %0,5), kalkan_erime_sn (savaştayken saniyede azami kalkanın oranı kadar erime: Moth, 3D Wheel; uyarlama: savaş dışında olağan dolum sürsün diye), roket_bekleme, fircatici_bekleme (roket fırlatıcısı: Star +%33, 3D Ring +%25, 3D Dome -%25), ep, onur",
- "_roketler": "roketler (belgeler/wiki/rockets.md; görsel kimlikleri ve bekleme grupları istemcinin kodundan): hasar, kimlik (0|v mesajındaki roket görseli), ozel (kendi bekleme grubu: bekleme_grubu = istemcinin CooldownType'ı, bekleme_sn), etki {durum: [değer, sn]} (durum.py: yavas, isabet, donuk), fx (0|n|fx görseli), hedef_carpan. Ayrıca: yalniz_govde (SP-100X), kalkan_hasar/kalkan_cal/kendine_yavas (SR-5), gorunum_sn (WIZ-X).",
+ "_formasyon_anahtarlari": "formasyonlar (belgeler/wiki/drones_pet.md): lazer, roket, npc (uzaylılara lazer+roket), npc_lazer (uzaylılara lazer), pvp_lazer (oyunculara; bot oyuncular gelince), mayin, kalkan, can, hiz, emme (kalkan emme; 3D Drill \"Shield Spread\" da), kacinma, kalkan_delme (uzaylının kalkan emmesini düşürür: Moth +%20, Double Arrow +%10, Pincer -%10), kalkan_dolum_sn (saniyede azami kalkanın oranı kadar dolum, savaşta da; kalkan_dolum_azami sınırı: Diamond %1 en çok 5.000, 3D Dome %0,5), kalkan_erime_sn (saniyede azami kalkanın oranı kadar erime, savaş dışında da: Moth, 3D Wheel; istemci \"drains shields by 5% per second\"), roket_bekleme, fircatici_bekleme (roket fırlatıcısı: Star +%33, 3D Ring +%25, 3D Dome -%25), ep, onur. Turtle istemcide yalnız lazer ve roket -%7,5 (\"laser and rocket damage decrease by 7.5%\"; E5)",
+ "_roketler": "roketler (belgeler/wiki/rockets.md; görsel kimlikleri ve bekleme grupları istemcinin kodundan): hasar, kimlik (0|v mesajındaki roket görseli), ozel (kendi bekleme grubu: bekleme_grubu = istemcinin CooldownType'ı, bekleme_sn), etki {durum: [değer, sn]} (durum.py: yavas, isabet, donuk), fx (0|n|fx görseli), hedef_carpan. Ayrıca: yalniz_govde (SP-100X), kalkan_hasar/kalkan_cal/kendine_yavas (SR-5), gorunum_sn (WIZ-X). isabet: roketin taban isabeti (yoksa npc.json roket_isabet); wikiwiki 弾薬 R-310 %70, PLT-2026 %80, PLT-2021 %90, PLT-3030 %65 (istemci items_ammunition_rocket_plt-3030_description \"lower accuracy rate\").",
  "savas_esyalari": {
   "_kaynak": "belgeler/wiki/extras_cpu_tech.md, rockets.md; istemcinin kodu (mayın türleri, bekleme grupları ve süreleri, EMP menzili 455, fırlatıcı menzili 650). Uyarlamalar _not alanlarında.",
   "mayin": {
    "bekleme_grubu": 1,
    "bekleme_sn": 30,
-   "kurulma_sn": 2,
+   "kurulma_sn": 5,
    "omur_sn": 120,
    "tetik": 125,
    "patlama": 275,
    "istif": 60,
    "harita_siniri": 20,
    "kendine_hasar": true,
-   "_not": "bekleme istemcinin tablosundan; kurulma, ömür, tetik ve patlama yarıçapı, üst üste koyma mesafesi ve harita sınırı uyarlama (istemci tanımlamıyor; patlama halkası 300). kendine_hasar: wiki Smart Bomb için \"kendi gemine zarar vermez\" diyor, yani mayın verir"
+   "_not": "bekleme istemcinin tablosundan; kurulma 5 sn istemci resource_faq/attack_mines_p \"activated 5 seconds after being launched\" (SLM-01 1 sn: items_ammunition_mine_slm-01_description); ömür, tetik ve patlama yarıçapı, üst üste koyma mesafesi ve harita sınırı uyarlama (istemci tanımlamıyor; patlama halkası 300). kendine_hasar: wiki Smart Bomb için \"kendi gemine zarar vermez\" diyor, yani mayın verir"
   },
   "mayinlar": {
    "ammunition_mine_acm-01": {
@@ -8004,7 +8165,8 @@
     "yavas": [
      0.5,
      5
-    ]
+    ],
+    "kurulma_sn": 1
    },
    "ammunition_mine_im-01": {
     "tip": 17,
@@ -8052,10 +8214,10 @@
   "emp": {
    "menu": "ammunition_specialammo_emp-01",
    "yaricap": 455,
-   "saskinlik_sn": 5,
+   "saskinlik_sn": 3,
    "bekleme_grubu": 9,
    "bekleme_sn": 35,
-   "_not": "uzaylıların hedefi sıfırlanır (saskinlik_sn ateş etmez: uyarlama), oyuncunun yavaşlatmaları kalkar"
+   "_not": "uzaylıların hedefi sıfırlanır (saskinlik_sn ateş etmez: wikiwiki EMP-01 \"約3秒間\"), oyuncunun yavaşlatmaları kalkar"
   },
   "atlama_cpu": {
    "menu": "equipment_extra_cpu_jp",
@@ -8301,9 +8463,9 @@
    },
    "tech_precision-targeter": {
     "sure_sn": 900,
-    "bekleme_sn": 900,
+    "bekleme_sn": 300,
     "roket_tam_isabet": true,
-    "_not": "roketler hep isabet eder; süre uyarlama"
+    "_not": "roketler hep isabet eder; süre istemci tf_tech_RPM_1_data_duration \"15 minutes\", bekleme wikiwiki TECH CENTER \"5分\""
    },
    "tech_backup-shields": {
     "bekleme_sn": 120,
@@ -8332,22 +8494,23 @@
    },
    "tech_explosive-charging-blob": {
     "gorsel": 73,
-    "sure_sn": 10,
+    "sure_sn": 6,
     "bekleme_sn": 120,
     "hasar": [
      50000,
      350000
     ],
     "yaricap": 500,
-    "_not": "dolum süresi boyunca hasar 50.000'den 350.000'e çıkar, sonunda çevredeki uzaylılara patlar; gemi yok olursa o anki hasarla patlar (uyarlama)"
+    "_not": "istemci tf_tech_ECB_descr: 6 sn sonra patlar, en çok 350.000; dolum süresi boyunca hasar 50.000'den 350.000'e çıkar, sonunda çevredeki uzaylılara patlar; gemi yok olursa o anki hasarla patlar (uyarlama: istemcide hedefe yapışır)"
    },
    "tech_burning-trail": {
-    "sure_sn": 5,
+    "sure_sn": 10,
     "bekleme_sn": 120,
     "hasar": 40000,
     "tetik": 150,
     "omur_sn": 30,
-    "_not": "saniyede bir yük bırakır (en çok 5: 200.000); uzaylı yaklaşınca 40.000 (uyarlama)"
+    "_not": "istemci tf_tech_BT_descr: 10 sn ateş izi; aralik_sn saniyede bir yük bırakır (en çok 5: wiki \"en çok 200.000\"; aralık uyarlama); uzaylı yaklaşınca 40.000 (uyarlama)",
+    "aralik_sn": 2
    },
    "tech_npc-nuke": {
     "sure_sn": 60,
@@ -8544,89 +8707,6 @@
     "isabet": 0.1
    }
   },
-  "ship_cyborg_design_cyborg-amor": {
-   "bonus": {
-    "lazer": 0.1,
-    "roket": 0.1
-   }
-  },
-  "ship_cyborg_design_cyborg-horus": {
-   "bonus": {
-    "lazer": 0.1,
-    "roket": 0.1
-   }
-  },
-  "ship_cyborg_design_cyborg-infinite": {
-   "bonus": {
-    "lazer": 0.1,
-    "roket": 0.1
-   }
-  },
-  "ship_cyborg_design_cyborg-lava": {
-   "bonus": {
-    "lazer": 0.1,
-    "roket": 0.1
-   }
-  },
-  "ship_cyborg_design_cyborg-psyche": {
-   "bonus": {
-    "lazer": 0.1,
-    "roket": 0.1
-   }
-  },
-  "ship_cyborg_design_cyborg-ullrin": {
-   "bonus": {
-    "lazer": 0.1,
-    "roket": 0.1
-   }
-  },
-  "ship_diminisher_design_diminisher-expo2016": {
-   "bonus": {
-    "lazer": 0.05,
-    "roket": 0.05
-   }
-  },
-  "ship_goliath-x_design_goliath-x-borealis": {
-   "bonus": {
-    "lazer": 0.02,
-    "roket": 0.02,
-    "ep": 0.02
-   }
-  },
-  "ship_hammerclaw-plus_design_hammerclaw-plus-argon": {
-   "bonus": {
-    "can": 0.25
-   }
-  },
-  "ship_hammerclaw_design_hammerclaw-carbonite": {
-   "bonus": {
-    "can": 0.25
-   }
-  },
-  "ship_hammerclaw_design_hammerclaw-frozen": {
-   "bonus": {
-    "can": 0.25
-   }
-  },
-  "ship_hammerclaw_design_hammerclaw-lava": {
-   "bonus": {
-    "can": 0.25
-   }
-  },
-  "ship_hecate-plus_design_hecate-plus-empyrian": {
-   "bonus": {
-    "lazer": 0.07,
-    "roket": 0.07,
-    "kalkan": 0.1
-   }
-  },
-  "ship_hecate_design_hecate-dusklight": {
-   "bonus": {
-    "lazer": 0.07,
-    "roket": 0.07,
-    "kalkan": 0.1
-   }
-  },
   "ship_holo_design_holo-epion": {
    "hp": 350000
   },
@@ -8638,59 +8718,6 @@
   },
   "ship_holo_design_holo-smite": {
    "hp": 350000
-  },
-  "ship_sentinel_design_sentinel-frost": {
-   "bonus": {
-    "kalkan": 0.1
-   }
-  },
-  "ship_solace-plus_design_solace-plus-phantasm": {
-   "bonus": {
-    "kalkan": 0.15
-   }
-  },
-  "ship_solace_design_solace-blaze": {
-   "bonus": {
-    "kalkan": 0.1
-   }
-  },
-  "ship_solaris-plus_design_solaris-plus-ullrin": {
-   "modul_basina": {
-    "lazer": 0.03,
-    "roket": 0.03
-   },
-   "modul_azami": 4
-  },
-  "ship_spearhead-plus_design_spearhead-plus-empyrian": {
-   "bonus": {
-    "kacinma": 0.05
-   }
-  },
-  "ship_spectrum-plus_design_spectrum-plus-amor": {
-   "bonus": {
-    "kalkan": 0.25
-   }
-  },
-  "ship_spectrum-plus_design_spectrum-plus-asimov": {
-   "bonus": {
-    "kalkan": 0.25
-   }
-  },
-  "ship_spectrum-plus_design_spectrum-plus-psyche": {
-   "bonus": {
-    "kalkan": 0.25
-   }
-  },
-  "ship_spectrum_design_spectrum-frost": {
-   "bonus": {
-    "kalkan": 0.25
-   }
-  },
-  "ship_venom_design_venom-frost": {
-   "bonus": {
-    "lazer": 0.05,
-    "roket": 0.05
-   }
   }
  },
  "_tasarimlar": "giyilen tasarımın kendi değerleri (tools/tasarim_degerleri.py; profil.ship_row): hp, temel_hiz ve yuvalar istemcinin gemi verisinden (taban gemiden farklıysa), bonus wiki ships.md'den (taban geminin bonusuna eklenir), modul_basina/modul_azami takılı gemi modülü başına",

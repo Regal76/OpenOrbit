@@ -1,7 +1,9 @@
 """LoW (Lord of War), tek kişilik sürüm (yol haritası Aşama 4). Değerler ve kaynaklar data/low.json'da.
 
-Akış (dünya döngüsünden, kilit altında): giriş -> eski korsanlar türlerine göre dalga dalga -> dört röle istasyonu sırayla (yanında
-durarak etkinleşir; istemcinin RELAY_STATION varlığı) -> Century Falcon ve eskortu -> bitti: ortada firmanın X-3'üne dönüş portalı.
+Akış (dünya döngüsünden, kilit altında): giriş -> eski korsanlar türlerine göre dalga dalga -> dört röle istasyonu sırayla (istemcinin
+RELAY_STATION varlığı; wiki: "shoot the station until its green indicator loads": vurulunca dolar, dünyanın asset_targets'ı; yedek
+olarak yanında durunca da) -> Century Falcon ve eskortu -> bitti: ortada firmanın X-3'üne dönüş portalı. Etkin her röle haritanın
+ortasında onarım robotunu hızlandırır (wiki "speeds HP regeneration in the middle of the map").
 İlerleme profilde (low): ölünce donus_sn içinde X-3'teki portaldan dönülürse kaldığı aşamadan sürer (dalganın uzaylıları yeniden gelir),
 yoksa baştan. LoW'da tamir yalnız istasyonda (X-1); atlama CPU'su çalışmaz.
 """
@@ -36,6 +38,7 @@ class Low:
             self.p.d['low'] = dict(st, olum=None) if returning else fresh()
             self.p.dirty = True
         self.t = now + L['giris_sn']
+        world.asset_targets = self             # röle seçilir ve vurulur (dunya.asset_laser)
         self.say('devam' if returning else 'giris')
         self.w.log('   LoW: %s (%s)' % ('kaldığı yerden' if returning else 'baştan', self.st['asama']))
 
@@ -117,7 +120,7 @@ class Low:
         w.log('   LoW röle istasyonu %d: (%d,%d)' % (no, x, y))
 
     def relay_tick(self, now):
-        """Röle: yanında yaricap içinde, yakında (yaricap x 2) uzaylı yokken ilerler; sn saniyede etkinleşir."""
+        """Röle (yedek yol): yanında yaricap içinde, yakında (yaricap x 2) uzaylı yokken ilerler; sn saniyede etkinleşir."""
         w, r, cfg = self.w, self.relay, L['role']
         dt, r['son'] = now - r['son'], now
         hx, hy = w.hero_pos(now)
@@ -127,6 +130,11 @@ class Low:
                for n in w.npcs.values() if n.alive and n.id in self.alive()):
             return
         r['ilerleme'] += min(dt, 1.0)
+        self.relay_step(now)
+
+    def relay_step(self, now):
+        """Rölenin ilerlemesi (saniye; vuruş hasar/hasar x sn kadar): yüzde iletisi, dolunca etkinleşir."""
+        w, r, cfg = self.w, self.relay, L['role']
         pct = min(100, int(100 * r['ilerleme'] / cfg['sn']))
         no = self.st['role'] + 1
         if pct // 25 > r['yuzde'] // 25 and pct < 100:
@@ -144,6 +152,44 @@ class Low:
         else:
             self.save(role=no)
             self.place_relay(now)
+
+    def regen(self, now):
+        """Onarım robotu çarpanı: haritanın ortasında (merkez.yaricap) etkin röle başına +merkez.onarim."""
+        c = L['role']['merkez']
+        hx, hy = self.w.hero_pos(now)
+        if math.hypot(hx - self.w.map_w / 2, hy - self.w.map_h / 2) > c['yaricap']:
+            return 1.0
+        return 1 + c['onarim'] * self.st.get('role', 0)
+
+    # ------------------------------------------------------------ röleyi vurma (dunya.asset_targets)
+    def charge(self):
+        """Rölenin dolumu hasar biriminde: (şimdiki, gereken)."""
+        cfg = L['role']
+        return int(self.relay['ilerleme'] / cfg['sn'] * cfg['hasar']), cfg['hasar']
+
+    def asset_pos(self, uid):
+        r = self.relay
+        return (r['x'], r['y']) if r and uid == r['kimlik'] else None
+
+    def asset_select(self, uid):
+        now, need = self.charge()
+        return [('ShipSelectionCommand', dict(userId=int(uid), shipType=0, shield=0, shieldMax=0, hitpoints=now, hitpointsMax=need,
+                                              nanoHull=0, maxNanoHull=0, shieldSkill=False)),
+                ('AssetInfoCommand', dict(assetId=int(uid), type=UZ.mod('AssetTypeModule', typeValue=RELAY_STATION), designId=0,
+                                          expansionStage=0, hitpoints=now, maxHitpoints=need, shielded=False, shieldEnergy=0,
+                                          maxShieldEnergy=0))]
+
+    def asset_attackable(self, uid):
+        return []
+
+    def asset_hit(self, uid, dmg):
+        """Vuruş röleyi doldurur (gösterge: AttackHitAssetCommand'ın canı dolum)."""
+        cfg = L['role']
+        self.relay['ilerleme'] = min(cfg['sn'], self.relay['ilerleme'] + dmg / float(cfg['hasar']) * cfg['sn'])
+        now, need = self.charge()
+        msgs = [('AttackHitAssetCommand', dict(assetId=int(uid), hitpointsNow=now, hitpointsMax=need))]
+        self.relay_step(time.time())
+        return msgs
 
     def spawn_boss(self):
         self.boss = self.spawn(L['boss'], 1)[0].id

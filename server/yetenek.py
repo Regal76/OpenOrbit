@@ -31,11 +31,12 @@ def level(p, sid):
 
 
 def mods(p):
-    """Yeteneklerin bonusları (profil.mods'a eklenir): yüzdeler oran, Ship Hull mutlak can."""
+    """Yeteneklerin bonusları (profil.mods'a eklenir): yüzdeler oran, Ship Hull mutlak can. II basamağı I'in devamı (skilltree
+    successor; değerler kesintisiz: Ship Hull 5.000, 10.000 → 15.000, 25.000, 50.000): II açıksa I sayılmaz."""
     out = {}
     for sid, lv in state(p)['seviye'].items():
         s = SKILLS.get(sid)
-        if not s or not lv or not s['etki']:
+        if not s or not lv or not s['etki'] or (sid.endswith('a') and level(p, sid[:-1] + 'b')):
             continue
         v = s['degerler'][lv - 1]
         out[s['etki']] = out.get(s['etki'], 0) + (v if s['birim'] == 'absolute' else v / 100.0)

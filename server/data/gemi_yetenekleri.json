@@ -1,6 +1,6 @@
 {
  "_kaynak": "Süre, bekleme ve etkiler belgeler/wiki/ships.md (darkorbitwiki). Menü öğeleri istemcinin kısayol menüsünden (kayıttaki MenuInitializationCommand, 'ship_abilities' kategorisi, 65 öğe). Görseller istemcinin kodundan: AbilityEffectActivationCommand.selectedAbilityId = istemcinin beceri kodu (EventAssemblySkills: 1 Solace, 2 Diminisher, 3 Spectrum, 4 Sentinel, 5 Venom, 6 hız efekti 'speed-buff-effect'), AbilityStartCommand: 102 Draw Fire, 106 Target Marker (MarkedByRecon), 110 EMP görseli, 111 mini harita (AddDoubleMinimapRevealEffect), 101 Aegis HP Repair ve 104 Shield Repair (istemci bu kimliklerde abilitySounds 90 aegisHPRepair ve 91 aegisShieldRecharge seslerini çalar; belgeler/istemci/gorseller.md). Repair Pod haritaya HEALING_POD (AssetType 33) nesnesi koyar ('varlik'; canlı deneme 2026-10-17). Fortify ve Protection gemi görünümü ('gorunum': istemcinin VisualModifier'ı, VisualModifierCommand; 8 FORTIFY zırh, 9 PROTECT_OWNER kırmızı halka; canlı deneme 2026-10-17). Ultimate Cloak'un görseli kesinleşmedi.",
- "_etkiler": "can_yuzde: anında azami canın oranı; can_onar / kalkan_onar: süre boyunca toplam (saniyede eşit); mods: süre boyunca profil bonusları (hiz, lazer, alinan_hasar, alinan_lazer, kalkan_hasari; sabit_hiz: gösterilen hız bu değere ayarlanır, 0 = kıpırdamaz); hedef_kalkan_sil: hedefin o anki kalkanından oran (başta ve sonda), hedef_kalkan_emme: hedefin kalkanının emme çarpanı; zehir: hedefin gövdesine saniyede bir vuruş (ilk, artis, en_cok, toplam); hedef_hasar: işaretli hedefe hasar bonusu; ates_cek: menzildeki uzaylılar saldırır; gizlen: uzaylılar görmez (saldırınca, kutu toplayınca, atlayınca biter); gorus: görüş mesafesi çarpanı; roket_bekleme_ms: roket bekleme süresi.",
+ "_etkiler": "can_yuzde: anında azami canın oranı; can_onar / kalkan_onar: süre boyunca toplam (saniyede eşit); mods: süre boyunca profil bonusları (hiz, lazer, alinan_hasar, alinan_lazer, kalkan_hasari; sabit_hiz: gösterilen hız bu değere ayarlanır, 0 = kıpırdamaz); hedef_kalkan_sil: hedefin o anki kalkanından oran (başta ve sonda), hedef_kalkan_emme: hedefin kalkanının emme çarpanı; zehir: hedefin gövdesine saniyede bir vuruş (ilk, artis, en_cok, toplam); hedef_hasar: işaretli hedefe hasar bonusu; ates_cek: menzildeki uzaylılar saldırır; gizlen: uzaylılar görmez (saldırınca, kutu toplayınca, atlayınca biter); gorus: görüş mesafesi çarpanı; roket_bekleme_ms: roket bekleme süresi. E5: hedef_kalkan_kapat: hedefin kalkanından oran süre boyunca kapanır, bitince geri (Shield Disarray); hedef_atis_araligi: hedefin lazer beklemesi [en az, en çok] sn (DDoL); yuk {kaynak: oldurme | zincir, azami, menzil (etkin değilken yük başına lazer menzili), mods (harcanan yük başına), artan (her yük bir öncekinden bu kadar fazla), azami_hiz}: yük biriktiren yetenek, yüksüz basılmaz, etkinleşince yükler harcanır (Momentum, Stockpile, Volt Discharge); ters_cevir: takılı modüllerin eksi nitelikleri artıya, eksi yoksa bu bonuslar (Self Reversal); dolum {saniyede, azami, bol_yaricap}: hedefe dolan vuruş, dolunca / süre bitince / hedef menzilden çıkınca (Charge Shot); kalkan_erit: saniyede azami kalkanın oranı kadar erime, sifirda_kapan: 0'da yetenek biter (Scramble, Supercharge Plus); ucgen_patlama {hasar, yaricap, uzaklik}: hedefin arkasında üçgen üç patlama (Triple Barrage); sonraki_gsp: bir sonraki Singularity Drive atışına bir kez (Quantum Amplifier); lazer_yansit: alinan_lazer'in azalttığı hasar saldırana döner (Prismatic Reflecting); olumsuz: can 1'de kalınca bu kadar sn dokunulmaz ve yetenek biter (Volt Back-up); fircatici_hasar, top, top_bekleme: mods anahtarları (fırlatıcı hasarı, Particle Cannon hasarı ve beklemesi).",
  "yetenekler": {
   "ability_solace": {
    "ad": "Nano-Cluster Repairer",
@@ -240,7 +240,7 @@
    "etki": {
     "roket_bekleme_ms": 1000
    },
-   "_not": "bekleme wiki'de yok (uyarlama 60 sn)"
+   "_not": "bekleme istemcinin gemi verisinden (Tartarus 24 sn, Tartarus Plus 72 sn); normal roket beklemesinin de 1 sn'ye inmesi doğrulanmadı (istemci: fırlatıcının \"one second instead of three\")"
   },
   "ability_basilisk_noxious-nebula": {
    "ad": "Noxious Nebula",
@@ -311,18 +311,23 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "hedef_kalkan_sil": 0.5,
-    "hedef_kalkan_emme": 1.0
+    "hedef_kalkan_kapat": 0.5
    },
    "hedefli": true,
-   "_not": "uyarlama: hedefin kalkanı yarıya"
+   "_not": "istemci: hedefin kalkanının %50'si süre boyunca kapanır, bitince kapanan miktar geri eklenir"
   },
   "ability_disruptor_ddol": {
    "ad": "DDoL",
    "sure_sn": 0,
    "bekleme_sn": 60,
-   "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "etki": {
+    "hedef_atis_araligi": [
+     3,
+     5
+    ]
+   },
+   "_not": "istemci: hedefin lazer beklemesi süre boyunca 3-5 sn arası rastgele (metin oyuncuyla sınırlamıyor: uzaylılara da; doğrulanmadı)",
+   "hedefli": true
   },
   "ability_goliath-x_frozen-claw": {
    "ad": "Frozen Claw",
@@ -359,20 +364,29 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "mods": {
-     "kalkan": 0.02
+    "yuk": {
+     "kaynak": "oldurme",
+     "azami": 10,
+     "menzil": 5,
+     "artan": {
+      "kalkan": 0.002
+     }
     }
    },
-   "_not": "uyarlama: yük sayılmaz, kalkan +%2"
+   "_not": "istemci: uzaylı öldürme bir yük (en çok 10); etkin değilken yük başına menzil +5; etkinleşince kalkan +%0,2, her yük öncekinden %0,2 fazla (10 yükte +%11); yükler sıfırlanır"
   },
   "ability_holo_self-reversal": {
    "ad": "Self Reversal",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "ters_cevir": true
+    "ters_cevir": {
+     "lazer": 0.1,
+     "roket": 0.1,
+     "hiz": 0.1
+    }
    },
-   "_not": "eksi modül bonusları artıya döner; yoksa +%10 hız ve hasar"
+   "_not": "istemci: takılı modüllerin eksi nitelikleri süre boyunca artıya döner; eksi yoksa hasar ve hız bonusu (wiki +%10/+%10)"
   },
   "ability_holo_enemy-reversal": {
    "ad": "Enemy Reversal",
@@ -391,14 +405,17 @@
      "oran": 0.8
     }
    },
-   "_not": "yarıçap uyarlama"
+   "_not": "istemci: alan hedefin konumunda, içindekiler %80 yavaş; yarıçap uyarlama (600)",
+   "hedefli": true
   },
   "ability_hyperion_qa": {
    "ad": "Quantum Amplifier",
    "sure_sn": 0,
    "bekleme_sn": 60,
-   "etki": {},
-   "_not": "etkisi wiki'de yok"
+   "etki": {
+    "sonraki_gsp": 0.1
+   },
+   "_not": "istemci: Singularity Drive saldırı hasarı +%10 (süresi 0: bir sonraki atışa; doğrulanmadı)"
   },
   "ability_keres_spr": {
    "ad": "Spread",
@@ -431,16 +448,18 @@
      "kacinma": 0.65,
      "lazer": 0.25,
      "hiz": 0.25
-    }
+    },
+    "kalkan_erit": 0.1,
+    "sifirda_kapan": true
    },
-   "_not": "kalkan erimesi uygulanmadı"
+   "_not": "istemci: kalkan süre boyunca erir, 0'da kapanır; saniyede azami kalkanın %10'u (wiki)"
   },
   "ability_mimesis_phase-out": {
    "ad": "Phase Out",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "ışınlanma görseli istemcide: uyarlama etkisiz"
+   "_not": "istemci: rastgele yöne 50 birim ışınlar (korsan haritası, Galaksi Kapısı, CSZ, UBA hariç); ışınlanmayı istemci kendisi çiziyor, konumun eşlenmesi canlıda doğrulanmadı: etkisiz"
   },
   "ability_orcus_assimilate": {
    "ad": "Assimilate",
@@ -492,10 +511,13 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "hedef_vurus": 300000
+    "dolum": {
+     "saniyede": 20000,
+     "azami": 300000
+    }
    },
    "hedefli": true,
-   "_not": "uyarlama: dolum beklenmez"
+   "_not": "istemci: menzildeki hedefe yük biriktirir, dolunca ya da hedef menzilden çıkınca biriken vurur; 300.000 (wiki) süre boyunca dolar"
   },
   "ability_retiarus_spc": {
    "ad": "Supercharge",
@@ -512,10 +534,17 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "hedef_vurus": 450000
+    "dolum": {
+     "saniyede": 45000,
+     "azami": 450000,
+     "bol_yaricap": 200
+    },
+    "mods": {
+     "hiz": -0.1
+    }
    },
    "hedefli": true,
-   "_not": "uyarlama: dolum beklenmez, bölünmez"
+   "_not": "istemci: dolum bitince vurur; wiki: saniyede +45.000, en çok 450.000, hedefin 200 çevresindekilere bölünür, dolarken hız -%10"
   },
   "ability_retiarus-plus_spcp": {
    "ad": "Supercharge Plus",
@@ -523,10 +552,13 @@
    "bekleme_sn": 60,
    "etki": {
     "mods": {
-     "hiz": 0.1
-    }
+     "hiz": 0.1,
+     "top": 0.1,
+     "top_bekleme": -0.5
+    },
+    "kalkan_erit": 0.1
    },
-   "_not": "kalkan erimesi uygulanmadı"
+   "_not": "istemci: hız, Particle Cannon beklemesi kısalır ve hasarı artar, saniyede kalkan kaybı (wiki: bekleme -%50, hasar +%10, kalkan -%10/sn)"
   },
   "ability_solace-plus_nano-cluster-repairer-plus": {
    "ad": "Nano-Cluster Repairer Plus",
@@ -571,11 +603,13 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
+    "hedef_hasar": 0.04,
     "mods": {
-     "lazer": 0.04,
      "hiz": 0.05
     }
-   }
+   },
+   "hedefli": true,
+   "_not": "istemci: hedefi işaretler (lazer hasarı artar; wiki +%4), kendi hızı +%5; hedefin kalkan delmesi -%50 (PvP)"
   },
   "ability_spectrum-plus_prismatic-reflecting": {
    "ad": "Prismatic Reflecting",
@@ -585,8 +619,10 @@
     "mods": {
      "lazer": -0.5,
      "alinan_lazer": -0.7
-    }
-   }
+    },
+    "lazer_yansit": true
+   },
+   "_not": "istemci: gelen lazer hasarı -%70, azaltılan kısım saldırana döner; kendi lazeri -%50"
   },
   "ability_tartarus-plus_rapid-fire-plus": {
    "ad": "Rapid Fire Plus",
@@ -595,9 +631,10 @@
    "etki": {
     "roket_bekleme_ms": 1000,
     "mods": {
-     "roket": 0.2
+     "fircatici_hasar": 0.2
     }
-   }
+   },
+   "_not": "istemci: fırlatıcıyı doldurur, fırlatıcı hasarı +%20 (yalnız fırlatıcı)"
   },
   "ability_tartarus-plus_speed-boost-plus": {
    "ad": "Speed Boost Plus",
@@ -630,44 +667,58 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "mods": {
-     "lazer": 0.15
+    "yuk": {
+     "kaynak": "zincir",
+     "azami": 20,
+     "mods": {
+      "lazer": 0.0075
+     }
     }
    },
-   "_not": "uyarlama: yük tam sayılır"
+   "_not": "istemci: Voltage Link'in her atlaması bir yük (en çok 20), etkinleşince hepsi harcanır; yük başına lazer +%0,75 (wiki)"
   },
   "ability_tempest_volt-backup": {
    "ad": "Volt Back-up",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "olumsuz": true
-   }
+    "olumsuz": 3
+   },
+   "_not": "istemci: süre boyunca can 1'in altına inmez, ardından 3 sn dokunulmaz ve yetenek beklemeye girer"
   },
   "ability_zephyr_mmt": {
    "ad": "Momentum",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "mods": {
-     "hiz": 0.15
+    "yuk": {
+     "kaynak": "oldurme",
+     "azami": 20,
+     "menzil": 5,
+     "mods": {
+      "hiz": 0.015
+     },
+     "azami_hiz": 750
     }
    },
-   "_not": "uyarlama: 10 yük sayılır"
+   "_not": "istemci: uzaylı öldürme bir yük (en çok 20); etkin değilken yük başına menzil +5; etkinleşince yük başına hız +%1,5 (en çok 750), yükler sıfırlanır"
   },
   "ability_zephyr_tbr": {
    "ad": "Triple Barrage",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {
-    "alan_hasar": {
-     "yaricap": 300,
-     "anlik": 60000
+    "ucgen_patlama": {
+     "hasar": 20000,
+     "yaricap": 150,
+     "uzaklik": 150
     }
-   }
+   },
+   "hedefli": true,
+   "_not": "istemci: hedefin arkasında üçgen üç patlama, her biri 20.000; üst üste binen alanlar toplanır. Yarıçap ve aralık uyarlama (150)"
   }
  },
- "_gemiler": "Gemi -> yetenekleri; Elite/Veteran tasarımları ana geminin yetenekleriyle, carpanlar wiki'deki tasarım bonusları (sure, bekleme, etki). Defcom/Raven Ultimate Cloaking, Yamato/Ronin Travel (wiki): istemcide kendi öğeleri yok, Spearhead'in ve Citadel'in öğesi kullanılır.",
+ "_gemiler": "Gemi -> yetenekleri; Elite/Veteran tasarımları ana geminin yetenekleriyle, carpanlar wiki'deki tasarım bonusları (sure, bekleme, etki). Defcom/Raven Ultimate Cloaking, Yamato/Ronin Travel (wiki): istemcide kendi öğeleri yok, Spearhead'in ve Citadel'in öğesi kullanılır. A-Elite'in onarım çarpanı yok: istemcinin kısa süreleri (Shield Repair 4 sn, HP Repair 6 sn) aynı toplamla \"%20/%10 faster\"ı zaten veriyor (E5).",
  "gemiler": {
   "ship_aegis": {
    "yetenekler": [
@@ -696,14 +747,6 @@
     "ability_aegis_shield-repair",
     "ability_aegis_repair-pod"
    ],
-   "carpanlar": {
-    "ability_aegis_shield-repair": {
-     "etki": 1.2
-    },
-    "ability_aegis_hp-repair": {
-     "etki": 1.1
-    }
-   },
    "ozel": {
     "ability_aegis_hp-repair": {
      "sure_sn": 6.0,

@@ -7857,7 +7857,7 @@
        "hp": 800,
        "kalkan": 400,
        "hasar": 20,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
         "ep": 400,
@@ -7898,7 +7898,7 @@
        "hp": 2000,
        "kalkan": 2000,
        "hasar": 80,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 800,
@@ -8847,7 +8847,7 @@
        "hp": 640000,
        "kalkan": 320000,
        "hasar": 15000,
-       "hiz": 200,
+       "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
         "ep": 320000,
@@ -8865,7 +8865,7 @@
        "hp": 1600000,
        "kalkan": 1600000,
        "hasar": 65000,
-       "hiz": 260,
+       "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
         "ep": 640000,

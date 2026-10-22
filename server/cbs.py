@@ -888,7 +888,7 @@ class Cbs:
             self.next_shot[n.id] = now + dunya.SAVAS['npc_saldiri_aralik_sn']
             sats = [s for s in targets if s > DEFLECTOR]
             slot = random.choice(sats) if sats else HULL
-            dmg = int(n.d.get('istasyon_hasari', n.d['hasar']) * random.uniform(0.7, 1.0))
+            dmg = int(n.d.get('istasyon_hasari', n.d['hasar']) * random.uniform(0.8, 1.0))
             w.send([('AttackLaserRunCommand', dict(attackerId=n.id, targetId=asset_id(aid, slot), laserColor=0,
                                                    isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
             msgs += self.damage_module(aid, slot, dmg, n.d['ad'])

@@ -345,6 +345,7 @@ class World:
         self.next_overdrive = 0.0      # SL-01, Prometheus: 5 sn'de bir ek hasar (lazer.py)
         self.ofke = LAZER.Ofke()       # Asmodeus Fervor
         self.artan = [1.0, 0.0]        # IDB-125: çarpan, son isabet
+        self.crit = False              # son laser_damage Odysseus kritiğiydi (vuruş iletisinde strike)
         self.quick_buy = None          # para değişince kısayol çubuğundaki hızlı alım öğelerinin durumu (magaza.py)
         self.map_msgs = None           # haritanın girişteki nesneleri (istasyon, taretler): yeniden yüklemede tekrar gönderilir
         self.on_home = None            # istasyonsuz haritada istasyonda tamir: oturum firmanın ana haritasına götürür
@@ -1121,6 +1122,7 @@ class World:
                 self.log('   satış olmadı: tür %s x%d (elde %d, istasyonda %s)' % (t, n, have, self.at_trade()))
                 return
             if by_pet:
+                price = int(price * (1 + self.pet.trade_bonus()))     # G-TRA1: +%5/15/30
                 self.pet.trade_used(time.time())      # kargo tüccarı bekleme süresine girer
             elif by_hm7:
                 self.log('   HM-7 ile satış (kalan %d)' % EK.use(self.p, 'equipment_extra_hmd-07'))
@@ -1319,7 +1321,8 @@ class World:
             self.last_combat = now
             self.stop_repair()
             self.p.ach('shot', silah='ROCKET_LAUNCHER')
-            ms = int(SAVAS['roket_bekleme_ms'] * (1 + self.p.mods().get('roket_bekleme', 0))     # 3D Ring +%25, 3D Dome -%25, Demon -%5
+            ms = int(SAVAS['roket_bekleme_ms'] * (0.5 if self.p.premium else 1)                  # Premium: "50% shorter rocket reload"
+                     * (1 + self.p.mods().get('roket_bekleme', 0))                               # 3D Ring +%25, 3D Dome -%25, Demon -%5
                      * EK.rocket_factor(self.p) * AY.carpan('roket_bekleme'))                          # R0K-T01: yarıya; panel
             ms = self.abilities.rocket_ms(ms, now)                  # Rapid Fire (Tartarus)
             self.rocket_ready = now + ms / 1000
@@ -1387,12 +1390,13 @@ class World:
 
     def take_box(self, h, by_pet=False):
         """Kutuyu al (oyuncu ya da P.E.T.'in otomatik toplayıcısı): kargo kutusu cevherleri kargoya sığdığı kadar, bonus kutusu
-        kredi/uridyum/cephane. P.E.T.'in kurtarma protokolü (AI-S) içeriği artırır."""
+        kredi/uridyum/cephane. P.E.T.'in kurtarma protokolü (AI-S) P.E.T.'in topladığı kutunun içeriğini artırır (istemci "boxes,
+        collected by your P.E.T.")."""
         with self.lock:
             b = self.boxes.get(h)
             if not b or (by_pet and b.get('pet_yok')):      # Vortex of Greed kutularını P.E.T. toplayamaz (Ö4)
                 return False
-            boost = 1 + (self.pet.proto('kutu') if self.pet and self.pet.active else 0)
+            boost = 1 + (self.pet.proto('kutu') if by_pet and self.pet else 0)
             m = self.p.mods()          # pilot yetenekleri: Tractor Beam I/II (kargo/bonus kutusu), Luck (bonus kutusu uridyumu)
             pre = []
             cargo_box = b['tip'] in CARGO_BOXES
@@ -1727,6 +1731,7 @@ class World:
 
         def reward():
             self.p.ach('kill', avatar='NPC', npc=n.d.get('npc_kimlik'), radyasyon=in_rad, ad=n.d.get('ad'))
+            GY.charge(self.p, 'oldurme')                 # Momentum, Stockpile: öldürme başına bir yük
             tot = self.p.gain(ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum'], neden='bonus_abschussAlien')
             RT.note_kill(self.p, n.d.get('npc_kimlik', 0), o['ep'], o['onur'])     # seyir defteri
             points = self.kapi.points(n) if n.d.get('puan') and hasattr(self.kapi, 'points') else []    # Plutus'un etkinlik puanı
@@ -1791,7 +1796,7 @@ class World:
         if not self.p.d.get('dronlar'):
             return []
         name = re.sub(r'^[^A-Za-z]+|[^A-Za-z]+$', '', n.d['ad'])      # "-=[ Lordakia ]=-", "..::{ Boss Lordakia }::.."
-        for pre in ('Boss ', 'Uber ', 'Über '):
+        for pre in ('Boss ', 'Uber ', 'Über ', 'Uber'):                   # "( UberStreuner )": boşluksuz da
             name = name[len(pre):] if name.startswith(pre) else name
         order = DRONE_POINTS['_gemi_sirasi']
         ship = self.p.ship()['lootId']
@@ -1847,19 +1852,21 @@ class World:
         ship = self.lasers()
         base = sum(LAZER.hit(l, target) * YK.factor(l, lv, YK.LASER) for l, lv in self.laser_levels()) \
             * (1 + LAZER.set_bonus(ship) + self.ofke.bonus(ship, now))
-        if ship and random.random() < LAZER.crit_chance(ship):
+        self.crit = bool(ship) and random.random() < LAZER.crit_chance(ship)
+        if self.crit:
             base += LAZER.crit_damage(ship)                       # Odysseus kritiği
         extra = LAZER.overdrive(ship)
         if extra and now >= self.next_overdrive:                  # SL-01 +38, Prometheus +200: 5 sn'de bir
             base += extra
             self.next_overdrive = now + LAZER.OVERDRIVE_SN
+        mods = self.p.mods()
         dlv = self.p.d.get('dron_ekipman_seviye', [])
         for k, (level, loots) in enumerate(self.p.d.get('dron_ekipman', [])):
             dloot, dup, ilv = dlv[k] if k < len(dlv) else (None, 0, [])
             hits = sum(LAZER.hit(l, target) * YK.factor(l, ilv[j] if j < len(ilv) else 0, YK.LASER)
                        for j, l in enumerate(loots) if l in lz)
-            base += hits * (1 + DRONE_LEVELS[level - 1]['lazer']) * YK.factor(dloot, dup, YK.DRONE_DAMAGE)
-        mods = self.p.mods()
+            base += (hits * (1 + DRONE_LEVELS[level - 1]['lazer'] + mods.get('dron_lazer', 0))      # Havoc, Cerberus: dron lazerine
+                     * YK.factor(dloot, dup, YK.DRONE_DAMAGE))
         base *= ((1 + mods.get('lazer', 0) + mods.get('npc', 0) + mods.get('npc_lazer', 0))       # formasyon, dron tasarımı
                  * (1 + self.p.lab_bonus(0)))                                                   # lazer yükseltmesi
         a = ESYA['lazer_cephane'].get(ammo, {'carpan': 1})
@@ -1874,8 +1881,8 @@ class World:
         return int(base * carpan * r), int(base * a.get('kalkan_carpan', 0) * r)
 
     def laser_range(self):
-        """Lazer menzili: SL-01 takılıysa -%25 (lazer.py)."""
-        return int(SAVAS['lazer_menzil'] * LAZER.range_factor(self.lasers()))
+        """Lazer menzili: SL-01 takılıysa -%25 (lazer.py); Momentum/Stockpile'ın biriken yükü (yük başına +5)."""
+        return int(SAVAS['lazer_menzil'] * LAZER.range_factor(self.lasers())) + GY.range_bonus(self.p)
 
     def other_ammo(self, kind, empty, need):
         """Biten cephanenin yerine eldeki en güçlü sıradan cephane -> lootId (lazer: AUTO_AMMO sırası; roket: hasara göre, özel
@@ -2013,12 +2020,12 @@ class World:
             if shield_dmg:
                 self.last_shield_hit = 0
                 self.hit_npc(n.id, shield_dmg, 1, shield_only=True)
-                if self.last_shield_hit and ammo == 'ammunition_laser_sab-50':     # SAB-50: çekilen kalkan oyuncuya (wiki)
+                if self.last_shield_hit:                 # Shield Leech (SAB-50 x2, CBO-100 x1): çekilen kalkan oyuncuya
                     g = self.p.d['gemi']
                     self.p.set_hull(shield=g.get('shield', 0) + self.last_shield_hit)
                     self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
-            else:
-                self.hit_npc(n.id, dmg, 1)
+            if dmg:
+                self.hit_npc(n.id, dmg, 1, strike=self.crit)
                 self.tech.leech(ammo, dmg)               # Energy Leech
             proc = LAZER.slow_proc(self.lasers())        # LF-5 Anchorlock: adede göre şansla yavaşlatma
             if proc and n.alive and random.random() < proc[0]:
@@ -2121,6 +2128,10 @@ class World:
             return 0
         r = ESYA['onarim_robotlari'][rep]
         boost = (1 + self.p.mods().get('onarim', 0)) * AY.carpan('onarim_hizi')     # REP-B01 (booster); panel
+        if self.p.premium:
+            boost *= 2                                                              # Premium: "twice as effective repair robots"
+        if self.low:
+            boost *= self.low.regen(time.time())                                    # LoW: etkin röleler ortada hızlandırır
         if 'tam_onarim_sn' in r:
             return self.p.d['gemi'].get('hitMax', 0) / r['tam_onarim_sn'] * boost
         return r.get('dakikada_hp', 0) / 60.0 * boost
@@ -2329,7 +2340,7 @@ class World:
 
     def form_shield_tick(self, now):
         """Formasyonun kalkan etkisi, saniyede bir: Diamond %1/sn (en çok 5.000) ve 3D Dome %0,5/sn savaşta da doldurur; Moth ve
-        3D Wheel savaştayken %5/sn eritir (uyarlama: savaş dışında olağan dolum sürsün diye)."""
+        3D Wheel %5/sn eritir (istemci: "drains shields by 5% per second", savaş koşulu yok)."""
         if now < self.next_form_shield:
             return
         self.next_form_shield = now + 1.0
@@ -2340,8 +2351,7 @@ class World:
         g = self.p.d['gemi']
         mx, sh = g.get('shieldMax', 0), g.get('shield', 0)
         delta = min(mx * up, m.get('kalkan_dolum_azami') or mx * up)
-        if down and now - self.last_combat < ESYA['savas_disi_sn']:
-            delta -= mx * down
+        delta -= mx * down
         new = max(0, min(mx, sh + delta))
         if int(new) != int(sh):
             self.p.set_hull(shield=new)
@@ -2358,15 +2368,18 @@ class World:
                 self.pet.shot_by.discard(n.id)             # ardından gemiye: son salvo gemide
         elif self.pet and self.pet.take_shot(n, now):
             return                              # atış P.E.T.'e gitti
-        n.next_shot = now + n.d.get('atis_aralik_sn', SAVAS['npc_saldiri_aralik_sn'])
+        ddol = n.etki.get('atis_bozuk', now)          # Disruptor DDoL: lazer beklemesi 3-5 sn
+        n.next_shot = now + (random.uniform(*ddol[0]['aralik']) if ddol else n.d.get('atis_aralik_sn', SAVAS['npc_saldiri_aralik_sn']))
         m = self.p.mods()
         msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.hid, laserColor=0,
                                                isDiminishedBySkillShield=m.get('alinan_lazer', 0) < 0,     # Spectrum
                                                skilledLaser=False, visualType=0))]
         if random.random() < AY.chance('npc_isabet', n.d.get('isabet', SAVAS['npc_isabet'])) * (1 - m.get('kacinma', 0)) * (1 - n.etki.accuracy_loss(now)):
-            dmg = int(n.d['hasar'] * random.uniform(0.7, 1.0) * self.alien.laser_factor(n, now)      # öfke, DMG kapsülü
-                      * max(0.0, 1 + m.get('alinan_lazer', 0)))                                     # Spectrum
+            raw = n.d['hasar'] * random.uniform(0.8, 1.0) * self.alien.laser_factor(n, now)      # kayıt: x0,8-1,0; öfke, DMG kapsülü
+            dmg = int(raw * max(0.0, 1 + m.get('alinan_lazer', 0)))                              # Spectrum
             self.hurt_hero(dmg, n, msgs=msgs, now=now)
+            if raw - dmg >= 1 and n.alive and GY.effect(self.p, 'lazer_yansit', now):
+                self.hit_npc(n.id, int(raw - dmg), 1)  # Spectrum Plus Prismatic Reflecting: azaltılan hasar saldırana
             self.alien.after_shot(n, now, True)        # yavaşlatan atış (uzayli.py)
         else:
             self.last_combat = now
@@ -2399,14 +2412,19 @@ class World:
         sh = g.get('shield', 0)
         to_shield = min(sh, int(dmg * self.p.d.get('kalkan_emme', 0.8)))   # kalkan jeneratörlerinin emme oranı (esyalar.json)
         hull = dmg - to_shield
+        stim, sb = 0, self.p.ship_row().get('stim_bariyer')
+        if sb and hull > 0 and random.random() < sb['sans']:      # Pusat Plus Stim Barrier: gövde hasarının %10'u alınmaz, cana döner
+            stim = int(hull * sb['oran'])
+            hull -= stim
+            msgs.append(stm('msg_stim_barrier_activated'))
         nano = g.get('nanoHull', 0)
         from_nano = min(nano, hull)                # nano gövde (kapı çekilişi): kalkandan sonra, gövdeden önce erir
         linked = self.pet.link_take(hull - from_nano) if self.pet and not self.invulnerable else 0   # G-HPL1: gövde hasarı P.E.T.'e
-        hp = g.get('hitPoints', 0) - (hull - from_nano - linked)
+        hp = g.get('hitPoints', 0) - (hull - from_nano - linked) + stim
         floor = self.tech.hp_floor(now)             # Anti-AI Emergency Reserves
         if floor:
             hp = max(hp, floor)
-        if hp <= 0 and GY.effect(self.p, 'olumsuz', now):              # Tempest Volt Back-up: 1 canın altına inmez
+        if hp <= 0 and self.abilities.hold_on(now):                      # Tempest Volt Back-up: can 1, 3 sn dokunulmaz
             hp = 1
         if hp <= 0 and self.abilities.last_stand(now):                   # Paladin Last Stand: can dolar
             hp = g.get('hitMax', hp)
@@ -2419,6 +2437,8 @@ class World:
                                               victimHitpoints=int(g['hitPoints']), victimShield=int(g.get('shield', 0)),
                                               victimNanoHull=int(g.get('nanoHull', 0)), damage=dmg, skilled=False, strike=False,
                                               cannonType=0)))
+        if g['hitPoints'] > 0 and self.pet:
+            self.pet.ship_hurt(now)                 # G-KK1: geminin canı eşiğin altında
         if g['hitPoints'] <= 0 and not self.hero_dead:
             self.hero_death(msgs, killer, cause=cause)
         return msgs

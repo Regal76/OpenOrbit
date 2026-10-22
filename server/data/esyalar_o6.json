@@ -89,23 +89,23 @@
    "booster_nbx-b01": [
     [
      "booster_bb-01",
-     10
+     72
     ]
    ],
    "booster_nqr-b01": [
     [
      "booster_qr-01",
-     10
+     72
     ]
    ],
    "booster_pcomb-b01": [
     [
      "booster_prc-b01",
-     4
+     3
     ],
     [
      "booster_prm-b01",
-     4
+     3
     ]
    ],
    "booster_rwrddbl-rc-b00": [
@@ -121,7 +121,7 @@
     ]
    ]
   },
-  "_takma_ad": "istemcinin tanımadığı boosterlar [[booster, saat]] (MAX-BP01: beş B01 10 saat; NBX/NQR 10 saat; PCOMB 4 saat; wiki ve metinler, süreler uyarlama)",
+  "_takma_ad": "istemcinin tanımadığı boosterlar [[booster, saat]] (MAX-BP01: beş B01 10 saat; NBX/NQR 72 saat; PCOMB 3 saat; eşdeğerlerin istemcideki saatleri, E5)",
   "magaza": {
    "booster_bb-01": 10000,
    "booster_qr-01": 10000,

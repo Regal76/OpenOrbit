@@ -12288,7 +12288,7 @@
    },
    {
     "tur": 4,
-    "anahtar": "isabet",
+    "anahtar": "lazer_isabet",
     "degerler": [
      3,
      6,
@@ -13245,16 +13245,16 @@
    "hp": 60000,
    "kalkan": 50000,
    "hasar": 1000,
-   "hiz": 320,
+   "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 3000,
-    "onur": 30,
-    "kredi": 15000,
-    "uridyum": 15
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 32
    },
    "kargo": {},
-   "_uyarlama": "değer kaynakta yok"
+   "_kaynak": "vortex_of_terror.json (fandom): can, kalkan, hasar, ödül; hız \"Between 290-310\""
   },
   "pm_unidentifieddestroyer": {
    "ad": "-=[ Unidentified Destroyer ]=-",
