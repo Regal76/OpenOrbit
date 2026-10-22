@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<battlePass>
+    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py; resmî dosya değil, uyarlama) -->
+    <objectiveList>
+        <objective questId="500532">
+            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        </objective>
+        <objective questId="500535">
+            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        </objective>
+        <objective questId="500538">
+            <questReward lootid="resource_booty-key" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        </objective>
+        <objective questId="500541">
+            <questReward lootid="ammunition_rocket_plt-3030" amount="4000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        </objective>
+        <objective questId="500544">
+            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        </objective>
+        <objective questId="500547">
+            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        </objective>
+        <objective questId="500533">
+            <questReward lootid="resource_collectable_polychromium" amount="350"/>
+            <bpReward lootid="resource_battle-pass-key" amount="6"/>
+        </objective>
+        <objective questId="500536">
+            <questReward lootid="resource_collectable_evocation-chip" amount="180"/>
+            <bpReward lootid="resource_battle-pass-key" amount="6"/>
+        </objective>
+        <objective questId="500539">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="6"/>
+        </objective>
+        <objective questId="500542">
+            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="600"/>
+            <bpReward lootid="resource_battle-pass-key" amount="6"/>
+        </objective>
+        <objective questId="500545">
+            <questReward lootid="ammunition_laser_vb-142" amount="6000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="6"/>
+        </objective>
+        <objective questId="500548">
+            <questReward lootid="resource_collectable_polychromium" amount="350"/>
+            <bpReward lootid="resource_battle-pass-key" amount="6"/>
+        </objective>
+        <objective questId="500534">
+            <questReward lootid="tech_npc-nuke" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="14"/>
+        </objective>
+        <objective questId="500537">
+            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
+            <bpReward lootid="resource_battle-pass-key" amount="14"/>
+        </objective>
+        <objective questId="500540">
+            <questReward lootid="tech_npc-nuke" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="14"/>
+        </objective>
+        <objective questId="500543">
+            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
+            <bpReward lootid="resource_battle-pass-key" amount="14"/>
+        </objective>
+        <objective questId="500546">
+            <questReward lootid="tech_npc-nuke" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="14"/>
+        </objective>
+        <objective questId="500549">
+            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
+            <bpReward lootid="resource_battle-pass-key" amount="14"/>
+        </objective>
+        <objective questId="500550">
+            <questReward lootid="resource_collectable_indoctrine-accelerator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="35"/>
+        </objective>
+    </objectiveList>
+    <flvDisplayLootId>resource_battle-pass-key</flvDisplayLootId>
+    <titleKeyBeforePurchase>window_objectives_bp_title</titleKeyBeforePurchase>
+    <descriptionKeyBeforePurchase>window_objectives_bp_promo_desc-gopjul2026</descriptionKeyBeforePurchase>
+    <descriptionKeyCollect>window_objectives_bp_collect_desc</descriptionKeyCollect>
+    <titleKeyAfterPurchase>window_objectives_bp_highlight_title-gopjul2026</titleKeyAfterPurchase>
+    <descriptionKeyAfterPurchase>window_objectives_bp_highlight_desc-gopjul2026</descriptionKeyAfterPurchase>
+</battlePass>

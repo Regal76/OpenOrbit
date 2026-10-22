@@ -305,7 +305,9 @@ class Kapilar:
         return out
 
     def info_cmd(self):
-        """GalaxyGateBuilderInfoCommand: kayıttaki şablon (kapı sırası ve olasılık modülleri), değerler profilden."""
+        """GalaxyGateBuilderInfoCommand: kayıttaki şablon (kapı sırası ve olasılık modülleri), değerler profilden; bonusRewardsDay:
+        Pazar GG Double Rewards (takvim.py gg_cift_odul)."""
+        import takvim as TK
         price, sale = self.energy_price()
         t = json.loads(json.dumps(self.info_tpl or {'gates': [], 'spinAmounts': K['cekilis_adetleri'], 'bonusRewardsDay': False,
                                                     'galaxyGateDay': False}))
@@ -322,7 +324,7 @@ class Kapilar:
                                                   boosts=[], state=0, probabilityModules=[], lifePrice=-1, id=0, multiplier=0,
                                                   multiGateProgressModules=[], livesLeft=-1), key))
         t.update(gates=gates, samples=self.d['enerji'], money=self.money(), energy_cost=price, spinOnSale=sale,
-                 spinamount_selected=self.d['cekilis'], spinAmounts=K['cekilis_adetleri'])
+                 spinamount_selected=self.d['cekilis'], spinAmounts=K['cekilis_adetleri'], bonusRewardsDay=TK.is_active('gg_cift_odul'))
         return ('GalaxyGateBuilderInfoCommand', t)
 
     def part_ids(self, key):
@@ -611,29 +613,31 @@ class Kapilar:
         """Kapı tamamlandı (kapı haritasında son dalga ya da Dispatch'in kapı gönderimi): ödüller (wiki; şanslı ödüller olasılığıyla),
         Kronos parçası, kapı sıfırlanır (ödüldeki parça yeni kapının ilk parçası). reward_msgs: dünyanın ödül mesajları (yoksa para
         güncellemesi). dispatch: görevler saymaz, N.O.V.A. bonusu yok (darkorbitwiki dispatch-gate: "boosters don't apply and missions
-        don't count"; başarım sayılır) -> (mesajlar, {yeni, kronos, sans})."""
+        don't count"; başarım sayılır). Pazar GG Double Rewards (takvim.py gg_cift_odul; Dispatch'te değil): EP, onur, Xenomit, log
+        diski, kupon, Assembly kaynakları ve şanslı ödüllerin olasılığı iki kat -> (mesajlar, {yeni, kronos, sans})."""
         import takvim as TK
         g, R = KAPI[key], KAPI[key]['odul']
+        x2 = 1 if dispatch or not TK.is_active('gg_cift_odul') else 2
         rm = reward_msgs or (lambda tot, **kw: self.m.money_msgs() if self.m else [])
         self.p.ach('gate', tur='%s_GATE' % key.upper(), dispatch=dispatch)      # istemcinin GalaxyGateType'ı (STREUNER_GATE …)
         with self.p.lock:
             self.p.d['gemi']['galaxyGatesDone'] = self.p.d['gemi'].get('galaxyGatesDone', 0) + 1    # ShipInitializationCommand
-        ep = int(R['ep'] * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0))))      # N.O.V.A. Field Intelligence (nova.py)
-        ep, onur, uri = AY.miktar('ep', ep), AY.miktar('onur', R['onur']), AY.miktar('uridyum', R['uridyum'])    # panelin çarpanları
+        ep = int(R['ep'] * x2 * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0))))    # N.O.V.A. Field Intelligence (nova.py)
+        ep, onur, uri = AY.miktar('ep', ep), AY.miktar('onur', R['onur'] * x2), AY.miktar('uridyum', R['uridyum'])    # panelin çarpanları
         tot = self.p.gain(ep=ep, onur=onur, uridyum=uri, neden='galaxy_gate_done')
         msgs = rm(tot, ep=ep, onur=onur, uridyum=uri)
         q = lambda v: AY.miktar('mod_odul', v)              # panel: kapı/mod ödülü çarpanı
         grants = {k: q(v) for k, v in R['cephane'].items()}
-        grants.update(xenomit=q(R['xenomit']), kupon=q(R['kupon']), log_disk=q(R['log_disk']), enerji=q(R['enerji']),
-                      ganimet={k: q(v) for k, v in (R['ganimet'] or {}).items()})
+        grants.update(xenomit=q(R['xenomit'] * x2), kupon=q(R['kupon'] * x2), log_disk=q(R['log_disk'] * x2), enerji=q(R['enerji']),
+                      ganimet={k: q(v * x2) for k, v in (R['ganimet'] or {}).items()})
         if key in K.get('schism', {}) and 'AllGatesSchism' in TK.ALWAYS:       # Schism'li kapılar (giriş bayrağı; wiki aralığı)
             grants['ganimet']['schism'] = q(random.randint(*K['schism'][key]))
         msgs += self.give(grants)
         got = []
-        for s in [s for s in R['sans'] if random.random() < AY.chance('dusme', s['olasilik'])]:
+        owned = {x['lootId'] for x in self.p.d['gemiler'].values()}
+        for s in [s for s in R['sans'] if random.random() < AY.chance('dusme', s['olasilik'] * x2)]:
             loot = random.choice(s['secenekler']) if s['esya'] == 'tasarim_secimi' else s['esya']
             got.append(loot)
-            owned = {x['lootId'] for x in self.p.d['gemiler'].values()}
             if loot in owned and s.get('yoksa_uridyum'):                # Kuiper: tasarım zaten varsa 10.000 uridyum (wiki)
                 u = AY.miktar('uridyum', s['yoksa_uridyum'])
                 tot = self.p.gain(uridyum=u, neden='galaxy_gate_done')
@@ -642,6 +646,12 @@ class Kapilar:
                 msgs += self.m.prize(loot, s['adet'])
         for loot, n, chance in TK.gate_rewards(key):          # etkinliğin kapı ödülü (Empyrian / Prosperous Fragment, Lucent Key)
             if random.random() < AY.chance('dusme', chance) and self.m:
+                msgs += self.m.prize(loot, n)
+                got.append(loot)
+        for s in [] if dispatch else TK.gate_choices(key):    # GG Special Rewards Weekend, LF-4 günü: olasılıkla paketten biri
+            rows = [r for r in s['secim'] if not (s.get('yinelenmez') and r[0] in owned)]
+            if rows and random.random() < AY.chance('dusme', s['olasilik']) and self.m:
+                loot, n = random.choice(rows)
                 msgs += self.m.prize(loot, n)
                 got.append(loot)
         for pk in TK.gate_packages(key):                      # ödülün paket adı (Prosperous'un 88.888 kredisi): başarım

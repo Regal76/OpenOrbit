@@ -12,15 +12,18 @@ import rutbe as RT
 import takvim as TK
 from eski_protokol import legacy
 
-# etkinlik -> [(geçmiş metni, {lootId: onur oranı}, onur sınırı)] (Battle Pass Halloween'de: savas_bileti.py)
+# etkinlik -> [(geçmiş metni, {lootId: onur oranı}, onur sınırı)]
 CONVERT = {
     'halloween': [('history_msg_event_halloweenoct2020_honor_converted',
-                   {'resource_collectable_candy-corn': 1, 'resource_collectable_golden-candy-corn': 20000}, None),
-                  ('history_msg_event_battle_pass_key_honor_converted', {'resource_battle-pass-key': 5000}, None)],
+                   {'resource_collectable_candy-corn': 1, 'resource_collectable_golden-candy-corn': 20000}, None)],
     'empyrian': [('history_msg_event_luminium_honor_converted', {'resource_collectable_luminium': 1}, 10000)],
     'immortal_union': [('history_msg_event_valentine_honor_converted',
                         {'resource_collectable_styxus-shard': 1, 'resource_collectable_charopos-shard': 1}, None)],
 }
+BPK = ('history_msg_event_battle_pass_key_honor_converted', {'resource_battle-pass-key': 5000}, None)
+for _k, _e in TK.EVENTS.items():                  # Battle Pass'li her etkinlikte kalan anahtarlar (savas_bileti.py; E8)
+    if 'BattlePass' in _e.get('turler', []):
+        CONVERT.setdefault(_k, []).append(BPK)
 
 
 class EtkinlikSonu:

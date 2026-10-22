@@ -3071,7 +3071,11 @@
    "bekleme_grubu": 5,
    "bekleme_sn": 10,
    "gorunum_sn": 10,
-   "_not": "WIZ-X: hedefin görünümü bir süre başka gemi olur (VisualModifierCommand 25); süre wiki'de yok (uyarlama 10 sn), bekleme istemcinin tablosundan"
+   "gorunum_etkinlik": {
+    "thanksgiving": 120,
+    "kis": 121
+   },
+   "_not": "WIZ-X: hedefin görünümü bir süre başka gemi olur (VisualModifierCommand 25); süre wiki'de yok (uyarlama 10 sn), bekleme istemcinin tablosundan; Thanksgiving'de hindi (120), kışın kardan adam (121): istemcinin DesignMutationCount başarımları (thanksgiving-mutate-turkeys mutatedDesignId 120, winterevent2013-frostlord SnowManMutation) ve lib_ships"
   },
   "ammunition_specialammo_sr-5": {
    "ozel": true,

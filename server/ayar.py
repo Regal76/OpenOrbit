@@ -189,7 +189,8 @@ SCHEMA = [
     _b('seviye_kisiti_yok', 'Seviye kısıtları kapalı', 'sure', "Portalların ve atlama CPU'sunun seviye şartı yok: her haritaya "
        'girebilirsin.'),
     _b('seans_hep_acik', 'Seanslı etkinlikler hep açık', 'sure', 'Saatle açılan etkinlikler (Vortex of Greed, Treacherous Domain, '
-       'Mimesis Mutiny) etkinlik süresince her an açık: portal hep açık, seans/savaş/sefer girince başlar.'),
+       'Mimesis Mutiny) etkinlik süresince her an açık: portal hep açık, seans/savaş/sefer girince başlar. Etkinlik uzaylıları '
+       '(Curcubitor, Agatus, Lanatum, Chaos Protegit) da oyundaki saat pencerelerinin dışında doğar.'),
     # ---------------------------------------------------------------- müzayede
     dict(anahtar='muzayede_rakip', ad='Sanal rakipler', grup='muzayede', tur='seviye', varsayilan=0,
          secenekler=list(RAKIP_SEVIYELERI), renkler=['', 'ok', 'ok', 'info', 'err'], uygulama='anında',

@@ -20,6 +20,7 @@ import json, math, os, random, time
 import ekstra as EK
 import harita as H
 import ayar as AY
+import takvim as TKV
 from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -905,7 +906,8 @@ class Esyalar:
             return
         if r.get('gorunum_sn'):                                                               # WIZ-X: başka bir geminin görünümü
             models = {int(t.get('model', k)) for k, t in _N['tipler'].items() if str(t.get('model', k)).isdigit()}
-            model = str(random.choice(sorted(models - {int(n.model)})))
+            ev = [m for k, m in sorted(r.get('gorunum_etkinlik', {}).items()) if TKV.is_active(k)]    # Thanksgiving hindi, kış kardan adam
+            model = str(ev[0] if ev else random.choice(sorted(models - {int(n.model)})))
             vis = lambda on: [('VisualModifierCommand', dict(userId=uid, modifier=25, attribute=0, additionalAttribute=model, count=0,
                                                              activated=on))]
             self.send(vis(True))

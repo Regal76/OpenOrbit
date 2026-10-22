@@ -1,5 +1,7 @@
-"""Battle Pass ve anahtar değişimi (yol haritası Aşama 7; veri data/biletler.json "savas_bileti" <- tools/biletler.py: kayıttaki
-Halloween 2026 Battle Pass'i ve CDN'deki xml/events/battlepass/pass_halloween2026.xml).
+"""Battle Pass ve anahtar değişimi (yol haritası Aşama 7, E8; veri data/biletler.json "savas_bileti" <- tools/biletler.py): etkinlik
+başına pass ('passler': Halloween kayıttan ve CDN'deki pass_halloween2026.xml'den, Immortal Union resmî pass_valentine2026.xml'den,
+Hitac, Protegit, Mimesis, GoP, Treacherous Domain ve Frozen Labyrinth yazılan pass_offline_*.xml'lerle); anahtar değişimi hepsinde
+kayıttaki Halloween listesi.
 
 Mesajlar (istemcinin kodu ve kayıt):
   giriş       BattlePassInfoCommand {filename, statusCommand BattlePassUpdateStatusCommand {questsToCollectReward [görev],
@@ -10,7 +12,7 @@ Mesajlar (istemcinin kodu ve kayıt):
   değişim     BattlePassKeyExchangeRequest {exchangeReward}: anahtar (resource_battle-pass-key) harcanır, ödül verilir ->
               BattlePassKeyExchangeUpdateCommand {numOfKeys, claimCount, exchangeReward, lootId}; anahtar sayısı değişince de (kayıt)
   süzgeç      BattlePassSetFilterRequest {battlePassWindowSettingsModule}
-Battle Pass etkinliğin (takvim.py: 'BattlePass' türü olan etkinlik, Halloween) süresince; anahtar değişimi de. Battle Pass mağazada
+Battle Pass etkinliğin (takvim.py: 'BattlePass' türü olan, pass'i olan etkinlik) süresince; anahtar değişimi de. Battle Pass mağazada
 (resource_battle-pass 200.000 U): alınınca o ana dek toplanan görevlerin anahtarları da verilir (uyarlama).
 Profilde: savas_bileti {donem, satin, deger, tamam, toplanacak, toplandi, degisim, suzgec}.
 """
@@ -22,8 +24,8 @@ import takvim as TK
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 B = json.load(open(os.path.join(HERE, 'data', 'biletler.json'), encoding='utf8'))['savas_bileti']
-QUESTS = {int(k): v for k, v in B['gorevler'].items()}
-REWARDS = {int(k): v for k, v in B['oduller'].items()}
+PASSES = {k: dict(p, gorevler={int(q): d for q, d in p['gorevler'].items()}, oduller={int(q): r for q, r in p['oduller'].items()})
+          for k, p in B['passler'].items()}
 EXCHANGE = {r['exchangeReward']: r for r in B['anahtar_degisimi']}
 KEY, PASS_ITEM = 'resource_battle-pass-key', 'resource_battle-pass'
 RUNNING, DONE = 2, 3
@@ -37,7 +39,7 @@ def mod(name, **f):
 def event_key(now=None):
     """Battle Pass'i açan etkinlik ve dönemi ('halloween-2026') ya da None."""
     for k in sorted(TK.active(now)):
-        if 'BattlePass' in TK.EVENTS[k].get('turler', []):
+        if 'BattlePass' in TK.EVENTS[k].get('turler', []) and k in PASSES:
             p = TK.period(k, now)
             year = time.localtime(p[0]).tm_year if p else time.localtime(now).tm_year
             return '%s-%d' % (k, year)
@@ -62,6 +64,11 @@ class SavasBileti:
     def active(self, now=None):
         return event_key(now) is not None
 
+    @property
+    def bp(self):
+        """Dönemin pass'i (ensure'dan sonra)."""
+        return PASSES[self.st['donem'].rsplit('-', 1)[0]]
+
     def ensure(self, now=None):
         ek = event_key(now)
         st = self.st
@@ -82,10 +89,10 @@ class SavasBileti:
         return mod('BattlePassUpdateStatusCommand', questsToCollectReward=list(st.get('toplanacak', [])), purchased=bool(st.get('satin')))
 
     def info_cmd(self):
-        st = self.st
+        st, bp = self.st, self.bp
         rows = [mod('BattlePassQuestModule', acceptabilityStatus=mod('QuestAcceptabilityStatusModule', type=DONE if q in st['tamam'] else RUNNING),
-                    questDefinition=GT.with_state(QUESTS[q], st['deger'].get(str(q), {}), q in st['tamam'])) for q in QUESTS]
-        return ('BattlePassInfoCommand', dict(filename=B['dosya'], statusCommand=self.status_cmd(), battlePassQuestModuleList=rows))
+                    questDefinition=GT.with_state(d, st['deger'].get(str(q), {}), q in st['tamam'])) for q, d in bp['gorevler'].items()]
+        return ('BattlePassInfoCommand', dict(filename=bp['dosya'], statusCommand=self.status_cmd(), battlePassQuestModuleList=rows))
 
     def exchange_cmd(self):
         rows = [dict(r, claimCount=self.st.get('degisim', {}).get(k, 0)) for k, r in EXCHANGE.items()]
@@ -105,10 +112,10 @@ class SavasBileti:
 
     # ------------------------------------------------------------ görevler
     def event(self, kind, **kw):
-        if not self.p.d.get('savas_bileti') or not self.active():
+        if not self.p.d.get('savas_bileti') or not self.ensure():     # etkinlik değiştiyse yeni dönemin pass'i
             return []
         st, msgs, done = self.st, [], []
-        for q, d in QUESTS.items():
+        for q, d in self.bp['gorevler'].items():
             if q in st['tamam']:
                 continue
             m, fin = GT.advance(self.p, d['rootCase'], st['deger'].setdefault(str(q), {}), kind, kw, self.map_id)
@@ -139,7 +146,7 @@ class SavasBileti:
 
     # ------------------------------------------------------------ istekler
     def keys_for(self, q):
-        return REWARDS.get(q, {}).get('anahtar', 0)
+        return self.bp['oduller'].get(q, {}).get('anahtar', 0)
 
     def collect(self, f=None):
         st = self.st
@@ -147,7 +154,7 @@ class SavasBileti:
             return [('BattlePassInfoCommand', self.info_cmd()[1])] if self.p.d.get('savas_bileti') else []
         msgs, keys = [], 0
         for q in list(st['toplanacak']):
-            for loot, n in REWARDS.get(q, {}).get('odul', []):
+            for loot, n in self.bp['oduller'].get(q, {}).get('odul', []):
                 msgs += self.m.reward(loot, n) if self.m else []
             if st.get('satin'):
                 keys += self.keys_for(q)

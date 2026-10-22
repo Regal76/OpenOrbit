@@ -30,6 +30,7 @@ LETTER = 'resource_wordpuzzle-letter'      # kutudaki harf (mağazanın ödül y
 CAPSULE = 'resource_lottery-capsule'
 MINION = D.get('minion', 'etk_hitac_minion')
 MOTHERSHIP = D.get('ana_gemi', 'etk_hitac_mothership')
+MINIONS, MOTHERSHIPS = {MINION, 'etk_hitac2_minion'}, {MOTHERSHIP, 'etk_hitac2_mothership'}      # E8: Hitac 2.0 da
 HISTORY_MAX = 20
 
 
@@ -107,11 +108,11 @@ class HitacPiyango:
         harf kutusu, ana geminin kapsül kutusu."""
         if not active():
             return []
-        if npc.tip == MINION:
+        if npc.tip in MINIONS:
             b = D.get('minion_kutusu', {'tur': 'HITAC_MINION', 'icerik': [['ammunition_laser_mcb-50', 300]], 'harf': 0.5})
             rows = [[l, a] for l, a in b['icerik']] + ([[LETTER, 1]] if random.random() < AY.chance('dusme', b.get('harf', 0.5)) else [])
             self.drop(w, b['tur'], x, y, rows, b.get('omur_sn', 300))
-        elif npc.tip == MOTHERSHIP:
+        elif npc.tip in MOTHERSHIPS:
             b = D.get('ana_gemi_kutusu', {'tur': 'HITAC', 'kapsul': 1})
             self.drop(w, b['tur'], x, y, [[CAPSULE, b['kapsul']]])
         else:

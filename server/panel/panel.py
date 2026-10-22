@@ -67,6 +67,18 @@ ETKINLIK_ACIKLAMA = {
     'prosperous': 'Prosperous kutuları; anahtarlar Galaksi Kapısı ödülünden.',
     'bahar': 'Bahar yumurtaları ve kutuları.',
     'chaos_omen': 'Chaos Omen harita etkinliği (Protegit Pandemonium öncesi).',
+    'gg_cift_odul': 'Galaksi Kapılarının EP, onur, Xenomit, log diski, kupon ve Assembly kaynağı ödülleri ile şanslı ödül '
+                    'olasılığı iki kat (Dispatch hariç).',
+    'lf4_gunu': 'Delta, Epsilon, Lambda ve Kuiper kapılarından LF-4 ya da 10.000 UCB-100 şansı.',
+    'lf4_gelismis': "Delta'dan LF-4-HP, Kappa'dan LF-4-PD, Zeta'dan LF-4-MD şansı.",
+    'gg_hafta_sonu_1': 'Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı.',
+    'gg_hafta_sonu_3': 'Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı.',
+    'gg_hafta_sonu_4': 'Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı.',
+    'nova_hafta_sonu': 'Delta, Epsilon, Lambda ve Kuiper kapıları N.E.U. verir.',
+    'obsidian_booty': "Haritalarda Obsidian Booty Box'lar çıkar.",
+    'rb_booty': "Haritalarda kırmızı ve mavi Booty Box'lar çıkar.",
+    'apocalypse_booty': "Haritalarda Apocalypse Booty Box'lar çıkar.",
+    'fever': 'Listedeki gemilere güçlenme; yalnız Gauntlet of Plutus, Mimesis Mutiny ve Protegit sürerken.',
 }
 GUNLER = {'tr': ('Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'), 'en': ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')}
 AYLAR = {'tr': ('Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'),
@@ -168,13 +180,8 @@ def open_folder(path):
 
 
 # ------------------------------------------------------------------ etkinlikler
-def _md(s):
-    m, d = s.split('-')
-    return int(m), int(d)
-
-
 def _period_text(a, b, lang):
-    (ma, da), (mb, db) = _md(a), _md(b)
+    (ma, da), (mb, db) = (a.month, a.day), (b.month, b.day)
     months = AYLAR[lang]
     if lang == 'en':
         return '%s %d – %s %d' % (months[ma - 1], da, months[mb - 1], db)
@@ -190,25 +197,24 @@ def event_list():
     out = []
     for key, e in TK.EVENTS.items():
         yearly = 'donemler' in e
-        if yearly:
-            when = ', '.join(_period_text(a, b, lang) for a, b in e['donemler'])
+        if yearly:                                      # önümüzdeki yılın dönemleri (takvim.upcoming; bitiş günü dahil)
+            spans = TK.upcoming(key, now)
+            when = ', '.join(_period_text(a, b - datetime.timedelta(days=1), lang) for a, b in spans[:4]) + (
+                ' …' if len(spans) > 4 else '') or _('Takvimde yeni dönemi yok')
         else:
             days = e.get('gunler', range(7))
             when = (_('Her gün') if len(list(days)) == 7 else ', '.join(GUNLER[lang][d] for d in days))
             hrs = e.get('saatler')
             if hrs:
                 when += ' ' + ', '.join('%02d:00–%02d:00' % (a, b) for a, b in hrs)
-            if e.get('cift_hafta'):
-                when += ' ' + _('(iki haftada bir)')
+            if e.get('ay_haftasi'):
+                when += ' ' + _('(ayın %s. haftası)', '/'.join(map(str, e['ay_haftasi'])))
+            if e.get('hafta_dongu'):
+                when += ' ' + _('(%s haftada bir)', e['hafta_dongu'][0])
         per = TK.period(key, now)
         nxt = None
         if yearly and not per:
-            best = None
-            for a, b in e['donemler']:
-                for y in (t.year, t.year + 1):
-                    s = datetime.datetime(y, *_md(a))
-                    if s > t and (best is None or s < best):
-                        best = s
+            best = next((s for s, f in spans if s > t), None)
             nxt = (best - t).days + 1 if best else None
         st = sel.get(key)
         out.append({'anahtar': key, 'ad': _(e.get('ad', key)), 'tur': 'yillik' if yearly else 'haftalik', 'zaman': when,

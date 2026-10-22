@@ -3741,7 +3741,92 @@
     "X-2"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "STYXUS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_styxus_x3": {
    "ad": "-=[ Styxus ]=-",
@@ -3771,7 +3856,92 @@
     "X-3"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "STYXUS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_styxus_x4": {
    "ad": "-=[ Styxus ]=-",
@@ -3801,7 +3971,92 @@
     "X-4"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "STYXUS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_styxus_x5": {
    "ad": "-=[ Styxus ]=-",
@@ -3831,7 +4086,92 @@
     "X-5"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "STYXUS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_styxus_x6": {
    "ad": "-=[ Styxus ]=-",
@@ -3861,7 +4201,92 @@
     "X-6"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "STYXUS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_styxus_x7": {
    "ad": "-=[ Styxus ]=-",
@@ -3891,7 +4316,92 @@
     "X-7"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "STYXUS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_styxus_x8": {
    "ad": "-=[ Styxus ]=-",
@@ -3921,7 +4431,92 @@
     "X-8"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: styxus_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "STYXUS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_charopos_x2": {
    "ad": "-=[ Charopos ]=-",
@@ -3951,7 +4546,92 @@
     "X-2"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x2); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "CHAROPOS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_charopos_x3": {
    "ad": "-=[ Charopos ]=-",
@@ -3981,7 +4661,92 @@
     "X-3"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x3); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "CHAROPOS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_charopos_x4": {
    "ad": "-=[ Charopos ]=-",
@@ -4011,7 +4776,92 @@
     "X-4"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x4); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "CHAROPOS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_charopos_x5": {
    "ad": "-=[ Charopos ]=-",
@@ -4041,7 +4891,92 @@
     "X-5"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x5); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "CHAROPOS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_charopos_x6": {
    "ad": "-=[ Charopos ]=-",
@@ -4071,7 +5006,92 @@
     "X-6"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x6); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "CHAROPOS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_charopos_x7": {
    "ad": "-=[ Charopos ]=-",
@@ -4101,7 +5121,92 @@
     "X-7"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x7); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "CHAROPOS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_charopos_x8": {
    "ad": "-=[ Charopos ]=-",
@@ -4131,7 +5236,92 @@
     "X-8"
    ],
    "etkinlik": true,
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: charopos_x8); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "kutu": {
+    "tur": "CHAROPOS_BOX",
+    "olasilik": 1.0,
+    "omur_sn": 300,
+    "mod": "biri",
+    "icerik": [
+     [
+      "resource_collectable_styxus-shard",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_collectable_charopos-shard",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       2,
+       5
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "ammunition_laser_vb-142",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ]
+    ]
+   }
   },
   "etk_santa_x2": {
    "ad": "Santa-1100101",
@@ -5094,6 +6284,53 @@
    "ek_odul": {
     "resource_collectable_byte-remnant": 50
    }
+  },
+  "etk_hitac2_minion": {
+   "ad": "Hitac-Minion 2.0",
+   "model": "117",
+   "npc_kimlik": 105,
+   "hp": 5500000,
+   "kalkan": 3500000,
+   "hasar": 20000,
+   "hiz": 300,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 1000000,
+    "onur": 24000,
+    "kredi": 5000000,
+    "uridyum": 2500
+   },
+   "kargo": {},
+   "_kaynak": "wiki: Hitac 2.0 Minion"
+  },
+  "etk_hitac2_mothership": {
+   "ad": "Hitac 2.0",
+   "model": "116",
+   "npc_kimlik": 106,
+   "hp": 14500000,
+   "kalkan": 8000000,
+   "hasar": 60000,
+   "hiz": 180,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 10000000,
+    "onur": 100000,
+    "kredi": 2000000,
+    "uridyum": 5000
+   },
+   "kargo": {},
+   "davranis": {
+    "cagrilar_yasarken_dokunulmaz": true,
+    "vurulunca_cagir": {
+     "tur": "etk_hitac2_minion",
+     "adet": 6,
+     "en_cok": 6,
+     "bekleme_sn": 90
+    }
+   },
+   "_kaynak": "wiki: Hitac 2.0 (rota 4-1 > 4-2 > 4-3); davranış Hitac 2.5 ile aynı (uyarlama)"
   }
  },
  "haritalar": {

@@ -17,8 +17,9 @@ Takvimde etkin bir etkinliğin harita bölümü bu haritanın sınıfını (X-2 
     {kutu türü, olasılık, içerik}; etkinlik türleri ve haritanın sıradan uzaylıları, ör. Empyrian'da Luminium); anahtarsız, P.E.T. de
     toplar; içerik açılınca: 'kesin' satırların hepsi, 'icerik'ten 'biri' ağırlıkla bir ödül ya da 'hepsi' her biri kendi olasılığıyla
     ([lootId, adet ya da [en az, en çok], olasılık %]); NPC türünün kendi 'kutu'su da (etkinlik kapıları)
-  - gezgin uzaylı (etkinliğin 'gezgin'i: Hitac ana gemisi): rotadaki haritalarda sırayla sure_sn kalır, oyuncu o haritadaysa
-    belirir, süresi dolunca sonraki haritaya geçer; öldürülünce bekleme_sn sonra rotanın başından (oturum boyunca)
+  - gezgin uzaylı (etkinliğin 'gezgin'i, tek ya da liste: Hitac 2.5 ve E8'den Hitac 2.0): rotadaki haritalarda sırayla sure_sn
+    kalır, oyuncu o haritadaysa belirir, süresi dolunca sonraki haritaya geçer; öldürülünce bekleme_sn sonra rotanın başından
+    (oturum boyunca)
 """
 import math, random, time
 
@@ -38,12 +39,14 @@ def mod(name, **f):
 
 
 def specs(now=None):
-    """Etkin etkinliklerin harita bölümleri: [(etkinlik, bölüm)]."""
+    """Etkin etkinliklerin şu an açık harita bölümleri: [(etkinlik, bölüm)] (bölümün dönemleri ve doğuş saatleri: takvim.window;
+    zorla açılan etkinlikte hepsi)."""
     out = []
     for k in sorted(TK.active(now)):
         e = TK.EVENTS[k]
         for s in ([e['harita']] if 'harita' in e else []) + e.get('harita_ek', []):
-            out.append((k, s))
+            if TK.forced(k) or TK.window(s, now):
+                out.append((k, s))
     return out
 
 
@@ -61,7 +64,7 @@ def roll(spec):
     return out + [(l, amount(a))]
 
 
-ROVER = {}                         # etkinlik -> gezgin uzaylının rotasının başlangıcı (öldürülünce bekleme sonrası)
+ROVER = {}                         # gezgin (rovers) -> rotasının başlangıcı (öldürülünce bekleme sonrası)
 NO_CARGO = {b for e in TK.EVENTS.values() for s in ([e['harita']] if 'harita' in e else []) + e.get('harita_ek', [])
             for b in s.get('kargo_yok', [])}          # etkinlik bitse de: o türün uzaylısı hiç kargo kutusu düşürmez
 
@@ -69,6 +72,12 @@ NO_CARGO = {b for e in TK.EVENTS.values() for s in ([e['harita']] if 'harita' in
 def no_cargo(n):
     """Bu uzaylı kargo kutusu düşürmez mi (etkinlik verisinin 'kargo_yok'u; Curcubitor yalnız sandığını düşürür)."""
     return base(n.tip) in NO_CARGO
+
+
+def rovers(k):
+    """Etkinliğin gezginleri [(ROVER anahtarı, gezgin)]: ilki etkinliğin adıyla, ötekiler 'ad#sıra'."""
+    g = TK.EVENTS[k].get('gezgin') or []
+    return [(k if i == 0 else '%s#%d' % (k, i), x) for i, x in enumerate(g if isinstance(g, list) else [g])]
 
 
 def route_at(k, g, now):
@@ -188,12 +197,11 @@ class HaritaEtkinlik:
             if kd and not trick and random.random() < AY.chance('dusme', kd.get('olasilik', 1.0)):    # uzaylının kutusu (Treat …)
                 h = w.drop_box(kd['tur'], x, y, None, kd.get('omur_sn', 300))
                 w.boxes[h]['etk'] = kd
-        for k in sorted(TK.active(now)):
-            g = TK.EVENTS[k].get('gezgin')
-            if g and n.tip == g['tur']:
-                ROVER[k] = now + g.get('bekleme_sn', 1800)
+        for rk, g in [r for k in sorted(TK.active(now)) for r in rovers(k)]:
+            if n.tip == g['tur']:
+                ROVER[rk] = now + g.get('bekleme_sn', 1800)
                 msgs.append(screen('%s destroyed! It will return in %d minutes.' % (n.d['ad'], g.get('bekleme_sn', 1800) // 60), big=True))
-                w.log('   gezgin %s yok edildi (%s)' % (n.d['ad'], k))
+                w.log('   gezgin %s yok edildi (%s)' % (n.d['ad'], rk))
         if not n.tip.startswith('etk_'):
             return msgs
         for k, s in self.here(now):
@@ -219,13 +227,10 @@ class HaritaEtkinlik:
         """Gezgin uzaylı bu haritada mı: gelince doğar, rotada ilerleyince ayrılır."""
         w, out = self.w, []
         name = H.name(w.map_id)
-        for k in sorted(TK.EVENTS):
-            g = TK.EVENTS[k].get('gezgin')
-            if not g:
-                continue
-            st = self.state(k)
-            alive = [i for i in st.setdefault('gezgin', []) if i in w.npcs and w.npcs[i].alive]
-            at = route_at(k, g, now) if TK.is_active(k, now) else None
+        for k, rk, g in [(k, rk, g) for k in sorted(TK.EVENTS) for rk, g in rovers(k)]:
+            st = self.state(k).setdefault('gezgin', {})
+            alive = [i for i in st.get(rk, []) if i in w.npcs and w.npcs[i].alive]
+            at = route_at(rk, g, now) if TK.is_active(k, now) else None
             if at == name and not alive and g['tur'] in w.CFG_TYPES:
                 x, y = w.random_spot()
                 n = w.spawn_npc_at(g['tur'], x, y)
@@ -242,7 +247,7 @@ class HaritaEtkinlik:
                     out.append(screen('%s jumped to %s.' % (n.d['ad'], at or '?')))
                     w.log('   gezgin %s ayrıldı -> %s' % (n.d['ad'], at))
                 alive = []
-            st['gezgin'] = alive
+            st[rk] = alive
         return out
 
     def summon(self, k, s, now):

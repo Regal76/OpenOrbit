@@ -163,6 +163,8 @@ class Sablonlar:
                     out.append(g)
             else:
                 out.append((mk, profil.patch_template(mk, m)))
+                if mk == 'EventActivationStateCommand':      # süren etkinliklerin harita süsleri (takvim.mood_cmds)
+                    out += TK.mood_cmds(TK.active())
         return out
 
     def world_msgs(self, map_id, kind):
@@ -674,7 +676,8 @@ class Session:
                 if self.cal_sent is not None:
                     log('   takvim: %s' % ', '.join(sorted(cur)) or '-')
                     changed = [(n, f) for n, f in items if self.win_sent.get(f['itemId']) != f['visible']]
-                    self.send([TK.event_cmd(now)] + changed, quiet=True)      # menü öğesi (canlıda doğrulanacak: Ö1)
+                    self.send([TK.event_cmd(now)] + changed + TK.mood_cmds(cur, self.cal_sent),
+                              quiet=True)      # menü öğesi (canlıda doğrulanacak: Ö1); harita süsleri
                     self.event_tips(now)
                 self.win_sent = {f['itemId']: f['visible'] for n, f in items}
                 self.cal_sent = cur
@@ -952,6 +955,16 @@ class Session:
                 PROFIL.d['davet_engeli'] = not PROFIL.d.get('davet_engeli', False)
                 PROFIL.dirty = True
             self.send([('InvitationBlockModule', {'active': PROFIL.d['davet_engeli']})], 'grup daveti engeli')
+        elif name == 'CommandCenterNewsClickedRequest':              # haberin tıklanması (E8; yanıtı yok): profildeki sayaç
+            with PROFIL.lock:
+                c = PROFIL.d.setdefault('haber_tik', {})
+                c[str(f.get('newsId'))] = c.get(str(f.get('newsId')), 0) + 1
+                PROFIL.dirty = True
+        elif name == 'CommandCenterNewsInfoRequest':                 # istemcinin haberlerinin tıklanma sayıları (takvim.news)
+            c = PROFIL.d.get('haber_tik', {})
+            ids = [dict(_='CommandCenterNewsModule', eventId=x.get('eventId', 0), newsId=x['newsId'], clickCount=c[x['newsId']])
+                   for x in f.get('newsInfo') or [] if c.get(x.get('newsId'))]
+            self.send([('CommandCenterInfoCommand', {'ids': ids})], 'Command Center: %d haber' % len(f.get('newsInfo') or []))
         elif name in SILENT:
             if name == 'EggTriggerRequest' and 0 <= f.get('eggTriggerType', -1) < len(EGG_TYPES):
                 PROFIL.ach('egg', tur=EGG_TYPES[f['eggTriggerType']])     # gizli başarımlar (EVENT_SECRET); yanıtı yok

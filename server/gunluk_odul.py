@@ -3,7 +3,8 @@ data/biletler.json <- tools/biletler.py, kayıttaki pencereler).
 
 Mini Client ödülü (kayıt: MiniClientRewardInfoCommand {rewardList 15 gün, isClaimable, timeToEndEvent sn, daysClaimed};
   MiniClientRewardClaimRequest -> ödül + MiniClientRewardDayInfoCommand {isClaimable, daysClaimed}): etkinlik süresince (takvim.py:
-  'MiniClientReward' türü olan etkinlik) günde bir; liste kayıttaki Halloween listesi.
+  'MiniClientReward' türü olan etkinlik: Trial of Terrors, E8'den Prosperous, Protegit, Gauntlet of Plutus, Mimesis, Treacherous
+  Domain, Fiesta, Thanksgiving ve kış takvimi) günde bir; liste kayıttaki Halloween listesi (ötekilerinin listesi kaynakta yok).
 Monthly Deluxe (MonthlyDeluxeInfoCommand {rewardList 28, dayInfoCommand {today, daysClaimed, isClaimable}, timeInfoCommand
   {timeToPassEnd}}; MonthlyDeluxeClaimRequest -> MonthlyDeluxeDayInfoCommand): gerçek parayla satılan paket
   (package_event-deal-month-deluxe -> resource_monthly-deluxe) uridyumla; alındığı günden 28 gün, her gün o günün ödülü.

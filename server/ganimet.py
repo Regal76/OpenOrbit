@@ -26,14 +26,17 @@ CODES = {b['kod']: KEYS[b['anahtar']] for b in BOXES.values() if b.get('kod')}  
 
 
 def active(kind, now=None):
-    """Takvim: altın kutu çift ISO haftalarının cumasında (wiki: iki haftada bir cuma; takvim.py altin_kutu); etkinlik kutuları
-    (Empyrian, Prosperous, Lucent Egg) etkinlik sürerken."""
-    cal = BOXES[kind].get('takvim')
-    if not cal:
-        return True
+    """Takvim (kutunun 'takvim'i takvim.py'deki etkinliğin adı): altın kutu ayın 2. ve 4. cuması, Obsidian / R&B / Apocalypse
+    haftalık rotasyonda (E8), etkinlik kutuları (Empyrian, Prosperous, Lucent Egg) etkinlik sürerken; liste: biri sürerken (Battle
+    Pass Box)."""
+    return bool(BOXES[kind].get('takvim') is None or box_event(kind, now))
+
+
+def box_event(kind, now=None):
+    """Kutunun takvimindeki etkin etkinlik (yoksa None)."""
     import takvim as TK
-    cal = 'altin_kutu' if cal == 'cuma_cift_hafta' else cal                 # etkinlik kutuları: etkinliğin adı (Empyrian …)
-    return cal in TK.EVENTS and TK.is_active(cal, now)                     # takvimde olmayan (E8: prometheus, athena) doğmaz
+    cal = BOXES[kind].get('takvim')
+    return next((k for k in (cal if isinstance(cal, list) else [cal]) if k in TK.EVENTS and TK.is_active(k, now)), None)
 
 
 def spawns(map_name, now=None):
@@ -65,8 +68,11 @@ def unique(loot):
 
 
 def pick(p, kind, rng=random):
-    """İçerikten bir ödül -> (lootId, adet). Sahip olunan tekil ödüller (gemi, tasarım, dron) çekilmez."""
-    rows = BOXES[kind]['odul']
+    """İçerikten bir ödül -> (lootId, adet). Sahip olunan tekil ödüller (gemi, tasarım, dron) çekilmez; 'odul_etkinlik'li kutuda
+    (Battle Pass Box) süren etkinliğin satırları."""
+    rows = BOXES[kind]['odul'] or BOXES[kind].get('odul_etkinlik', {}).get(box_event(kind)) or []
+    if not rows:                             # etkinlik bitmişken toplanan Battle Pass Box: anahtar geri
+        return BOXES[kind]['anahtar'], 1
     if kind == BL_CACHE:                     # wiki: tasarım rastgele, zaten varsa 10.000 uridyum
         loot = rng.choice(rows)[0]
         return ('currency_uridium', K['bl_tekrar_uridyum']) if owned(p, loot) else (loot, 1)
