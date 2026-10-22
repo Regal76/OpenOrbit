@@ -334,6 +334,7 @@ class World:
         self.gate_lives = None         # kapıda ölünce kalan can (ölüm ekranının metni)
         self.near_gate = None
         self.gate_peace = False        # portal çevresindeki güvenli bölgede mi (BeaconCommand.inPeaceArea)
+        self.entered = time.time()     # haritaya giriş (4-5'te portal DMZ'si bir süre)
         self.station_inside = None     # istasyon bölgesinde mi (BeaconCommand.inStation); None: ilk adımda gönderilir
         self.jumping = False
         self.on_jump = on_jump         # (hedef harita, portal) -> oturum harita değişimini yapar
@@ -460,18 +461,29 @@ class World:
         return True
 
     def in_peace(self, x, y):
-        """Güvenli bölge: istasyon çevresi ya da harita portallarının çevresi (NPC saldırmaz, doğmaz, oraya dolaşmaz)."""
-        s = self.station
+        """Güvenli bölge: kendi firmasının istasyonunun çevresi ya da harita portallarının çevresi (NPC saldırmaz, doğmaz, oraya dolaşmaz)."""
+        s = self.home_station()
         if s and (x - s['posX']) ** 2 + (y - s['posY']) ** 2 <= s['peaceRadius'] ** 2:
             return True
         return self.near_gate_peace(x, y)
 
     def peace_gates(self):
-        """Güvenli bölgesi olan portallar: harita portalları (Galaksi Kapısı ve kapı haritası portalları değil; harita.py)."""
+        """Güvenli bölgesi olan portallar: harita portalları (Galaksi Kapısı ve kapı haritası portalları değil; harita.py). Düşman
+        firmanın haritasında ve savaş haritalarında (4-1..4-4) yok; 4-5'te girişten sonra 15 sn (istemcinin DMZ yardımı)."""
+        n, fac = H.name(self.map_id), H.company(self.map_id)
+        if n in H.NO_DMZ_MAPS or (fac and fac != self.p.d['pilot'].get('factionId')) \
+                or time.time() > self.entered + H.DMZ_AFTER_JUMP_SN.get(n, float('inf')):
+            return []
         return [g for g in self.gates if not g.get('kapi') and not g.get('gizli')]
 
     def near_gate_peace(self, x, y):
         return any(math.hypot(g['x'] - x, g['y'] - y) <= H.GATE_PEACE_RADIUS for g in self.peace_gates())
+
+    def home_station(self):
+        """Oyuncunun firmasının istasyonu: başka firmanın üssünde (X-1, X-8) güvenli bölge, rafineri, hangar, donanım değiştirme ve
+        istasyonda tamir yok; ölünce kendi ana haritasında doğar."""
+        s = self.station
+        return s if s and s.get('type') == self.p.d['pilot'].get('factionId') else None
 
     def in_station(self):
         return self.in_peace(*self.hero_pos())
@@ -697,6 +709,14 @@ class World:
         self.send([('AddBoxCommand', dict(hash=h, boxType=kind, x=int(x), y=int(y)))])
         return h
 
+    def drop_chests(self, sd, x, y):
+        """Patron sandıkları: tek oyunculuda bütün hasar oyuncunun, en iyi kademeden en çok adet; uzaylının çevresine dizilir,
+        içerik etkinlik kutusu gibi açılınca ('kesin' satırlar; etkinlik_harita.roll)."""
+        for k in range(sd['adet']):
+            a = 2 * math.pi * k / sd['adet']
+            h = self.drop_box(sd['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200, None, sd.get('omur_sn', 600))
+            self.boxes[h]['etk'] = sd
+
     def spawn_bonus_box(self):
         x, y = self.random_spot()
         table = CFG['bonus_kutu_4x'] if H.name(self.map_id).startswith('4-') else CFG['bonus_kutu']   # boxes.md: 4-X'te zengin kutu
@@ -746,7 +766,8 @@ class World:
                 self.add_gate(g)
             self.start_rules()
             for name, a in (self.map_msgs() if self.map_msgs else []):
-                if name == 'AssetCreateCommand' and a['type']['typeValue'] in H.STATION_ASSETS:
+                if name == 'AssetCreateCommand' and a['type']['typeValue'] in H.STATION_ASSETS \
+                        and a.get('factionId') in (0, None, self.p.d['pilot'].get('factionId')):   # düşman üssününkiler kullanılmaz
                     self.assets.append((a['assetId'], a['posX'], a['posY'], H.STATION_ASSETS[a['type']['typeValue']]))
                     self.asset_types[a['assetId']] = a['type']['typeValue']
                 if name == 'AssetCreateCommand' and a['type']['typeValue'] == H.QUEST_GIVER:
@@ -994,7 +1015,7 @@ class World:
 
     # ------------------------------------------------------------ istasyon: nesneler ve rafineri
     def at_station(self):
-        s = self.station
+        s = self.home_station()
         hx, hy = self.hero_pos()
         return bool(s) and math.hypot(hx - s['posX'], hy - s['posY']) <= s['peaceRadius']
 
@@ -1143,13 +1164,13 @@ class World:
         g = next((g for g in self.gates if math.hypot(g['x'] - hx, g['y'] - hy) <= H.JUMP_RADIUS), None)
         gid = g['gateId'] if g else None
         peace = self.near_gate_peace(hx, hy)
-        s = self.station
+        s = self.home_station()
         inside = bool(s) and math.hypot(hx - s['posX'], hy - s['posY']) <= s['peaceRadius']
         if gid == self.near_gate and peace == self.gate_peace and inside == self.station_inside:
             return
         was = None if self.station_inside is None else bool(self.station_inside or self.gate_peace)
         self.gate_peace, self.station_inside = peace, inside    # istasyona giriş/çıkışta da (inStation, inPeaceArea; kayıt)
-        msgs = [('BeaconCommand', self.p.beacon(self.station, near_gate=bool(g), pos=(hx, hy), gate_peace=peace,
+        msgs = [('BeaconCommand', self.p.beacon(self.home_station(), near_gate=bool(g), pos=(hx, hy), gate_peace=peace,
                                                 radiation=self.radiation_since is not None))]
         if (inside or peace) != was:          # donanım değiştirilebilir mi (in_station; kayıt: varınca ve ayrılınca, çiftler hâlinde)
             msgs += [('EquipReadyCommand', {'ready': inside or peace}),
@@ -1487,16 +1508,10 @@ class World:
         if box.get('defter'):
             RT.note(self.p, box['defter'])                              # seyir defteri: "… booty key used"
         loot, n = GN.pick(self.p, kind)
-        n = AY.miktar('uridyum' if loot == 'currency_uridium' else 'toplama', n)       # panelin çarpanları
         msgs += [self.beam_msg(), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
         if GN.key_line(self.p, kind):
             msgs.append(legacy(GN.key_line(self.p, kind)))
-        if loot == 'currency_uridium':
-            msgs += self.reward_msgs(self.p.gain(uridyum=n, neden='collect_bonusbox'), uridyum=n)
-        elif self.grant:
-            msgs += self.grant(loot, n)
-        else:
-            self.p.add_resource(loot, n)
+        msgs += self.grant_loot(loot, n)          # para (Prime Astral'ın EP/onuru …) hesaba, gerisi mağazanın ödül işleviyle; panelin çarpanları
         if box.get('yeniden_sn'):                                       # Echo sandığı: patronun düşürdüğü, yeniden doğmaz
             self.schedule(GN.respawn_delay(kind) * AY.carpan('kutu_yenilenme'), 'booty', kind)
         self.send(msgs)
@@ -1671,6 +1686,14 @@ class World:
             cargo = {t: int(v * f) for t, v in cargo.items() if int(v * f) > 0}
         return cargo
 
+    def x1_reward(self):
+        """Kendi X-1 haritanda yüksek seviyede öldürme ödülü (EP, onur, kredi, uridyum) azalır: seviye 7'den, 15'ten hiç
+        (npc.json x1_odul; panelin x1_kargo ayarı kapatır)."""
+        if H.map_class(self.map_id) != 'X-1' or H.company(self.map_id) != self.p.d['pilot'].get('factionId') or not AY.get('x1_kargo'):
+            return 1
+        lv = self.p.d['pilot'].get('level', 1)
+        return next((k for l, k in reversed(SAVAS['x1_odul']) if lv >= l), 1)
+
     @staticmethod
     def aggressive(n):
         """Uzaylı oyuncuyu kendiliğinden kovalar mı: panelin saldırganlık ayarı (0 türün ayarı, 1 hepsi, 2 hiçbiri). Saldırgan
@@ -1725,6 +1748,9 @@ class World:
         o['kredi'] = int(o['kredi'] * (1 + form.get('kredi', 0)))  # Greed (pilot yeteneği)
         if o.get('uridyum') and random.random() < form.get('cift_uridyum', 0):
             o['uridyum'] *= 2                                      # N.O.V.A. Autonomous Extraction (Galaksi Kapılarında; nova.py)
+        f = self.x1_reward()
+        if f != 1:
+            o = {a: int(v * f) for a, v in o.items()}
         for k in ('ep', 'onur', 'kredi', 'uridyum'):
             o[k] = AY.miktar(k, o.get(k, 0))                       # panelin ödül çarpanları
         in_rad = self.radiation_since is not None
@@ -1746,6 +1772,8 @@ class World:
         if cargo:
             kind = 'CANDY_CARGO' if TKV.has_type('CandyCargo') else 'FROM_SHIP'
             self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_box(kind, x, y, cargo, SAVAS['kutu_omur_sn']))
+        if n.d.get('sandik'):                              # hasara göre sandıklar (Invoke XVI, Mindfire Behemoth; npc.json)
+            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_chests(n.d['sandik'], x, y))
         for sp in n.davranis.get('olunce_dogur', []):       # ölünce doğanlar (Lordakium sporları …): yeniden doğmazlar
             for k in range(sp.get('adet', 1)):
                 a = 2 * math.pi * k / max(1, sp.get('adet', 1))
@@ -2149,7 +2177,7 @@ class World:
             return
         self.repairing = True
         self.next_repair = now + 1.0
-        self.send([('BeaconCommand', self.p.beacon(self.station, near_gate=bool(self.near_gate), pos=self.hero_pos(now), repairing=True,
+        self.send([('BeaconCommand', self.p.beacon(self.home_station(), near_gate=bool(self.near_gate), pos=self.hero_pos(now), repairing=True,
                                                     gate_peace=self.gate_peace, radiation=self.radiation_since is not None)),
                    ('UIItemAddHighlightCommand', dict(self.repbot_highlight(), soundModule=mod('SoundTriggerModule', playSound=False, soundId=0)))])
         self.log('   onarım robotu çalıştı (%.0f HP/sn)' % self.repair_rate())
@@ -2158,7 +2186,7 @@ class World:
         if not self.repairing:
             return
         self.repairing = False
-        self.send([('BeaconCommand', self.p.beacon(self.station, near_gate=bool(self.near_gate), pos=self.hero_pos(), repairing=False,
+        self.send([('BeaconCommand', self.p.beacon(self.home_station(), near_gate=bool(self.near_gate), pos=self.hero_pos(), repairing=False,
                                                     gate_peace=self.gate_peace, radiation=self.radiation_since is not None)),
                    ('UIItemRemoveHighlightCommand', self.repbot_highlight())])
 
@@ -2513,7 +2541,7 @@ class World:
         self.send(msgs)
 
     def beacon_msg(self, now):
-        return ('BeaconCommand', self.p.beacon(self.station, near_gate=bool(self.near_gate), pos=self.hero_pos(now),
+        return ('BeaconCommand', self.p.beacon(self.home_station(), near_gate=bool(self.near_gate), pos=self.hero_pos(now),
                                                repairing=self.repairing, gate_peace=self.gate_peace,
                                                radiation=self.radiation_since is not None))
 
@@ -2691,7 +2719,7 @@ class World:
             g = self.p.d['gemi']
             hp, shield = g.get('hitMax', 1), g.get('shieldMax', 0)
             x, y = self.death_pos or self.hero_pos()
-            if kind == REPAIR_BASE and not self.station and self.on_home:
+            if kind == REPAIR_BASE and not self.home_station() and self.on_home:
                 self.p.set_hull(hp=hp, shield=shield)
                 self.hero_dead = False
                 self.send(msgs)
@@ -2704,7 +2732,7 @@ class World:
                     self.send([('KillScreenUpdateCommand', {'options': self.repair_options()})])
                     return
                 x, y = spot
-            elif kind == REPAIR_BASE and self.station:
+            elif kind == REPAIR_BASE and self.home_station():
                 x, y = self.station['posX'], self.station['posY']
             elif kind == REPAIR_RAID_GATE:
                 x, y = self.map_w // 2, self.map_h // 2         # Hades: kapı haritasının ortasında, tam canla; dalga sürer

@@ -2747,7 +2747,121 @@
    "para": [
     "resource_collectable_byte-remnant"
    ],
-   "_kaynak": "mimesis_mutiny.json schedule: Mart ortası 15 gün (her yıl), Kasım 2025; tools/buyuk_icerikler.py"
+   "_kaynak": "mimesis_mutiny.json schedule: Mart ortası 15 gün (her yıl), Kasım 2025; tools/buyuk_icerikler.py",
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-3",
+      "X-4",
+      "4-1",
+      "4-2",
+      "4-3",
+      "4-4"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_hexor_mimesis",
+       "adet": 4
+      },
+      {
+       "tur": "etk_raging_mimesis",
+       "adet": 2
+      },
+      {
+       "tur": "etk_cloning_mimesis",
+       "adet": 1
+      },
+      {
+       "tur": "etk_terror_mimesis",
+       "adet": 1
+      },
+      {
+       "tur": "etk_reflector_mimesis",
+       "adet": 1
+      }
+     ],
+     "kutu_dusme": {
+      "etk_terror_mimesis": {
+       "tur": "MIMESIS_AI_TERROR_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 600,
+       "mod": "biri",
+       "kesin": [
+        [
+         "resource_collectable_byte-remnant",
+         [
+          5,
+          15
+         ]
+        ]
+       ],
+       "icerik": [
+        [
+         "resource_key_access-escort",
+         1,
+         1
+        ],
+        [
+         "ammunition_laser_emaa-20",
+         [
+          100,
+          300
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          10,
+          30
+         ],
+         1
+        ]
+       ]
+      },
+      "etk_reflector_mimesis": {
+       "tur": "MIMESIS_AI_REFLECTOR_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 600,
+       "mod": "biri",
+       "kesin": [
+        [
+         "resource_collectable_byte-remnant",
+         [
+          10,
+          25
+         ]
+        ]
+       ],
+       "icerik": [
+        [
+         "resource_key_access-escort",
+         1,
+         1
+        ],
+        [
+         "ammunition_laser_emaa-20",
+         [
+          100,
+          300
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          10,
+          30
+         ],
+         1
+        ]
+       ]
+      }
+     },
+     "_kaynak": "wiki aliens (Mimesis türleri X-3, X-4, 4-1..4-4), boxes/mimesis-box (Terror ve Reflector, Top 3: Escort Key, Byte Remnant, EMAA-20, PLD-8); nüfus ve kutu adetleri uyarlama. Cloned ve Kamikaze yalnız çağrılır (uzayli_yetenekleri.json)",
+     "_arac": "tools/etkinlik_kutulari.py"
+    }
+   ]
   },
   "mileage_market": {
    "ad": "Mileage Market",

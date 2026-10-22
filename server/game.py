@@ -157,7 +157,8 @@ class Sablonlar:
             elif kind == 'hazir' and (mk == 'EquipReadyCommand' or m.get('message', '').startswith('0|n|MSG|3|2|msg_equip_')):
                 continue               # kayıtta her yerde true; dünya istasyon bölgesine girip çıktıkça gönderir (dunya.check_gates)
             elif mk.startswith('@'):
-                g = profil.generate(mk, self.station(map_id))
+                st = self.station(map_id)               # düşman üssü güvenli bölge değil (dunya.home_station)
+                g = profil.generate(mk, st if st and st.get('type') == profil.d['pilot'].get('factionId') else None)
                 if g:
                     out.append(g)
             else:
@@ -719,7 +720,7 @@ class Session:
             return
         k = PROFIL.d['konum']
         st = SABLON.station(k['mapId'])
-        if not st:
+        if not st or st.get('type') != PROFIL.d['pilot'].get('factionId'):        # düşman üssünde tamir yok: kendi ana haritası
             k['mapId'] = HOME_MAP.get(PROFIL.d['pilot'].get('factionId'), 5)
             st = SABLON.station(k['mapId'])
         if st:

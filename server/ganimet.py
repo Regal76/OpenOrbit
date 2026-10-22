@@ -1,12 +1,15 @@
 """Anahtarlı ganimet kutuları (yol haritası Aşama 5; veri data/kutular.json <- tools/kutular.py, wiki + istemcinin adları).
 
 Haritada AddBoxCommand {boxType: PIRATE_BOOTY | PIRATE_BOOTY_GOLD | PIRATE_BOOTY_RED | PIRATE_BOOTY_BLUE | BLACK_BOOTY_BOX |
-PIRATE_BOOTY_SILVER | UNSTABLE_BLACKLIGHT_CACHE | BLACKLIGHT-CRYPT}; toplarken (CollectBoxRequest) türün anahtarı yoksa kutu yerinde
+PIRATE_BOOTY_SILVER | UNSTABLE_BLACKLIGHT_CACHE | BLACKLIGHT-CRYPT | ASTRAL_BOOTY_BOX | ASTRAL_PRIME_BOOTY_BOX | MASQUE_BOOTY_BOX
+(Apocalypse) | PERSEUS_BLESSING_BOOTY_BOX | PROMETHEUS_BOOTY_BOX | LAUREL_BOX (son ikisi E8'in etkinliklerinde) | etkinlik kutuları};
+toplarken (CollectBoxRequest) türün anahtarı yoksa kutu yerinde
 kalır ve istemcinin metni gelir (0|A|STM|msg_loot_failed_no_booty-key-…); varsa bir anahtar harcanır, HUD sayacı güncellenir
 ("0|A|<kod>|<kalan>"), içerikten bir ödül çekilir (ağırlıkla; sahip olunan gemi/tasarım/dron çekilmez) ve mağazanın ödül işleviyle
 verilir. Black Light Cache'teki tasarıma zaten sahipse 10.000 uridyum (wiki). Yeşil anahtar yoksa ve ayarlarda otomatik alım açıksa
 (autoBuyGreenBootyKeys) mağaza fiyatıyla bir anahtar alınır.
-Haritalar: X-2..X-8 (1-2 … 3-8), 4-X, 5-X (5-1..5-3), 5-4 (gümüş), BL (BL-1..3). Altın kutular iki haftada bir cuma (wiki).
+Haritalar: X-2..X-8 (1-2 … 3-8), X-1..X-8 (Perseus, Laurel), 4-X, 5-X (5-1..5-3), 5-4 (gümüş), BL (BL-1..3). Altın kutular iki
+haftada bir cuma (wiki).
 """
 import json, os, random, re, time
 
@@ -29,7 +32,8 @@ def active(kind, now=None):
     if not cal:
         return True
     import takvim as TK
-    return TK.is_active(cal if cal in TK.EVENTS else 'altin_kutu', now)     # etkinlik kutuları: etkinliğin adı (Empyrian …)
+    cal = 'altin_kutu' if cal == 'cuma_cift_hafta' else cal                 # etkinlik kutuları: etkinliğin adı (Empyrian …)
+    return cal in TK.EVENTS and TK.is_active(cal, now)                     # takvimde olmayan (E8: prometheus, athena) doğmaz
 
 
 def spawns(map_name, now=None):

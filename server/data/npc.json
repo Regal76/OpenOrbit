@@ -1386,7 +1386,31 @@
     ]
    },
    "_model_notu": "istemci: npcId 177 = Black Light 3 (221)",
-   "_hiz_notu": "wiki: Invoke XVI hareketsiz (belgeler/wiki/aliens.md)"
+   "_hiz_notu": "wiki: Invoke XVI hareketsiz (belgeler/wiki/aliens.md)",
+   "sandik": {
+    "tur": "INVOKE_XVI_BOX_3",
+    "adet": 5,
+    "omur_sn": 600,
+    "mod": "biri",
+    "icerik": [],
+    "kesin": [
+     [
+      "resource_collectable_rinusk",
+      [
+       12,
+       16
+      ]
+     ],
+     [
+      "resource_collectable_blacklight-trace",
+      [
+       6,
+       8
+      ]
+     ]
+    ],
+    "_kaynak": "wiki invoke-xvi: hasara göre sandık (Rinusk, Blacklight Trace; daha çok hasara daha iyi sandık, en çok 5). Tek oyunculuda en iyi kademe (_3) ve 5 sandık; adetler uyarlama (ek ödülün beşte biri)"
+   }
   },
   "225": {
    "ad": "\\ Mindfire Behemoth //",
@@ -1422,7 +1446,46 @@
      41
     ]
    },
-   "_model_notu": "istemci: npcId 178 = Black Light 4 (225)"
+   "_model_notu": "istemci: npcId 178 = Black Light 4 (225)",
+   "sandik": {
+    "tur": "MINDFIRE_BEHEMOTH_BOX_3",
+    "adet": 8,
+    "omur_sn": 600,
+    "mod": "biri",
+    "icerik": [],
+    "kesin": [
+     [
+      "resource_collectable_rinusk",
+      [
+       12,
+       15
+      ]
+     ],
+     [
+      "resource_collectable_blacklight-trace",
+      [
+       15,
+       18
+      ]
+     ],
+     [
+      "resource_collectable_mindfire-cerebrum",
+      [
+       4,
+       5
+      ]
+     ],
+     [
+      "currency_uridium",
+      5625
+     ],
+     [
+      "currency_credits",
+      22500000
+     ]
+    ],
+    "_kaynak": "wiki mindfire-behemot: hasara göre sandık (Rinusk, Blacklight Trace, Mindfire Cerebrum; en çok 8), 45.000 U ve 180.000.000 kredi sandıklara bölünür. Tek oyunculuda en iyi kademe (_3) ve 8 sandık; Rinusk/Trace/Cerebrum adetleri uyarlama (ek ödülün sekizde biri)"
+   }
   },
   "214": {
    "ad": "\\ Purpose XXI //",
@@ -4771,6 +4834,266 @@
    "haritalar": [],
    "etkinlik": true,
    "_kaynak": "taban -=[ Protegit ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_hexor_mimesis": {
+   "ad": "-=[ Hexor Mimesis ]=-",
+   "hp": 495000,
+   "kalkan": 200000,
+   "hasar": 6500,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 128,
+    "kredi": 128000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 400,
+    "1": 400,
+    "2": 400,
+    "4": 64,
+    "5": 64,
+    "6": 4,
+    "3": 8
+   },
+   "npc_kimlik": 233,
+   "model": "278",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: hexor_mimesis); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "ek_odul": {
+    "resource_collectable_byte-remnant": 5
+   }
+  },
+  "etk_raging_mimesis": {
+   "ad": "-=[ Raging Mimesis ]=-",
+   "hp": 1045000,
+   "kalkan": 600000,
+   "hasar": 20000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 102400,
+    "onur": 512,
+    "kredi": 512000,
+    "uridyum": 300
+   },
+   "kargo": {
+    "0": 1000,
+    "1": 1000,
+    "2": 1000,
+    "4": 256,
+    "5": 256,
+    "6": 8,
+    "3": 16
+   },
+   "npc_kimlik": 234,
+   "model": "279",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: raging_mimesis); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "ek_odul": {
+    "resource_collectable_byte-remnant": 10
+   }
+  },
+  "etk_cloning_mimesis": {
+   "ad": "-=[ Cloning Mimesis ]=-",
+   "hp": 2200000,
+   "kalkan": 1200000,
+   "hasar": 75000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 205300,
+    "onur": 1024,
+    "kredi": 1024000,
+    "uridyum": 600
+   },
+   "kargo": {
+    "0": 2400,
+    "1": 2400,
+    "2": 2400,
+    "4": 512,
+    "5": 512,
+    "6": 16,
+    "3": 32
+   },
+   "npc_kimlik": 235,
+   "model": "280",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: cloning_mimesis); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "ek_odul": {
+    "resource_collectable_byte-remnant": 25
+   }
+  },
+  "etk_cloned_mimesis": {
+   "ad": "-=[ Cloned Mimesis ]=-",
+   "hp": 495000,
+   "kalkan": 200000,
+   "hasar": 0,
+   "hiz": 280,
+   "saldirgan": false,
+   "odul": {
+    "ep": 25600,
+    "onur": 128,
+    "kredi": 128000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 400,
+    "1": 400,
+    "2": 400,
+    "4": 64,
+    "5": 64,
+    "6": 4,
+    "3": 8
+   },
+   "npc_kimlik": 236,
+   "model": "280",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: cloned_mimesis); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_terror_mimesis": {
+   "ad": "-=[ Terror Mimesis ]=-",
+   "hp": 3000000,
+   "kalkan": 1800000,
+   "hasar": 65000,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 409600,
+    "onur": 2048,
+    "kredi": 2048000,
+    "uridyum": 900
+   },
+   "kargo": {
+    "0": 3200,
+    "1": 3200,
+    "2": 3200,
+    "4": 1024,
+    "5": 1024,
+    "6": 32,
+    "3": 64
+   },
+   "npc_kimlik": 237,
+   "model": "281",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: terror_mimesis); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "ek_odul": {
+    "resource_collectable_byte-remnant": 35
+   }
+  },
+  "etk_kamikaze_mimesis": {
+   "ad": "-=[ Kamikaze Mimesis ]=-",
+   "hp": 495000,
+   "kalkan": 200000,
+   "hasar": 0,
+   "hiz": 450,
+   "saldirgan": true,
+   "odul": {
+    "ep": 25600,
+    "onur": 128,
+    "kredi": 128000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 400,
+    "1": 400,
+    "2": 400,
+    "4": 64,
+    "5": 64,
+    "6": 4,
+    "3": 8
+   },
+   "npc_kimlik": 238,
+   "model": "282",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: kamikaze_mimesis); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama"
+  },
+  "etk_reflector_mimesis": {
+   "ad": "-=[ Reflector Mimesis ]=-",
+   "hp": 4500000,
+   "kalkan": 2500000,
+   "hasar": 50000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 819200,
+    "onur": 4096,
+    "kredi": 4096000,
+    "uridyum": 1250
+   },
+   "kargo": {
+    "0": 4000,
+    "1": 4000,
+    "2": 4000,
+    "4": 2048,
+    "5": 2048,
+    "6": 64,
+    "3": 128
+   },
+   "npc_kimlik": 239,
+   "model": "283",
+   "haritalar": [
+    "X-3",
+    "X-4",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4"
+   ],
+   "etkinlik": true,
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: reflector_mimesis); görünüm istemcinin game.xml'i; hız, saldırganlık uyarlama",
+   "ek_odul": {
+    "resource_collectable_byte-remnant": 50
+   }
   }
  },
  "haritalar": {
@@ -6197,6 +6520,29 @@
    ]
   ],
   "_x1_kargo": "darkorbit.fandom.com Hall of Fame: X-1 haritalarında yüksek seviyede NPC kargosu azalır: seviye 7 %50, 8 %25, 9 %13, 10 ve üstü hiç (alçak seviyelilerin haritası).",
+  "x1_odul": [
+   [
+    7,
+    0.8
+   ],
+   [
+    9,
+    0.6
+   ],
+   [
+    11,
+    0.4
+   ],
+   [
+    13,
+    0.2
+   ],
+   [
+    15,
+    0
+   ]
+  ],
+  "_x1_odul": "darkorbitwiki.com aliens (Streuner, Recruit/Aider Streuner): seviye 7'den kendi X-1 haritanda öldürmek ödülü kısmen ya da tamamen azaltır, 15'ten hiç ödül yok (EP, onur, kredi, uridyum). Ara basamaklar uyarlama; düşman X-1'inde ceza yok.",
   "kutu_gorus": 1000,
   "kutu_birakma": 1150,
   "_kutu_gorus": "Kayıt: kutular ve cevherler kahramana ~1.000 birim kala AddBoxCommand/AddOreCommand ile geliyor, uzaklaşınca toplanmadan RemoveCollectableCommand (161 kez, 900-1.150 birim). Bırakma uzaklığı uyarlama.",

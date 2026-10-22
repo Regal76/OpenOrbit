@@ -12241,6 +12241,12 @@
        "pm_ebl_attend",
        4
       ]
+     ],
+     [
+      [
+       "pm_ebl_phasingcyborg",
+       1
+      ]
      ]
     ]
    },
@@ -13285,7 +13291,7 @@
    "saldirgan": true,
    "odul": {
     "ep": 819200,
-    "onur": 4096000,
+    "onur": 4096,
     "kredi": 4096000,
     "uridyum": 1250
    },
@@ -14331,6 +14337,23 @@
     "onur": 0,
     "kredi": 0,
     "uridyum": 0
+   },
+   "kargo": {}
+  },
+  "pm_ebl_phasingcyborg": {
+   "ad": "-=[ Phasing Cyborg ]=-",
+   "model": "297",
+   "npc_kimlik": 254,
+   "hp": 4500000,
+   "kalkan": 2500000,
+   "hasar": 50000,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 819200,
+    "onur": 4096,
+    "kredi": 4096000,
+    "uridyum": 1250
    },
    "kargo": {}
   }

@@ -1,6 +1,6 @@
 {
  "_aciklama": "LoW (Lord of War), tek kişilik sürüm (low.py; yol haritası Aşama 4). Wiki (belgeler/arastirma/pve_icerik.md 2.9, darkorbitwiki.com/galaxy-gates/low): portal X-3'te, grup kapısı (en az 3 kişi). Uzaylılar ve sayıları wiki'den (LoW sürümleri: npc.json 90-97, npcId 42-48 ve Century Falcon 120): Vagrant 14, Marauder 17, Outcast 18, Corsair 10, Hooligan 17, Ravager 17, Convict 16; hepsi ölünce dört röle istasyonu sırayla etkinleştirilir, dördüncüden sonra Century Falcon Vagrant'larla gelir. Ödüller uzaylıların kendi ödülleri: wiki'nin tek oyunculu toplamı (7.002.000 EP, 26.400 onur, 35.400 U, 35.355.000 kredi) bunların toplamı. Herkes ölünce 5 dk içinde dönülebilir.",
- "_uyarlama": "Uzaylılar türlerine göre sırayla dalga dalga (109'u birden değil). Röle istasyonu vurularak dolar (wiki \"shoot the station until its green indicator loads\"; dolum için gereken hasar 300.000 uyarlama; istemcide röleyi seçip vurmak canlıda doğrulanmadı): yedek olarak yanında (yaricap) yakında uzaylı yokken sn saniye durunca da dolar. Etkin her röle haritanın ortasında (merkez.yaricap) onarım robotunu %25 hızlandırır (wiki \"speeds HP regeneration in the middle of the map\", oran uyarlama). Vagrant'lar wiki'nin 14'ü: dalgada 4, her rölede 1 savunan, Century Falcon'un eskortu 6 (wiki toplamı 14 Vagrant'la birebir; önceki 6 eskort + 12 savunan fazladan 18'di). Bitince ortada firmanın X-3'üne dönüş portalı. Kırmızı uçuş yasağı bölgeleri (haritanın görselinde) sunucuda yok.",
+ "_uyarlama": "Uzaylılar türlerine göre sırayla dalga dalga (109'u birden değil). Röle istasyonu vurularak dolar (wiki \"shoot the station until its green indicator loads\", istemcinin transmission_groupgate_relay_station_2 metni; dolum için gereken hasar 300.000 uyarlama; istemcide röleyi seçip vurmak canlıda doğrulanmadı): yedek olarak yanında (yaricap) sn saniye durunca da dolar. Haritada korsan (rölenin savunanı da) varken röle etkinleşmez (istemcinin msg_groupgate_cant_activate_relay_because_npcs_are_alive metni). Etkin her röle haritanın ortasında (merkez.yaricap) onarım robotunu %25 hızlandırır (wiki \"speeds HP regeneration in the middle of the map\", oran uyarlama). Vagrant'lar wiki'nin 14'ü: dalgada 4, her rölede 1 savunan, Century Falcon'un eskortu 6 (wiki toplamı 14 Vagrant'la birebir; önceki 6 eskort + 12 savunan fazladan 18'di). Bitince ortada firmanın X-3'üne dönüş portalı. Kırmızı uçuş yasağı bölgeleri (haritanın görselinde) sunucuda yok.",
  "harita": 200,
  "dalgalar": [["94", 4], ["93", 17], ["92", 18], ["91", 10], ["96", 17], ["97", 17], ["95", 16]],
  "boss": "90",
@@ -15,7 +15,7 @@
   "giris": "LoW: destroy all Lord of War ships, then activate the {roleler} relay stations.",
   "devam": "LoW: welcome back! The instance continues.",
   "dalga": "LoW: {ad} x{adet} incoming ({dalga}/{toplam})",
-  "role": "Relay station {no}/{roleler}: stay close to it to activate it.",
+  "role": "Relay station {no}/{roleler}: destroy its defender, then use your laser cannons on it.",
   "role_ilerleme": "Relay station {no}/{roleler}: {yuzde}%",
   "role_tamam": "Relay station {no}/{roleler} activated!",
   "boss": "Century Falcon has appeared!",

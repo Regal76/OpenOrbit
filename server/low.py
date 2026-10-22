@@ -2,8 +2,9 @@
 
 Akış (dünya döngüsünden, kilit altında): giriş -> eski korsanlar türlerine göre dalga dalga -> dört röle istasyonu sırayla (istemcinin
 RELAY_STATION varlığı; wiki: "shoot the station until its green indicator loads": vurulunca dolar, dünyanın asset_targets'ı; yedek
-olarak yanında durunca da) -> Century Falcon ve eskortu -> bitti: ortada firmanın X-3'üne dönüş portalı. Etkin her röle haritanın
-ortasında onarım robotunu hızlandırır (wiki "speeds HP regeneration in the middle of the map").
+olarak yanında durunca da; haritada korsan varken etkinleşmez, istemcinin metni) -> Century Falcon ve eskortu -> bitti: ortada
+firmanın X-3'üne dönüş portalı. Etkin her röle haritanın ortasında (LoW HQ'su, harita.py) onarım robotunu hızlandırır (wiki "speeds
+HP regeneration in the middle of the map").
 İlerleme profilde (low): ölünce donus_sn içinde X-3'teki portaldan dönülürse kaldığı aşamadan sürer (dalganın uzaylıları yeniden gelir),
 yoksa baştan. LoW'da tamir yalnız istasyonda (X-1); atlama CPU'su çalışmaz.
 """
@@ -11,6 +12,7 @@ import json, math, os, random, time
 
 import harita as H
 import uzayli as UZ
+from eski_protokol import legacy
 from kapi import screen
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -120,14 +122,11 @@ class Low:
         w.log('   LoW röle istasyonu %d: (%d,%d)' % (no, x, y))
 
     def relay_tick(self, now):
-        """Röle (yedek yol): yanında yaricap içinde, yakında (yaricap x 2) uzaylı yokken ilerler; sn saniyede etkinleşir."""
+        """Röle (yedek yol): yanında yaricap içinde, haritada korsan yokken ilerler; sn saniyede etkinleşir."""
         w, r, cfg = self.w, self.relay, L['role']
         dt, r['son'] = now - r['son'], now
         hx, hy = w.hero_pos(now)
-        if math.hypot(r['x'] - hx, r['y'] - hy) > cfg['yaricap']:
-            return
-        if any(math.hypot(n.mover.pos(now)[0] - r['x'], n.mover.pos(now)[1] - r['y']) <= cfg['yaricap'] * 2
-               for n in w.npcs.values() if n.alive and n.id in self.alive()):
+        if math.hypot(r['x'] - hx, r['y'] - hy) > cfg['yaricap'] or self.alive():
             return
         r['ilerleme'] += min(dt, 1.0)
         self.relay_step(now)
@@ -142,7 +141,7 @@ class Low:
             self.say('role_ilerleme', no=no, yuzde=pct)
         if r['ilerleme'] < cfg['sn']:
             return
-        w.send([UZ.asset_remove(r['kimlik'], RELAY_STATION)])
+        w.send([UZ.asset_remove(r['kimlik'], RELAY_STATION), legacy('0|A|STM|msg_relaisstation_activated')])
         self.relay = None
         self.say('role_tamam', no=no)
         w.log('   LoW röle istasyonu %d etkin' % no)
@@ -180,7 +179,8 @@ class Low:
                                           maxShieldEnergy=0))]
 
     def asset_attackable(self, uid):
-        return []
+        """Korsanlar (rölenin savunanı da) haritadayken röle etkinleşmez (istemcinin metni)."""
+        return [legacy('0|A|STM|msg_groupgate_cant_activate_relay_because_npcs_are_alive')] if self.alive() else []
 
     def asset_hit(self, uid, dmg):
         """Vuruş röleyi doldurur (gösterge: AttackHitAssetCommand'ın canı dolum)."""

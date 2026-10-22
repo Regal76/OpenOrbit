@@ -10,7 +10,8 @@ Yetenekler (veri alanları uzayli_yetenekleri.json'un açıklamasında):
   yavaşlatan atış (Barb, Stinger, Saboteur, Behemoth)  isabet eden lazer: hız sınırı (küre, 120) ya da oranla yavaşlatma
   birden çok hedef (Behemoth)                          kritik canda P.E.T.'e de ateş eder
   roket (StreuneR) ve roket fırlatıcı (Annihilator)    ayrı beklemeyle oyuncuya roket
-  tekillik (The Stinger)                               saniyede hasar, toplam sınırlı, menzil içinde
+  tekillik (The Stinger, Reflector Mimesis)            saniyede hasar, toplam sınırlı, menzil içinde (Reflector'da girdap yok)
+  temasla patlama (Kamikaze Mimesis)                   lazer atmaz; yaklaşınca patlar (bomba hasarı), ödülsüz kalkar
   kaybolma (Emperor Lordakium)                         belli hasardan sonra uzağa ışınlanır, iki sahte belirir (vurulunca patlar);
                                                        gizliyken can ve kalkan doldurur
   yapışkan bomba (Emperor Kristallon)                  aralıkla gecikmeli büyük hasar (tek oyunculu: grup boyuna bölünür)
@@ -231,6 +232,8 @@ class Yetenekler:
                 self.singularity(n, now)
             if 'yapiskan_bomba' in d:
                 self.bomb(n, now)
+            if 'temasla_patla' in d:
+                self.kamikaze(n, now)
             if 'hiz_becerisi' in d:
                 self.speed_skill(n, now)
             if 'kaybolma' in d and n.ab.get('gizli'):
@@ -317,11 +320,21 @@ class Yetenekler:
         if not n.engaged or now < n.ab.get('tekillik', 0) or not self.hero_open(now) or self.dist(n, now) > t['menzil']:
             return
         n.ab['tekillik'] = now + t['bekleme_sn']
-        if not any(d_.get('gorsel') for d_ in self.hero_dots):
+        gorsel = t.get('gorsel', True)                     # Reflector Mimesis'in radyasyonu: girdap yok
+        if gorsel and not any(d_.get('gorsel') for d_ in self.hero_dots):
             self.w.send([self.singularity_visual(True)])    # canlı test H30: hasar vardı, görsel yoktu
         self.hero_dots.append(dict(npc=n.id, bitis=now + t['sure_sn'], kalan=t['azami'], sn_hasar=t['sn_hasar'], sonraki=now + 1.0,
-                                   menzil=t['menzil'], gorsel=True))
+                                   menzil=t['menzil'], gorsel=gorsel))
         self.w.log('   %s tekilliği başladı' % n.d['ad'])
+
+    def kamikaze(self, n, now):
+        """Kamikaze Mimesis: oyuncuya yaricap kadar yaklaşınca patlar (bomba hasarı) ve ödülsüz kalkar."""
+        t, w = n.davranis['temasla_patla'], self.w
+        if not n.engaged or not self.hero_open(now) or self.dist(n, now) > t['yaricap']:
+            return
+        boom = [('ShipDestroyedCommand', dict(destroyedUserId=n.id, explosionTypeId=0))] if n.id in w.visible else []
+        w.send(w.hurt_hero(t['hasar'], n, atype=0) + boom + w.remove_npc(n))
+        w.log('   %s patladı: %d hasar' % (n.d['ad'], t['hasar']))
 
     def singularity_visual(self, on):
         return ('VisualModifierCommand', dict(userId=self.w.hid, modifier=SINGULARITY_TARGET, attribute=0, additionalAttribute='',

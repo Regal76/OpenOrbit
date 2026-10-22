@@ -14,6 +14,10 @@ MAP_W, MAP_H = 21000, 13100
 JUMP_RADIUS = 600          # kayıt: (2514,11402) yakın, (2504,11050) değil -> ~520–670 arası
 JUMP_DELAY_SN = 3.05       # kayıt: JumpInitiatedCommand -> JumpToServerCommand 3,05 sn
 GATE_PEACE_RADIUS = 1000   # kayıt: 2-1 portalına 818 birimde BeaconCommand.inPeaceArea true, 1171'de false (GG kapıları hariç)
+# istemcinin yardımı (dmz_position_p, dmz_warning_p): portal DMZ'si yalnız kendi firmanın haritalarında; savaş haritalarında (4-1..4-4)
+# yok, 4-5'te portaldan geçtikten sonra 15 sn
+NO_DMZ_MAPS = {'4-1', '4-2', '4-3', '4-4'}
+DMZ_AFTER_JUMP_SN = {'4-5': 15}
 NAMES = {}
 LEVELS = {}                # istemcinin maps-config.xml'i: harita -> (habitant, foreign) gereken seviye (kendi / başka firma)
 SCALE = {}                 # istemcinin maps-config.xml'i: scaleFactor 2 olan haritalar (4-4, 4-5, 5-1, 5-3) iki kat büyük
@@ -97,6 +101,10 @@ for _m, _n in NAMES.items():
 # istasyonlu haritalar -> firma: X-1 (istemcinin maps-config.xml'inde home="n") ve X-8 (wiki: Home Base)
 STATION_MAPS = {1: 1, 5: 2, 9: 3, 20: 1, 24: 2, 28: 3}
 FACTION_NAME = {1: 'MMO', 2: 'EIC', 3: 'VRU'}
+# X-8'in üssü ön karakol: istemcinin AssetType'ı COMPANY_HQ_OUTPOST 47, HANGAR_OUTPOST 49, ORE_TRADE_OUTPOST 51, INSTANT_REPAIR_OUTPOST
+# 54, STATION_TURRET_*_OUTPOST 56/58 (lib_assets *_outpost_<firma>, metinler "Corporate Outpost", "Outpost Hangar" …; kayıtta X-8 yok)
+OUTPOST = {46: 47, 48: 49, 50: 51, 53: 54, 55: 56, 57: 58}
+OUTPOST_MAPS = {20, 24, 28}
 TPL_CENTER = (19000, 2000)          # kayıttaki 2-1 istasyonunun merkezi (SpaceStationCommand)
 CORNERS = [(19000, 2000), (2000, 2000), (19000, 11100), (2000, 11100)]
 
@@ -110,6 +118,10 @@ def map_world(map_id, tpl):
     fac = STATION_MAPS.get(int(map_id))
     if not fac or not tpl:
         giris, hazir = structure(map_id, tpl, gs) if tpl else ([], [])
+        if int(map_id) in LOW_STATION:
+            w, h = map_size(map_id)
+            hazir.append({'_m': 'SpaceStationCommand', 'posX': w // 2, 'posY': h // 2, 'peaceRadius': 0, 'id': 0,
+                          'type': LOW_STATION[int(map_id)]})
         return {'giris': giris, 'hazir': hazir + gate_msgs}
     cx, cy = max(CORNERS, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs), default=0))
     dx, dy = cx - TPL_CENTER[0], cy - TPL_CENTER[1]
@@ -118,7 +130,10 @@ def map_world(map_id, tpl):
     for m in tpl.get('giris', []):
         if m['_m'] == 'AssetCreateCommand':                    # görev verici (34) dahil: görevlere dönüş her ana istasyonda
             ids[m['assetId']] = base + len(ids)
-            giris.append(quest_giver(dict(m, posX=m['posX'] + dx, posY=m['posY'] + dy, factionId=fac, assetId=ids[m['assetId']]), map_id))
+            a = quest_giver(dict(m, posX=m['posX'] + dx, posY=m['posY'] + dy, factionId=fac, assetId=ids[m['assetId']]), map_id)
+            if int(map_id) in OUTPOST_MAPS and a['type']['typeValue'] in OUTPOST:
+                a['type'] = dict(a['type'], typeValue=OUTPOST[a['type']['typeValue']])
+            giris.append(a)
     for m in tpl.get('giris', []):
         if m['_m'] == 'MapAssetActionAvailableCommand' and m['mapAssetId'] in ids:
             giris.append(dict(m, mapAssetId=ids[m['mapAssetId']]))
@@ -152,7 +167,10 @@ STRUCTURES = {17: 34, 21: 34, 25: 34, 306: 34, 307: 34, 308: 34, 92: 50}
 # (game.Sablonlar.station bunu atlar).
 STRUCTURE_STATION = {92: 6}
 STRUCTURE_ASSET_TYPE = {92: 52}
-DECOR_STATION_TYPES = set(STRUCTURE_STATION.values())
+# LoW'un ortasındaki korsan HQ'su (low.json: etkin röleler ortada onarımı hızlandırır): istemcinin "station_4" LoW istasyonu
+# (SpaceStationCommand type 4, mini haritada healthStation). Süs istasyonu: güvenli bölgesi yok, tamir/doğma yeri değil.
+LOW_STATION = {200: 4}
+DECOR_STATION_TYPES = set(STRUCTURE_STATION.values()) | set(LOW_STATION.values())
 
 
 def structure(map_id, tpl, gs):
@@ -241,7 +259,8 @@ def map_class(map_id):
 
 # istasyon nesneleri: yaklaşınca tıklanabilir olur (kayıt: ~500 birimde MapAssetActionAvailableCommand state 0, uzaklaşınca 1)
 STATION_ASSETS = {46: 'ttip_company_hq', 48: 'ttip_hangar', 50: 'ttip_ore_trade', 52: 'ttip_ore_trade',   # HQ, hangar, rafineri (52: görünmez)
-                  53: 'ttip_instant_repair', 54: 'ttip_instant_repair'}     # tamir istasyonu (ana üs / karakol; Ö1)
+                  53: 'ttip_instant_repair', 54: 'ttip_instant_repair',     # tamir istasyonu (ana üs / karakol; Ö1)
+                  47: 'ttip_company_hq', 49: 'ttip_hangar', 51: 'ttip_ore_trade'}     # X-8 ön karakolu (OUTPOST)
 REPAIR_ASSETS = (53, 54)         # InstantRepairRequest: onarım kuponuyla anında onarım (dunya.instant_repair)
 ASSET_RANGE = 500
 QUEST_GIVER = 34                 # AssetCreateCommand.type: görev verici (kayıt: Reginald Crowley, 2-1)

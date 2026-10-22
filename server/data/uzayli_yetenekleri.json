@@ -1,5 +1,5 @@
 {
- "_aciklama": "Uzaylı yetenekleri (yol haritası Aşama 4; uzayli.py ve dunya.py uygular). Anahtar istemcinin npcId'si (npc.json npc_kimlik, kapilar.json npc_kimlik): aynı uzaylı haritada da kapıda da aynı yetenekle gelir. Kaynak belgeler/wiki/aliens.md (wiki); wiki'nin sayı vermediği yerler '_uyarlama' notunda. Alanlar: vurulunca_cagir {tur, adet, en_cok, bekleme_sn}, yenilenme {can_sn, kalkan_sn, bekleme_sn}, olunce_dogur [{tur, adet}], cagrilar_yasarken_dokunulmaz, cagrilar_yasarken_onarim {can_sn}, ofke {saldiran, sure_sn, hasar_carpani, ek_cagri, onarim_can_sn}, can_esiginde_cagir [{oran, tur, adet}], gizlenme_bozar {menzil}, yavaslatan_atis {hiz | oran, sn, menzil}, coklu_hedef {can_orani}, roket {hasar, bekleme_sn, firlatici, adet}, tekillik {sn_hasar, azami, sure_sn, menzil, bekleme_sn}, kaybolma {hasar, sahte, uzaklik, patlama, patlama_yaricap, sahte_omur_sn, can_sn, kalkan_sn}, yapiskan_bomba {hasar, aralik_sn, gecikme_sn, grup}, hiz_becerisi {hiz, kalkan_orani}, kapsuller {adet, aralik_sn, toplama_ms, toplama_mesafe, can, kalkan, hasar}.",
+ "_aciklama": "Uzaylı yetenekleri (yol haritası Aşama 4; uzayli.py ve dunya.py uygular). Anahtar istemcinin npcId'si (npc.json npc_kimlik, kapilar.json npc_kimlik): aynı uzaylı haritada da kapıda da aynı yetenekle gelir. Kaynak belgeler/wiki/aliens.md (wiki); wiki'nin sayı vermediği yerler '_uyarlama' notunda. Alanlar: vurulunca_cagir {tur, adet, en_cok, bekleme_sn}, yenilenme {can_sn, kalkan_sn, bekleme_sn}, olunce_dogur [{tur, adet}], cagrilar_yasarken_dokunulmaz, cagrilar_yasarken_onarim {can_sn}, ofke {saldiran, sure_sn, hasar_carpani, ek_cagri, onarim_can_sn}, can_esiginde_cagir [{oran, tur, adet}], gizlenme_bozar {menzil}, yavaslatan_atis {hiz | oran, sn, menzil}, coklu_hedef {can_orani}, roket {hasar, bekleme_sn, firlatici, adet}, tekillik {sn_hasar, azami, sure_sn, menzil, bekleme_sn, gorsel (girdap; yoksa var)}, temasla_patla {hasar, yaricap}, kaybolma {hasar, sahte, uzaklik, patlama, patlama_yaricap, sahte_omur_sn, can_sn, kalkan_sn}, yapiskan_bomba {hasar, aralik_sn, gecikme_sn, grup}, hiz_becerisi {hiz, kalkan_orani}, kapsuller {adet, aralik_sn, toplama_ms, toplama_mesafe, can, kalkan, hasar}.",
  "yetenekler": {
   "13": {
    "_ad": "Cubikon",
@@ -253,6 +253,50 @@
    },
    "_kaynak": "aliens.md: azami hasar lazer 20.000 / roket 300.000",
    "_uyarlama": "30 sn'de bir roket"
+  },
+  "235": {
+   "_ad": "Cloning Mimesis",
+   "vurulunca_cagir": {
+    "tur": "etk_cloned_mimesis",
+    "adet": 3,
+    "en_cok": 3,
+    "bekleme_sn": 30
+   },
+   "_kaynak": "aliens.md: 3 klon (Cloned Mimesis) yaratır, klonlar bir şey yapmaz",
+   "_uyarlama": "vurulunca, en çok 3 klon, 30 sn bekleme"
+  },
+  "237": {
+   "_ad": "Terror Mimesis",
+   "can_esiginde_cagir": [
+    {
+     "oran": 0.5,
+     "tur": "etk_kamikaze_mimesis",
+     "adet": 5
+    }
+   ],
+   "_kaynak": "aliens.md: canının %50'sinde 5 Kamikaze Mimesis çağırır"
+  },
+  "238": {
+   "_ad": "Kamikaze Mimesis",
+   "temasla_patla": {
+    "hasar": 20000,
+    "yaricap": 500
+   },
+   "_kaynak": "aliens.md: lazer atmaz, gemine yaklaşınca patlar (20.000 bomba hasarı)",
+   "_uyarlama": "patlama uzaklığı 500, ödülsüz kalkar"
+  },
+  "239": {
+   "_ad": "Reflector Mimesis",
+   "tekillik": {
+    "sn_hasar": 10000,
+    "azami": 100000,
+    "sure_sn": 10,
+    "menzil": 800,
+    "bekleme_sn": 30,
+    "gorsel": false
+   },
+   "_kaynak": "aliens.md: lazer ve radyasyon hasarı (10 sn boyunca saniyede 10.000)",
+   "_uyarlama": "menzil 800, 30 sn bekleme; tekilliğin girdabı gösterilmez"
   }
  },
  "kapsul_turleri": [

@@ -106,8 +106,9 @@ SCHEMA = [
        'teknoloji eşyası miktarı. Gemi, lazer ve tasarım gibi tek eşyalar bir tane kalır; para ve EP kendi çarpanıyla.', hi=50.0),
     _c('dusme', 'Eşya düşme şansı', 'odul', 'Uzaylılardan booster, ekipman, kaynak ve etkinlik kutusu düşme olasılığı; '
        'Galaksi Kapısı şanslı ödülleri (en çok %100).', hi=20.0, sinir=1000.0),
-    _b('x1_kargo', "X-1'de yüksek seviye kargo azalması", 'odul', "X-1 haritalarında seviyen yükseldikçe uzaylıların kargo kutusu "
-       'küçülür (seviye 7: %50, 10 ve üstü: hiç; oyundaki gibi). Kapatılırsa her seviyede tam kargo.', varsayilan=True),
+    _b('x1_kargo', "X-1'de yüksek seviye kargo ve ödül azalması", 'odul', "X-1 haritalarında seviyen yükseldikçe uzaylıların kargo kutusu "
+       'küçülür (seviye 7: %50, 10 ve üstü: hiç), kendi X-1 haritanda öldürme ödülü de azalır (seviye 15 ve üstü: hiç; oyundaki gibi). '
+       'Kapatılırsa her seviyede tam kargo ve ödül.', varsayilan=True),
     # ---------------------------------------------------------------- ilerleme
     _c('dron_puan', 'Dron deneyimi', 'ilerleme', 'Dronlarının uzaylı öldürünce kazandığı puan: dron seviye atlama hızı.',
        hi=50.0),
