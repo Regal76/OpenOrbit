@@ -100,7 +100,7 @@ def mod(name, **f):
     return f
 
 
-from eski_protokol import legacy  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
+from eski_protokol import legacy, loot_kind  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
 
 
 def keyed(key, **wild):
@@ -796,7 +796,7 @@ class Magaza:
                     msgs.append(('MenuItemStatusCommand', st))
                 if before == 0:
                     msgs.append(('RefreshSelectedUICategoryCommand', {}))
-                kind = 'BAT' if g.startswith('ammunition_laser_') else 'ROK' if g.startswith(('ammunition_rocket_', 'ammunition_rocketlauncher_')) else 'LOT'
+                kind = loot_kind(g)
                 msgs += [self.inv_item(iid, g, total), self.pack([self.hangar_item(iid, g, total)]),
                          legacy('0|LM|ST|%s|%s|%d' % (kind, g, n))]
             elif g == PETM.HULL:
@@ -924,7 +924,7 @@ class Magaza:
             st = self.p.menu_status(loot)
             if st:
                 msgs.append(('MenuItemStatusCommand', st))
-            kind = 'BAT' if loot.startswith('ammunition_laser_') else 'ROK' if loot.startswith('ammunition_rocket') else 'LOT'
+            kind = loot_kind(loot)
             msgs += [self.inv_item(iid, loot, total), self.pack([self.hangar_item(iid, loot, total)]), legacy('0|LM|ST|%s|%s|%d' % (kind, loot, n))]
         elif slot_of(loot):
             slot, equipped = slot_of(loot), False
@@ -1354,14 +1354,15 @@ class Magaza:
             hp = ESYA['gemiler'].get(ship['lootId'], {}).get('hp', 0)
             gv = ship.get('govde') or {}
             hull = dict(hp=int(gv.get('hitPoints', hp)), maxHp=hp, shield=0, nano=int(gv.get('nanoHull', 0)), maxNano=hp)
-        t.update(hull, laserAmmo=sum(n for k, n in c.items() if k.startswith('ammunition_laser_')),
+        t.update(hull, hull=round(100 * hull['hp'] / max(hull['maxHp'], 1)),          # gövde bütünlüğü % (kayıt: 115.659/116.000 -> 100)
+                 upgradeModuleCount=len(self.p.loadout(sid)['upgrades']),              # takılı gemi yükseltme modülleri
+                 laserAmmo=sum(n for k, n in c.items() if k.startswith('ammunition_laser_')),
                  rockets=sum(n for k, n in c.items() if k.startswith('ammunition_rocket_')),
                  laserCount=s['lasers'], speedGenerators=s['speed_gens'], shieldGenerators=s['shield_gens'], shipId=int(sid),
                  isActive=sid == self.p.d['aktif_gemi'], isFavorite=bool(ship.get('favori')), lootId='',
                  curDesignLootId=self.p.ship_look(sid), designList=self.designs(sid),
                  repairVouchers=int((self.p.d.get('kapilar') or {}).get('kupon', 0)))      # kapıların onarım kuponları
-        if s['display']:
-            t['maxSpeed'] = s['display']
+        t['maxSpeed'] = s['display'] or 0                       # gemi verisinde yoksa kayıttaki 355 değil
         return ('HangarShipDetailCommand', t)
 
     def apply_stats(self):

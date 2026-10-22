@@ -328,8 +328,9 @@ class UnvanAvi:
     def grant_title(self, key):
         import basarim as BSM
         st = BSM.state(self.p)
+        BSM.title_id(key)                                  # başarım penceresinde seçilebilsin (tabloda olmayan etkinlik unvanı)
         if key not in st['unvanlar']:
             with self.p.lock:
                 st['unvanlar'].append(key)
                 self.p.dirty = True
-        return [legacy('0|A|STM|msg_title_received')]
+        return [legacy('0|LM|ST|LOT|%s|1' % key)]          # istemcide "unvan alındı" metni yok; unvanın adı (resource_achievement)

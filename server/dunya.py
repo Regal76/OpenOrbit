@@ -1144,9 +1144,13 @@ class World:
         inside = bool(s) and math.hypot(hx - s['posX'], hy - s['posY']) <= s['peaceRadius']
         if gid == self.near_gate and peace == self.gate_peace and inside == self.station_inside:
             return
+        was = None if self.station_inside is None else bool(self.station_inside or self.gate_peace)
         self.gate_peace, self.station_inside = peace, inside    # istasyona giriş/çıkışta da (inStation, inPeaceArea; kayıt)
         msgs = [('BeaconCommand', self.p.beacon(self.station, near_gate=bool(g), pos=(hx, hy), gate_peace=peace,
                                                 radiation=self.radiation_since is not None))]
+        if (inside or peace) != was:          # donanım değiştirilebilir mi (in_station; kayıt: varınca ve ayrılınca, çiftler hâlinde)
+            msgs += [('EquipReadyCommand', {'ready': inside or peace}),
+                     legacy('0|n|MSG|3|2|%s|' % ('msg_equip_ready' if inside or peace else 'msg_equip_not_ready'))]
         if gid == self.near_gate:
             self.send(msgs)
             return

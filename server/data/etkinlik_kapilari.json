@@ -5160,7 +5160,7 @@
        "kalkan": 1000000,
        "hasar": 12000,
        "hiz": 350,
-       "npc_kimlik": 0,
+       "npc_kimlik": 151,
        "odul": {
         "ep": 100000,
         "onur": 1000,
@@ -5922,7 +5922,7 @@
        "kalkan": 1000000,
        "hasar": 12000,
        "hiz": 350,
-       "npc_kimlik": 0,
+       "npc_kimlik": 151,
        "odul": {
         "ep": 100000,
         "onur": 1000,
@@ -6795,7 +6795,7 @@
        "kalkan": 1000000,
        "hasar": 12000,
        "hiz": 350,
-       "npc_kimlik": 0,
+       "npc_kimlik": 151,
        "odul": {
         "ep": 100000,
         "onur": 1000,
@@ -7227,7 +7227,7 @@
        "kalkan": 1000000,
        "hasar": 12000,
        "hiz": 350,
-       "npc_kimlik": 0,
+       "npc_kimlik": 151,
        "odul": {
         "ep": 100000,
         "onur": 1000,
@@ -7689,7 +7689,7 @@
        "kalkan": 8000000,
        "hasar": 40000,
        "hiz": 250,
-       "npc_kimlik": 0,
+       "npc_kimlik": 317,
        "odul": {
         "ep": 1500000,
         "onur": 8000,
@@ -7835,6 +7835,7 @@
    "kimlik": 4,
    "ad": "Birthday Gate",
    "etkinlik": "dogum_gunu",
+   "kapi_turu": "BIRTHDAY",
    "giris": "X-1",
    "portal": 15,
    "can": 3,
@@ -9048,7 +9049,7 @@
        "kalkan": 1000000,
        "hasar": 10000,
        "hiz": 300,
-       "npc_kimlik": 0,
+       "npc_kimlik": 262,
        "odul": {
         "ep": 10000,
         "onur": 30,
@@ -9551,7 +9552,7 @@
        "kalkan": 10000000,
        "hasar": 5000,
        "hiz": 200,
-       "npc_kimlik": 0,
+       "npc_kimlik": 25,
        "odul": {
         "ep": 222222,
         "onur": 22222,

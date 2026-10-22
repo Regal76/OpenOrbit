@@ -2850,7 +2850,7 @@
     "Charopos": 7
    }
   },
-  "ammunition_laser_emma-20": {
+  "ammunition_laser_emaa-20": {
    "carpan": 4,
    "hedef_carpan": {
     "Mimesis": 7
@@ -4437,7 +4437,8 @@
    "5": "resource_ore_duranium",
    "6": "resource_ore_promerium",
    "7": "resource_ore_seprom",
-   "8": "resource_ore_palladium"
+   "8": "resource_ore_palladium",
+   "28": "resource_ore_osmium"
   },
   "fiyatlar": {
    "0": [
@@ -4474,6 +4475,11 @@
     750,
     0,
     750
+   ],
+   "28": [
+    3000,
+    0,
+    3000
    ]
   },
   "osmium_fiyati": 3000,

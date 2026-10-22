@@ -50,6 +50,7 @@ class SavasBileti:
         self.m = None
         self.send = None
         self.map_id = None
+        self.objective = None         # oturum bağlar: biten görev Season Pass'in "N Battle Pass görevi" koşuluna (87)
         # istemcinin bildiği anahtar sayısı: giriş demeti (login_msgs) gönderir; None olsaydı LoginRequest sırasındaki ilk olay
         # anahtar güncellemesini giriş demetinden önce gönderiyordu
         self.keys_sent = profil.resource(KEY)
@@ -124,8 +125,10 @@ class SavasBileti:
             self.log('   Battle Pass görevi bitti: %d' % q)
         if done:
             msgs.append(('BattlePassInfoCommand', self.info_cmd()[1]))
-            for q in done:                                            # "N görev bitir" (Battle Pass ve Season Pass)
+            for q in done:                                            # "N Battle Pass görevi bitir" (Battle Pass ve Season Pass)
                 msgs += self.event('objective') if kind != 'objective' else []
+                if self.objective:
+                    self.objective()
         if kind == 'objective':
             return msgs
         if self.p.resource(KEY) != self.keys_sent:

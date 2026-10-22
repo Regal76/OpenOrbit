@@ -12,13 +12,14 @@ distance, shot, damage, minute, formation, equip, gate, death, level, pet_level,
 dispatch, event_score, assembly_collect, package, gate_wave. Karşılığı olmayan koşullar (PvP, WIZ-X ile oyuncu dönüştürme, klan, Skylab …)
 veride kalır, ilerlemez.
 """
-import json, os, time
+import json, os, time, zlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = json.load(open(os.path.join(HERE, 'data', 'basarimlar.json'), encoding='utf8'))
 ACH = D['basarimlar']
 TITLES = D['unvanlar']
 TITLE_KEYS = {v: k for k, v in TITLES.items()}
+EVENT_TITLE_BASE = 2000          # tabloda olmayan (etkinlik) unvanlar: 2000 + crc32 % 30000 (istemcide kimlik short)
 CURRENCY = {'CREDITS': 'kredi', 'URIDIUM': 'uridyum', 'EXPERIENCE': 'ep', 'HONOUR': 'onur'}
 NEXT = 7                         # kayıt: nextAchievements 7 tane
 # etkinlik başarımları (EVENT_* grupları, sezon bileti, etkinlik özniteliği olanlar) yalnız o etkinlik açıkken ilerler; sunucuda
@@ -203,9 +204,20 @@ def target(c):
     return len(c['kume']) if 'kume' in c else c.get('deger', 1)
 
 
+def title_id(key):
+    """Unvanın kimliği. Başarım tablosunda olmayan etkinlik unvanları (World Boss, Mimesis, Strike and Exit, Galaxy Trek, BL/Astral
+    sıralaması) anahtardan sabit kimlik alır: her açılışta aynı, kayıttaki seçili unvan yeniden açılışta da çözülür."""
+    if key not in TITLES:
+        TITLES[key] = EVENT_TITLE_BASE + zlib.crc32(key.encode()) % 30000
+        TITLE_KEYS[TITLES[key]] = key
+    return TITLES[key]
+
+
 class Basarimlar:
     def __init__(self, profil, log=print):
         self.p, self.log = profil, log
+        for k in state(profil)['unvanlar']:
+            title_id(k)
         self.send = None             # oturum: kendiliğinden giden mesajlar (kazanma bildirimi, güncel liste)
 
     # ------------------------------------------------------------ durum

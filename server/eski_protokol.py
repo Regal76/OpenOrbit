@@ -47,6 +47,16 @@ def msg(*parts):
     return legacy('|'.join(['0'] + [str(p) for p in parts]))
 
 
+def loot_kind(loot):
+    """0|LM|ST satırının eşya türü: BAT lazer, RL roketatar (kayıt: RL|ammunition_rocketlauncher_eco-10|7), ROK roket cephanesi,
+    öteki LOT; istemcide her biri ayrı metin."""
+    if loot.startswith('ammunition_laser_'):
+        return 'BAT'
+    if loot.startswith('ammunition_rocketlauncher_'):
+        return 'RL'
+    return 'ROK' if loot.startswith('ammunition_rocket_') else 'LOT'
+
+
 def stm(key, *args):
     """Yerelleştirilmiş ekran mesajı: stm('jumplevelfalse', '%!', 2) -> 0|A|STM|jumplevelfalse|%!|2."""
     return msg('A', 'STM', key, *args)

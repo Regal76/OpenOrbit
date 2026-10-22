@@ -77,7 +77,7 @@ def screen(text, big=False, **wild):
                                        baseKeyType=mod('ReplacementTypeModule', typeValue=kind), textStyle=0))))
 
 
-from eski_protokol import legacy  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
+from eski_protokol import legacy, loot_kind  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
 
 
 def npc_type(key, wave, i):
@@ -458,7 +458,7 @@ class Kapilar:
                     msgs += ([('MenuItemStatusCommand', st)] if st else []) + [self.m.inv_item(iid, loot, total),
                                                                               self.m.pack([self.m.hangar_item(iid, loot, total)])]
                 if note:
-                    msgs.append(legacy('0|LM|ST|%s|%s|%d' % ('BAT' if loot.startswith('ammunition_laser_') else 'ROK', loot, n)))
+                    msgs.append(legacy('0|LM|ST|%s|%s|%d' % (loot_kind(loot), loot, n)))
         if grants.get('xenomit'):
             n = min(grants['xenomit'], p.cargo_free())
             if n > 0:

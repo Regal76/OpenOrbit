@@ -7,17 +7,21 @@ Koşul türleri istemcinin ConditionType enum'u (derlenmiş koddan); eşleşmele
   29 DAMAGE_NPCS ([sayı, npcId …, 0])          30 DAMAGE_PLAYERS (bot oyuncularla)    34 VISIT_MAP
   51 CARGO (kargo kutusu)                     52 SELL_ORE                            53 LEVEL (seviye)
   55 COLLECT_BONUS_BOX                        67 COLLECT_LOOT ([lootId …])           80 FINISH_GALAXY_GATES ([sayı, ad …, harita …])
-  85 COLLECT_BUILT_RECIPE (Assembly)          87 COMPLETED_OBJECTIVES (Battle Pass görevi)   89 SPEND_ITEM ([lootId])
+  85 COLLECT_BUILT_RECIPE (Assembly)          87 COMPLETED_OBJECTIVES (biten Battle Pass görevi)   89 SPEND_ITEM ([lootId])
   95 COMPLETE_SEASON_PASS_QUESTS ([2 sezonluk | 5 günlük | 6 haftalık])   96 LOGIN   100 RECHARGE_AMOUNT (tek oyunculu: Uridium Bank)
-Alt koşul 77 ON_MAP: yalnız listedeki haritalarda.
+Alt koşul 77 ON_MAP: yalnız listedeki haritalarda. 97 DURING_EVENT: yalnız adı geçen etkinlik açıkken (takvimdeki etkinlik türü,
+ör. NpcEvent, ya da EVENT_NAMES'teki takvim anahtarı; Season Pass'in "etkinlikte 15 Battle Pass görevi" görevleri).
 Olaylar (oturum toplar): başarım olayları (kill, damage, distance, minute, gate, assembly_collect, level, ammo, spend), görev olayları
 (cargo, loot, sell, bonus, map) ve iç olaylar (login, recharge, sp_quest, objective).
 """
 import copy, time
 
+import takvim as TK
 from gorev import conditions, evaluate, mod
 
 ON_MAP = 77
+DURING_EVENT = 97
+EVENT_NAMES = {'HitacAssault2016': 'hitac'}       # alt koşul 97'nin adı -> takvim anahtarı (PVPSummerEvent: PvP, takvimde yok)
 THROTTLE_SN = 1.0                 # aynı koşulun ara değeri en çok saniyede bir (mesafe, cephane, hasar sık gelir; kayıt: saniyede bir)
 LAST_SENT = {}                    # koşul -> son gönderim
 SP_CATEGORY = {3: '5', 6: '6', 9: '2'}           # QuestType -> COMPLETE_SEASON_PASS_QUESTS eşleşmesi (istemci: DAILIES, WEEKLIES, SEASON)
@@ -93,6 +97,12 @@ def measure(c, kind, kw, map_id=None):
     return 0
 
 
+def during_event(c, now=None):
+    """Alt koşul 97 (DURING_EVENT) varsa adı geçen etkinlik şu an açık mı; yoksa True."""
+    during = [s for s in c.get('subConditions', []) if s['type'] == DURING_EVENT]
+    return not during or any(EVENT_NAMES.get(n) in TK.active(now) or TK.has_type(n, now) for n in during[0]['matches'])
+
+
 def cond_update(cid, value, active, completed):
     return ('QuestConditionUpdateCommand', {'questConditionId': cid, 'state': mod(
         'QuestConditionStateModule', currentValue=value, active=active, completed=completed)})
@@ -106,7 +116,7 @@ def advance(p, root, vals, kind, kw, map_id=None, notify=True):
         if not before[c['id']][0]:
             continue
         inc = measure(c, kind, kw, map_id)
-        if not inc:
+        if not inc or not during_event(c):
             continue
         key = str(c['id'])
         with p.lock:

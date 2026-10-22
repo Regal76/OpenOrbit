@@ -154,6 +154,8 @@ class Sablonlar:
             mk = m['_m']
             if mk in ('@harita_giris', '@harita_hazir'):
                 out += self.world_msgs(map_id, 'giris' if mk == '@harita_giris' else 'hazir')
+            elif kind == 'hazir' and (mk == 'EquipReadyCommand' or m.get('message', '').startswith('0|n|MSG|3|2|msg_equip_')):
+                continue               # kayıtta her yerde true; dünya istasyon bölgesine girip çıktıkça gönderir (dunya.check_gates)
             elif mk.startswith('@'):
                 g = profil.generate(mk, self.station(map_id))
                 if g:
@@ -326,6 +328,7 @@ class Session:
             _o.m = self.magaza
             _o.send = (lambda note: lambda m: self.send(m, note))(_note)
         self.magaza.biletler = (self.sezon, self.bilet, self.odul)
+        self.bilet.objective = lambda: self.sezon.event('objective')     # Season Pass 700023-700025 (etkinlikte 15 Battle Pass görevi)
         self.magaza.quest = self.quest_event                        # toplama görevleri: rafineride üretilen cevher
         self.bank_sent = None         # istemcinin son gördüğü Uridium Bank birikimi
         self.cal_sent, self.cal_next = None, 0.0                            # takvim: son bildirilen etkin etkinlikler
@@ -479,9 +482,13 @@ class Session:
         """InternalPilotBioRequest: kayıttaki profil kartı + oyuncunun kaydettiği bilgiler (InternalPilotBioUpdateRequest)."""
         bio = PROFIL.d.get('pilot_bio', {})
         self.play_time()
+        k = PROFIL.d.get('klan') or {}                                  # tek kişilik klan (klan.py)
         rank = {'rank': PROFIL.d['pilot'].get('dailyRank', 1),            # pilot kartındaki rütbe (sayı)
                 'playTime': int(PROFIL.d.get('oynama_sn', 0) // 3600),     # saat
-                'userName': PROFIL.d['pilot'].get('userName', '')}          # kayıttaki ad değil, profilinki
+                'userName': PROFIL.d['pilot'].get('userName', ''),          # kayıttaki ad değil, profilinki
+                'userId': PROFIL.user_id, 'registrationDate': PROFIL.d.get('olusturma', '') + '.0',    # kayıttaki hesabınki değil
+                'ranking': 1,                                               # Hall of Fame'de tek oyuncu (rutbe.hof_top)
+                'clanName': k.get('ad', ''), 'clanRank': k.get('sira', 0) if k else 0, 'clanMemberCount': 1 if k else 0}
         return [(n, dict(f, **{k: v for k, v in dict(bio, **rank).items() if k in f})) if n == 'InternalPilotBioUserProfileCommand'
                 else (n, f) for n, f in resp]
 

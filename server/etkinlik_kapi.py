@@ -260,7 +260,7 @@ class EtkinlikKapilari:
         self.end(key, now)
         for fn in self.finish_hooks:
             msgs += fn(key)
-        self.p.ach('gate', tur='%s_GATE' % key.upper())
+        self.p.ach('gate', tur=g.get('kapi_turu') or '%s_GATE' % key.upper())    # istemcinin GalaxyGateType'ı (Birthday: BIRTHDAY)
         self.log('   %s tamamlandı: %s%s' % (g['ad'], fmt_time(secs), ' (yeni rekor)' if G.get('en_iyi_sn') == secs and best != secs else ''))
         return msgs, dict(yeni={'parcalar': []}, kronos=None, sure=secs)
 

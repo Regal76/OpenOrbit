@@ -248,6 +248,9 @@ class Profil:
             if 'dron_konfig' not in s:
                 s['dron_konfig'] = {c: {} for c in s['konfigler']}     # config -> dron kimliği -> takılı eşya kimlikleri
                 self.dirty = True
+        osmium = self.d.get('diger_esyalar', {}).pop('resource_ore_osmium', 0)
+        if osmium:                           # Osmium (OreType 28) cevher sayılmıyordu, depoya düşmüştü (2026-10-22 taraması, E2)
+            self.add_ores({28: osmium})
         q = self.d.get('ayarlar', {}).get('qualitySettingsModule') or {}
         if q.get('qualityExplosion', 0) > 255:
             # tablo QualitySettingsRequest.qualityExplosion'ın bayt takasını bilmiyordu (protocol.py FIXES): istemcinin 3'ü 768 kaydedilmişti
@@ -765,6 +768,8 @@ class Profil:
         if name == 'LegacyModule' and fields.get('message', '').startswith('0|n|INV|'):
             parts = fields['message'].split('|')                # gizlenme CPU'suyla gizliyken girişte gizli
             return dict(fields, message='0|n|INV|%s|%d' % (parts[3], 1 if self.d.get('cpu_gizli') else 0))
+        if name == 'InvitationBlockModule':                     # grup daveti engeli (kayıttaki false yerine profilin seçimi)
+            return dict(fields, active=bool(self.d.get('davet_engeli')))
         if name == 'LegacyModule' and fields.get('message', '').startswith('0|S|CFG|'):
             return dict(fields, message='0|S|CFG|%s' % self.aktif_konfig)
         if name != 'MenuInitializationCommand':

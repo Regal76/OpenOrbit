@@ -104,7 +104,7 @@ CORNERS = [(19000, 2000), (2000, 2000), (19000, 11100), (2000, 11100)]
 def map_world(map_id, tpl):
     """Kayıtta olmayan haritanın dünya mesajları {'giris', 'hazir'} ('_m' anahtarlı): portallar istemcinin spacemap-config.xml'inden.
     İstasyonlu haritalarda kayıttaki 2-1 istasyonu (tpl) portallardan en uzak köşeye taşınır; firma, nesne kimlikleri ve bölge
-    adları haritaya göre değişir. Görev verici de taşınır (adı kayıttaki EIC görev vericisi)."""
+    adları haritaya göre değişir. Görev verici de taşınır (tasarımı ve adı haritanın firmasına göre: quest_giver)."""
     gs = gates(map_id)
     gate_msgs = [dict(jumpgate_create(g)[1], _m='JumpgateCreateCommand') for g in gs]
     fac = STATION_MAPS.get(int(map_id))
@@ -118,7 +118,7 @@ def map_world(map_id, tpl):
     for m in tpl.get('giris', []):
         if m['_m'] == 'AssetCreateCommand':                    # görev verici (34) dahil: görevlere dönüş her ana istasyonda
             ids[m['assetId']] = base + len(ids)
-            giris.append(dict(m, posX=m['posX'] + dx, posY=m['posY'] + dy, factionId=fac, assetId=ids[m['assetId']]))
+            giris.append(quest_giver(dict(m, posX=m['posX'] + dx, posY=m['posY'] + dy, factionId=fac, assetId=ids[m['assetId']]), map_id))
     for m in tpl.get('giris', []):
         if m['_m'] == 'MapAssetActionAvailableCommand' and m['mapAssetId'] in ids:
             giris.append(dict(m, mapAssetId=ids[m['mapAssetId']]))
@@ -164,7 +164,8 @@ def structure(map_id, tpl, gs):
     spots = CORNERS + [(10500, 6550), (10500, 2000), (10500, 11100), (2000, 6550), (19000, 6550)]   # köşeler, kenar ortaları, merkez
     cx, cy = max(spots, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs), default=0))
     aid = 151000000 + int(map_id) * 100 + 90
-    giris = [dict(src, assetId=aid, posX=cx, posY=cy, factionId=src['factionId'] if kind == QUEST_GIVER else company(map_id) or 0)]
+    giris = [quest_giver(dict(src, assetId=aid, posX=cx, posY=cy, factionId=src['factionId'] if kind == QUEST_GIVER else company(map_id) or 0),
+                         map_id)]
     if int(map_id) in STRUCTURE_ASSET_TYPE:
         giris[0]['type'] = dict(src['type'], typeValue=STRUCTURE_ASSET_TYPE[int(map_id)])
     hazir = []
@@ -177,6 +178,17 @@ def structure(map_id, tpl, gs):
             sc[0], sc[1] = cx, cy
             hazir.append(dict(m, poiId='mapAssetRangeZone-%d' % aid, shapeCoordinates=sc))
     return giris, hazir
+
+
+def quest_giver(m, map_id):
+    """Görev vericinin modeli ve adı haritanın firmasına ve üs türüne göre (kayıtta yalnız 2-1'inki var: designId 6, Reginald
+    Crowley). İstemcinin lib_assets'i: questgiver_3/6/9 MMO/EIC/VRU ana üs (X-1), 4/7/10 outpost (X-8), 5/8/11 beacon (X-5),
+    12 Black Light; adlar eh_character_descr_*."""
+    fac, n = company(map_id), name(map_id)
+    if m['type']['typeValue'] != QUEST_GIVER or not fac:
+        return m
+    design = 12 if n.startswith('BL-') else QUEST_GIVER_DESIGN[n[2:]] + 3 * (fac - 1)
+    return dict(m, designId=design, userName=QUEST_GIVER_NAME[fac])
 
 
 def gates(map_id):
@@ -233,6 +245,8 @@ STATION_ASSETS = {46: 'ttip_company_hq', 48: 'ttip_hangar', 50: 'ttip_ore_trade'
 REPAIR_ASSETS = (53, 54)         # InstantRepairRequest: onarım kuponuyla anında onarım (dunya.instant_repair)
 ASSET_RANGE = 500
 QUEST_GIVER = 34                 # AssetCreateCommand.type: görev verici (kayıt: Reginald Crowley, 2-1)
+QUEST_GIVER_DESIGN = {'1': 3, '8': 4, '5': 5}                  # X-1, X-8, X-5: MMO'nunki; EIC +3, VRU +6 (quest_giver)
+QUEST_GIVER_NAME = {1: 'Morgus Petterson', 2: 'Reginald Crowley', 3: 'Vanessa Arkadium'}
 
 
 def asset_available(asset_id, tip, near, wild=()):
