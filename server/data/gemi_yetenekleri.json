@@ -11,7 +11,11 @@
    },
    "gorsel": {
     "etki": 1
-   }
+   },
+   "metin": [
+    "msg_instant_heal_activated",
+    "msg_instant_heal_stopped"
+   ]
   },
   "ability_diminisher": {
    "ad": "Weaken Shields",
@@ -24,7 +28,11 @@
    },
    "gorsel": {
     "etki": 2
-   }
+   },
+   "metin": [
+    "msg_weaken_shield_activated",
+    "msg_weaken_shield_stopped"
+   ]
   },
   "ability_spectrum": {
    "ad": "Prismatic Shielding",
@@ -38,7 +46,11 @@
    },
    "gorsel": {
     "etki": 3
-   }
+   },
+   "metin": [
+    "msg_prismatic_shielding_activated",
+    "msg_prismatic_shielding_stopped"
+   ]
   },
   "ability_sentinel": {
    "ad": "The Fortress",
@@ -51,7 +63,11 @@
    },
    "gorsel": {
     "etki": 4
-   }
+   },
+   "metin": [
+    "msg_fortress_activated",
+    "msg_fortress_stopped"
+   ]
   },
   "ability_venom": {
    "ad": "Singularity II",
@@ -68,7 +84,11 @@
    },
    "gorsel": {
     "etki": 5
-   }
+   },
+   "metin": [
+    "msg_singularity2_activated",
+    "msg_singularity2_stopped"
+   ]
   },
   "ability_lightning": {
    "ad": "Afterburner",
@@ -81,7 +101,11 @@
    },
    "gorsel": {
     "etki": 6
-   }
+   },
+   "metin": [
+    "msg_afterburner_activated",
+    "msg_afterburner_stopped"
+   ]
   },
   "ability_aegis_hp-repair": {
    "ad": "HP Repair",
@@ -247,7 +271,11 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_noxious_nebula_activated",
+    "msg_noxious_nebula_stopped"
+   ]
   },
   "ability_basilisk_heightened-valour": {
    "ad": "Heightened Valour",
@@ -259,14 +287,22 @@
      "roket": 0.05
     }
    },
-   "_not": "grup ve depolanan yük yok"
+   "_not": "grup ve depolanan yük yok",
+   "metin": [
+    "msg_heightened_valour_activated",
+    "msg_heightened_valour_stopped"
+   ]
   },
   "ability_berserker_shl": {
    "ad": "Shield Link",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "grup üyesinin kalkan hasarını üstlenir: bot oyuncularla"
+   "_not": "grup üyesinin kalkan hasarını üstlenir: bot oyuncularla",
+   "metin": [
+    "msg_shield_link_activated",
+    "msg_shield_link_stopped"
+   ]
   },
   "ability_berserker_bsk": {
    "ad": "Berserk",
@@ -275,7 +311,11 @@
    "etki": {
     "ofke_can": 1.0
    },
-   "_not": "kaybedilen her %1 can +%1 lazer hasarı"
+   "_not": "kaybedilen her %1 can +%1 lazer hasarı",
+   "metin": [
+    "msg_berserk_activated",
+    "msg_berserk_stopped"
+   ]
   },
   "ability_berserker_rvg": {
    "ad": "Revenge",
@@ -287,7 +327,11 @@
      "hiz": -0.05
     }
    },
-   "_not": "alınan hasar saldırana döner"
+   "_not": "alınan hasar saldırana döner",
+   "metin": [
+    "msg_revenge_activated",
+    "msg_revenge_stopped"
+   ]
   },
   "ability_citadel-plus_prismatic-endurance": {
    "ad": "Prismatic Endurance",
@@ -297,14 +341,22 @@
     "mods": {
      "alinan_lazer": -0.8
     }
-   }
+   },
+   "metin": [
+    "msg_prismatic_endurance_activated",
+    "msg_prismatic_endurance_stopped"
+   ]
   },
   "ability_disruptor_redirect": {
    "ad": "Redirect",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_redirect_activated",
+    "msg_redirect_stopped"
+   ]
   },
   "ability_disruptor_shield-disarray": {
    "ad": "Shield Disarray",
@@ -314,7 +366,11 @@
     "hedef_kalkan_kapat": 0.5
    },
    "hedefli": true,
-   "_not": "istemci: hedefin kalkanının %50'si süre boyunca kapanır, bitince kapanan miktar geri eklenir"
+   "_not": "istemci: hedefin kalkanının %50'si süre boyunca kapanır, bitince kapanan miktar geri eklenir",
+   "metin": [
+    "msg_shield_disarray_activated",
+    "msg_shield_disarray_stopped"
+   ]
   },
   "ability_disruptor_ddol": {
    "ad": "DDoL",
@@ -327,7 +383,11 @@
     ]
    },
    "_not": "istemci: hedefin lazer beklemesi süre boyunca 3-5 sn arası rastgele (metin oyuncuyla sınırlamıyor: uzaylılara da; doğrulanmadı)",
-   "hedefli": true
+   "hedefli": true,
+   "metin": [
+    "msg_ddol_activated",
+    "msg_ddol_stopped"
+   ]
   },
   "ability_goliath-x_frozen-claw": {
    "ad": "Frozen Claw",
@@ -343,21 +403,33 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "grup üyeleri arasında: bot oyuncularla"
+   "_not": "grup üyeleri arasında: bot oyuncularla",
+   "metin": [
+    "msg_reallocate_activated",
+    "msg_reallocate_stopped"
+   ]
   },
   "ability_hecate_particle-beam": {
    "ad": "Particle Beam",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_particle_beam_activated",
+    "msg_particle_beam_stopped"
+   ]
   },
   "ability_hecate-plus_particle-beam-plus": {
    "ad": "Particle Beam Plus",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_particle_beam_plus_activated",
+    "msg_particle_beam_plus_stopped"
+   ]
   },
   "ability_hecate-plus_stockpile": {
    "ad": "Stockpile",
@@ -373,7 +445,11 @@
      }
     }
    },
-   "_not": "istemci: uzaylı öldürme bir yük (en çok 10); etkin değilken yük başına menzil +5; etkinleşince kalkan +%0,2, her yük öncekinden %0,2 fazla (10 yükte +%11); yükler sıfırlanır"
+   "_not": "istemci: uzaylı öldürme bir yük (en çok 10); etkin değilken yük başına menzil +5; etkinleşince kalkan +%0,2, her yük öncekinden %0,2 fazla (10 yükte +%11); yükler sıfırlanır",
+   "metin": [
+    "msg_stockpile_activated",
+    "msg_stockpile_stopped"
+   ]
   },
   "ability_holo_self-reversal": {
    "ad": "Self Reversal",
@@ -386,14 +462,22 @@
      "hiz": 0.1
     }
    },
-   "_not": "istemci: takılı modüllerin eksi nitelikleri süre boyunca artıya döner; eksi yoksa hasar ve hız bonusu (wiki +%10/+%10)"
+   "_not": "istemci: takılı modüllerin eksi nitelikleri süre boyunca artıya döner; eksi yoksa hasar ve hız bonusu (wiki +%10/+%10)",
+   "metin": [
+    "msg_self_reversal_activated",
+    "msg_self_reversal_stopped"
+   ]
   },
   "ability_holo_enemy-reversal": {
    "ad": "Enemy Reversal",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_enemy_reversal_activated",
+    "msg_enemy_reversal_stopped"
+   ]
   },
   "ability_hyperion_ga": {
    "ad": "Gravitational Anchor",
@@ -406,7 +490,11 @@
     }
    },
    "_not": "istemci: alan hedefin konumunda, içindekiler %80 yavaş; yarıçap uyarlama (600)",
-   "hedefli": true
+   "hedefli": true,
+   "metin": [
+    "msg_gravitational_anchoractivated",
+    "msg_gravitational_anchorstopped"
+   ]
   },
   "ability_hyperion_qa": {
    "ad": "Quantum Amplifier",
@@ -415,21 +503,33 @@
    "etki": {
     "sonraki_gsp": 0.1
    },
-   "_not": "istemci: Singularity Drive saldırı hasarı +%10 (süresi 0: bir sonraki atışa; doğrulanmadı)"
+   "_not": "istemci: Singularity Drive saldırı hasarı +%10 (süresi 0: bir sonraki atışa; doğrulanmadı)",
+   "metin": [
+    "msg_charge_shot_hyperion_activated",
+    "msg_charge_shot_hyperion_stopped"
+   ]
   },
   "ability_keres_spr": {
    "ad": "Spread",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_spread_activated",
+    "msg_spread_stopped"
+   ]
   },
   "ability_keres_sle": {
    "ad": "Sleight",
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_sleight_activated",
+    "msg_sleight_stopped"
+   ]
   },
   "ability_liberator-plus_self-repair": {
    "ad": "Self Repair",
@@ -437,7 +537,11 @@
    "bekleme_sn": 60,
    "etki": {
     "can_onar": 350000
-   }
+   },
+   "metin": [
+    "msg_self_repair_activated",
+    "msg_self_repair_stopped"
+   ]
   },
   "ability_mimesis_scramble": {
    "ad": "Scramble",
@@ -468,7 +572,11 @@
    "etki": {
     "emme_can": 0.8
    },
-   "_not": "uzaylı hasarının %80'i cana döner"
+   "_not": "uzaylı hasarının %80'i cana döner",
+   "metin": [
+    "msg_assimilate_activated",
+    "msg_assimilate_stopped"
+   ]
   },
   "ability_paladin_last-stand": {
    "ad": "Last Stand",
@@ -492,7 +600,11 @@
     "mods": {
      "alinan_hasar": -0.5
     }
-   }
+   },
+   "metin": [
+    "msg_ripper_activated",
+    "msg_ripper_stopped"
+   ]
   },
   "ability_pusat-plus_speed-sap": {
    "ad": "Speed Sap",
@@ -504,7 +616,11 @@
     },
     "hedef_yavaslat": 0.1
    },
-   "hedefli": true
+   "hedefli": true,
+   "metin": [
+    "msg_speed_sap_activated",
+    "msg_speed_sap_stopped"
+   ]
   },
   "ability_retiarus_chs": {
    "ad": "Charge Shot",
@@ -517,7 +633,11 @@
     }
    },
    "hedefli": true,
-   "_not": "istemci: menzildeki hedefe yük biriktirir, dolunca ya da hedef menzilden çıkınca biriken vurur; 300.000 (wiki) süre boyunca dolar"
+   "_not": "istemci: menzildeki hedefe yük biriktirir, dolunca ya da hedef menzilden çıkınca biriken vurur; 300.000 (wiki) süre boyunca dolar",
+   "metin": [
+    "msg_charge_shot_activated",
+    "msg_charge_shot_stopped"
+   ]
   },
   "ability_retiarus_spc": {
    "ad": "Supercharge",
@@ -527,7 +647,11 @@
     "mods": {
      "hiz": 0.1
     }
-   }
+   },
+   "metin": [
+    "msg_supercharge_activated",
+    "msg_supercharge_stopped"
+   ]
   },
   "ability_retiarus-plus_chsp": {
    "ad": "Super Charge Shot",
@@ -544,7 +668,11 @@
     }
    },
    "hedefli": true,
-   "_not": "istemci: dolum bitince vurur; wiki: saniyede +45.000, en çok 450.000, hedefin 200 çevresindekilere bölünür, dolarken hız -%10"
+   "_not": "istemci: dolum bitince vurur; wiki: saniyede +45.000, en çok 450.000, hedefin 200 çevresindekilere bölünür, dolarken hız -%10",
+   "metin": [
+    "msg_charge_shot_plus_activated",
+    "msg_charge_shot_plus_stopped"
+   ]
   },
   "ability_retiarus-plus_spcp": {
    "ad": "Supercharge Plus",
@@ -558,7 +686,11 @@
     },
     "kalkan_erit": 0.1
    },
-   "_not": "istemci: hız, Particle Cannon beklemesi kısalır ve hasarı artar, saniyede kalkan kaybı (wiki: bekleme -%50, hasar +%10, kalkan -%10/sn)"
+   "_not": "istemci: hız, Particle Cannon beklemesi kısalır ve hasarı artar, saniyede kalkan kaybı (wiki: bekleme -%50, hasar +%10, kalkan -%10/sn)",
+   "metin": [
+    "msg_supercharge_plus_activated",
+    "msg_supercharge_plus_stopped"
+   ]
   },
   "ability_solace-plus_nano-cluster-repairer-plus": {
    "ad": "Nano-Cluster Repairer Plus",
@@ -566,7 +698,11 @@
    "bekleme_sn": 60,
    "etki": {
     "can_yuzde": 0.5
-   }
+   },
+   "metin": [
+    "msg_nano_cluster_repairer_plus_activated",
+    "msg_nano_cluster_repairer_plus_stopped"
+   ]
   },
   "ability_solaris_inc": {
    "ad": "Incinerate",
@@ -578,7 +714,11 @@
      "saniyede": 10000
     }
    },
-   "_not": "yarıçap uyarlama"
+   "_not": "yarıçap uyarlama",
+   "metin": [
+    "msg_incinerate_activated",
+    "msg_incinerate_stopped"
+   ]
   },
   "ability_solaris-plus_incinerate-plus": {
    "ad": "Incinerate Plus",
@@ -589,7 +729,11 @@
      "yaricap": 600,
      "saniyede": 15000
     }
-   }
+   },
+   "metin": [
+    "msg_incinerate_plus_activated",
+    "msg_incinerate_plus_stopped"
+   ]
   },
   "ability_spearhead-plus_jamx-creed": {
    "ad": "JAMX Creed",
@@ -597,7 +741,11 @@
    "bekleme_sn": 60,
    "etki": {},
    "basarim": "JAMX_CREED",
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
+   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "metin": [
+    "msg_jamx_creed_activated",
+    "msg_jamx_creed_stopped"
+   ]
   },
   "ability_spearhead-plus_neutralizing-marker": {
    "ad": "Neutralizing Marker",
@@ -611,7 +759,11 @@
     }
    },
    "hedefli": true,
-   "_not": "istemci: hedefi işaretler (lazer hasarı artar; wiki +%4), kendi hızı +%5; hedefin kalkan delmesi -%50 (PvP)"
+   "_not": "istemci: hedefi işaretler (lazer hasarı artar; wiki +%4), kendi hızı +%5; hedefin kalkan delmesi -%50 (PvP)",
+   "metin": [
+    "msg_neutralizing_marker_activated",
+    "msg_neutralizing_marker_stopped"
+   ]
   },
   "ability_spectrum-plus_prismatic-reflecting": {
    "ad": "Prismatic Reflecting",
@@ -624,7 +776,11 @@
     },
     "lazer_yansit": true
    },
-   "_not": "istemci: gelen lazer hasarı -%70, azaltılan kısım saldırana döner; kendi lazeri -%50"
+   "_not": "istemci: gelen lazer hasarı -%70, azaltılan kısım saldırana döner; kendi lazeri -%50",
+   "metin": [
+    "msg_prismatic_reflecting_activated",
+    "msg_prismatic_reflecting_stopped"
+   ]
   },
   "ability_tartarus-plus_rapid-fire-plus": {
    "ad": "Rapid Fire Plus",
@@ -636,7 +792,11 @@
      "fircatici_hasar": 0.2
     }
    },
-   "_not": "istemci: fırlatıcıyı doldurur, fırlatıcı hasarı +%20 (yalnız fırlatıcı)"
+   "_not": "istemci: fırlatıcıyı doldurur, fırlatıcı hasarı +%20 (yalnız fırlatıcı)",
+   "metin": [
+    "msg_rapid_fire_plus_activated",
+    "msg_rapid_fire_plus_stopped"
+   ]
   },
   "ability_tartarus-plus_speed-boost-plus": {
    "ad": "Speed Boost Plus",
@@ -648,7 +808,11 @@
      "lazer": -0.25
     }
    },
-   "ac_kapa": true
+   "ac_kapa": true,
+   "metin": [
+    "msg_speed_boost_plus_activated",
+    "msg_speed_boost_plus_stopped"
+   ]
   },
   "ability_tempest_voltage-link": {
    "ad": "Voltage Link",
@@ -662,7 +826,11 @@
      "menzil": 600
     }
    },
-   "hedefli": true
+   "hedefli": true,
+   "metin": [
+    "msg_voltage_link_activated",
+    "msg_voltage_link_stopped"
+   ]
   },
   "ability_tempest_volt-discharge": {
    "ad": "Volt Discharge",
@@ -677,7 +845,11 @@
      }
     }
    },
-   "_not": "istemci: Voltage Link'in her atlaması bir yük (en çok 20), etkinleşince hepsi harcanır; yük başına lazer +%0,75 (wiki)"
+   "_not": "istemci: Voltage Link'in her atlaması bir yük (en çok 20), etkinleşince hepsi harcanır; yük başına lazer +%0,75 (wiki)",
+   "metin": [
+    "msg_volt_discharge_activated",
+    "msg_volt_discharge_stopped"
+   ]
   },
   "ability_tempest_volt-backup": {
    "ad": "Volt Back-up",
@@ -686,7 +858,11 @@
    "etki": {
     "olumsuz": 3
    },
-   "_not": "istemci: süre boyunca can 1'in altına inmez, ardından 3 sn dokunulmaz ve yetenek beklemeye girer"
+   "_not": "istemci: süre boyunca can 1'in altına inmez, ardından 3 sn dokunulmaz ve yetenek beklemeye girer",
+   "metin": [
+    "msg_volt_backup_activated",
+    "msg_volt_backup_stopped"
+   ]
   },
   "ability_zephyr_mmt": {
    "ad": "Momentum",
@@ -703,7 +879,11 @@
      "azami_hiz": 750
     }
    },
-   "_not": "istemci: uzaylı öldürme bir yük (en çok 20); etkin değilken yük başına menzil +5; etkinleşince yük başına hız +%1,5 (en çok 750), yükler sıfırlanır"
+   "_not": "istemci: uzaylı öldürme bir yük (en çok 20); etkin değilken yük başına menzil +5; etkinleşince yük başına hız +%1,5 (en çok 750), yükler sıfırlanır",
+   "metin": [
+    "msg_momentum_activated",
+    "msg_momentum_stopped"
+   ]
   },
   "ability_zephyr_tbr": {
    "ad": "Triple Barrage",
@@ -717,7 +897,11 @@
     }
    },
    "hedefli": true,
-   "_not": "istemci: hedefin arkasında üçgen üç patlama, her biri 20.000; üst üste binen alanlar toplanır. Yarıçap ve aralık uyarlama (150)"
+   "_not": "istemci: hedefin arkasında üçgen üç patlama, her biri 20.000; üst üste binen alanlar toplanır. Yarıçap ve aralık uyarlama (150)",
+   "metin": [
+    "msg_triple_barrage_activated",
+    null
+   ]
   }
  },
  "_gemiler": "Gemi -> yetenekleri; Elite/Veteran tasarımları ana geminin yetenekleriyle, carpanlar wiki'deki tasarım bonusları (sure, bekleme, etki). Defcom/Raven Ultimate Cloaking, Yamato/Ronin Travel (wiki): istemcide kendi öğeleri yok, Spearhead'in ve Citadel'in öğesi kullanılır. A-Elite'in onarım çarpanı yok: istemcinin kısa süreleri (Shield Repair 4 sn, HP Repair 6 sn) aynı toplamla \"%20/%10 faster\"ı zaten veriyor (E5).",

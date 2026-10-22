@@ -351,15 +351,16 @@ class Kosu(KAPI.Kosu):
         return len(self.k.order(self.key))
 
     def say(self, event, **extra):
-        """kapi.Kosu.say, dalga sayısı seçilen sırayla."""
+        """kapi.Kosu.say, dalga sayısı seçilen sırayla (giriş ve devamda kalan can: lifes_left)."""
         G = self.k.gate(self.key)
         n = min(G['dalga'], self.wave_count() - 1)
         vals = dict(kapi=self.g['ad'], dalga=n + 1, toplam=self.wave_count(), can=G['can'], anahtar=self.key,
                     gruplar=len(self.wave()['gruplar']), sure='')
         vals.update(extra)
         m = self.messages().get(event, {})
-        return [KAPI.screen(m[kind].format(**vals), big=kind == 'buyuk', NAME=self.g['ad'], WAVE='%d/%d' % (vals['dalga'], vals['toplam']))
-                for kind in ('buyuk', 'kisa') if kind in m]
+        out = [KAPI.screen(m[kind].format(**vals), big=kind == 'buyuk', NAME=self.g['ad'], WAVE='%d/%d' % (vals['dalga'], vals['toplam']))
+               for kind in ('buyuk', 'kisa') if kind in m]
+        return out + ([KAPI.stm('lifes_left', '%!', vals['can'])] if event in ('giris', 'devam') else [])
 
     def cur_map(self):
         return self.wave()['harita']
@@ -456,7 +457,7 @@ class Kosu(KAPI.Kosu):
             k.p.dirty = True
         if left <= 0:
             k.end(self.key)
-        self.w.send([KAPI.screen('%s: you lost a life. Lives left: %d' % (self.g['ad'], left))] + k.plutus_cmds(self.key))
+        self.w.send([KAPI.screen('%s: you lost a life.' % self.g['ad']), KAPI.stm('lifes_left', '%!', left)] + k.plutus_cmds(self.key))
         self.w.log('   %s: can kaybedildi, kalan %d%s' % (self.g['ad'], left, ' (kapı kapandı)' if left <= 0 else ''))
         self.before_death = self.phase
         self.phase = 'void' if left <= 0 else 'dead'

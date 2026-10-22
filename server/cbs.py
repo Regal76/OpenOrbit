@@ -104,6 +104,7 @@ class Cbs:
         self.tick_err = {}                      # asteroit -> hatası bir kez yazıldı
         self.starmap_tpl = None                 # girişin StarmapStationCommand şablonu (değişince yeniden gönderilir)
         self.home = None                        # oturum bağlar: üs haritası
+        self.prime = None                       # son bilinen Prime Time durumu (geçişte duyuru)
 
     # ------------------------------------------------------------ profil
     @property
@@ -400,6 +401,11 @@ class Cbs:
     def tick(self, now):
         msgs = []
         st = self.st
+        pt = prime_time(now)
+        if self.prime is not None and pt != self.prime and self.clan_name():
+            # kayıttaki satır: 0|n|MSG|1|1|msg_primetime_started| ("Activated Battle Station's Prime Time"); bitişi _ended
+            msgs.append(legacy('0|n|MSG|1|1|msg_primetime_%s|' % ('started' if pt else 'ended')))
+        self.prime = pt
         for aid_s, a in list(st['asteroitler'].items()):
             try:                                        # bir asteroidin hatası ötekileri ve yakınlığı durdurmasın
                 msgs += self.tick_asteroid(int(aid_s), a, now)
@@ -544,6 +550,8 @@ class Cbs:
         hit = next((s for s, y in a['yuvalar'].items() if int(y['iid']) == iid), None)
         if hit is None:
             return self.error('ITEM_NOT_IN_STATION')
+        # kurulumu sürerken çıkarılan modül: istemcinin "The installation of this Module has been cancelled."
+        abort = [stm('msg_station_module_install_aborted')] if a['yuvalar'][hit].get('kurulum_bitis', 0) > time.time() else []
         with self.p.lock:
             del a['yuvalar'][hit]
             self.p.dirty = True
@@ -552,9 +560,9 @@ class Cbs:
                   slot=int(hit) if int(hit) > DEFLECTOR else -1)
         if a['durum'] == 'kurulu' and int(hit) == HULL:
             self.destroy(aid, 'hull removed')
-            return [self.building_ui(aid), self.available_msg()] + self.refresh_assets(aid)
+            return [self.building_ui(aid), self.available_msg()] + self.refresh_assets(aid) + abort
         msgs = [self.progress_msg(aid) if a['durum'] == 'bos' else self.status_msg(aid), self.available_msg()]
-        return msgs + (self.refresh_assets(aid) if a['durum'] != 'bos' else [])
+        return msgs + (self.refresh_assets(aid) if a['durum'] != 'bos' else []) + abort
 
     def build(self, aid, minutes):
         a = self.ast(aid)
@@ -844,7 +852,7 @@ class Cbs:
             ms = npc.mover.go(tx, ty, max(150, npc.d.get('hiz', 300)), time.time())
             w.send([('MoveCommand', dict(userId=npc.id, x=int(tx), y=int(ty), timeToTarget=ms))])
         self.log('   CBS: %s uzaylı baskını (%d)' % (AST[aid]['ad'], n))
-        return [KAPI.screen('Aliens are attacking your Battle Station at %s!' % AST[aid]['ad'], big=True)]
+        return [KAPI.screen('key:msg_object_under_attack', big=True, ASSET_NAME='Battle Station %s' % AST[aid]['ad'])]
 
     def raid_power(self, aid, n, now):
         """Baskıncı başına can+kalkan ve atış hasarı istasyona göre (haritanın sıradan uzaylıları 1 milyonluk uyduları çizemiyordu;

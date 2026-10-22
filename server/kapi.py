@@ -77,7 +77,7 @@ def screen(text, big=False, **wild):
                                        baseKeyType=mod('ReplacementTypeModule', typeValue=kind), textStyle=0))))
 
 
-from eski_protokol import legacy, loot_kind  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
+from eski_protokol import legacy, loot_kind, stm  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
 
 
 def npc_type(key, wave, i):
@@ -720,8 +720,9 @@ class Kosu:
         G = self.k.gate(self.key)
         return self.g['dalgalar'][min(G['dalga'], len(self.g['dalgalar']) - 1)]
 
-    def say(self, event, **extra):
-        """data/kapilar.json "mesajlar"daki olay -> ekran mesajları (büyük ve/veya kısa)."""
+    def say(self, event, wild=None, **extra):
+        """data/kapilar.json "mesajlar"daki olay -> ekran mesajları (büyük ve/veya kısa; wild: "key:" metnin öteki yer tutucuları);
+        giriş ve devamda kalan can istemcinin metniyle (lifes_left "%! lives left")."""
         G = self.k.gate(self.key)
         waves = self.g['dalgalar']
         n = min(G['dalga'], len(waves) - 1)
@@ -733,7 +734,10 @@ class Kosu:
         for kind in ('buyuk', 'kisa'):
             if kind in m:
                 text = m[kind].format(**vals)
-                out.append(screen(text, big=kind == 'buyuk', NAME=self.g['ad'], WAVE='%d/%d' % (vals['dalga'], vals['toplam'])))
+                out.append(screen(text, big=kind == 'buyuk', NAME=self.g['ad'], WAVE='%d/%d' % (vals['dalga'], vals['toplam']),
+                                  **(wild or {})))
+        if event in ('giris', 'devam'):
+            out.append(stm('lifes_left', '%!', vals['can']))
         return out
 
     def messages(self):
@@ -875,7 +879,10 @@ class Kosu:
         msgs += [('GalaxyGateBuilderGateCompleteCommand', dict(gateId=self.g['kimlik'], currPart=len(info['yeni']['parcalar'])))]
         msgs += self.say('dalga_bitti', dalga=len(self.g['dalgalar']), sn=0)[:1] + self.say('tamam')
         if info['kronos']:
-            msgs += self.say('kronos_parca', parca=info['kronos'][1], gerek=KRONOS_PARTS)
+            got, total = info['kronos']
+            msgs += self.say('kronos_parca', sk='s' if got == 1 else 'p', wild=dict(COUNT=got))
+            if total >= KRONOS_PARTS:                    # son parça: istemcinin "Kronos Gate erected."
+                msgs.append(screen('key:log_msg_gg_build_complete_kronos'))
         w.send(msgs)
         self.phase = 'done'
 

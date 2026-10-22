@@ -10322,13 +10322,13 @@
   2,
   1
  ],
- "_mesajlar": "Kapı haritasındaki ekran mesajları (istemcinin MessageCommand komutu: buyuk = büyük bildirim + günlük, kisa = üstte kısa mesaj). İstemci İngilizce olduğu için İngilizce; \"key:\" ile başlayanlar istemcinin kendi çeviri metni (log_galaxygate_wave_name: \"%NAME% - Wave %WAVE%\"). {kapi} kapı adı, {dalga} dalga numarası, {toplam} dalga sayısı, {sn} saniye, {grup}/{gruplar} alt dalga, {kalan} kalan uzaylı, {can} kalan can, {ad} uzaylı adı, {parca}/{gerek} Kronos parçası. \"kalan\" yalnız grupta 3 ve daha az uzaylı kalınca.",
+ "_mesajlar": "Kapı haritasındaki ekran mesajları (istemcinin MessageCommand komutu: buyuk = büyük bildirim + günlük, kisa = üstte kısa mesaj). İstemci İngilizce olduğu için İngilizce; \"key:\" ile başlayanlar istemcinin kendi çeviri metni (log_galaxygate_wave_name: \"%NAME% - Wave %WAVE%\"). {kapi} kapı adı, {dalga} dalga numarası, {toplam} dalga sayısı, {sn} saniye, {grup}/{gruplar} alt dalga, {kalan} kalan uzaylı, {ad} uzaylı adı, {sk} Kronos parçası tekil/çoğul (s/p; adedi %COUNT%). \"kalan\" yalnız grupta 3 ve daha az uzaylı kalınca. Giriş ve devamın ardından kalan can istemcinin lifes_left metniyle (kapi.py).",
  "mesajlar": {
   "giris": {
-   "kisa": "Galaxy Gate {kapi}: {toplam} attack waves. Lives left: {can}"
+   "kisa": "Galaxy Gate {kapi}: {toplam} attack waves."
   },
   "devam": {
-   "kisa": "Welcome back! The gate continues from wave {dalga}/{toplam}. Lives left: {can}"
+   "kisa": "Welcome back! The gate continues from wave {dalga}/{toplam}."
   },
   "geri_sayim": {
    "kisa": "Attack wave {dalga} begins in {sn} seconds"
@@ -10363,7 +10363,7 @@
    "kisa": "Final wave! Destroy all aliens to complete the gate."
   },
   "kronos_parca": {
-   "kisa": "Kronos Gate part received ({parca}/{gerek})."
+   "kisa": "key:log_msg_gg_reward_kronos_part_{sk}"
   }
  },
  "bonus": {

@@ -247,11 +247,13 @@ class Astral:
                 self.open_gates()
             return world.kapi
         world.kapi = PO.Kosu(world, self, break_sn=3)
-        world.send([self.info_cmd(), self.inventory_cmd(), KAPI.screen('Rift %d/15%s' % (r['rift'], ' (Frenzied)' if r['cilgin'] else ''),
-                                                                      big=True)])
+        world.send([self.info_cmd(), self.inventory_cmd()])
         return world.kapi
 
     def wave_started(self, i):
+        r = self.run                                     # istemcinin metni: "%NAME% - Rift %RIFT% Wave %WAVE%"
+        self.world.send([KAPI.screen('key:log_astralascension_wave_name', big=True, RIFT=r['rift'], WAVE=i + 1,
+                                 NAME='Astral Ascension' + (' (Frenzied)' if r['cilgin'] else ''))])
         if self.rift()['patron']:
             self.run['dalga_bas'] = time.time()
 

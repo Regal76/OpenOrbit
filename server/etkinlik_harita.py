@@ -30,7 +30,8 @@ from eski_protokol import legacy
 from kapi import screen
 
 TRICK_MINE = 'ammunition_mine_ddm-01'
-BOSS_TEXT = {'curcubitor': ('curcubitor_boss_spawn', 'msg_curcubitor_ran_away'), 'agatusbreach': ('agatusbreach_boss_spawn', None)}
+BOSS_TEXT = {'curcubitor': ('curcubitor_boss_spawn', 'msg_curcubitor_ran_away'), 'agatusbreach': ('agatusbreach_boss_spawn', None),
+             'npc_valentine': ('npc_valentine_boss_spawn', None), 'npc_hitacAssault': ('npc_hitacAssault_boss_spawn', None)}
 
 
 def mod(name, **f):
@@ -200,7 +201,7 @@ class HaritaEtkinlik:
         for rk, g in [r for k in sorted(TK.active(now)) for r in rovers(k)]:
             if n.tip == g['tur']:
                 ROVER[rk] = now + g.get('bekleme_sn', 1800)
-                msgs.append(screen('%s destroyed! It will return in %d minutes.' % (n.d['ad'], g.get('bekleme_sn', 1800) // 60), big=True))
+                msgs.append(screen('key:msg_summoning_boss_killed', big=True, NPC_NAME=n.d['ad']))      # "… Another will arrive soon!"
                 w.log('   gezgin %s yok edildi (%s)' % (n.d['ad'], rk))
         if not n.tip.startswith('etk_'):
             return msgs
@@ -236,7 +237,7 @@ class HaritaEtkinlik:
                 n = w.spawn_npc_at(g['tur'], x, y)
                 n.summoned = True                        # dünya yeniden doğurmaz, etkinlik bitince kalkmaz (rota yönetir)
                 alive = [n.id]
-                out.append(screen('%s has arrived in %s!' % (n.d['ad'], name), big=True))
+                out.append(screen('key:msg_npc_spawned_map', big=True, NPC_NAME=n.d['ad'], MAP=name))
                 w.log('   gezgin %s geldi (%s)' % (n.d['ad'], name))
             elif alive and at != name:
                 for i in alive:

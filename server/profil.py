@@ -93,6 +93,9 @@ SLOT_BAR_KEYS = {'standardSlotBar': ('slotmenuPosition', 'slotMenuOrder'),
                  'proActionBar': ('slotmenuProActionPosition', 'slotMenuProActionOrder')}
 LAYOUT_COUNT = 6                    # WindowConstants.LayoutsMap (Horizontal/Vertical List/Grid, ProAction Horizontal/Vertical Grid)
 # ekipmana bağlı kısayol öğeleri (CPU'lar, Smart Bomb, fırlatıcı, gemi yetenekleri): takma/çıkarmadan sonra yenilenir (menu_changes)
+# hızlı alım öğesinin eşya çubuğu ipucundaki "Double click to buy" (kayıt: toolTipItemBar'ın son satırı; kısayol çubuğunda yok)
+QUICK_BUY_TIP = {'_': 'MessageKeyListWildcardModule', 'wildCardReplacements': [], 'baseKey': 'ttip_quick_buy_itembar',
+                 'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 5}, 'textStyle': 0}
 EQUIP_MENUS = ('equipment_extra_', 'ability_', 'equipment_weapon_rocketlauncher_', 'ammunition_rocketlauncher_', 'ammunition_mine_smb-01')
 
 _LEVELS = None
@@ -828,6 +831,9 @@ class Profil:
                         x.update(activatable=False, maxTime=f_['maxTime'], time=f_['time'],
                                  timerState={'_': 'TimerStateModule', 'timerStateValue': f_['timerState']})
                 if x.get('_') == 'MenuItemStatusCommand' and x.get('menuItemId'):
+                    lines = (x.get('toolTipItemBar') or {}).get('commandList')
+                    if x['menuItemId'].startswith('buy_') and lines is not None and                             not any(l.get('baseKey') == QUICK_BUY_TIP['baseKey'] for l in lines):
+                        lines.append(json.loads(json.dumps(QUICK_BUY_TIP)))
                     self.menu_status_cache.setdefault(x['menuItemId'], json.loads(json.dumps(x)))
                     cur = self.menu_status(x['menuItemId'])
                     if cur:

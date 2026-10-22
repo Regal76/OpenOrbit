@@ -349,6 +349,7 @@ class Esyalar:
         self.waiting = {}          # grup -> bitiş: bitince READY bildirimi
         self.ghost_end = 0.0       # Ghostifier görünümünün bitişi
         self.next_dep = 0.0        # Smart Bomb / Insta-Shield sayacının denetimi (dependent_tick)
+        self.aim_warned = False    # nişan CPU'sunun Xenomit uyarısı gitti (Xenomit gelince yeniden)
         self.born = time.time()    # bu harita yüklemesi (giriş, atlama, portal): atlama CPU'su 10 sn sonra (jump_cpu_failed_time)
         now = time.time()
         for g, (until, mx) in self.p.d.get(TIMERS, {}).items():
@@ -753,8 +754,14 @@ class Esyalar:
         p = self.p
         item = S['nisan_cpu']['menu']
         r = max((v for l, v in EK.props(p, 'nisan')), default=0)
-        if not r or not toggled(p, item) or p.ore_count(XENOMIT) < S['nisan_cpu']['xenomit']:
+        if not r or not toggled(p, item):
             return chance
+        if p.ore_count(XENOMIT) < S['nisan_cpu']['xenomit']:
+            if not self.aim_warned:              # "Warning: The Targeting Guidance CPU isn't working. You don't have enough Xenomit."
+                self.aim_warned = True
+                self.send([stm('aim_cpu_failed_xenomit')])
+            return chance
+        self.aim_warned = False
         p.remove_ores({XENOMIT: S['nisan_cpu']['xenomit']})
         self.send(self.ore_msgs())
         return 1 - (1 - chance) * (1 - r)
@@ -809,6 +816,8 @@ class Esyalar:
 
     def launcher_fire(self, now, n=None):
         w, p = self.w, self.p
+        if n is None and not capacity(p):              # kısayoldan, fırlatıcı takılı değil
+            return self.send([stm('hellstorm_launcher_not_equipped')])
         n = n or w.npcs.get(w.target)
         ammo, cnt = loaded(p)
         if not n or not n.alive or cnt <= 0 or w.hero_dead or w.jumping or ammo not in LAUNCHER_AMMO:
@@ -928,8 +937,11 @@ class Esyalar:
         loot = jump_loot(p)
         if not loot or w.hero_dead or w.jumping or self.jump:
             return
-        if w.map_id == home_map(p) or not jump_allowed(loot, w.map_id) or EK.uses(p, loot) <= 0:
-            self.send(self.status(S['atlama_cpu']['menu']))
+        home = int(w.map_id) == home_map(p)             # map_id metin: önce hiç tutmuyor, ana haritada da atlıyordu
+        if home or not jump_allowed(loot, w.map_id) or EK.uses(p, loot) <= 0:
+            # istemcinin metinleri: "…already on the target map." / "Jump from the current map not possible with your CPU!"
+            why = 'jump_cpu_failed_ontarget' if home else None if jump_allowed(loot, w.map_id) else 'jump_cpu_failed_map'
+            self.send(self.status(S['atlama_cpu']['menu']) + ([stm(why)] if why else []))
             return
         if self.too_soon(now):
             return

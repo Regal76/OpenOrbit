@@ -233,8 +233,8 @@ class Voyagers(Arena):
                     s['acik'] = r['zorluk'] + 1
             self.p.dirty = True
         self.p.ach('gate', tur='VOYAGERS_GATE')
-        msgs.append(KAPI.screen("Voyagers' Ascent %s completed in %s: %d star%s" % (z['ad'], fmt(secs), stars, '' if stars == 1 else 's'),
-                                big=True))
+        msgs += [KAPI.screen('key:log_msg_gg_completed_voyagersascentrial', big=True),          # istemcinin metni; süre ve yıldız
+                 KAPI.screen("Voyagers' Ascent %s completed in %s: %d star%s" % (z['ad'], fmt(secs), stars, '' if stars == 1 else 's'))]
         w.add_gate(self.exit_portal(w))
         w.send(msgs + [self.gecis.cmd('VoyagersPassCommand')])
         self.log('   Voyagers %s: %d sn, %d yıldız; %s' % (z['ad'], secs, stars, ', '.join(got) or '-'))
@@ -360,7 +360,8 @@ class Trinity(Arena):
         for loot in got:
             msgs += self.grant(loot, 1)
         self.p.ach('gate', tur='TRINITY_GATE')
-        msgs.append(KAPI.screen('Trinity Trials %s completed! Equipment: %d' % (z['ad'], len(got)), big=True))
+        msgs += [KAPI.screen('key:log_msg_gg_completed_trinitytrials', big=True),
+                 KAPI.screen('Trinity Trials %s completed! Equipment: %d' % (z['ad'], len(got)))]
         w.add_gate(self.exit_portal(w))
         self.log('   Trinity %s bitti: %s' % (z['ad'], ', '.join(got) or 'donanım yok'))
         self.run = None

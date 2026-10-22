@@ -726,6 +726,7 @@ class WbKosu:
             if self.m.titles:
                 msgs += self.m.titles(D['son_vurus']['unvan'])
             msgs.append(legacy('0|A|STM|log_msg_worldboss_boss_killed|%%USERNAME%%|%s' % self.m.p.d['pilot'].get('userName', '')))
+            msgs.append(KAPI.screen('key:log_msg_gg_completed_world_boss', big=True))
             msgs += self.rank_rewards(1.0)
             self.clear_adds()
             w.log('   World Boss: Fortress yenildi')

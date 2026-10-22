@@ -18,7 +18,7 @@
   "role": "Relay station {no}/{roleler}: destroy its defender, then use your laser cannons on it.",
   "role_ilerleme": "Relay station {no}/{roleler}: {yuzde}%",
   "role_tamam": "Relay station {no}/{roleler} activated!",
-  "boss": "Century Falcon has appeared!",
-  "bitti": "LoW completed! The portal in the center of the map leads back to X-3."
+  "boss": "key:msg_boss_appearence",
+  "bitti": "key:msg_groupgate_finished"
  }
 }

@@ -1012,7 +1012,12 @@
      "adet": 1,
      "sure_sn": 1800
     },
-    "_kaynak": "wiki hitac-assault: Underling kotası (X-2 200 … X-8 35) Underboss çağırır. Ana gemiler (harita harita dolaşan) ve Pursuit of Prestige yok. Uyarlama: nüfus 15. İstemcide Hitac için etkinlik göstergesi metni yok: gösterge gönderilmez."
+    "_kaynak": "wiki hitac-assault: Underling kotası (X-2 200 … X-8 35) Underboss çağırır. Ana gemiler (harita harita dolaşan) ve Pursuit of Prestige yok. Uyarlama: nüfus 15. Gösterge: istemcinin npc_hitacAssault_* metinleri (E9).",
+    "bilgi": {
+     "komut": "NpcEventInfoCommand",
+     "metin": "npc_hitacAssault",
+     "npc": 300
+    }
    },
    "gezgin": [
     {

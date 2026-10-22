@@ -169,6 +169,12 @@ def timer_msg(p, item, now=None):
                                          menuItemId=item, maxTime=f['maxTime'], time=f['time']))
 
 
+def line(item, stop=False):
+    """Yeteneğin "… activated" / "… deactivated" satırı (istemcinin metni, gemi_yetenekleri.json "metin"; yoksa boş)."""
+    key = (ABILITIES[item].get('metin') or [None, None])[1 if stop else 0]
+    return [stm(key)] if key else []
+
+
 def menu_status(p, item, st):
     """Kısayol menüsündeki yetenek öğesi: yalnız etkin geminin yetenekleri görünür; Last Stand kuruluyken seçili."""
     owned = item in ship_items(p)
@@ -344,7 +350,7 @@ class Motor:
                 st.update(hazir=now + cd, bekleme_ms=int(cd * 1000))
                 p.dirty = True
             self.refresh(now)
-            msgs = (self.visual_on(item, None) if st['acik'] else self.visual_off(item, None)) + [timer_msg(p, item, now)]
+            msgs = (self.visual_on(item, None) if st['acik'] else self.visual_off(item, None)) + [timer_msg(p, item, now)] +                 line(item, stop=not st['acik'])
             self.waiting.add(item)                # iki basış arası bekleme bitince düğme yine basılabilir
             self.send(msgs + self.stats())
             w.log('   yetenek %s: %s' % (a['ad'], 'açık' if st['acik'] else 'kapalı'))
@@ -360,7 +366,7 @@ class Motor:
             if 'sonraki_gsp' in e:
                 st['bekleyen'] = e['sonraki_gsp']
             p.dirty = True
-        msgs = self.visual_on(item, target.id if target else None) + [timer_msg(p, item, now)]
+        msgs = self.visual_on(item, target.id if target else None) + [timer_msg(p, item, now)] + line(item)
         g = p.d['gemi']
         if 'can_yuzde' in e:                      # Solace: anında azami canın %35'i
             hp0 = g.get('hitPoints', 0)
@@ -461,8 +467,8 @@ class Motor:
         n = w.npcs.get(s.get('hedef'))
         if n:
             n.etki.remove(source=item)            # hedefteki etkiler (zayıf kalkan, zehir, işaret) erken kalkar
-        if duration(p, item) > 0:
-            msgs.append(timer_msg(p, item, now))
+        if duration(p, item) > 0:                 # anlık yeteneklerin (Solace) bitiş satırı yok
+            msgs += [timer_msg(p, item, now)] + line(item, stop=True)
         if 'mods' in e:
             msgs += self.stats()
         self.waiting.add(item)
@@ -513,7 +519,7 @@ class Motor:
                 with self.p.lock:
                     s['acik'] = False
                 self.refresh(now)
-                self.send(self.visual_off(i, None) + [timer_msg(self.p, i, now)])
+                self.send(self.visual_off(i, None) + [timer_msg(self.p, i, now)] + line(i, stop=True))
 
     def tick(self, now):
         p, w = self.p, self.w

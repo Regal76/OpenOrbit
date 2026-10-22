@@ -141,10 +141,12 @@ class Labirent:
         """Köşe portalı: bir Labyrinth Key -> (geçebilir mi, mesajlar)."""
         if not g.get('ucretli'):
             return True, []
+        if not TK.is_active(L['etkinlik']):                       # etkinlik bitti: yalnız ortadaki portal (X-1'e)
+            return False, [KAPI.screen('key:log_msg_flb_not_running')]
         need = L.get('anahtar_ucreti', 1)
         if keys(self.p) < need:
             self.log('   labirent: anahtar yok (%d gerekli)' % need)
-            return False, [KAPI.screen('You need a Labyrinth Key to use this gate. Destroy Frozen aliens to find keys.')]
+            return False, [KAPI.screen('key:log_msg_flb_no_accesskey')]
         with self.p.lock:
             state(self.p)['anahtar'] = keys(self.p) - need
             self.p.dirty = True
@@ -186,7 +188,8 @@ class Labirent:
             if not any(n.tip == SKOLL for n in self.w.npcs.values()) and random.random() < L['skoll']['olasilik']:
                 z = random.choice(ZONES)
                 self.spawn(SKOLL, z)
-                self.w.send([KAPI.screen('Skoll has appeared in %s, zone %d!' % (MAPS[self.map]['ad'], ZONES.index(z) + 1), big=True)])
+                self.w.send([KAPI.screen('key:msg_npc_skoll-labyrinth_spawn_now', big=True, MAP=MAPS[self.map]['ad'],
+                                         ZONE=ZONES.index(z) + 1)])
                 self.log('   labirent: Skoll doğdu (%s %s)' % (MAPS[self.map]['ad'], z))
         self.synk_check(now)
 
@@ -209,7 +212,7 @@ class Labirent:
         if s['harita'] == self.map and now >= s['dogus'] and not alive:
             n = self.spawn(SYNK, s['bolge'])
             self.synk_id = n.id
-            self.w.send([KAPI.screen('Synk is here: %s, zone %d!' % (MAPS[self.map]['ad'], ZONES.index(s['bolge']) + 1), big=True),
+            self.w.send([KAPI.screen('key:msg_npc_synk_spawn_now', big=True, MAP=MAPS[self.map]['ad'], ZONE=ZONES.index(s['bolge']) + 1),
                          self.synk_cmd(now)])
             self.log('   labirent: Synk doğdu (%s %s)' % (MAPS[self.map]['ad'], s['bolge']))
 
@@ -223,7 +226,8 @@ class Labirent:
         self.new_synk(now, now + random.uniform(*L['synk']['yeniden_sn']))
         self.p.ach('synk')
         self.log('   labirent: Synk avlandı (%d)' % st['avlar'])
-        return [KAPI.screen('You caught Synk! (%d)' % st['avlar'], big=True), self.synk_cmd(now)] + self.info_msgs(now)
+        return [KAPI.screen('key:msg_npc_synk_killed', big=True, PLAYER=self.p.d['pilot'].get('userName', '')),
+                self.synk_cmd(now)] + self.info_msgs(now)
 
     def synk_cmd(self, now=None):
         now = time.time() if now is None else now

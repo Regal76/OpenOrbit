@@ -2324,10 +2324,10 @@
    "_odul": "fandom: bitişte 4.000-4.500 PIB-100 (Easy yarısı); EP/onur/kredi/uridyum Plutus'un kendi ödülünde (wiki)",
    "mesajlar": {
     "tamam": {
-     "buyuk": "Plutus defeated! Gauntlet of Plutus completed in {sure}."
+     "buyuk": "key:log_msg_gg_completed_gop_easy"
     },
     "giris": {
-     "kisa": "Gauntlet of Plutus: {toplam} waves in random order. Lives left: {can}"
+     "kisa": "Gauntlet of Plutus: {toplam} waves in random order."
     },
     "koruma": {
      "kisa": "Plutus is protected by his turrets. Destroy the turrets first!"
@@ -4694,10 +4694,10 @@
    "_odul": "fandom: bitişte 4.000-4.500 PIB-100 (Easy yarısı); EP/onur/kredi/uridyum Plutus'un kendi ödülünde (wiki)",
    "mesajlar": {
     "tamam": {
-     "buyuk": "Plutus defeated! Gauntlet of Plutus completed in {sure}."
+     "buyuk": "key:log_msg_gg_completed_gop"
     },
     "giris": {
-     "kisa": "Gauntlet of Plutus: {toplam} waves in random order. Lives left: {can}"
+     "kisa": "Gauntlet of Plutus: {toplam} waves in random order."
     },
     "koruma": {
      "kisa": "Plutus is protected by his turrets. Destroy the turrets first!"
@@ -8577,7 +8577,7 @@
    "_uyarlama": "EP JP wiki'nin 221.333'ü (fandom 2.324.000); BDR-1212 hesap yaşına göre -> 2.500 BDR-1211",
    "mesajlar": {
     "tamam": {
-     "buyuk": "Happy Birthday, DarkOrbit! Birthday Gate completed."
+     "buyuk": "key:log_msg_gg_completed_bday"
     }
    }
   },
@@ -8814,7 +8814,7 @@
    "_uyarlama": "tek oyunculu (2-8 oyuncu yerine), ek dalga sayıları, Overlord’un ölüm ışını ve uzaktakini seçmesi yok",
    "mesajlar": {
     "tamam": {
-     "buyuk": "The Gygerim Overlord is destroyed! Quarantine Zone cleared."
+     "buyuk": "key:log_msg_gg_completed_quarantine_zone"
     },
     "koruma": {
      "kisa": "The Gygerim Overlord is shielded while its minions live."
@@ -10328,7 +10328,7 @@
    "_uyarlama": "elit görevler yok: kapı 22. seviyede X-1’de, bir kez; EP ödülü onda biri (1,2 milyar yerine)",
    "mesajlar": {
     "tamam": {
-     "buyuk": "Compromising Invasion is over. Well done, pilot!"
+     "buyuk": "key:log_msg_gg_completed_black_light"
     }
    }
   }

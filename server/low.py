@@ -54,6 +54,7 @@ class Low:
             self.p.dirty = True
 
     def say(self, key, **kw):
+        """Akış metni: "key:" önekliyse istemcinin metni (Century Falcon, bitiş), değilse low.json'un cümlesi."""
         vals = dict(roleler=L['role']['adet'], toplam=len(L['dalgalar']))
         vals.update(kw)
         self.w.send([screen(L['mesajlar'][key].format(**vals))])
@@ -196,6 +197,7 @@ class Low:
         tip, n = L['eskort']
         self.spawn(tip, n, near=self.w.npcs[self.boss].mover.pos(time.time()))
         self.say('boss')
+        self.w.send([legacy('0|A|STM|msg_boss_adds_spawn')])                 # eskortu (istemcinin metni)
         self.w.log('   LoW: Century Falcon geldi')
 
     def finish(self):

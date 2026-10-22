@@ -322,7 +322,8 @@ class Echoes:
             hx, hy = w.hero_pos(now)
             h = w.drop_box(box, hx + random.uniform(-150, 150), hy + random.uniform(-150, 150), None, None)
             w.boxes[h]['anahtarli'] = True
-        w.send(msgs + [KAPI.screen('Level %d cleared in %s!' % (n, '%d:%02d' % divmod(secs, 60)), big=True), self.info_cmd()])
+        w.send(msgs + [KAPI.screen('key:log_msg_gg_completed_expedition', big=True),
+                       KAPI.screen('Level %d cleared in %s!' % (n, '%d:%02d' % divmod(secs, 60))), self.info_cmd()])
         self.log('   Echoes seviye %d bitti: %d sn' % (n, secs))
 
     def fail(self, why):

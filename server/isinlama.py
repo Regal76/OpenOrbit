@@ -85,8 +85,13 @@ class Isinlama:
         self.busy = (sid, pay, now)
         self.log('   ışınlama başladı: shipId %s (%s)' % (sid, pay or 'ücretsiz'))
         w.later(GERI_SAYIM, lambda: done(*self.finish(w)))
-        return [('ShipWarpWindowCloseCommand', {}), stm('msg_swstarted'),
-                stm('msg_swcountdown_p', '%SECONDS%', GERI_SAYIM)]
+        n = int(GERI_SAYIM)
+        for k in range(1, n):                        # geri sayım saniyede bir; son saniye "Warp finished in 1 second"
+            w.later(k, lambda left=n - k: self.busy and self.busy[2] == now and w.send([self.countdown(left)]))
+        return [('ShipWarpWindowCloseCommand', {}), stm('msg_swstarted'), self.countdown(GERI_SAYIM)]
+
+    def countdown(self, left):
+        return stm('msg_swcountdown_s') if left == 1 else stm('msg_swcountdown_p', '%SECONDS%', left)
 
     def finish(self, w):
         """Geri sayım bitti -> (mesajlar, gemi değişti mi)."""
@@ -102,8 +107,10 @@ class Isinlama:
         _, changed = self.m.activate({'shipId': sid}, in_station=True)
         if not changed:
             return [('ShipWarpCanceledCommand', {})], False
-        import rutbe as RT
-        RT.note(self.p, 'history_ship_warp_completed', self.p.ship()['lootId'])
+        import json, rutbe as RT
+        loot = self.p.ship()['lootId']
+        name = RT.R['gemi_puan'].get(loot.split('_design_')[0], {}).get('ad', loot)
+        RT.note(self.p, 'history_ship_warp_completed', loot, args=json.dumps({'%SHIP_NAME%': name, '%MAP_NAME%': H.name(w.map_id)}))
         msgs = [('ShipWarpCompletedCommand', {'currentShipLootId': self.p.ship()['lootId']})]
         msgs += INV.update_msgs(self.m, self.p, list(pay)) if pay else []
         return msgs + [self.m.ships_cmd()], True

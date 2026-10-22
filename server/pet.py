@@ -60,6 +60,8 @@ TIMED = {HP_LINK: 'hp-link', COMBAT_BEACON: 'combat-beacon', HP_BEACON: 'hp-beac
 BEACONS = (COMBAT_BEACON, HP_BEACON)
 READY_NAMES = {**TIMED, KAMIKAZE: 'kamikaze'}     # bekleme bitince msg_pet_<ad>-gear_cooldown_ready
 START_MAPS = ('1-1', '2-1', '3-1')       # G-KK1 seçilmez (istemci msg_pet_kamikaze-gear_not_on_start_maps)
+FUEL_WARN = 0.1                          # yakıt azaminin %10'una inince msg_pet_running_out_of_fuel (oran uyarlama)
+ATTACK_WARN_SN = 30                      # msg_pet_under_attack en çok bu kadar saniyede bir (uyarlama)
 # istemcinin PetRequest.PetRequestType enum'u
 LAUNCH, DEACTIVATE, TOGGLE, HOTKEY_GUARD, REPAIR_DESTROYED, HOTKEY_REPAIR_SHIP, HOTKEY_BUY_FUEL = range(7)
 DESTROYED_NONE, DESTROYED_KAMIKAZE = 0, 1
@@ -179,6 +181,7 @@ class Pet:
         self.look = None             # istemcinin bildiği görünüm (gemi türü): yalnız değişince PetLevelUpdateCommand
         self.release_wait = False    # bekleme bitince "hazır" iletisi gidecek
         self.heat_sent, self.next_heat_msg = None, 0.0
+        self.next_attack_warn = 0.0
         self.on_stats = None         # gemi değerleri yeniden (magaza.apply_stats): HEAT bonusu değişince
         profil.pet_mods = self.heat_mods
 
@@ -600,8 +603,10 @@ class Pet:
         with lock:
             if kind == LAUNCH or (kind == TOGGLE and not self.active):
                 self.launch()
+                if self.active:
+                    self.send([legacy('0|A|STM|msg_pet_activated')])     # oyuncunun isteğiyle (harita değişiminde değil)
             elif kind == DEACTIVATE or kind == TOGGLE:
-                self.deactivate()
+                self.deactivate(msg='msg_pet_deactivated')
             elif kind == HOTKEY_GUARD:
                 self.select(GUARD)
             elif kind == HOTKEY_REPAIR_SHIP:
@@ -738,6 +743,10 @@ class Pet:
         if t == HP_LINK:
             self.link_end = now + self.gear(HP_LINK).get('sure_sn', 20)
             msgs.append(self.link_visual(True))
+        # istemcinin metinleri: "Guard mode activated", "P.E.T. repairs the ship now.", lazersiz savaş dişlisi
+        msgs += [legacy('0|A|STM|%s' % k) for k in (
+            'msg_pet_guard_mode_activated' if t == GUARD else 'msg_pet_ship_repair_gear_activated' if t == COMBO_REPAIR else None,
+            'msg_pet_no_laser_equipped' if t in FIGHTING and not self.lasers() else None) if k]
         self.send(msgs)
         self.log('   P.E.T. dişlisi: %s%s' % (t, ' hedef %s' % opt if opt else ''))
 
@@ -929,9 +938,12 @@ class Pet:
         if self.fuel_clock >= 1:
             used = int(self.fuel_clock)
             self.fuel_clock -= used
+            before = self.d['yakit']
             with self.p.lock:
-                self.d['yakit'] = max(0, self.d['yakit'] - used)
+                self.d['yakit'] = max(0, before - used)
                 self.p.dirty = True
+            if 0 < self.d['yakit'] <= PET['azami_yakit'] * FUEL_WARN < before:
+                self.send([legacy('0|A|STM|msg_pet_running_out_of_fuel')])
             if self.d['yakit'] <= 0:
                 self.send([self.fuel_msg(), ('PetOutOfFuelCommand', {}), self.init_msg()])
                 self.deactivate(msg='msg_pet_out_of_fuel')
@@ -1212,6 +1224,9 @@ class Pet:
                                            victimHitpoints=int(d['can']), victimShield=int(d['kalkan']), victimNanoHull=0, damage=dmg,
                                            skilled=False, strike=False, cannonType=0)),
                  self.hp_msg(), self.shield_msg()]
+        if now >= self.next_attack_warn:                 # "Warning! Your P.E.T. is under attack!"
+            self.next_attack_warn = now + ATTACK_WARN_SN
+            msgs.append(legacy('0|A|STM|msg_pet_under_attack'))
         w.send(msgs)
         kk = self.gear(KAMIKAZE)
         if self.kamikaze_armed(now) and d['can'] <= self.hp_max() * kk.get('esik', 0):

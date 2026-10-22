@@ -1379,7 +1379,7 @@
       "kisa": "Fiesta Gate (Tranquil): {toplam} waves."
      },
      "tamam": {
-      "buyuk": "Fiesta Gate (Tranquil) completed!"
+      "buyuk": "key:log_msg_gg_completed_fiesta"
      }
     }
    },
@@ -2352,7 +2352,7 @@
       "kisa": "Fiesta Gate (Standard): {toplam} waves."
      },
      "tamam": {
-      "buyuk": "Fiesta Gate (Standard) completed!"
+      "buyuk": "key:log_msg_gg_completed_fiesta"
      }
     }
    },
@@ -3574,7 +3574,7 @@
       "kisa": "Fiesta Gate (Fierce): {toplam} waves."
      },
      "tamam": {
-      "buyuk": "Fiesta Gate (Fierce) completed!"
+      "buyuk": "key:log_msg_gg_completed_fiesta"
      }
     }
    },
@@ -4981,7 +4981,7 @@
       "kisa": "Fiesta Gate (Savage): {toplam} waves."
      },
      "tamam": {
-      "buyuk": "Fiesta Gate (Savage) completed!"
+      "buyuk": "key:log_msg_gg_completed_fiesta"
      }
     }
    },
@@ -6688,7 +6688,7 @@
       "kisa": "Fiesta Gate (Mythic): {toplam} waves."
      },
      "tamam": {
-      "buyuk": "Fiesta Gate (Mythic) completed!"
+      "buyuk": "key:log_msg_gg_completed_fiesta"
      }
     }
    }

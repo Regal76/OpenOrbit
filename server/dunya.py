@@ -300,6 +300,7 @@ class World:
         self.low = None                # LoW'un tek kişilik sürümü (low.Low)
         self.labirent = None           # Frozen Labyrinth haritası (labirent.Labirent)
         self.gate_fee = None           # ücretli portal (labirent: Labyrinth Key) -> (geçer mi, mesajlar)
+        self.sold = False              # istasyonda cevher satıldı: ilk harekette rafineri penceresi kapanır (on_move)
         self.session_tick = None       # oturumun zamanlı sistemleri (Assembly, Dispatch, Skylab; game.Session.tick)
         self.visible = set()           # istemcinin bildiği NPC'ler (görüş mesafesi; kayıt: ~2.000 birimde gösterilir)
         self.seen_items = set()        # istemcinin bildiği kutu ve cevherler (kayıt: ~1.000 birimde)
@@ -1155,6 +1156,7 @@ class World:
                 msgs.append(self.ore_pack([t]))
             msgs += self.quest('sell', ore=t, amount=n)
             self.send(msgs)
+            self.sold = self.sold or self.at_trade()
             self.log('   satıldı: %s x%d = %d kredi' % (ORE['turler'].get(str(t), t), n, kredi))
 
     # ------------------------------------------------------------ portallar
@@ -1192,6 +1194,8 @@ class World:
         with self.lock:
             g = next((x for x in self.gates if x['gateId'] == self.near_gate), None)
             if not g or self.jumping or self.hero_dead:
+                if not (g or self.jumping or self.hero_dead):
+                    self.send([stm('jumpgate_failed_no_gate')])     # "Jump not possible! You're not located close enough to a jump gate."
                 return False
             need = 0 if g.get('kapi') else H.level_required(g['hedef'], self.p.d['pilot'].get('factionId'))
             if self.p.d['pilot'].get('level', 1) < need:
@@ -1256,6 +1260,9 @@ class World:
         with self.lock:
             now = time.time()
             self.hero.go(f['targetX'], f['targetY'], self.p.d['gemi'].get('speed', 300), now, start=(f['positionX'], f['positionY']))
+            if self.sold:                  # kayıt: satıştan sonraki ilk MoveRequest'te 0|UI|W|MIW|ore_trade (pencere küçülür)
+                self.sold = False
+                self.send([legacy('0|UI|W|MIW|ore_trade')])
 
     def selection(self, n):
         return ('ShipSelectionCommand', dict(userId=n.id, shipType=int(n.model), shield=int(n.shield), shieldMax=n.d['kalkan'],
@@ -1973,6 +1980,7 @@ class World:
             return
         if not lasers or self.p.use_ammo(ammo, len(lasers)) is None:
             if not lasers:
+                self.send([stm('no_lasers_on_board')])      # "Your ship doesn't have any laser cannons. That's why you can't attack."
                 self.laser_stop()
                 return
             alt, msgs = self.ammo_out('lazer', ammo, len(lasers))
@@ -2023,6 +2031,7 @@ class World:
         if not lasers or self.p.use_ammo(ammo, len(lasers)) is None:
             if not lasers:
                 self.log('   lazer atışı yok: lazer takılı değil')
+                self.send([stm('no_lasers_on_board')])      # "Your ship doesn't have any laser cannons. That's why you can't attack."
                 self.laser_stop()
                 return
             alt, msgs = self.ammo_out('lazer', ammo, len(lasers))
