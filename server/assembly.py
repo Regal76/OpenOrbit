@@ -179,6 +179,11 @@ class Assembly:
         self.shown = set(keys)
         return ('AssemblyRecipeContentModule', {'recipes': [self.recipe(k) for k in keys] + self.up.recipes()})
 
+    def filter_msgs(self):
+        """Pencerenin saklanan süzgeçleri (AssemblySetFilterRequest'in modülü, filterType başına): girişte geri (E10)."""
+        return [('AssemblyWindowSettingsModule', {k: v for k, v in m.items() if k != '_'})
+                for _, m in sorted(self.st['suzgec'].items()) if m]
+
     def update(self, key, target=0, now=None):
         return ('AssemblyRecipeStatusUpdateCommand', dict(targetItemId=target, status=self.status(key, now), lootId=key))
 

@@ -10,7 +10,8 @@ Durum: 1 okunmadı, 3 okundu (istemci mesajı açınca UserMessageUpdateStatusRe
 (sayfa - 1) * 15). Kutu kimliği (boxId) silme, durum ve ek alma isteklerinde double gelir.
 Ekler (LootModule): mesajla gelen eşyalar; UserMessageLootRequest ile alınır (mağazanın ödül yolu). İstemci (UIMailSystem.SetItemInfo,
 SetMailItemsInfo) ekleri yalnız bilgi (70) mesajında gösterir; isReceived üç durumlu: 0 gönderilen, 1 alınan (Claim düğmesi), 2 ekleri
-alınmış ("Claimed", düğme kapalı). UserMessageLootCommand'ın istemcide işleyicisi yok: alınca liste yeniden gönderilir (canlı deneme
+alınmış ("Claimed", düğme kapalı). Eksiz gelen mesaj da 2 (E10; 1'deyken her mesajın yanında hediye simgesi çıkıyordu, CANLI_TEST N5;
+canlıda doğrulanmadı). UserMessageLootCommand'ın istemcide işleyicisi yok: alınca liste yeniden gönderilir (canlı deneme
 2026-10-17). Ekli mesaj bu yüzden hep bilgi türüyle eklenir (add).
 Tek oyunculu: alıcı yalnız oyuncunun kendisi olabilir (kendine not gibi); bot oyuncular Aşama 11'de alıcı olur. Rehber ve kara
 liste boş başlar; kara liste profilde saklanır.
@@ -94,7 +95,7 @@ class Posta:
     def info(self, r, inbox):
         me = self.p.d['pilot']
         base = dict(senderId=int(r.get('gonderen_id', 0)), replacements=r.get('degistirmeler', ''), insertDate=r['tarih'],
-                    boxId=r['id'], parent=False, isReceived=(2 if r.get('ekler') and r.get('ek_alindi') else 1) if inbox else 0,
+                    boxId=r['id'], parent=False, isReceived=(2 if r.get('ek_alindi') else 1) if inbox else 0,      # eksiz: 2 (E10)
                     messageId=r['id'], type=r['tur'], subject=r['konu'], body=r['metin'], status=r['durum'],
                     attachments=[mod('LootModule', lootId=l, amount=n, modifier='') for l, n in r.get('ekler', [])])
         if r['tur'] == AUCTION:

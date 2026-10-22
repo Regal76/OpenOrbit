@@ -812,6 +812,12 @@ class Profil:
             return dict(fields, active=bool(self.d.get('davet_engeli')))
         if name == 'LegacyModule' and fields.get('message', '').startswith('0|S|CFG|'):
             return dict(fields, message='0|S|CFG|%s' % self.aktif_konfig)
+        if name == 'LegacyModule' and fields.get('message', '').startswith('0|A|JV|'):
+            return dict(SE.vouchers_msg(self)[1])                # AJP-01 kupon sayısı (kayıttaki 0 yerine)
+        if name == 'WindowItemCommand':
+            # menü öğesinin profildeki yeri ve görünürlüğü (kayıttaki yer; etkinlik pencereleri kayıtta görünmez geliyordu), kapalı
+            cur = self.window_item(fields.get('itemId'))
+            return dict(fields, **{k: cur[k] for k in ('posX', 'posY', 'width', 'height', 'visible') if k in cur}, maximized=False)                 if cur else fields
         if name != 'MenuInitializationCommand':
             return fields
         f = json.loads(json.dumps(fields))
@@ -949,6 +955,10 @@ class Profil:
                 for b in f.get('changedKeyBindings', []):
                     cur[(b.get('actionType'), b.get('parameter'))] = b
                 self.d['tus_atamalari'] = list(cur.values())
+            elif name == 'ResetSettingsRequest':
+                # Ayarlar > Klavye > Reset: tuşlar tohumdakine (istemci isteği çoğu kez bağlantı kapanmadan gönderemiyor: CANLI_TEST
+                # N12; panelin "tuş atamaları" seçeneği aynısı)
+                self.d['tus_atamalari'] = self._from_seed(self.tohum)['tus_atamalari']
             elif name == 'UIWindowUpdateRequest':
                 for bar in self.d['arayuz'].get('featureBars', []):
                     for it in bar.get('featureBarItems', []):

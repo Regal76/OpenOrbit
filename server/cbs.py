@@ -390,6 +390,7 @@ class Cbs:
             if not aid:
                 continue
             a = self.ast(aid)
+            s['lastChangedTimestamp'] = 0               # sahipsiz: kayıttaki hesabın gördüğü değişim zamanı değil (E10)
             if a['durum'] in ('kurulu', 'kurma'):
                 rival = a.get('sahip') == 'rakip'
                 s.update(status=HOSTILE if rival else OWN, clanName=a.get('rakip') if rival else self.clan_name(),

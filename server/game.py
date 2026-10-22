@@ -122,7 +122,9 @@ class Sablonlar:
     def __init__(self):
         self.giris = _load('giris.json', {})
         self.haritalar = _load('haritalar.json', {})
-        self.yanitlar = _load('yanitlar.json', {})
+        # yalnız kullanılanlar (E10): ötekilerin hepsini kod karşılıyor; kayıttaki hesabın verisi (başka oyuncuların adları, klan
+        # listeleri) bir isteğin yedeğinden pencereye çıkmasın. Dosyada kalırlar: araçların kaynağı (rutbe, pve_modlari, sira_odulleri)
+        self.yanitlar = {k: v for k, v in _load('yanitlar.json', {}).items() if k in USED_RESPONSES}
         self.uretilen = {}
 
     def map_world(self, map_id):
@@ -149,9 +151,17 @@ class Sablonlar:
                 return [profil.generate('@gemi'), profil.generate('@giris_yaniti')]
             return []
         map_id = profil.d['konum']['mapId']
-        out = []
+        out, windows = [], set()
         for m in self.giris.get(kind, []):
             mk = m['_m']
+            if mk in DEAD_TEMPLATE or m.get('message') in DEAD_LEGACY:
+                continue
+            if mk == 'WindowItemCommand':
+                # kayıtta Contacts ve Ship Warp girişte üçer kez, her hazır demetinde yine üçer kez (kayıttaki yerle, maximized false:
+                # açık pencere kapanır): girişte bir kez, profildeki yer ve görünürlükle (profil.patch_template)
+                if kind == 'hazir' or m.get('itemId') in windows:
+                    continue
+                windows.add(m.get('itemId'))
             if mk in ('@harita_giris', '@harita_hazir'):
                 out += self.world_msgs(map_id, 'giris' if mk == '@harita_giris' else 'hazir')
             elif kind == 'hazir' and (mk == 'EquipReadyCommand' or m.get('message', '').startswith('0|n|MSG|3|2|msg_equip_')):
@@ -191,6 +201,13 @@ class Sablonlar:
 
 
 LOOSE_FIELDS = {'startIndex', 'page', 'start', 'newsInfo'}       # yanıtın türünü değiştirmeyen istek alanları
+# kayıtlı yanıtlardan sunucunun kullandıkları: yanıt olarak (Command Center, pilot kartı) ve veri şablonu olarak (mağaza, hangar, kapı)
+USED_RESPONSES = {'CommandCenterGetDontShowRequest', 'CommandCenterNewsInfoRequest', 'InternalPilotBioRequest', 'ShopItemListRequest',
+                  'HangarShipEquipmentRequest', 'HangarListRequest', 'HangarShipDetailRequest', 'GalaxyGateBuilderInfoRequest'}
+# giriş şablonunun ölü yükü (E10): R-Zone durumu (171 kez; işleyicisi ölü), CTB ve POI (istemcide işleyicisi yok), 0|TR ve 0|8
+# (istemcinin OnData'sında dalı yok)
+DEAD_TEMPLATE = {'RzoneStatusCommand', 'CTBMatchStateCommand', 'POIReadyCommand'}
+DEAD_LEGACY = {'0|TR', '0|8'}
 # gerçek sunucunun da yanıt vermediği istekler (kayıt): günlüğe "yanıtsız" diye düşmesin
 SILENT = {'TrackVariableRequest',
           'CommandCenterNewsClickedRequest', 'PerformanceTrackingSendInfoRequest',
@@ -255,8 +272,8 @@ def login_batch(kind, first=True):
     """first=False: harita değişimi (portal, istasyonda tamir). Girişte kendiliğinden açılan pencereler (günlük bonus, ipuçları,
     Season Pass) yalnız girişte gelir; arayüz harita değişiminde kalır, veriyi yeniden göndermek pencereleri yeniden açıyordu."""
     msgs = no_popups(SABLON.batch(kind, PROFIL))
-    if not first:
-        msgs = [(n, f) for n, f in msgs if n not in POPUP_MSGS or n == 'CommandCenterDontShowInfoCommand']
+    if not first:                    # pencere öğeleri de yalnız girişte: harita değişiminde açık pencereyi kapatıyordu (E10)
+        msgs = [(n, f) for n, f in msgs if (n not in POPUP_MSGS or n == 'CommandCenterDontShowInfoCommand') and n != 'WindowItemCommand']
     return msgs
 
 
@@ -658,7 +675,7 @@ class Session:
                 continue
             if n == 'AssemblyRecipeContentModule':
                 if not asm:
-                    out.append(self.assembly.content())
+                    out += [self.assembly.content()] + self.assembly.filter_msgs()
                     asm = True
                 continue
             out.append((n, f))
@@ -955,6 +972,10 @@ class Session:
                 PROFIL.d['davet_engeli'] = not PROFIL.d.get('davet_engeli', False)
                 PROFIL.dirty = True
             self.send([('InvitationBlockModule', {'active': PROFIL.d['davet_engeli']})], 'grup daveti engeli')
+        elif name == 'InvitationCreationRequest':
+            # ada göre grup daveti: bot oyuncular gelene dek kimse yok (kayıttaki yanıt: error 2 CANDIDATE_NONEXISTENT; yanıtsızken
+            # grup penceresi bekleyip boş kalıyordu)
+            self.send([('InvitationErrorCommand', {'inviterId': 0, 'candidateId': 0, 'error': 2})], 'grup daveti: %s' % f.get('name'))
         elif name == 'CommandCenterNewsClickedRequest':              # haberin tıklanması (E8; yanıtı yok): profildeki sayaç
             with PROFIL.lock:
                 c = PROFIL.d.setdefault('haber_tik', {})
