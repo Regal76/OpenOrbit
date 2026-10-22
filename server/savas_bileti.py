@@ -50,7 +50,9 @@ class SavasBileti:
         self.m = None
         self.send = None
         self.map_id = None
-        self.keys_sent = None
+        # istemcinin bildiği anahtar sayısı: giriş demeti (login_msgs) gönderir; None olsaydı LoginRequest sırasındaki ilk olay
+        # anahtar güncellemesini giriş demetinden önce gönderiyordu
+        self.keys_sent = profil.resource(KEY)
 
     @property
     def st(self):

@@ -19,7 +19,7 @@ Günlük görevler (3 + 2 Gold) her gün, haftalıklar (5 + 3 Gold) pazartesi ha
 Extra Gold Pass Gold Pass'ten sonra.
 Profilde: sezon {donem, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, deger, tamam, yenileme}.
 """
-import datetime, json, os, random, time
+import datetime, json, os, random, threading, time
 
 import ayar as AY
 import gorev_takip as GT
@@ -146,7 +146,9 @@ class Sezon:
         self.m = None              # mağaza (ödüller, para mesajları; oturum bağlar)
         self.send = None           # oturuma gönderme (görev ilerlemesi olaylardan gelir)
         self.map_id = None
-        self.busy = False
+        # yalnız aynı iş parçacığında iç içe olayı önler: dünyanın (öldürme, toplama) ve oturumun (alım, satış) aynı anda gelen
+        # olayları ortak bir bayrakla birbirini düşürüyordu
+        self.yerel = threading.local()
 
     # ------------------------------------------------------------ durum
     @property
@@ -295,13 +297,13 @@ class Sezon:
     # ------------------------------------------------------------ görevler
     def event(self, kind, **kw):
         """Oyun olayı -> görev ilerlemesi (oturuma gönderilir)."""
-        if self.busy or not self.p.d.get('sezon'):
+        if getattr(self.yerel, 'busy', False) or not self.p.d.get('sezon'):
             return []
-        self.busy = True
+        self.yerel.busy = True
         try:
             msgs = self._event(kind, kw)
         finally:
-            self.busy = False
+            self.yerel.busy = False
         if msgs and self.send:
             self.send(msgs)
         return msgs

@@ -19,7 +19,7 @@ Mesaj akışları gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md, 
           KillScreenRepairRequest -> ShipInitializationCommand (istasyonda / portalda / yerinde tamir)
 Sayısal değerler data/npc.json'dan, tamir fiyatları data/esyalar.json'dan (olum_ekrani).
 """
-import json, math, os, random, re, string, threading, time, weakref
+import json, math, os, random, re, string, threading, time, traceback, weakref
 
 import harita as H
 import booster as BOOSTER
@@ -257,7 +257,8 @@ class World:
 
     def __init__(self, profil, send, log, map_id, station=None, test_near=False, on_jump=None, keep_state=False):
         self.perf = Olcum()                 # döngü adımının süresi (ms): canlı durum ve panel
-        self._batch = None                  # döngü adımı sürerken gönderilecekler (adım sonunda tek çerçevede)
+        self.step_errors = {}               # döngü hatasının son satırı -> en son günlüğe yazıldığı an (step_error)
+        self._batch = None                 # döngü adımı sürerken gönderilecekler (adım sonunda tek çerçevede)
         self._loop_ident = None             # döngünün iş parçacığı (defer: oturumun adım içindeki mesajları da sıraya)
         self.cbs_trade = None               # Clan Battle Station'da maden satışı: () -> fiyat çarpanı ya da None (cbs.py)
         self.asset_targets = None           # vurulabilir harita varlıkları (rakip Battle Station'ın modülleri: cbs.py): asset_pos(id)
@@ -831,7 +832,8 @@ class World:
         h, m = (int(v) for v in hm.split(':'))
         lt = time.localtime(now)
         t = time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday, h, m, 0, 0, 0, -1))
-        return t - 86400 if t > now else t
+        # dün: takvim günü (yaz saati değişen günde 86.400 sn bir saat kaydırırdı); mktime ayın 0. gününü önceki aya taşır
+        return time.mktime((lt.tm_year, lt.tm_mon, lt.tm_mday - 1, h, m, 0, 0, 0, -1)) if t > now else t
 
     def drifter_tick(self, now):
         """Zaman çizelgeli Black Light başıboşları (npc.json haritalar.zamanli; wiki saatleri): saatinden sonra zamanli_sure_sn içinde
@@ -2810,6 +2812,8 @@ class World:
                 self._batch = []
                 try:
                     self.step(time.time())
+                except Exception:               # iş parçacığı ölmesin (uzaylılar ve zamanlayıcılar dururdu); sonraki adım yeniden dener
+                    self.step_error('adım')
                 finally:
                     batch, self._batch = self._batch, None
                 if batch:                       # kilit altında: oturumun sonraki mesajlarından önce, aynı sırayla
@@ -2817,7 +2821,17 @@ class World:
                         self.send_raw(batch)
                     except OSError:
                         self.running = False
+                    except Exception:
+                        self.step_error('gönderim')
                 self.perf.add((time.perf_counter() - t0) * 1000.0)
+
+    def step_error(self, what):
+        """Döngüdeki hatanın yığın izi günlüğe; aynı hata (son satırı) en çok 60 sn'de bir yazılır."""
+        tb = traceback.format_exc()
+        key, now = tb.strip().splitlines()[-1], time.time()
+        if now - self.step_errors.get(key, 0) >= 60:
+            self.step_errors[key] = now
+            self.log('   dünya %s hatası (%s):\n%s' % (what, H.name(self.map_id), tb))
 
     def step(self, now):
         """Döngünün bir adımı (0,1 sn; dünya kilidi altında): zamanlayıcılar, görüş, uzaylılar, kutular … Ölçüm aracı
@@ -2825,7 +2839,10 @@ class World:
         due = [t for t in self.timers if t[0] <= now]
         self.timers = [t for t in self.timers if t[0] > now]
         for _, fn in due:
-            fn()
+            try:                               # biri hata verirse aynı adımdaki öteki zamanlayıcılar kaybolmasın
+                fn()
+            except Exception:
+                self.step_error('zamanlayıcı')
         if self.collect_wish:
             self.collect_tick(now)
         if not self.jumping:

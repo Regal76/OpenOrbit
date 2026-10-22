@@ -91,6 +91,25 @@ def log(text):
             fh.write(time.strftime('%H:%M:%S ') + text + '\n')
 
 
+def encode(msgs):
+    """Mesajları çerçeveler; kodlanamayan mesaj (255'i aşan liste, bilinmeyen alan …) adıyla günlüğe yazılıp atlanır, ötekiler gider."""
+    out = []
+    for n, f in msgs:
+        try:
+            out.append(P.frame(P.encode_message(n, f)))
+        except Exception as e:
+            log('   kodlanamadı, gönderilmedi: %s: %r' % (n, e))
+    return b''.join(out)
+
+
+def save_profile():
+    """Profil kaydı; hata (dosya kilitli, disk) günlüğe yazılır, oturumu ve harita değişimini düşürmez; bir sonraki kayıtta yeniden denenir."""
+    try:
+        PROFIL.save()
+    except Exception as e:
+        log('   profil kaydedilemedi: %r' % e)
+
+
 def _load(name, default):
     p = YOL.sablon(name) if name in YOL.SABLONLAR else os.path.join(DATA, name)     # şablon: kendi kaydın, yoksa paylaşılabilir kopya
     return json.load(open(p, encoding='utf8')) if p and os.path.exists(p) else default
@@ -364,10 +383,7 @@ class Session:
 
     def logout_done(self):
         self.logout_timer = None
-        try:
-            PROFIL.save()
-        except OSError as e:
-            log('   profil kaydedilemedi: %r' % e)
+        save_profile()
         try:
             self.send([legacy('0|l')], 'çıkış')
             self.c.shutdown(socket.SHUT_RDWR)
@@ -479,7 +495,7 @@ class Session:
                 for n, f in msgs:
                     log('-> %s %s' % (n, P.fmt(f, 160)))
             return
-        data = b''.join(P.frame(P.encode_message(n, f)) for n, f in msgs)
+        data = encode(msgs)
         with self.send_lock:
             self.c.sendall(data)
             if KONTROL:
@@ -722,7 +738,7 @@ class Session:
             x, y = pos or H.arrival(old, dest)
             PROFIL.d['konum'].update(mapId=dest, x=x, y=y, portalda=pos is None)
             PROFIL.dirty = True
-            PROFIL.save()
+            save_profile()
             self.send(msgs + [('JumpToServerCommand', {})], quiet=True)
             self.map_pending = True      # giriş demetinden önce: istemcinin ReadyRequest'i hemen gelse de kaçmaz
             RT.daily_rank(PROFIL)        # gün değiştiyse rütbe (istemci yalnız ShipInitializationCommand'dan okur)
@@ -1015,20 +1031,24 @@ class Session:
                     if KONTROL:
                         KT.IZ.add('<-', name, f)
                     with self.packet_lock:
-                        self.on_packet(name, mid, f, err)
+                        try:                      # bir isteğin hatası oturumu düşürmesin: yığın izi günlüğe, istemci bağlı kalır
+                            self.on_packet(name, mid, f, err)
+                        except ConnectionError:
+                            raise
+                        except Exception:
+                            log('   istek hatası (%s):\n%s' % (name, traceback.format_exc()))
                     if time.time() - last_save > 10:
                         last_save = time.time()
                         self.play_time()
-                        try:
-                            PROFIL.save()
-                        except OSError as e:      # kayıt bir sonraki denemeye kalır; bağlantı düşmez
-                            log('   profil kaydedilemedi: %r' % e)
-        except Exception as e:
-            log('error %r' % e)
+                        save_profile()
+        except ConnectionError as e:
+            log('   bağlantı kapandı: %r' % e)
+        except Exception:
+            log('error\n%s' % traceback.format_exc())
         if self.world:
             self.world.stop()
         self.play_time()
-        PROFIL.save()
+        save_profile()
         log('disconnect %s' % (self.addr,))
         global CURRENT
         if CURRENT is self:
@@ -1036,6 +1056,12 @@ class Session:
 
     def payment_click(self):
         """İstemcinin ödeme düğmesi (odeme.Dinleyici: 127.0.0.1:443'e bağlandı): mağaza Extras'ta açılır, ürün ekranda yazılır."""
+        msg = self.pencereler.offline()
+        if msg:                                       # kupon kodu ya da resim yükleme: mağaza açılmaz
+            log('   443: ödeme dışı istek -> %s' % msg)
+            with self.packet_lock:
+                self.send([KAPI.screen(msg)], '443: ekran metni')
+            return
         item = self.pencereler.guess()
         log('   ödeme düğmesi -> mağaza (son pencere: %s)' % (item or '-'))
         with self.packet_lock:
@@ -1065,10 +1091,7 @@ def autosave():
         if time.time() - last < 10:
             continue
         last = time.time()
-        try:
-            PROFIL.save()
-        except Exception as e:            # sözlük o an değişiyorsa ya da dosya kilitliyse bir sonraki turda
-            log('   profil kaydedilemedi (otomatik): %r' % e)
+        save_profile()                    # dosya kilitliyse bir sonraki turda
 
 
 def stop_gracefully():
@@ -1089,7 +1112,8 @@ def stop_gracefully():
 
 def main():
     global SOHBET
-    AY.configure()                # oyun ayarları (panel): --ayarlar=<yol> ya da save/ayarlar.json; değişince kendiliğinden okunur
+    P.uyari = log
+    AY.configure()              # oyun ayarları (panel): --ayarlar=<yol> ya da save/ayarlar.json; değişince kendiliğinden okunur
     log('ayarlar: %s | %s' % (AY._state['yol'], ', '.join('%s %s' % x for x in AY.summary()) or 'varsayılan'))
     SOHBET = SH.Sohbet(log)
     SOHBET.start()                # yerel sohbet (7771); istemci girişteki ChatParamCommand ile buraya bağlanır

@@ -160,6 +160,7 @@ STAT_TABLES = (('lazerler', 'hasar'), ('kalkan_jeneratorleri', 'kalkan'), ('hiz_
 PAY_CURRENCY = {'currency_uridium': ('uridium', 'URI'), 'currency_credits': ('credits', 'CRE'), 'currency_experience': ('ep', 'EP'),
                 'currency_honour': ('honourPoints', 'HON')}
 PRIZE_CURRENCY = {'currency_uridium': 'uridyum', 'currency_credits': 'kredi', 'currency_experience': 'ep', 'currency_honour': 'onur'}
+SHOP_MAX = 255                     # ShopItemListCommand.itemList'in sayacı bir bayt (protocol.LIST_MAX)
 
 
 def design_base(loot):
@@ -599,6 +600,10 @@ class Magaza:
         if self.featured and self.featured[0] == category and time.time() < self.featured[2]:
             # ödeme düğmesinden açılan mağaza: istemci listenin ilk ürününü seçili açıyor (odeme.py)
             t['itemList'].sort(key=lambda it: it['lootId'] != self.featured[1])
+        if len(t['itemList']) > SHOP_MAX:
+            # liste sayacı bir bayt (istemcinin okuması): fazlası kodlanamaz, sekme hiç açılmazdı; sondakiler (ek ürünler) gösterilmez
+            self.log('   mağaza: %s sekmesinde %d ürün, ilk %d gösteriliyor' % (category, len(t['itemList']), SHOP_MAX))
+            t['itemList'] = t['itemList'][:SHOP_MAX]
         return ('ShopItemListCommand', t)
 
     def feature(self, category, loot, sec=15.0):

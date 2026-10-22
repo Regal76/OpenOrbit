@@ -18,6 +18,7 @@ liste boş başlar; kara liste profilde saklanır.
 import time
 
 NOT_SINIRI = 10
+KUTU_SINIRI = 500          # gelen ve giden kutusu başına (seyir defteri ve hesap geçmişiyle aynı)
 SAYFA = 15
 OKUNMADI, OKUNDU = 1, 3
 USER, CLAN, SYSTEM, AUCTION, INFO = 10, 20, 50, 60, 70
@@ -76,7 +77,10 @@ class Posta:
                    'ek_alindi': not attachments}
             if extra:
                 rec.update(extra)
-            self.d['gelen' if inbox else 'giden'].insert(0, rec)
+            box = self.d['gelen' if inbox else 'giden']
+            box.insert(0, rec)
+            if len(box) > KUTU_SINIRI:             # sistem iletileri birikir: en eskiler silinir, eki alınmamışlar kalır
+                box[KUTU_SINIRI:] = [r for r in box[KUTU_SINIRI:] if not r.get('ek_alindi', True)]
             self.p.dirty = True
         return rec
 

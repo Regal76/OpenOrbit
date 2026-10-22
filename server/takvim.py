@@ -20,7 +20,10 @@ D = json.load(open(os.path.join(HERE, 'data', 'etkinlikler.json'), encoding='utf
 EVENTS = D['etkinlikler']
 ALWAYS = D['surekli']['turler']
 FORCED, MODE = set(), 'takvim'          # takvim | hepsi | yok (yıllıklar için)
-EVENT_IDS = {}                          # EventModule.id: tür adı başına sabit
+# "iki haftada bir" (cift_hafta) bu pazartesiden sayılır; ISO hafta paritesi 53 haftalık yılda (2026) üç haftalık ara bırakıyordu.
+# (ISO'da 2. hafta: 2026 sonuna kadar dönüşüm eskisiyle aynı)
+CIFT_HAFTA_BASI = datetime.date(2024, 1, 8)
+EVENT_IDS = {}                        # EventModule.id: tür adı başına sabit
 
 
 def configure(argv=None):
@@ -63,7 +66,7 @@ def period(key, now=None):
         return None
     if t.weekday() not in e.get('gunler', range(7)):
         return None
-    if e.get('cift_hafta') and t.isocalendar()[1] % 2:
+    if e.get('cift_hafta') and (t.date() - CIFT_HAFTA_BASI).days // 7 % 2:
         return None
     day = t.replace(hour=0, minute=0, second=0, microsecond=0)
     for a, b in e.get('saatler', [[0, 24]]):

@@ -261,9 +261,21 @@ class Profil:
             if not (self.dirty or force):
                 return
             os.makedirs(os.path.dirname(self.path), exist_ok=True)
+            # dünya ve oturum profile kilitsiz yazıyor: kodlama sürerken sözlüğün boyu değişirse ("dictionary changed size during
+            # iteration") yeniden denenir; dosyaya ancak metin tamamlanınca yazılır
+            for k in range(5):
+                try:
+                    text = json.dumps(self.d, ensure_ascii=False, indent=1)
+                    break
+                except RuntimeError:
+                    if k == 4:
+                        raise
+                    time.sleep(0.01)
             tmp = self.path + '.tmp'
             with open(tmp, 'w', encoding='utf8') as fp:
-                json.dump(self.d, fp, ensure_ascii=False, indent=1)
+                fp.write(text)
+                fp.flush()
+                os.fsync(fp.fileno())           # elektrik kesintisinde yarım/boş profil kalmasın
             # Windows: hedef dosya o an başka süreçte açıksa (virüs tarayıcısı, yedekleme) os.replace "Erişim engellendi" verir;
             # birkaç kez yeniden denenir (canlı: 10 sn'lik kayıt hatası oturumu düşürmüştü)
             for k in range(6):

@@ -237,6 +237,7 @@ class H(BaseHTTPRequestHandler):
         path = self.path.split('#')[0]
         base = path.split('?')[0]
         port = self.server.server_address[1]
+        status = 200
         if base in ROUTES:
             ctype, out = ROUTES[base](self)
         elif port == 8090 and base == '/':
@@ -245,12 +246,12 @@ class H(BaseHTTPRequestHandler):
             ctype, out = 'text/plain', SESSION
         elif cdn_file(base):
             ctype, out = cdn_file(base)
-        else:
-            ctype, out = 'text/plain', ''
+        else:                    # istemcinin bilinen uçları yukarıda; bilinmeyen istek boş 200 yerine 404 (http.log'da görünür)
+            ctype, out, status = 'text/plain', '', 404
             log('unknown.log', '%s :%d %s body=%r' % (self.command, port, self.path, body[:500]))
         out = out.encode('utf8') if isinstance(out, str) else out
-        log('http.log', '%s :%d %s cookie=%s body=%r -> %d bytes %s' % (self.command, port, self.path, self.headers.get('Cookie'), body[:300], len(out), out[:160]))
-        self.send_response(200)
+        log('http.log', '%s :%d %s cookie=%s body=%r -> %d, %d bytes %s' % (self.command, port, self.path, self.headers.get('Cookie'), body[:300], status, len(out), out[:160]))
+        self.send_response(status)
         self.send_header('Content-Type', ctype)
         self.send_header('X-Custom-Header', 'DarkOrbitUnity')   # GetPost bu başlık olmadan girişi reddediyor
         self.send_header('Content-Length', str(len(out)))
@@ -264,9 +265,15 @@ class H(BaseHTTPRequestHandler):
         pass
 
 
+class Sunucu(ThreadingHTTPServer):
+    def handle_error(self, request, client_address):
+        """İstemcinin kopardığı bağlantıda http.server'ın yığın dökümü (stderr) yerine errors.log'a tek satır."""
+        log('errors.log', 'http %s: %r' % (client_address[0], sys.exc_info()[1]))
+
+
 def serve_http(port):
     try:
-        ThreadingHTTPServer(('127.0.0.1', port), H).serve_forever()
+        Sunucu(('127.0.0.1', port), H).serve_forever()
     except OSError as e:
         log('errors.log', 'http %d: %s' % (port, e))
 

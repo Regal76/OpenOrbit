@@ -10,7 +10,8 @@ UIWindowUpdateRequest maximized) bulunur; mağazayı açmak zararsız olduğu i�
 Mağazayı açan komut ExpeditionBuyTicketCommand {result False}: istemcinin işleyicisi mağazayı Extras'ta açıyor ("extras,
 resource_key_access-dse"; Echoes biletine uridyum yetmeyince de bu). Mağazanın ürün listesinde ödemeli ürünler uridyumla (magaza.py).
 Sunucu MileageMarketBuyCommand, VIPMerchantExchangeBuyCommand, ReturneeLoginBundleBuyCommand, UridiumBankClaimCommand göndermediği için
-(istemci bunlarla da ödeme isteği açıyor) 443'e gelen her bağlantı oyuncunun bir ödeme düğmesine basmasıdır.
+(istemci bunlarla da ödeme isteği açıyor) 443'e gelen her bağlantı oyuncunun bir ödeme düğmesine basmasıdır; kupon kodu ve resim
+yükleme de 443'e gidiyor, onlar son açılan pencereden ayrılır (CEVRIMDISI).
 """
 import socket, threading, time
 
@@ -33,6 +34,13 @@ URUNLER = {
     'returnee_login': ('Returnee Bundles', []),
 }
 GENEL = 'Payment pages are offline: packages are sold in the Shop > Extras for uridium.'
+# 443'e giden ödeme dışı istekler (TLS içindeki yol görünmez): kupon kodu (UIVouchersSystem -> JavascriptHelper.PostVoucherUrl),
+# avatar ve klan logosu yükleme (UploadHelper -> /unityApi/upload.php). Son açılan pencere bunlardansa mağaza açılmaz, bu metin yazılır
+CEVRIMDISI = {
+    'vouchers': 'Voucher codes cannot be redeemed offline.',
+    'pilotSheet': 'Image upload is not available offline.',
+    'clan': 'Image upload is not available offline.',
+}
 
 
 def open_shop():
@@ -83,6 +91,12 @@ class Pencereler:
         now = time.time() if now is None else now
         rows = [(t, i) for i, t in self.son.items() if i in URUNLER and now - t <= PENCERE_SN]
         return max(rows)[1] if rows else None
+
+    def offline(self, now=None):
+        """Son açılan pencere ödeme dışı bir HTTPS isteğinin penceresiyse (CEVRIMDISI) onun metni, yoksa None."""
+        now = time.time() if now is None else now
+        rows = [(t, i) for i, t in self.son.items() if now - t <= PENCERE_SN]
+        return CEVRIMDISI.get(max(rows)[1]) if rows else None
 
 
 def redirect(magaza, item):

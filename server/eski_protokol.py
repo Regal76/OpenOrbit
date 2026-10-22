@@ -34,6 +34,11 @@ def legacy(text):
         keys = flashres()
         if keys is not None and text[8:] not in keys:
             text = '0|A|CSTM|%s|-1' % text[8:]
+    elif text.startswith(('0|LM|ST|CRE|', '0|LM|ST|URI|')):
+        p = text.split('|')                # istemci kazancı SafeInt okuyor (toplamı SafeLong): 2^31-1'i aşan kazanç eksi görünürdü
+        if int(p[4]) > 2 ** 31 - 1:
+            p[4] = str(2 ** 31 - 1)
+            text = '|'.join(p)
     return (MODULE, {'message': text})
 
 

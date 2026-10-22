@@ -50,7 +50,7 @@ def window(now=None):
         return True, int((b - mins) * 60)
     if mins < a:
         return False, int((a - mins) * 60)
-    nxt = slot_for(now + 86400)
+    nxt = slot_for((t.replace(hour=12, minute=0, second=0, microsecond=0) + datetime.timedelta(days=1)).timestamp())    # yarın
     return False, int((1440 - mins + (_hm(nxt['bas']) if nxt else 1440)) * 60)
 
 

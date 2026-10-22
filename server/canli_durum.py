@@ -64,7 +64,14 @@ def write(path, data):
     tmp = path + '.tmp'
     with open(tmp, 'w', encoding='utf8') as fh:
         json.dump(data, fh, ensure_ascii=False)
-    os.replace(tmp, path)
+    for k in range(5):                            # panel dosyayı okurken Windows yerine koymayı reddeder
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if k == 4:
+                raise
+            time.sleep(0.05)
 
 
 def start(game, folder, log=print):

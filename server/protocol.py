@@ -232,6 +232,8 @@ class EncodeError(Exception):
 
 
 _INV = {}
+uyari = None        # kodlama uyarısı (sınıra kırpılan int alanı): oyun sunucusu günlük işlevini bağlar
+LIST_MAX = {'byte': 255, 'short': 32767, 'ushort': 65535, 'int': M32}
 
 
 def _inverse_table(t, x):
@@ -248,9 +250,16 @@ def _inverse_table(t, x):
     return tab
 
 
-def _enc_prim(out, t, x, v):
+def _enc_prim(out, t, x, v, name=None):
     if t in ('int', 'uint'):
-        v = int(v) & M32
+        v = int(v)
+        hi = (1 << 31) - 1 if t == 'int' else M32
+        if not -(1 << 31) <= v <= hi:      # sessizce sarılıp eksiye dönerdi (kazanç, puan): sınıra kırpılır
+            c = min(max(v, -(1 << 31)), hi)
+            if uyari:
+                uyari('   %s alanı 32 bite sığmadı: %d -> %d' % (name or t, v, c))
+            v = c
+        v &= M32
         if x and x != 'v':
             # read(): değer = (ham >>> a) | (ham << b)  ->  ham = değeri a bit sola döndür
             if not (x[0] == 'or' and x[1][0] == 'shr' and x[2][0] == 'shl'):
@@ -304,13 +313,15 @@ def _enc_steps(out, steps, f, ctx):
         if t == 'list':
             v = v or []
             n = len(v)
+            if n > LIST_MAX[s['n']]:
+                raise EncodeError('%s listesi %d öğe; sayacı (%s) en çok %d' % (name, n, s['n'], LIST_MAX[s['n']]))
             out += {'byte': lambda: struct.pack('>B', n), 'short': lambda: struct.pack('>h', n),
                     'ushort': lambda: struct.pack('>H', n), 'int': lambda: struct.pack('>I', n)}[s['n']]()
             e = s.get('e') or {'t': 'module'}
             for item in v:
-                _enc_prim(out, e['t'], e.get('x'), item)
+                _enc_prim(out, e['t'], e.get('x'), item, name)
         else:
-            _enc_prim(out, t, s.get('x'), v)
+            _enc_prim(out, t, s.get('x'), v, name)
 
 
 def _default(s):

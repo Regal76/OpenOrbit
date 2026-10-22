@@ -44,6 +44,7 @@ SABLONLAR = os.path.join(YOL.SAVE, 'ayar_sablonlari.json')
 TARAYICI_PROFILI = os.path.join(os.environ.get('LOCALAPPDATA') or YOL.SAVE, 'DarkOrbitPanel', 'tarayici')
 GUNLUKLER = ('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log', 'panel.log', 'errors.log', 'unknown.log')
 NABIZ_SN = 180                      # tarayıcı penceresi izlenemiyorsa: bu kadar istek gelmezse pencere kapandı sayılır
+DEVIR_SN = 10                       # tarayıcı süreci bundan önce çıkarsa pencereyi açık bir sürece devretmiştir (watch_window)
 GUNCELLEME_SN = 6 * 3600            # GitHub'da yeni sürüm denetimi aralığı (başarısızsa bir saat sonra yeniden)
 ETKINLIK_ACIKLAMA = {
     'yukseltme_saati': "Assembly'de ekipman yükseltmesi %25 daha az uridyum.",
@@ -526,8 +527,15 @@ def open_window(url):
 def watch_window(proc):
     STATE['pencere'] = proc
     STATE['pencere_izleniyor'] = True
+    t0 = time.time()
     proc.wait()
     STATE['pencere_izleniyor'] = False
+    if time.time() - t0 < DEVIR_SN:
+        # aynı profil klasörüyle açık bir tarayıcı süreci varsa yeni süreç pencereyi ona devredip hemen çıkar (18, 20 ve 22 Ekim:
+        # panel açılır açılmaz "kapandı" sayılıp kapanıyordu): pencere açık, kapanışı sayfanın nabzından anlaşılır (ticker)
+        STATE['nabiz'] = time.time()
+        log('panel penceresi açık bir tarayıcı sürecine devredildi; nabızla izleniyor')
+        return
     log('panel penceresi kapandı')
     if CFG.get('pencere_kapaninca') == 'kapat':
         YON.stop_client()
