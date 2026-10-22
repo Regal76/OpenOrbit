@@ -404,7 +404,7 @@ class MmKosu:
                 x = min(max(int(cx + math.cos(a) * r), 500), w.map_w - 500)
                 y = min(max(int(cy + math.sin(a) * r), 500), w.map_h - 500)
                 n = w.spawn_npc_at(tip, x, y, prep=lambda n: PO.scale_npc(n, hp=self.hp_f, dmg=self.dmg_f))
-                n.gate, n.engaged = True, True
+                n.gate, n.engaged, n.hunt = True, True, True
                 n.next_think = 0
                 self.wave.add(n.id)
 

@@ -384,7 +384,7 @@ class Kosu(KAPI.Kosu):
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı
             for x, y in KAPI.spread(cx, cy, count, w.map_w, w.map_h):
                 n = w.spawn_npc_at(npc_type(self.key, idx, i), x, y)
-                n.gate, n.engaged = True, True
+                n.gate, n.engaged, n.hunt = True, True, True
                 n.next_think = time.time()
                 self.npcs.add(n.id)
                 if a.get('kalici'):

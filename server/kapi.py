@@ -780,7 +780,7 @@ class Kosu:
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyan patron bir tane)
             for x, y in spread(cx, cy, count, w.map_w, w.map_h):
                 n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, model=model)
-                n.gate, n.engaged = True, True
+                n.gate, n.engaged, n.hunt = True, True, True
                 n.next_think = time.time()
                 self.npcs.add(n.id)
                 if a.get('kalici'):

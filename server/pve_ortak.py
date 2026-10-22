@@ -135,7 +135,7 @@ class Kosu:
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyucu bir tane)
             for x, y in KAPI.spread(cx, cy, count, w.map_w, w.map_h):
                 n = w.spawn_npc_at(tip, x, y, prep=lambda n: self.m.scale(n, self.i, self.wave()))   # güçlendirilip bildirilir
-                n.gate, n.engaged = True, True
+                n.gate, n.engaged, n.hunt = True, True, True
                 n.next_think = now
                 self.npcs.add(n.id)
                 if keep:

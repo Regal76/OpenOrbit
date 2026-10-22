@@ -64,7 +64,7 @@ class Low:
         for i in range(count):
             b, d = random.uniform(0, 2 * math.pi), random.uniform(0, 250 + 40 * count)
             n = w.spawn_npc_at(tip, cx + math.cos(b) * d, cy + math.sin(b) * d)
-            n.gate, n.engaged, n.next_think = True, True, time.time()
+            n.gate, n.engaged, n.hunt, n.next_think = True, True, True, time.time()
             self.npcs.add(n.id)
             out.append(n)
         return out

@@ -158,6 +158,7 @@ class NPC:
         self.hp, self.shield = self.d['hp'], self.d['kalkan']
         self.engaged = False
         self.gate = False                   # Galaksi Kapısı uzaylısı: yeniden doğmaz
+        self.hunt = False                   # dalga uzaylısı (kapılar, modlar): oyuncunun peşini bırakmaz, kaçıp dolaşmaya gitmez
         self.flee = False                   # oyuncu güvenli bölgeye kaçtı: uzaklaş
         self.invulnerable = None            # işlev: True dönerken hasar almaz (Zeta Devourer: diğer uzaylılar yaşarken; kapi.py)
         self.next_think = time.time() + random.uniform(1, 6)
@@ -2718,12 +2719,13 @@ class World:
             best = best or (x, y)
         return best
 
-    def disengage(self, n, now):
+    def disengage(self, n, now, flee=True):
+        """Peşini bırak. flee: bir sonraki düşüncede güvenli bölgeden ve oyuncudan uzaklaşır (dalga uzaylısı kaçmaz, yerinde bekler)."""
         if n.engaged and not self.hero_dead:
             self.send(self.combat_state(COMBAT_ESCAPED, now))        # "You escaped the attack."
         n.engaged = False
-        n.flee = True
-        n.next_think = now                  # bir sonraki düşüncede güvenli bölgeden uzaklaşır
+        n.flee = flee
+        n.next_think = now
 
     def combat_state(self, state, now):
         """Savaş durumu satırı (Ö1): CombatStateCommand {combatState}; istemci (AttackUpdateCombatState) günlüğe yazar: 0 "Out of
@@ -2745,6 +2747,12 @@ class World:
         dist = math.hypot(hx - nx, hy - ny)
         hero_safe = (self.in_peace(hx, hy) or self.hero_dead or self.jumping or self.abilities.cloaked(now)
                      or self.items.cloaked())                      # gizlenme CPU'su
+        # dalga uzaylısı (kapı, mod): uzaklık ve saldırganlık ayarından bağımsız hep oyuncunun peşinde. Önceden 2.500 birimden uzak
+        # kalınca ya da oyuncu ölüp dirilince/gizlenince peşini bırakıp oyuncudan 3.000+ birim uzağa dolaşmaya gidiyor, kapıda kalan
+        # uzaylılar bulunamıyordu (kullanıcı bildirimi, 2026-10-22: Delta Gate dalga III)
+        hunt = n.hunt and not getattr(n, 'pasif', False)
+        if hunt and not n.engaged and not hero_safe and now >= n.next_think:
+            n.engaged = True                    # oyuncu yine ulaşılabilir (dirildi, gizlenme bitti, EMP geçti …)
         if (self.aggressive(n) and not getattr(n, 'pasif', False) and not hero_safe
                 and dist < n.d.get('fark_mesafe', SAVAS['npc_fark_mesafe']) * AY.carpan('npc_fark')
                 and not self.in_peace(nx, ny)
@@ -2752,25 +2760,30 @@ class World:
             n.engaged = True
             n.next_think = min(n.next_think, now)      # hemen kovalamaya başla (--yakin-npc ile dondurulmuş olsa da)
             self.log('   %s saldırıyor (mesafe %d)' % (n.d['ad'], dist))
-        if n.engaged and (hero_safe or dist > 2500):
-            self.disengage(n, now)              # oyuncu güvenli bölgeye kaçtı: peşini bırak ve uzaklaş (portalın önünde beklemez)
+        if n.engaged and (hero_safe or (dist > 2500 and not hunt)):
+            self.disengage(n, now, flee=not hunt)   # oyuncu güvenli bölgeye kaçtı: peşini bırak ve uzaklaş (portalın önünde beklemez)
         if n.etki.frozen(now):
             return                              # donuk: kıpırdamaz, ateş etmez (durum.py)
         if n.engaged:
             if dist > 450 and now >= n.next_think and n.speed() > 0:
                 a = math.atan2(ny - hy, nx - hx) + n.spread
-                tx, ty = hx + math.cos(a) * n.keep, hy + math.sin(a) * n.keep
-                if self.near_zone(tx, ty, 0):
+                # harita içinde: oyuncu kenarda ya da sınırın dışındayken (radyasyon) uzaylı haritadan çıkmasın
+                tx = min(max(hx + math.cos(a) * n.keep, 300), self.map_w - 300)
+                ty = min(max(hy + math.sin(a) * n.keep, 300), self.map_h - 300)
+                if not hunt and self.near_zone(tx, ty, 0):
                     self.disengage(n, now)          # güvenli bölgeye girmez
                     return
-                ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
-                self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
+                if not (hunt and self.in_peace(tx, ty)):     # dalga uzaylısı güvenli bölgenin kenarında bekler
+                    ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
+                    self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
                 n.next_think = now + 1.0
             if dist <= self.npc_range(n) and now >= n.next_shot and n.d['hasar'] > 0 and now >= self.invuln_until:
                 if n.next_shot == 0.0:
                     self.send([legacy('0|n|LSH|%d|%d' % (self.hid, n.id))])
                 self.npc_shoot(n, now)
             return
+        if hunt:
+            return                              # dalga uzaylısı dolaşmaz: oyuncu yine ulaşılabilir olunca peşine düşer
         if now >= n.next_think and n.speed() <= 0:
             n.next_think = now + 3600          # hareketsiz (Cubikon, Mindfire Behemoth)
         elif now >= n.next_think:
