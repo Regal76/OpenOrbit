@@ -139,11 +139,14 @@ class Ebl:
         with self.p.lock:
             r['dalga'] += 1
             done = r['dalga']
-            if done > self.st.get('en_iyi', 0):
+            record = done > self.st.get('en_iyi', 0)
+            if record:
                 self.st['en_iyi'] = done
                 self.st['en_iyi_an'] = int(time.time() * 1000)
             self.p.dirty = True
         self.p.ach('gate_wave', tur='ETERNAL_GATE', dalga=done)       # başarım: "Eternal Gate'te N. dalgaya ulaş"
+        if record:
+            self.p.ach('rekor_ebl')                  # şampiyon başarımı: sıralamada tek oyuncu, kişisel rekor birinci
         w = (done - 1) % D['tur'] + 1
         pts = D['kontrol'].get(str(w))
         self.world.send([('EternalBlacklightWaveInfoCommand', self.wave_info())])

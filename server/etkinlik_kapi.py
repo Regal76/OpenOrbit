@@ -261,7 +261,10 @@ class EtkinlikKapilari:
         for fn in self.finish_hooks:
             msgs += fn(key)
         self.p.ach('gate', tur=g.get('kapi_turu') or '%s_GATE' % key.upper())    # istemcinin GalaxyGateType'ı (Birthday: BIRTHDAY)
-        self.log('   %s tamamlandı: %s%s' % (g['ad'], fmt_time(secs), ' (yeni rekor)' if G.get('en_iyi_sn') == secs and best != secs else ''))
+        record = G.get('en_iyi_sn') == secs and best != secs
+        if record:
+            self.p.ach('rekor_plutus')               # şampiyon başarımı (Gauntlet of Plutus; süreli tek kapı): kişisel rekor
+        self.log('   %s tamamlandı: %s%s' % (g['ad'], fmt_time(secs), ' (yeni rekor)' if record else ''))
         return msgs, dict(yeni={'parcalar': []}, kronos=None, sure=secs)
 
     # ------------------------------------------------------------ etkinlik puanı (Gauntlet of Plutus)

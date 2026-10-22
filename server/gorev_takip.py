@@ -1,9 +1,11 @@
-"""Görev koşullarının oyun olaylarıyla ilerlemesi: Season Pass, Battle Pass ve etkinlik görevleri için (yol haritası Aşama 7).
+"""Görev koşullarının oyun olaylarıyla ilerlemesi: Season Pass, Battle Pass, etkinlik görevleri ve ana görevler için tek ölçüm noktası
+(yol haritası Aşama 7, E6; ana görevler konumu ve kendine özgü türleri gorev.Gorevler.matches'te ekler).
 
 Koşul türleri istemcinin ConditionType enum'u (derlenmiş koddan); eşleşmelerin anlamı istemcinin koşul sınıflarının ParseMatches'inden:
-  1 TIMER (ms; dakika olayı 60.000)            6 KILL_NPC ([npcId]; boş liste istemcide çöker)    7 DAMAGE (her hasar)
-  9 TAKE_DAMAGE (alınan hasar: damage_taken)
-  12 DISTANCE                                 20/22 AMMUNITION ([tür, derece]: 1 lazer, 2 roket, 3 diğer; 0 = hepsi)
+  1 TIMER (ms; dakika olayı 60.000)            3 ENDURANCE (haritada kalma, ms; dakika olayı)   6 KILL_NPC ([npcId]; boş liste
+  istemcide çöker)                            7 DAMAGE (her hasar)                             9 TAKE_DAMAGE (alınan hasar: damage_taken)
+  12 DISTANCE, 13 TRAVEL (mesafe)             20/22 AMMUNITION ([tür, derece]: 1 lazer, 2 roket, 3 diğer; 0 = hepsi)
+  35 DIE (ölüm)  42 JUMP (portal)             56 FINISH_QUEST ([görev]; biten görev)
   29 DAMAGE_NPCS ([sayı, npcId …, 0])          30 DAMAGE_PLAYERS (bot oyuncularla)    34 VISIT_MAP
   51 CARGO (kargo kutusu)                     52 SELL_ORE                            53 LEVEL (seviye)
   55 COLLECT_BONUS_BOX                        67 COLLECT_LOOT ([lootId …])           80 FINISH_GALAXY_GATES ([sayı, ad …, harita …])
@@ -11,8 +13,9 @@ Koşul türleri istemcinin ConditionType enum'u (derlenmiş koddan); eşleşmele
   95 COMPLETE_SEASON_PASS_QUESTS ([2 sezonluk | 5 günlük | 6 haftalık])   96 LOGIN   100 RECHARGE_AMOUNT (tek oyunculu: Uridium Bank)
 Alt koşul 77 ON_MAP: yalnız listedeki haritalarda. 97 DURING_EVENT: yalnız adı geçen etkinlik açıkken (takvimdeki etkinlik türü,
 ör. NpcEvent, ya da EVENT_NAMES'teki takvim anahtarı; Season Pass'in "etkinlikte 15 Battle Pass görevi" görevleri).
-Olaylar (oturum toplar): başarım olayları (kill, damage, distance, minute, gate, assembly_collect, level, ammo, spend), görev olayları
-(cargo, loot, sell, bonus, map) ve iç olaylar (login, recharge, sp_quest, objective).
+Olaylar (oturum toplar): başarım olayları (kill, damage, distance, minute, gate, assembly_collect, level, ammo, spend, jump, death,
+quest), görev olayları (cargo, loot, sell, bonus, map) ve iç olaylar (login, recharge, sp_quest, objective). Sık gelen olayların
+(hasar, mesafe, cephane) ara değeri saniyede bir gönderilir.
 """
 import copy, time
 
@@ -23,6 +26,7 @@ ON_MAP = 77
 DURING_EVENT = 97
 EVENT_NAMES = {'HitacAssault2016': 'hitac'}       # alt koşul 97'nin adı -> takvim anahtarı (PVPSummerEvent: PvP, takvimde yok)
 THROTTLE_SN = 1.0                 # aynı koşulun ara değeri en çok saniyede bir (mesafe, cephane, hasar sık gelir; kayıt: saniyede bir)
+FREQUENT = ('damage', 'damage_taken', 'damage_player', 'distance', 'ammo')
 LAST_SENT = {}                    # koşul -> son gönderim
 SP_CATEGORY = {3: '5', 6: '6', 9: '2'}           # QuestType -> COMPLETE_SEASON_PASS_QUESTS eşleşmesi (istemci: DAILIES, WEEKLIES, SEASON)
 
@@ -52,13 +56,15 @@ def measure(c, kind, kw, map_id=None):
     t, m = c['type'], [str(x) for x in c['matches']]
     if t == 1 and kind in ('minute', 'login'):
         return 60000 if kind == 'minute' else 1                     # giriş: "oyuna gir" görevleri (TIMER 1 ms; kayıt: girişte biter)
+    if t == 3 and kind == 'minute':
+        return 60000
     if t == 6 and kind == 'kill' and kw.get('avatar', 'NPC') == 'NPC':
         return 1 if not m or str(kw.get('npc')) in m else 0
     if t == 7 and kind == 'damage':
         return int(kw.get('adet', 0))
     if t == 9 and kind == 'damage_taken':
         return int(kw.get('adet', 0))
-    if t == 12 and kind == 'distance':
+    if t in (12, 13) and kind == 'distance':
         return int(kw.get('adet', 0))
     if t in (20, 22) and kind == 'ammo':
         return int(kw.get('adet', 0)) if not m or m[0] in ('0', ammo_kind(kw.get('loot', ''))) else 0
@@ -69,6 +75,10 @@ def measure(c, kind, kw, map_id=None):
         return int(kw.get('adet', 0))
     if t == 34 and kind == 'map':
         return 1 if not m or str(kw.get('map')) in m else 0
+    if t == 35 and kind == 'death':
+        return 1
+    if t == 42 and kind == 'jump':
+        return 1
     if t == 51 and kind == 'cargo':
         return 1
     if t == 52 and kind == 'sell':
@@ -77,6 +87,8 @@ def measure(c, kind, kw, map_id=None):
         return ('set', int(kw.get('deger', 0)))
     if t == 55 and kind == 'bonus':
         return 1
+    if t == 56 and kind == 'quest':
+        return 1 if not m or str(kw.get('id')) in m else 0
     if t == 67 and kind == 'loot':
         return int(kw.get('amount', 0)) if not m or kw.get('loot') in m else 0
     if t == 80 and kind == 'gate':
@@ -108,14 +120,15 @@ def cond_update(cid, value, active, completed):
         'QuestConditionStateModule', currentValue=value, active=active, completed=completed)})
 
 
-def advance(p, root, vals, kind, kw, map_id=None, notify=True):
-    """Bir görevin koşullarını olayla ilerletir (değerler vals'ta, kilit altında) -> (mesajlar, tamamlandı mı)."""
+def advance(p, root, vals, kind, kw, map_id=None, notify=True, fn=measure):
+    """Bir görevin koşullarını olayla ilerletir (değerler vals'ta, kilit altında; fn: ölçüm, ana görevlerde Gorevler.matches)
+    -> (mesajlar, tamamlandı mı)."""
     before = evaluate(root, vals)[0]
     changed = []
     for c in conditions(root):
         if not before[c['id']][0]:
             continue
-        inc = measure(c, kind, kw, map_id)
+        inc = fn(c, kind, kw, map_id)
         if not inc or not during_event(c):
             continue
         key = str(c['id'])
@@ -137,7 +150,7 @@ def advance(p, root, vals, kind, kw, map_id=None, notify=True):
         for c in conditions(root):
             v = min(vals.get(str(c['id']), 0), c['targetValue'])
             moved = after[c['id']] != before[c['id']]
-            if c['id'] in ids and (moved or now - LAST_SENT.get(c['id'], 0) >= THROTTLE_SN):
+            if c['id'] in ids and (moved or kind not in FREQUENT or now - LAST_SENT.get(c['id'], 0) >= THROTTLE_SN):
                 LAST_SENT[c['id']] = now
                 msgs.append(cond_update(c['id'], v, True, False))
             if moved:

@@ -319,6 +319,7 @@ class UnvanAvi:
                 msgs += self.m.prize(loot, n)
             if r.get('unvan'):
                 msgs += self.grant_title(r['unvan'])
+            msgs.append(SR.confirmation(rank, SR.DEFAULT_REWARD, r))           # RewardType'ta Title Frenzy yok
             self.log('   Pursuit of Prestige bitti: %d. sıra (%.1f dk), ödül %s' % (rank, self.st['puan'], r['esyalar']))
         with self.p.lock:
             self.p.d['unvan_avi'] = {}

@@ -236,8 +236,15 @@ def hof_pages(p, f, now=None):
     return [('HallOfFamePages', dict(pageType='', myList=[row], dataList=[row], type=t, pageSize=50, currentPage=1, totalPage=1))]
 
 
+def _runs(p, n):
+    return sum(sorted((p.d.get('mimesis') or {}).get('seferler', []), reverse=True)[:n])
+
+
 HOF_EVENTS = {2: lambda p: (p.d.get('labirent') or {}).get('avlar', 0),                   # FrozenLabyrinth: Synk avları
-              3: lambda p: ((p.d.get('pve') or {}).get('ebl') or {}).get('en_iyi', 0)}      # EternalGate: Eternal Black Light dalgası
+              3: lambda p: ((p.d.get('pve') or {}).get('ebl') or {}).get('en_iyi', 0),     # EternalGate: Eternal Black Light dalgası
+              4: lambda p: _runs(p, 10),                                                   # MimesisMutiny: en iyi 10 sefer (mimesis.total)
+              5: lambda p: _runs(p, 1),                                                    # PayloadEscort: en iyi sefer
+              6: lambda p: min(((p.d.get('dunya_patronu') or {}).get('etkinlik') or {}).get('hasar', 0), 2 ** 31 - 1)}  # PublicWorldBoss: hasar
 
 
 def _ebl_time(p):
@@ -250,7 +257,8 @@ HOF_TIMES = {3: _ebl_time}          # Time sütunu: en ileri dalganın zamanı (
 
 def hof_events(p, f):
     """HallOfFameDataListRequest {requested: istemcinin HallOfFameType'ı}: etkinlik sıralamaları. Tek oyunculu: Frozen Labyrinth
-    (Synk avları) ve Eternal Gate (Eternal Black Light'ın en ileri dalgası) listelerinde yalnız oyuncu; diğerleri boş."""
+    (Synk avları), Eternal Gate (Eternal Black Light'ın en ileri dalgası), Mimesis Mutiny (en iyi 10 seferin toplamı), Payload Escort
+    (en iyi sefer) ve World Boss (etkinlik boyu hasar) listelerinde yalnız oyuncu; Galactic Strife boş."""
     t = int(f.get('requested') or 0)
     v = HOF_EVENTS.get(t, lambda p: 0)(p)
     rows = [dict(_row(p, 1, v, v), time=HOF_TIMES.get(t, lambda p: '')(p))] if v else []

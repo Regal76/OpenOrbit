@@ -15,7 +15,10 @@ canının 0,5-2 katı; 20.'de unvan), son vuruş (777 U, 777 Infiltrator Fragmen
 kaldırılan can payından sanal sıra; 1. ve Fortress öldüyse Dread Overlord, ilk 10 Dread Warlord). Canlar oyuncunun gücüyle ölçeklenir
 (donanımın UCB-100 x6 sürekli hasarı / 60.000, 0,25-2,5). Etkinlik bitince Infiltrator Fragment'ler onura (1:1).
 İstemci: PublicWorldBossRequest {action 0} -> PublicWorldBossInfoCommand (pencere 0x82'yi açar), 0,5 sn sonra Raid ve Rank komutları.
-Profilde: dunya_patronu {donem, toplam, kademe, h_ref, gun, alinan {kademe: adet}, girdi}.
+Rankings'in Events sayfası: RankingsEventsInfoRequest {rankType 0 bugün, 1 dün, 2 etkinlik} -> WorldBossRankingInfoCommand (yalnız
+oyuncunun satırı: puan Fortress'e verilen hasar, sıra o dönemin en iyi sanal savaş sırası, timeTaken saniye: istemci FormatTime(sn)).
+Profilde: dunya_patronu {donem, toplam, kademe, h_ref, gun, alinan {kademe: adet}, girdi, gunler {tarih: {hasar, sn, sira}} (bugün ve
+dün), etkinlik {hasar, sn, sira}, son (son vuruş anı)}.
 """
 import datetime, json, math, os, random, threading, time
 
@@ -100,7 +103,7 @@ def title_mod(key):
 
 
 class DunyaPatronu:
-    REQUESTS = ('PublicWorldBossRequest',)
+    REQUESTS = ('PublicWorldBossRequest', 'RankingsEventsInfoRequest')
 
     def __init__(self, profil, magaza, ekapilar, log=print):
         self.p, self.m, self.k, self.log = profil, magaza, ekapilar, log
@@ -158,9 +161,38 @@ class DunyaPatronu:
             mod('PublicWorldBossRankReward', rewardTitleModule=title_mod((r['unvanlar'] or [None])[0]), to=r['e'], rewards=rewards(r['oduller']),
                 **{'from': r['den']}) for r in D['siralama']]))
 
+    def ranking_cmd(self, kind):
+        st = self.st
+        day = (datetime.date.today() - datetime.timedelta(days=kind)).isoformat()
+        row = (st.get('etkinlik') if kind == 2 else st.get('gunler', {}).get(day)) or {}
+        me = mod('WorldBossRankingInfoModule', username=self.p.d['pilot'].get('userName', ''), score=min(int(row['hasar']), 2 ** 31 - 1),
+                 rank=int(row.get('sira') or D['sanal_sira'][-1][1]), timeTaken=int(row.get('sn', 0))) if row.get('hasar') else None
+        return ('WorldBossRankingInfoCommand', dict(isActive=active(), titleStr='', myRank=me, prevRank=None, nextRank=None,
+                                                    rankingInfoList=[me] if me else []))
+
+    def tally(self, dmg=0, rank=None):
+        """Rankings ve Hall of Fame için: bugünün ve etkinliğin hasarı, savaşta geçen süre (vuruşlar arası 60 sn'den kısaysa), en iyi sıra."""
+        now = time.time()
+        st = self.st
+        today = datetime.date.today()
+        with self.p.lock:
+            days = st.setdefault('gunler', {})
+            for k in [k for k in days if k < (today - datetime.timedelta(days=1)).isoformat()]:
+                del days[k]
+            for row in (days.setdefault(today.isoformat(), {}), st.setdefault('etkinlik', {})):
+                row['hasar'] = row.get('hasar', 0) + dmg
+                if dmg and now - st.get('son', 0) < 60:
+                    row['sn'] = row.get('sn', 0) + now - st['son']
+                if rank:
+                    row['sira'] = min(row.get('sira') or rank, rank)
+            if dmg:
+                st['son'] = now
+            self.p.dirty = True
+
     def handle(self, name, f):
-        if name != 'PublicWorldBossRequest':
-            return []
+        if name == 'RankingsEventsInfoRequest':
+            kind = int(f.get('rankType') or 0)
+            return [self.ranking_cmd(kind)] if kind in (0, 1, 2) else []           # 3: Title Frenzy (unvan_avi.py)
         later = [self.raid_cmd(), self.rank_cmd()]
         threading.Timer(0.5, lambda: self.send(later)).start()      # pencere kurulduktan sonra (istemci yoksa sessizce düşürür)
         return [self.info_cmd()]
@@ -222,6 +254,7 @@ class DunyaPatronu:
         with self.p.lock:
             st['toplam'] += dmg
             self.p.dirty = True
+        self.tally(dmg)
         while st['kademe'] < len(D['kademe']) and st['toplam'] >= self.tier_need(st['kademe'] + 1):
             k = st['kademe'] + 1
             with self.p.lock:
@@ -593,9 +626,11 @@ class WbKosu:
         g = self.m.p.d['gemi']
         if g.get('hitPoints', 0) >= g.get('hitMax', 0):
             return
-        self.m.p.set_hull(hp=min(g['hitMax'], g.get('hitPoints', 0) + D['sifa_feneri']['sn_can']))
+        hp0 = g.get('hitPoints', 0)
+        self.m.p.set_hull(hp=min(g['hitMax'], hp0 + D['sifa_feneri']['sn_can']))
         w.send([('HitpointInfoCommand', dict(hitpoints=int(g['hitPoints']), hitpointsMax=g.get('hitMax', 0),
                                              nanoHull=int(g.get('nanoHull', 0)), nanoHullMax=g.get('maxNanoHull', 0)))])
+        self.m.p.ach('wb_heal', adet=g['hitPoints'] - hp0)               # World Boss başarımı (recoverhp)
 
     def move_fortress(self, now):
         f = self.fortress
@@ -701,6 +736,7 @@ class WbKosu:
         if rank is None:
             return []
         row = next((x for x in D['siralama'] if x['den'] <= rank <= x['e']), None)
+        self.m.tally(rank=rank)
         msgs = []
         if row:
             for loot, n in row['oduller']:

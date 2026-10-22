@@ -12,6 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 _P = os.path.join(HERE, 'data', 'sira_odulleri.json')
 TABLES = {int(k): v for k, v in json.load(open(_P, encoding='utf8'))['tablolar'].items()} if os.path.exists(_P) else {}
 PLUTUS, EBL, ASTRAL = 2, 7, 9
+DEFAULT_REWARD, PAYLOAD_ESCORT_REWARD = 3, 6                 # EventRewardConfirmationCommand.RewardType
 
 
 def mod(name, **f):
@@ -37,7 +38,17 @@ def reward(f):
     r = next((r for r in t['araliklar'] if r['den'] <= n <= r['e']), None)
     if not r:
         return []
-    items = [mod('RewardModule', lootId=l, amount=a) for l, a in r['esyalar']]
+    return [('RankRewardCommand', dict(rankType=int(f['rankType']), rewardContentModuleList=items(r), rewardRange=range_mod(r)))]
+
+
+def items(r):
+    out = [mod('RewardModule', lootId=l, amount=a) for l, a in r['esyalar']]
     if r.get('unvan'):
-        items.append(mod('RewardTitleModule', titleKey=r['unvan']))
-    return [('RankRewardCommand', dict(rankType=int(f['rankType']), rewardContentModuleList=items, rewardRange=range_mod(r)))]
+        out.append(mod('RewardTitleModule', titleKey=r['unvan']))
+    return out
+
+
+def confirmation(rank, reward_type, r):
+    """Etkinlik sonu tebrik penceresi: EventRewardConfirmationCommand {ranking, rewardType (komutun kendi RewardType'ı: 3 DEFAULT,
+    6 PAYLOAD_ESCORT, ...), reward}; istemci EventRewardData'yla pencereyi açar."""
+    return ('EventRewardConfirmationCommand', dict(ranking=int(rank), rewardType=reward_type, reward=items(r)))

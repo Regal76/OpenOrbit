@@ -9,8 +9,10 @@ sıradaki seviye, score: sayaç; yalnız 0'dan büyükler), nextAchievements: bu
 gönderir (0: değişiklik yok sayılır). Gemi üstündeki unvan "0|n|t|<kullanıcı>|<unvan kimliği>|<unvan anahtarı>" (kayıt).
 Olaylar profil.ach(tür, ...) ile gelir (dünya, görevler, kapılar, mağaza, P.E.T.): kill, gain, box, box_ammo, quest, map, jump,
 distance, shot, damage, minute, formation, equip, gate, death, level, pet_level, ability, laser_types, tutorial, season_level,
-dispatch, event_score, assembly_collect, package, gate_wave. Karşılığı olmayan koşullar (PvP, WIZ-X ile oyuncu dönüştürme, klan, Skylab …)
-veride kalır, ilerlemez.
+dispatch, event_score, assembly_collect, package, gate_wave; E6: display (görüntü ayarının displayUse2d'si: 3B), egg (istemcinin
+EggTriggerRequest'i), wb_heal / wb_damage (World Boss savaşında onarılan can ve alınan hasar), rekor_ebl / rekor_plutus (şampiyon
+başarımları: tek oyunculu sıralamada kişisel rekor birinciliktir). Karşılığı olmayan koşullar (PvP, WIZ-X ile oyuncu dönüştürme, klan,
+Skylab, ölü modların şampiyonlukları …) veride kalır, ilerlemez.
 """
 import json, os, time, zlib
 
@@ -37,9 +39,11 @@ KINDS = {'Currency': 'gain', 'AvatarTypeKill': 'kill', 'NpcTypeDestroyed': 'kill
          # adıyla), etkinlik puanı (Plutus: etkinlik_kapi.py), Assembly'de toplanan üretim (assembly.py), mayın koyma (savas_esya.py: shot MINE), paket ödülü
          # (kapi.py: Prosperous), EBL dalgası (ebl.py). DesignMutationCount (WIZ-X ile oyuncu dönüştürme) bot oyuncularla.
          'LevelAbsolute': 'season_level', 'Dispatch': 'dispatch', 'NPCSelectionKill': 'kill', 'EventScore': 'event_score',
-         'BuildRecipe': 'assembly_collect', 'TriggerMine': 'shot', 'CollectPackage': 'package', 'ClearGalaxyGateWave': 'gate_wave'}
-# takvimsiz etkinlik grupları: hep açık (Eternal Black Light'ın eski adı Eternal Gate; mod her gün açık)
-ALWAYS_GROUPS = {'EVENT_ETERNALGATE'}
+         'BuildRecipe': 'assembly_collect', 'TriggerMine': 'shot', 'CollectPackage': 'package', 'ClearGalaxyGateWave': 'gate_wave',
+         # E6
+         'Uses3D': 'display', 'EggTriggerCount': 'egg', 'PublicWorldBossCondition': ('wb_heal', 'wb_damage')}
+# takvimsiz etkinlik grupları: hep açık (Eternal Black Light'ın eski adı Eternal Gate; mod her gün açık; gizli Easter Egg'ler)
+ALWAYS_GROUPS = {'EVENT_ETERNALGATE', 'EVENT_SECRET'}
 # istemcinin ShipIcon adı uzaylının adından çıkmıyorsa (NPCSelectionKill)
 ICON_ALIASES = {'FRIGHTFUL_CURCUBITOR': 'BOSS_FRIGHTFUL_CURCUBITOR'}
 
@@ -56,7 +60,9 @@ def ship_icons(name):
     return out + ((ICON_ALIASES[exact.upper()],) if exact.upper() in ICON_ALIASES else ())
 # sunucu tarafı koşullar (IgnoredCondition): başarım -> olay. Aylık sıralama: tek oyunculu uyarlama, rütbe puanı kazanılan her ay
 # (oyuncu Hall of Fame'de tek; rutbe.py daily_rank yeni ayın ilk hesabında gönderir)
-SERVER_SIDE = {'achievement_monthlyranking-general': 'monthly_rank', 'achievement_monthlyranking-pilot': 'monthly_rank'}
+SERVER_SIDE = {'achievement_monthlyranking-general': 'monthly_rank', 'achievement_monthlyranking-pilot': 'monthly_rank',
+               # şampiyonlar (E6 uyarlaması): sıralamada tek oyuncu; kişisel rekor (EBL'de en ileri dalga, Plutus'ta en iyi süre)
+               'achievement_event_eternalgate-champion': 'rekor_ebl', 'achievement_event_gauntletofplutus-champion': 'rekor_plutus'}
 
 
 def mod(name, **f):
@@ -193,6 +199,14 @@ def measure(c, kind, kw):
         return ('add', 1) if kw.get('paket') in param(c, 'packageId') else None
     if s == 'ClearGalaxyGateWave':                          # "Eternal Gate'te N. dalgaya ulaş": ulaşılan en yüksek dalga
         return ('max', kw.get('dalga', 0)) if kw.get('tur') in param(c, 'galaxyGateType') else None
+    if s == 'Uses3D':                                       # 3B görünüm (DisplaySettingsModule.displayUse2d false)
+        return ('set', 1) if kw.get('use2d') is False else None
+    if s == 'EggTriggerCount':
+        return ('add', 1) if kw.get('tur') in param(c, 'eggTriggerType') else None
+    if s == 'PublicWorldBossCondition':                     # recoverhp / takedamage (unvanın adında); yalnız bu yılın başarımı
+        want = 'wb_heal' if 'recoverhp' in c.get('unvan', '') else 'wb_damage'
+        year = c.get('olay', '').endswith('_%d' % time.localtime().tm_year)
+        return ('add', int(kw.get('adet', 0))) if kind == want and year and kw.get('adet', 0) > 0 else None
     return None
 
 
@@ -336,6 +350,7 @@ class Basarimlar:
             done += self.event('pet_level', deger=d['pet'].get('seviye', 0))
         items = [x for v in d.get('ekipman', {}).values() for x in v]
         items += [self.p.drone_design(x, s) for x in d.get('dronlar', []) for s in ('design', 'visual')]
+        done += self.event('display', use2d=d.get('ayarlar', {}).get('displaySettingsModule', {}).get('displayUse2d'))
         return done + self.event('equip', esyalar=[x for x in items if x])
 
     # ------------------------------------------------------------ istemci

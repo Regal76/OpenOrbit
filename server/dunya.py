@@ -2299,6 +2299,8 @@ class World:
         self.send([('HitpointInfoCommand', dict(hitpoints=int(g['hitPoints']), hitpointsMax=g.get('hitMax', 0),
                                                 nanoHull=g.get('nanoHull', 0), nanoHullMax=g.get('maxNanoHull', 0)))]
                   + self.heal_msgs(hp0))
+        if getattr(self.kapi, 'key', None) == 'dunya_patronu':
+            self.p.ach('wb_heal', adet=g['hitPoints'] - hp0)          # World Boss başarımı (recoverhp)
         if g['hitPoints'] >= g.get('hitMax', 0):
             self.stop_repair()
             self.log('   onarım tamam')
@@ -2409,6 +2411,8 @@ class World:
         self.stop_repair()
         if dmg > 0:
             self.p.ach('damage_taken', adet=dmg)       # alınan hasar (görev koşulu TAKE_DAMAGE; Galaxy Trek'in Endurance görevi)
+            if getattr(self.kapi, 'key', None) == 'dunya_patronu':
+                self.p.ach('wb_damage', adet=dmg)      # World Boss başarımı (takedamage)
         sh = g.get('shield', 0)
         to_shield = min(sh, int(dmg * self.p.d.get('kalkan_emme', 0.8)))   # kalkan jeneratörlerinin emme oranı (esyalar.json)
         hull = dmg - to_shield

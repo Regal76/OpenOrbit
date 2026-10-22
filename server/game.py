@@ -195,8 +195,9 @@ SILENT = {'TrackVariableRequest',
           'EggTriggerRequest'}
 # günlüğe hiç yazılmayan istekler. EggTriggerRequest: istemcinin "harita dışına 6100 birim çıkıldı" sürprizi
 # (ChangePositionSyncGameObjectPos.Run); 2D'de geminin y'si ters eksende tutulduğu için gemi haritanın alt yarısındayken
-# saniyede bir gelir (kullanıcının 2D oturumunda 10 dakikada 103 kez; H82). Sunucuda karşılığı yok.
+# saniyede bir gelir (kullanıcının 2D oturumunda 10 dakikada 103 kez; H82). Yanıtı yok; gizli başarımları ilerletir (E6).
 UNLOGGED = ('MoveRequest', 'KeepAlive', 'AttackRocketRequest', 'EggTriggerRequest')
+EGG_TYPES = ('MINIMAP_PING', 'GOING_ROUND_THE_MAP', 'GALAXY_GATE_FIREWORK', 'RAINBOW_LASER')     # istemcinin EggTriggerType'ı
 SOHBET = None                # yerel sohbet sunucusu (sohbet.py; main başlatır, port 7771)
 KONTROL = '--kontrol' in sys.argv        # canlı test kontrol kanalı (kontrol.py): mesaj izi ve enjeksiyon
 CURRENT = None               # son bağlanan istemcinin oturumu (kontrol kanalı bunu yönetir)
@@ -395,13 +396,17 @@ class Session:
             pass
 
     def ach_event(self, kind, **kw):
-        """Oyun olayları: rütbe sayaçları (rutbe.py), Pass görevleri ve başarımlar (basarim.py)."""
+        """Oyun olayları: rütbe sayaçları (rutbe.py), Pass görevleri, ana görevler (öldürme görev olayından gelir) ve başarımlar
+        (basarim.py)."""
         RT.event(PROFIL, kind, **kw)
         if kind != 'map' and not kw.get('dispatch'):     # harita ziyareti görev olayından gelir; Dispatch'in kapısı görev saymaz
             self.pass_event(kind, **kw)
             msgs = self.ek.event(kind, kw)        # Ö3'ün etkinlik görevleri (Galaxy Trek)
             if msgs:
                 self.send(msgs, 'etkinlik görevi')
+            msgs = self.gorev.event(kind, **kw) if kind != 'kill' else []      # E6: tek ölçüm noktası (gorev_takip.measure)
+            if msgs:
+                self.send(msgs, 'görev')
         if kind == 'death':                       # "ölmeden" görevleri başarısız (gorev.py)
             failed = self.gorev.broken('death')
             if failed:
@@ -947,7 +952,8 @@ class Session:
                 PROFIL.dirty = True
             self.send([('InvitationBlockModule', {'active': PROFIL.d['davet_engeli']})], 'grup daveti engeli')
         elif name in SILENT:
-            pass
+            if name == 'EggTriggerRequest' and 0 <= f.get('eggTriggerType', -1) < len(EGG_TYPES):
+                PROFIL.ach('egg', tur=EGG_TYPES[f['eggTriggerType']])     # gizli başarımlar (EVENT_SECRET); yanıtı yok
         elif name.startswith(('Assembly', 'Disassembly', 'Dispatch', 'Skylab')):
             sysm = self.assembly if name.startswith(('Assembly', 'Disassembly')) else self.dispatch if name.startswith('Dispatch') \
                 else self.skylab
@@ -1012,6 +1018,8 @@ class Session:
             getattr(w, WORLD_REQUESTS[name])(f)
         elif PROFIL.apply(name, f):
             log('   profile yazıldı: %s' % name)
+            if name == 'DisplaySettingsRequest':
+                PROFIL.ach('display', use2d=f.get('displayUse2d'))      # başarım: 3B görünüm (Uses3D)
             if name == 'UIWindowUpdateRequest':
                 if f.get('maximized'):
                     self.pencereler.opened(f.get('itemId'))

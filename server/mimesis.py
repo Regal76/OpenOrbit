@@ -282,6 +282,7 @@ class Mimesis:
                 msgs += self.m.prize(loot, n)
             if r.get('unvan') and self.titles:
                 msgs += self.titles(r['unvan'])
+            msgs.append(SR.confirmation(1, SR.PAYLOAD_ESCORT_REWARD, r))
             self.log('   Mimesis Mutiny bitti: toplam %d, 1. sıra ödülü' % total)
         with self.p.lock:
             self.p.d['mimesis'] = {}

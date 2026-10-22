@@ -596,12 +596,14 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
+   "basarim": "JAMX_CREED",
    "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)"
   },
   "ability_spearhead-plus_neutralizing-marker": {
    "ad": "Neutralizing Marker",
    "sure_sn": 0,
    "bekleme_sn": 60,
+   "basarim": "NEUTRALIZING_MARKER",
    "etki": {
     "hedef_hasar": 0.04,
     "mods": {

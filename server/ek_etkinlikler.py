@@ -56,23 +56,25 @@ class EkEtkinlikler:
         self.requests = {}
         for s in self.systems:
             for r in getattr(s, 'REQUESTS', ()):
-                self.requests[r] = s
+                self.requests.setdefault(r, []).append(s)      # RankingsEventsInfoRequest: Title Frenzy (3) ve World Boss (0/1/2)
 
     def add(self, system):
         """Kaba sonradan sistem (Clan Battle Station: cbs.py; oturum kurar)."""
         self.systems.append(system)
         for r in getattr(system, 'REQUESTS', ()):
-            self.requests[r] = system
+            self.requests.setdefault(r, []).append(system)
 
     def handles(self, name):
         return name in self.requests
 
     def handle(self, name, f):
-        try:
-            return self.requests[name].handle(name, f) or []
-        except Exception:
-            self.log('   Ö3 isteği hatası (%s):\n%s' % (name, traceback.format_exc()))
-            return []
+        out = []
+        for s in self.requests[name]:
+            try:
+                out += s.handle(name, f) or []
+            except Exception:
+                self.log('   Ö3 isteği hatası (%s):\n%s' % (name, traceback.format_exc()))
+        return out
 
     def _each(self, meth, *a):
         out = []

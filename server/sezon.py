@@ -12,17 +12,22 @@ Kayıttaki akışlar ve istemcinin mesajları:
   görev yenileme     SeasonPassRefreshRequest {questId, costType}: günlük ya da haftalık görevin yerine havuzdan başkası
 Görev durumu (istemcinin MissionStatusType'ı): 0 sürüyor, 1 Gold sürüyor, 2 Gold Pass gerekir, 3 bitti, 4 Gold bitti, 5 Gold Pass
 gerekir ama bitti (puanı Gold Pass alınınca gelir).
-Tek oyunculu uyarlamalar: sezon takvim çeyreği (ocak, nisan, temmuz, ekim); ödül sırası ve görevler kayıttaki sezonun (her sezon aynı).
-Sezon bitince alınmamış ödüller verilir (istemcinin metni: "Any unclaimed rewards from the previous season has been booked to you").
+Tek oyunculu uyarlamalar: ödül sırası ve görevler kayıttaki sezonun (her sezon aynı).
+Sezonlar gerçek oyunun ayları: şubat, mayıs, ağustos, kasım başı (season_id "2026-08").
+Sezon bitince alınmamış ödüller verilir (istemcinin metni: "Any unclaimed rewards from the previous season has been booked to you");
+N.O.V.A. kaptanları bekler: sezon sonu penceresi SeasonPassRewardUnclaimedInfoCommand {captainPending, captainOwned, captainLimit,
+captainWarning} (istemcinin ShowEndView'ı; girişte bekleyen varken yine), düğmesi SeasonPassRewardClaimAllRequest. Kadroda yer yoksa
+kaptan ödülü alınmaz, SeasonPassCaptainLimitCommand ("Your N.O.V.A. roster is already full!"); bekleyenler sonraki sezon sonunda yanar.
 Günlük görevler (3 + 2 Gold) her gün, haftalıklar (5 + 3 Gold) pazartesi havuzdan çekilir; sezonluklar sezon boyunca. Yenileme: günde
 1 ücretsiz, sonra 500 U; haftalık 500 U (kayıttaki refreshInfo). Gold Pass mağazada (resource_gold-pass 400.000 U) ya da paketten;
 Extra Gold Pass Gold Pass'ten sonra.
-Profilde: sezon {donem, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, deger, tamam, yenileme}.
+Profilde: sezon {donem, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, deger, tamam, yenileme, bekleyen [[kaptan, adet]]}.
 """
 import datetime, json, os, random, threading, time
 
 import ayar as AY
 import gorev_takip as GT
+import nova as NV
 from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -71,26 +76,28 @@ def mod(name, **f):
     return f
 
 
-def season_id(now=None):
+def season_start(now=None):
+    """Sezonun başladığı (yıl, ay): gerçek oyunun sezonları şubat, mayıs, ağustos ve kasım başında (achievement_seasonpass_202608)."""
     t = datetime.datetime.fromtimestamp(time.time() if now is None else now)
-    return '%d-Q%d' % (t.year, (t.month - 1) // 3 + 1)
+    return t.year - (t.month < 2), (t.month - 2) % 12 // 3 * 3 + 2
+
+
+def season_id(now=None):
+    return '%d-%02d' % season_start(now)
 
 
 def season_end(now=None):
-    t = datetime.datetime.fromtimestamp(time.time() if now is None else now)
-    q = (t.month - 1) // 3
-    y, m = (t.year + 1, 1) if q == 3 else (t.year, q * 3 + 4)
-    return datetime.datetime(y, m, 1).timestamp()
+    y, m = season_start(now)
+    return datetime.datetime(y + (m == 11), (m + 2) % 12 + 1, 1).timestamp()
 
 
 def achievement_group(now=None):
     """Bu sezonun Season Pass başarım grubu (SEASONPASS_Qn; istemcinin LevelAbsolute başarımları: "Gold Season Pass'in 50 / 80
-    seviyesi"). Gerçek oyunun sezonları başlangıç ayıyla adlı (achievement_seasonpass_202608 = Q14); tek oyunculu sezon takvim
-    çeyreği: bu çeyreğin başından önce başlamış en yeni sezonunki (uyarlama)."""
+    seviyesi"). Gerçek oyunun sezonları başlangıç ayıyla adlı (achievement_seasonpass_202608 = Q14); istemcide bu sezonunki yoksa
+    ondan önce başlamış en yeni sezonunki (uyarlama)."""
     import re
     import basarim as BS
-    t = datetime.datetime.fromtimestamp(time.time() if now is None else now)
-    start = (t.year, ((t.month - 1) // 3) * 3 + 1)
+    start = season_start(now)
     best = None
     for aid, a in BS.ACH.items():
         m = re.match(r'achievement_seasonpass_(\d{4})(\d{2})$', aid)
@@ -160,13 +167,19 @@ class Sezon:
         now = time.time() if now is None else now
         st, msgs = self.st, []
         sid = season_id(now)
+        if '-Q' in st.get('donem', ''):             # eski biçim (takvim çeyreği): çeyreğin ilk gününün sezonu (ilerleme silinmesin)
+            y, q = st['donem'].split('-Q')
+            with self.p.lock:
+                st['donem'] = season_id(datetime.datetime(int(y), int(q) * 3 - 2, 1).timestamp())
         if st.get('donem') != sid:
+            wait = []
             if st.get('donem'):
-                msgs += self.close_season()
+                ended, wait = self.close_season()
+                msgs += ended
             with self.p.lock:
                 st.clear()
                 st.update(donem=sid, puan=0, gold=False, ext=False, alinan={k: [] for k, g, e in TRACKS}, deger={}, tamam=[],
-                          sezonluk=pool(SEASON, False) + pool(SEASON, True), yenileme={'gun': 0, 'hafta': 0})
+                          sezonluk=pool(SEASON, False) + pool(SEASON, True), yenileme={'gun': 0, 'hafta': 0}, bekleyen=wait)
                 self.p.dirty = True
             msgs += self.activate_items()
         if st.get('gun') != day_id(now):
@@ -245,7 +258,23 @@ class Sezon:
                 self.st['ipucu'] = True
                 self.p.dirty = True
         self.level_event()                                          # başarım (eski profiller: seviye zaten 50'yi geçmiş olabilir)
-        return msgs + [self.status_cmd(tips=tips), self.mission_cmd(), self.points_cmd(), self.reward_cmd()]
+        return msgs + [self.status_cmd(tips=tips), self.mission_cmd(), self.points_cmd(), self.reward_cmd()] + self.unclaimed_msgs()
+
+    def roster(self):
+        return len((self.p.d.get('nova') or {}).get('kadro', []))
+
+    def roster_full(self, loot, n):
+        """N.O.V.A. ödülü için kadroda yer yok mu (nova.py'nin hire'ı kadro doluyken kaptanı uridyuma çevirirdi)."""
+        return loot.startswith('captain_') and self.roster() + n > NV.D['azami_kadro']
+
+    def unclaimed_msgs(self):
+        """Önceki sezondan bekleyen N.O.V.A.'lar varsa sezon sonu penceresi."""
+        wait = sum(n for l, n in self.st.get('bekleyen', []))
+        if not wait:
+            return []
+        return [('SeasonPassRewardUnclaimedInfoCommand', dict(captainLimit=NV.D['azami_kadro'], captainPending=wait,
+                                                              captainOwned=self.roster(), captainWarning=self.roster_full('captain_', wait),
+                                                              spcId=0, marketingImage=S['gorsel'], seasonName=S['ad']))]
 
     # ------------------------------------------------------------ puan ve Gold Pass
     def add_points(self, n):
@@ -369,22 +398,41 @@ class Sezon:
         self.ensure()
         lv = int(f.get('level') or 0)
         key = 'ext' if f.get('extGoldPass') else 'gold' if f.get('goldPass') else 'ucretsiz'
+        got = self.claimable(key, lv)
+        if got and self.roster_full(*got):
+            return [('SeasonPassCaptainLimitCommand', {})]
         msgs = self.give(key, lv)
         if msgs is None:
             return [legacy('0|A|STM|sp_error_no-claimable-rewards')]
         return msgs + [('SeasonPassRewardClaimCommand', dict(extGoldPass=key == 'ext', goldPass=key == 'gold', claimed=True, level=lv))]
 
     def claim_all(self, f=None):
+        """Claim All ya da sezon sonu penceresinin düğmesi (spcId): önce önceki sezondan bekleyen N.O.V.A.'lar."""
         self.ensure()
-        msgs, n = [], 0
+        msgs, n, full = [], 0, False
+        for row in list(self.st.get('bekleyen', [])):
+            if self.roster_full(*row):
+                full = True
+                continue
+            with self.p.lock:
+                self.st['bekleyen'].remove(row)
+                self.p.dirty = True
+            msgs += self.m.reward(*row) if self.m else []
+            n += 1
         for key, gold, ext in TRACKS:
             for lv, l, a in S['odul'][key]:
+                got = self.claimable(key, lv)
+                if got and self.roster_full(*got):
+                    full = True
+                    continue
                 got = self.give(key, lv)
                 if got is not None:
                     n += 1
                     msgs += got + [('SeasonPassRewardClaimCommand', dict(extGoldPass=ext, goldPass=gold, claimed=True, level=lv))]
+        if full:
+            msgs.append(('SeasonPassCaptainLimitCommand', {}))
         if not n:
-            return [legacy('0|A|STM|sp_error_no-claimable-rewards')]
+            return msgs or [legacy('0|A|STM|sp_error_no-claimable-rewards')]
         return msgs + [self.reward_cmd()]
 
     def buy_levels(self, f):
@@ -432,16 +480,20 @@ class Sezon:
         return [self.mission_cmd()] + ([] if free or not self.m else self.m.money_msgs())
 
     def close_season(self):
-        """Sezon bitti: ulaşılan seviyelerin alınmamış ödülleri verilir."""
-        msgs, n = [], 0
+        """Sezon bitti: ulaşılan seviyelerin alınmamış ödülleri verilir; N.O.V.A.'lar bekler -> (mesajlar, bekleyenler)."""
+        msgs, n, wait = [], 0, []
         for key, gold, ext in TRACKS:
             for lv, l, a in S['odul'][key]:
+                got = self.claimable(key, lv)
+                if got and got[0].startswith('captain_'):
+                    wait.append(list(got))
+                    continue
                 got = self.give(key, lv)
                 if got is not None:
                     msgs += got
                     n += 1
-        self.log('   Season Pass sezonu bitti (%s): %d ödül verildi' % (self.st.get('donem'), n))
-        return msgs + [legacy('0|A|STM|sp_season-has-ended_description')]
+        self.log('   Season Pass sezonu bitti (%s): %d ödül verildi, %d N.O.V.A. bekliyor' % (self.st.get('donem'), n, len(wait)))
+        return msgs + [legacy('0|A|STM|sp_season-has-ended_description')], wait
 
     def handle(self, name, f):
         fn = {'SeasonPassRewardClaimRequest': self.claim, 'SeasonPassRewardClaimAllRequest': self.claim_all,
@@ -450,6 +502,8 @@ class Sezon:
 
     def tick(self, now):
         if self.p.d.get('sezon') and (self.st.get('gun') != day_id(now) or self.st.get('donem') != season_id(now)):
+            ended = self.st.get('donem') != season_id(now)
             msgs = self.ensure(now) + [self.status_cmd(now), self.mission_cmd(), self.points_cmd(), self.reward_cmd()]
+            msgs += self.unclaimed_msgs() if ended else []
             if self.send:
                 self.send(msgs)

@@ -2716,7 +2716,9 @@
   "world_boss": {
    "ad": "Treacherous Domain",
    "turler": [],
-   "basarim": [],
+   "basarim": [
+    "EVENT_PUBLIC_WORLD_BOSS"
+   ],
    "donemler": [
     [
      "06-17",
