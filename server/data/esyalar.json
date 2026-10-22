@@ -5788,6 +5788,458 @@
   "drone_designs_drone-champion-ukraine": {
    "id": 177,
    "yuva": "visual"
+  },
+  "drone_designs_beacon": {
+   "id": 3,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-a-elite-blaze": {
+   "id": 32,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-a-elite-lava": {
+   "id": 33,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-a-elite-ocean": {
+   "id": 34,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-a-elite-poison": {
+   "id": 35,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-a-elite-sandstorm": {
+   "id": 36,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-ace": {
+   "id": 87,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-argon": {
+   "id": 126,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-blaze": {
+   "id": 122,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-borealis": {
+   "id": 128,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-dusklight": {
+   "id": 127,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-lava": {
+   "id": 125,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-legend": {
+   "id": 124,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-sandstorm": {
+   "id": 130,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-berserker-silver": {
+   "id": 84,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-centurion-carbonite": {
+   "id": 139,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-centurion-dusklight": {
+   "id": 88,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-centurion-harbinger": {
+   "id": 129,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-centurion-lava": {
+   "id": 202,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-centurion-seraph": {
+   "id": 120,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-citadel-samurai": {
+   "id": 180,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-citadel-viking": {
+   "id": 195,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg": {
+   "id": 52,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-argon": {
+   "id": 58,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-carbonite": {
+   "id": 77,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-dusklight": {
+   "id": 133,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-elysium": {
+   "id": 179,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-horus": {
+   "id": 144,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-inferno": {
+   "id": 153,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-lava": {
+   "id": 63,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-legend": {
+   "id": 148,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-cyborg-sandstorm": {
+   "id": 145,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-argon": {
+   "id": 72,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-carbonite": {
+   "id": 205,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-dusklight": {
+   "id": 83,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-eldritch": {
+   "id": 147,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-elysium": {
+   "id": 143,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-inferno": {
+   "id": 140,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-lava": {
+   "id": 71,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-legend": {
+   "id": 73,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-diminisher-seraph": {
+   "id": 136,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-enigma-carbonite": {
+   "id": 79,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-eostra": {
+   "id": 85,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-g-champion-argon": {
+   "id": 65,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-g-champion-dusklight": {
+   "id": 81,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-g-champion-lava": {
+   "id": 66,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-g-champion-legend": {
+   "id": 64,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-g-champion-silver": {
+   "id": 67,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-dogma": {
+   "id": 152,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-argon": {
+   "id": 75,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-borealis": {
+   "id": 46,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-carbonite": {
+   "id": 193,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-dusklight": {
+   "id": 121,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-lava": {
+   "id": 74,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-legend": {
+   "id": 76,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-ocean": {
+   "id": 47,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-regular": {
+   "id": 48,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-goliath-x-sandstorm": {
+   "id": 49,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hammerclaw": {
+   "id": 53,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hammerclaw-argon": {
+   "id": 57,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hammerclaw-carbonite": {
+   "id": 78,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hammerclaw-dusklight": {
+   "id": 134,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hammerclaw-lava": {
+   "id": 62,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hammerclaw-legend": {
+   "id": 82,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hammerclaw-sandstorm": {
+   "id": 185,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-hyperion-cerevisia": {
+   "id": 204,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-inferno": {
+   "id": 50,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-orcus-thornspire": {
+   "id": 182,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-orcus-viking": {
+   "id": 149,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-paladin-khepri": {
+   "id": 184,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-argon": {
+   "id": 146,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-blaze": {
+   "id": 37,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-dusklight": {
+   "id": 132,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-lava": {
+   "id": 26,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-legend": {
+   "id": 137,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-ocean": {
+   "id": 38,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-poison": {
+   "id": 27,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-pusat-sandstorm": {
+   "id": 28,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-retiarus-wyvern": {
+   "id": 197,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-argon": {
+   "id": 69,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-carbonite": {
+   "id": 151,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-dusklight": {
+   "id": 86,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-harbinger": {
+   "id": 119,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-inferno": {
+   "id": 186,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-lava": {
+   "id": 68,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-legend": {
+   "id": 70,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-mobius": {
+   "id": 138,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-sentinel-seraph": {
+   "id": 123,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-solace-enigma": {
+   "id": 181,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-solace-inferno": {
+   "id": 201,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-solace-striker": {
+   "id": 200,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-spectrum-blaze": {
+   "id": 39,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-spectrum-carbonite": {
+   "id": 196,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-spectrum-lava": {
+   "id": 29,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-spectrum-ocean": {
+   "id": 40,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-spectrum-poison": {
+   "id": 30,
+   "yuva": "visual"
+  },
+  "drone_designs_drone-spectrum-sandstorm": {
+   "id": 31,
+   "yuva": "visual"
+  },
+  "drone_designs_enigma-lava": {
+   "id": 61,
+   "yuva": "visual"
+  },
+  "drone_designs_enigma-legend": {
+   "id": 60,
+   "yuva": "visual"
+  },
+  "drone_designs_erythros": {
+   "id": 187,
+   "yuva": "visual"
+  },
+  "drone_designs_frost": {
+   "id": 18,
+   "yuva": "visual"
+  },
+  "drone_designs_infiltrator": {
+   "id": 142,
+   "yuva": "visual"
+  },
+  "drone_designs_intimidator": {
+   "id": 178,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-argon": {
+   "id": 43,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-green": {
+   "id": 22,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-lava": {
+   "id": 44,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-legend": {
+   "id": 45,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-ocean": {
+   "id": 42,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-orange": {
+   "id": 24,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-poison": {
+   "id": 41,
+   "yuva": "visual"
+  },
+  "drone_designs_phantom-red": {
+   "id": 23,
+   "yuva": "visual"
+  },
+  "drone_designs_skull-dreadwing": {
+   "id": 192,
+   "yuva": "visual"
+  },
+  "drone_designs_xanthos": {
+   "id": 203,
+   "yuva": "visual"
   }
  },
  "_dron_tasarimlari_kaynak": "Kimlikler istemcinin game.xml <drones><designs> listesi (uzaydaki '0|n|d|…|tür|seviye|tasarım|görünüm' alanları). Yuva istemcinin DroneItem kodundan: DroneDesignType 'design' (bonuslu), DroneCustomizationType 'visual' (yalnız görünüm). Bonuslar wiki (belgeler/wiki/drones_pet.md): dron_basina her tasarımlı drona, takim sahip olunan bütün dronlar aynı tasarımı taşıyınca (istemcinin Havoc metni: 'If all of the drones are equipped'; wiki 10 dron der). npc = NPC'lere hasar (lazer ve roket). Champion ülke tasarımları (drone-champion-*) ve Champion yalnız görünüm (wiki: Visual drone designs kozmetiktir; Aşama 5).",
@@ -6745,6 +7197,13 @@
    },
    "booster_prc-b01": {
     "ozel_sans": 50
+   },
+   "booster_dmg-dlb2": {
+    "DAMAGE": 5
+   },
+   "booster_ephon-1": {
+    "EXPERIENCE_POINTS": 100,
+    "HONOUR_POINTS": 100
    }
   },
   "tavan": {
@@ -6784,7 +7243,8 @@
    "resource_collectable_hybrid-alloy",
    "resource_collectable_indoctrineoil"
   ],
-  "_ozel_sans": "PRC-B00 / PRC-B01 (istemcinin metni): Hybrid Alloy ve Indoctrine Oil düşme olasılığı %20 / %50 artar (uzaylının ek ödülündeki olasılık çarpılır; dunya.extra_loot). Mağazadaki PRC-B00 gerçek zamanla 10 saat."
+  "_ozel_sans": "PRC-B00 / PRC-B01 (istemcinin metni): Hybrid Alloy ve Indoctrine Oil düşme olasılığı %20 / %50 artar (uzaylının ek ödülündeki olasılık çarpılır; dunya.extra_loot). Mağazadaki PRC-B00 gerçek zamanla 10 saat.",
+  "_dlb2_ephon": "Assembly tariflerinin boosterları (istemcinin metinleri): DMG-DLB2 DMG-DLB ile aynı hasar bonusu; EPHON-1 \"Boosts the Experience and Honor you gain by 100%\". Önceden tanınmayıp görünmez depoya düşüyordu (2026-10-22)."
  },
  "_boosterlar_kaynak": "belgeler/wiki/extras_cpu_tech.md (darkorbitwiki Extras/Boosters): B01 hasar/can/onarım/EP/onur +%10, kalkan +%25, kalkan yenilenmesi +%10, uzaylı kaynağı +%25, yetenek beklemesi -%20; B02 (paylaşımlı) aynı, kalkan yenilenmesi +%25, bekleme -%30 (paylaşım tek oyunculu oyunda yok); DMG-H01 hasar +%2 ve isabet +%8; DMG-PVP01 NPC'ye hasar +%1. 10 saat, mağazada 10.000 U. Tür üst sınırları wiki tablosundan (hasar %35, can %30, kalkan %80, kalkan yenilenmesi %50, onarım %30, EP %200, onur %180, kaynak %100, bekleme %55). Boss/Uber uzaylıdan 1-10 saatlik booster düşer (wiki); olasılık (Boss %3, Uber %6) ve türler uyarlama. PRC-B00 bilinmiyor (satılmaz). ABILITY_COOLDOWN_TIME gemi yetenekleri yokken yalnız gösterilir. Günlük ödül ve uzaylı boosterları (wiki): EP-DLB +%25, HON-DLB +%25, DMG-DLB +%5, SHD-DLB +%25, HP-DLB +%10, CD-DLB -%5, NPC-B01/B02 uzaylılara hasar +%10, P-EP-B01 P.E.T. EP +%10 (gösterge türü yok: yalnız etki).",
  "satis_orani": 0.1,

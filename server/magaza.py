@@ -51,6 +51,7 @@ import parcacik as PC
 import rezonator as RZ
 import ayar as AY
 import ipucu as IP
+import sezon as SZ
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
@@ -168,6 +169,18 @@ def design_base(loot):
 
 def slot_of(loot):
     return next((s for p, s in SLOTS if loot.startswith(p)), None)
+
+
+def loose_item(loot):
+    """Gemi yuvası olmayan, envantere örnek olarak giren eşya: dron ve P.E.T. tasarımı, P.E.T. dişlisi ve protokolü (hangarda takılır)."""
+    return loot in DESIGNS or loot in PETM.DESIGNS or PETM.slot_for(loot) in ('gears', 'protocols')
+
+
+def hidden(loot):
+    """Depoda (diger_esyalar) envanterde görünmeyen ve hiçbir sistemin okumadığı eşya mı. Kaynaklar (resource_) görünür; gemisi yokken
+    gelen gemi tasarımı (pending_designs) ve CBS modülü (cbs.absorb) bilerek bekler. Ödül böyle bir eşyaya düşerse kaybolmuş sayılır
+    (2026-10-22: Season Pass'in dron tasarımları, rezervleri ve Assembly'nin P.E.T. protokolleri böyle kayboluyordu)."""
+    return not loot.startswith(('resource_', 'module_')) and not design_base(loot)
 
 
 def pet_only(loot):
@@ -867,6 +880,12 @@ class Magaza:
         RT.note(self.p, 'received_item', loot, n)                              # seyir defteri
         if loot == PET_LOOT:                       # ödül yolundan P.E.T. depoya düşüp kayboluyordu (canlı test H43)
             return self.grant_pet()
+        got = SZ.reserve(loot, n)
+        if got is not None:                        # Season Pass rezervi: içeriği (sezon.py; önceden görünmez depoya düşüyordu)
+            for l, k in got:
+                msgs += self.reward(l, k)
+            self.log('   rezerv açıldı: %s x%d -> %s' % (loot, n, ', '.join('%s x%d' % x for x in got)))
+            return msgs
         if loot in PASS_ITEMS and self.biletler:                               # Season Pass puanı, Gold/Extra Gold, Battle Pass, Deluxe
             sz, bp, go = self.biletler
             if loot == 'resource_battle-pass':
@@ -934,7 +953,7 @@ class Magaza:
                 n = min(n, self.p.cargo_free())
             if n > 0:
                 msgs += [('AttributeOreCountUpdateCommand', {'oreCountList': self.p.add_ores({t: n})}), self.ore_pack([t])]
-        elif loot in DESIGNS or loot in PETM.DESIGNS:      # dron / P.E.T. tasarımı (kapı, kutu, Assembly): envantere, hangarda takılır
+        elif loose_item(loot):     # dron / P.E.T. tasarımı, P.E.T. dişlisi ve protokolü (kapı, kutu, Assembly, Pass): envantere, hangarda takılır
             for _ in range(n):
                 iid = self.p.new_item(loot)
                 msgs += [self.inv_item(iid, loot, 1), self.pack([self.hangar_item(iid, loot, 1)])]
@@ -982,8 +1001,39 @@ class Magaza:
                 msgs += self.resource_msgs(loot, total, n)
             if loot in GN.KEYS and GN.key_line(self.p, GN.KEYS[loot]):         # ganimet anahtarı: HUD sayacı
                 msgs.append(legacy(GN.key_line(self.p, GN.KEYS[loot])))
-            self.log('   ödül depoda: %s x%d (toplam %d)' % (loot, n, total))
+            if hidden(loot):        # envanterde görünmez, hiçbir sistem okumaz: bu ödül kaybolur (test_odul_yollari yakalar)
+                self.log('   UYARI: ödül tanınmıyor, envanterde görünmeyecek: %s x%d (depoda saklandı, toplam %d)' % (loot, n, total))
+            else:
+                self.log('   ödül depoda: %s x%d (toplam %d)' % (loot, n, total))
         return msgs
+
+    def rescue_depot(self):
+        """Ödül yolunda önceden tanınmadığı için görünmez depoya düşmüş eşyaları yerine taşır (2026-10-22: Season Pass'in Hyperion dron
+        tasarımı ve rezervleri, Assembly'nin P.E.T. protokolleri): tasarım, dişli ve protokol envantere; rezervler açılır (aynı
+        içerik birleşir, seyir defteri dolmasın). Hâlâ tanınmayanlar depoda kalır, günlükte uyarılır. Oturum her bağlantıda bir kez,
+        giriş mesajlarından önce çağırır -> taşınan [(lootId, adet)]."""
+        moved, opened = [], {}
+        for loot, n in sorted(self.p.d.get('diger_esyalar', {}).items()):
+            n = int(n)
+            if n <= 0 or not hidden(loot):
+                continue
+            if loose_item(loot):
+                for _ in range(n):
+                    self.p.new_item(loot)
+            elif loot in SZ.RESERVES:
+                for l, k in SZ.reserve(loot, n):
+                    opened[l] = opened.get(l, 0) + k
+            else:
+                self.log('   UYARI: depoda envanterde görünmeyen eşya: %s x%d' % (loot, n))
+                continue
+            self.p.add_resource(loot, -n)
+            moved.append((loot, n))
+        for l, k in sorted(opened.items()):
+            self.reward(l, k)
+        if moved:
+            self.log('   depodan kurtarıldı: %s%s' % (', '.join('%s x%d' % x for x in moved),
+                                                    ' -> %s' % ', '.join('%s x%d' % x for x in sorted(opened.items())) if opened else ''))
+        return moved
 
     def resource_msgs(self, loot, total, n):
         """Depodaki kaynağın sayacı (InventoryItemUpdatedCommand: Assembly malzeme sayaçları buradan; canlı test H31) ve günlük satırı

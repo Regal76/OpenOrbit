@@ -343,6 +343,7 @@ class Session:
         self.ek_next = 0.0
         PROFIL.hint = self.ipucu.show
         self.secrets = set()         # LoginRequest'teki oturum anahtarı: eski metin protokolü de taşır ("S|CFG|2|<kullanıcı>|<anahtar>")
+        self.magaza.rescue_depot()   # görünmez depoya düşmüş ödüller (dron tasarımı, P.E.T. protokolü, Season Pass rezervi) yerine
 
     # ------------------------------------------------------------ çıkış
     def logout_start(self):

@@ -38,6 +38,34 @@ TRACKS = (('ucretsiz', False, False), ('gold', True, False), ('ext', False, True
 GOLD_ITEM, EXT_ITEM, POINT_ITEM = 'resource_gold-pass', 'resource_ext-gold-pass', 'resource_season-pass-point'
 
 
+def _reserve_pool(*tracks):
+    return [(r[1], r[2]) for t in tracks for r in S['odul'][t]
+            if r[1].startswith('resource_') and r[1] not in (GOLD_ITEM, EXT_ITEM, POINT_ITEM)]
+
+
+# Season Pass rezervleri (package_seasonpass-*): ödül sıralarında paket olarak gelir, istemci içeriğini vermez (yalnız "A reserve
+# containing useful resources for the average pilot" / "… only the most sought after resources in the galaxy" / "… booty keys").
+# Uyarlama: açılınca aynı sezonun ödül sırasındaki kaynak satırlarından biri (Gold: Gold ve Extra Gold sıraları; dev rezerv üç çekiş),
+# ganimet anahtarı rezervi ücretsiz sıranın 10 anahtarı. Önceden ödül yolunda tanınmayıp görünmez depoya düşüyordu (2026-10-22).
+RESERVES = {'package_seasonpass-free': (_reserve_pool('ucretsiz'), 1),
+            'package_seasonpass-gold': (_reserve_pool('gold', 'ext'), 1),
+            'package_seasonpass-gold-giant': (_reserve_pool('gold', 'ext'), 3),
+            'package_seasonpass-bootykey': ([('resource_booty-key', 10)], 1),
+            'package_seasonpass-bootykey-giant': ([('resource_booty-key', 10)], 3)}
+
+
+def reserve(loot, n=1):
+    """Rezerv açılınca verilenler [(lootId, adet)] (aynı eşya birleşir) ya da None (rezerv değil)."""
+    if loot not in RESERVES:
+        return None
+    pool, draws = RESERVES[loot]
+    out = {}
+    for _ in range(int(n) * draws):
+        l, k = random.choice(pool)
+        out[l] = out.get(l, 0) + k
+    return sorted(out.items())
+
+
 def mod(name, **f):
     f['_'] = name
     return f
