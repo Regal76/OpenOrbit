@@ -6512,6 +6512,894 @@
     "lootId": "drone_designs_hercules",
     "uridyum": 100000,
     "sablon": "drone_designs_demon-silver"
+   },
+   {
+    "lootId": "drone_designs_beacon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-ace",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-blaze",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-legend",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-sandstorm",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-berserker-silver",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-centurion-carbonite",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-centurion-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-centurion-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-champion-eostrana",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-champion-eostrax",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-citadel-samurai",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-citadel-viking",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-carbonite",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-elysium",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-horus",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-inferno",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-legend",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-cyborg-sandstorm",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-diminisher-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-diminisher-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-diminisher-elysium",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-diminisher-inferno",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-g-champion-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-g-champion-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-g-champion-legend",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-g-champion-silver",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-goliath-dogma",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-goliath-x-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-goliath-x-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-goliath-x-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-goliath-x-legend",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-hammerclaw",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-hammerclaw-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-hammerclaw-carbonite",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-hammerclaw-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-hammerclaw-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-hammerclaw-legend",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-hammerclaw-sandstorm",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-inferno",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-orcus-thornspire",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-orcus-viking",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-paladin-khepri",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-pusat-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-pusat-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-pusat-legend",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-pusat-ocean",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-retiarus-wyvern",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-sentinel-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-sentinel-dusklight",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-sentinel-inferno",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-sentinel-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-sentinel-legend",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-sentinel-mobius",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-solace-enigma",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-solace-inferno",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-solace-striker",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-spectrum-carbonite",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-spectrum-ocean",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_drone-spectrum-sandstorm",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_enigma-argon",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_enigma-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_enigma-poison",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_phantom-lava",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "drone_designs_skull-dreadwing",
+    "uridyum": 5000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_berserker-ace",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_chimera-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_cyborg-argon",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_diminisher-dusklight",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_frozen",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_green",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_hammerclaw-argon",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_hammerclaw-dusklight",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_mirage-argon",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_mirage-carbonite",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_mirage-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_mirage-legend",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_mirage-orange",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-a-elite-empyrian",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-a-elite-nobilis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-berserker-argon",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-berserker-blaze",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-berserker-borealis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-berserker-nobilis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-centurion-dusklight",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-centurion-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-centurion-nobilis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-citadel-samurai",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-citadel-viking",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-cyborg-dusklight",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-cyborg-horus",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-cyborg-inferno",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-cyborg-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-cyborg-phantasm",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-diminisher-argon",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-diminisher-carbonite",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-diminisher-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-diminisher-legend",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-diminisher-mobius",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-diminisher-nobilis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-diminisher-phantasm",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-g-champion-argon",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-g-champion-dusklight",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-g-champion-legend",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-g-champion-nobilis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-goliath-dogma",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-goliath-dreadwing",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-goliath-x-argon",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-goliath-x-dusklight",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-goliath-x-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-hammerclaw",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-hammerclaw-carbonite",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-hammerclaw-frost",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-hammerclaw-inferno",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-hammerclaw-legend",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-hammerclaw-nobilis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-hammerclaw-poison",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-inferno",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-mirage-poison",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-orcus-carbonite",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-orcus-legend",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-orcus-thornspire",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-orcus-viking",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-paladin-khepri",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-phoenix",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-pusat-inferno",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-pusat-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-pusat-phantasm",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-pusat-poison",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-retiarus-wyvern",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-sentinel-dusklight",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-sentinel-inferno",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-sentinel-lava",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-sentinel-legend",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-sentinel-nobilis",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-sentinel-phantasm",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-solace-enigma",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-solace-striker",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-spectrum-phantasm",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_pet-spectrum-poison",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "pet_designs_red",
+    "uridyum": 40000,
+    "sablon": "drone_designs_demon-silver",
+    "_arac": "kozmetik"
    }
   ],
   "petgear": [
@@ -7504,6 +8392,1626 @@
     "uridyum": 100000,
     "sablon": "ship_pusat_design_pusat-expo2016",
     "_arac": "e4"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-borealis",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-lava",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-ocean",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_berserker_design_berserker-poison",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_bigboy_design_mamba",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_centurion_design_centurion-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_centurion_design_centurion-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-legend",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-prosperous",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel-plus_design_citadel-plus-shogun",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel_design_citadel-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel_design_citadel-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_citadel_design_citadel-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-amor",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-blaze",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-celestial",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-firestar",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-frozen",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-infinite",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-maelstrom",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-ocean",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-poison",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-starscream",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_cyborg-sunstorm",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_cyborg_design_ship-cyborg-argon",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-argon",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-blaze",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-lava",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_diminisher-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_diminisher_design_ship-diminisher-dusklight",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_disruptor_design_disruptor-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_disruptor_design_disruptor-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_disruptor_design_disruptor-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_disruptor_design_disruptor-prometheus",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_g-champion_design_g-champion-argon",
+    "uridyum": 20000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_g-champion_design_g-champion-dusklight",
+    "uridyum": 20000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_g-surgeon_design_g-surgeon-cicada",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_g-surgeon_design_g-surgeon-devolarium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_g-surgeon_design_g-surgeon-locust",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_g-surgeon_design_g-surgeon-saimon",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_g-surgeon_design_g-surgeon-sibelonit",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-arisen",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-bdayriot",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-blaze",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-prosperous",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-plus_design_goliath-plus-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-x_design_goliath-x-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-x_design_goliath-x-lava",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath-x_design_goliath-x-legend",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath_design_bronze",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath_design_gold",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath_design_goliath-razer",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath_design_iron",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_goliath_design_silver",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-prometheus",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw_design_hammerclaw-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw_design_hammerclaw-frozen",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw_design_hammerclaw-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw_design_hammerclaw-lava",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw_design_hammerclaw-prometheus",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw_design_hammerclaw-prosperous",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hammerclaw_design_hammerclaw-tyrannos",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate-plus_design_hecate-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate-plus_design_hecate-plus-asimov",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate-plus_design_hecate-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate-plus_design_hecate-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate-plus_design_hecate-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate-plus_design_hecate-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate_design_hecate-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate_design_hecate-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate_design_hecate-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate_design_hecate-lava",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate_design_hecate-ocean",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_hecate_design_hecate-poison",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_keres_design_keres-contagion",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_keres_design_keres-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_keres_design_keres-prometheus",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_liberator-plus_design_liberator-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-argon",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-mint",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_mimesis_design_mimesis-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_n-ambassador_design_n-ambassador-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_nostromo_design_nostromo-razer",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-blaze",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-celestial",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-dusklight",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-firestar",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-guardian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-hellspire",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-maelstrom",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-starscream",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-strife",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-sunstorm",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_orcus_design_orcus-wildfire",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_paladin_design_paladin-dusklight",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_paladin_design_paladin-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_paladin_design_paladin-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_paladin_design_paladin-guardian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_paladin_design_paladin-legend",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_paladin_design_paladin-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-dusklight",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_pusat-plus_design_pusat-plus-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_retiarus-plus_design_retiarus-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_retiarus-plus_design_retiarus-plus-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_retiarus_design_retiarus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_retiarus_design_retiarus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_retiarus_design_retiarus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-contagion",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-lava",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-legend",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_sentinel_design_sentinel-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-atlantis",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace-plus_design_solace-plus-prometheus",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-argon",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-blaze",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-borealis",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-ocean",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-poison",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-prometheus",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-prosperous",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solace_design_solace-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-asimov",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-legend",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-nobilis",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris-plus_design_solaris-plus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris_design_solaris-asimov",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris_design_solaris-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_solaris_design_solaris-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead-plus_design_spearhead-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead-plus_design_spearhead-plus-blaze",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead-plus_design_spearhead-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead-plus_design_spearhead-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead-plus_design_spearhead-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead-plus_design_spearhead-plus-sandstorm",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead_design_spearhead-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead_design_spearhead-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spearhead_design_spearhead-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum-plus_design_spectrum-plus-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum-plus_design_spectrum-plus-asimov",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum-plus_design_spectrum-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum-plus_design_spectrum-plus-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum-plus_design_spectrum-plus-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-ace",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-argon",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-prometheus",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_spectrum_design_spectrum-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus-plus_design_tartarus-plus-carbonite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus-plus_design_tartarus-plus-elysium",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus-plus_design_tartarus-plus-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus-plus_design_tartarus-plus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus-plus_design_tartarus-plus-phantasm",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus_design_tartarus-dusklight",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus_design_tartarus-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus_design_tartarus-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus_design_tartarus-lava",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus_design_tartarus-osiris",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tartarus_design_tartarus-smite",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_tempest_design_tempest-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_v-lightning_design_v-lightning-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_venom_design_venom-arios",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_venom_design_venom-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_venom_design_venom-epion",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_venom_design_venom-inferno",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_venom_design_venom-neikos",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_venom_design_venom-ocean",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_venom_design_venom-poison",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_zephyr_design_zephyr-empyrian",
+    "uridyum": 50000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
+   },
+   {
+    "lootId": "ship_zephyr_design_zephyr-frost",
+    "uridyum": 100000,
+    "sablon": "ship_pusat_design_pusat-expo2016",
+    "_arac": "kozmetik"
    }
   ],
   "generator": [
@@ -8735,5 +11243,6 @@
    "resource_shop-discount-week-1": 7
   },
   "_not": "Shop Discount (günlük giriş ödülü; istemci \"Shop Discount for 1 week\", item_tooltip_shop_discount_variable \"Uridium-Rabatt von %SHOPDISCOUNT%%\"): alınınca süresi eklenir, uridyumla alımlar oran kadar ucuz; girişte UserInventoryModule.activePremiumDiscount. Oran uyarlama (bn_halloweenShopDiscount \"-10%\"); istemcinin indirimli fiyatı gösterip göstermediği canlıda doğrulanmadı"
- }
+ },
+ "_ek_magaza_kozmetik": "İstemcinin gemi tasarımları (ShipDesignType), dron görünümleri (DroneCustomizationType), bonuslu dron tasarımları (DroneDesignType) ve P.E.T. tasarımları (PetCustomizationType) içinden tek oyunculuda hiçbir kaynağı olmayanlar mağazaya: gemi tasarımları \"shipdesign\" sekmesine (sekme 255 ürün sınırında: magaza.shop_list ek tasarımları yalnız hangardaki gemiler için gösterir), dron ve P.E.T. tasarımları \"customization\" sekmesine (kayıtta P.E.T. tasarım paketleri de bu sekmede: package_pd-*). Kaynak sayılanlar: kayıttaki mağaza listeleri ve öteki araçların ek mağaza satırları (gösterilen paketlerin içeriğiyle), ödül verileri (kutular, kapılar, etkinlikler, biletler, görevler, günlük giriş, sıralama ödülleri, Dispatch, müzayede, dükkânlar, modlar …), Assembly'de sürekli ya da etkinlikle görünen tarifler (assembly.event_recipes'in kuralı), Ö6, rezonatör ve Synthesis tarifleri. İstemcinin metinleri bu tasarımların kaynağını söylemiyor; fiyat market dengesinin sınıf değeri (tools/market_dengesi.py value: gemi tasarımı 50.000 U, premium temalar 100.000, ülke tasarımları 20.000; P.E.T. tasarımı 40.000; dron görünümü 5.000), satırın uridyum alanında (fiyatlar.json'da satırı yok; market_dengesi yeniden çalıştırılırsa E4'ün uyarlama fiyatları da değişir). Sunucunun veremediği tasarımlar (Magaza.contents None; taban gemisi esyalar.json'da olmayan gemi tasarımları) atlanır."
 }

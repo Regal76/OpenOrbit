@@ -556,6 +556,13 @@ class Magaza:
             t['itemList'] = [it for it in t['itemList'] if it['lootId'] != PET_LOOT]
         # sunucuda karşılığı olmayanlar (Assembly parçaları, anahtarlar, içeriği tanımlanmamış paketler …) gösterilmez
         t['itemList'] = [it for it in t['itemList'] if self.contents(it['lootId'], 1) is not None and self.gate_ok(it['lootId'])]
+        if category == 'shipdesign':
+            # ek mağazanın gemi tasarımları (E4 ve E11'in kaynaksız tasarımları, ~270) sekmeye sığmaz (SHOP_MAX): yalnız hangardaki
+            # gemilerinki, şimdiki geminin tasarımları önce (fazlası sondan kesilir; kayıttakiler hep)
+            owned = {s['lootId'] for s in self.p.d['gemiler'].values()}
+            extra = lambda it: it['lootId'] in self.extra_entry
+            t['itemList'] = [it for it in t['itemList'] if not extra(it) or design_base(it['lootId']) in owned]
+            t['itemList'].sort(key=lambda it: extra(it) and design_base(it['lootId']) != t['currentShipLootId'])
         for it in t['itemList']:
             if (self.extra_entry.get(it['lootId']) or {}).get('bir_kez'):
                 it['maxAmount'] = 1                          # Ö7 paketleri: etkinlikte bir kez
