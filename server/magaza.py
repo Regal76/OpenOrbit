@@ -55,7 +55,8 @@ import sezon as SZ
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
-FIYAT = json.load(open(os.path.join(HERE, 'data', 'fiyatlar.json'), encoding='utf8'))['fiyatlar']    # market dengesi (tools/market_dengesi.py)
+_F = json.load(open(os.path.join(HERE, 'data', 'fiyatlar.json'), encoding='utf8'))
+FIYAT, KUR = _F['fiyatlar'], _F['kur']        # market dengesi (tools/market_dengesi.py); KUR: 1 U kaç kredi
 CONFIG_COOLDOWN_SN = 5          # config geçişleri arası (kayıtta 2,4 sn sonraki reddedildi; süre uyarlama)
 
 CURRENCY = {'virtual': 'credits', 'real': 'uridium'}
@@ -157,6 +158,9 @@ RES_YERINE = {'drone_have_max': ('items_drone_have_max', {}),
 ASSEMBLY_PARTS = {l for r in json.load(open(os.path.join(HERE, 'data', 'tarifler.json'), encoding='utf8'))['tarifler'].values()
                   for l in r['parcalar'] if l.startswith('resource_')}
 STAT_TABLES = (('lazerler', 'hasar'), ('kalkan_jeneratorleri', 'kalkan'), ('hiz_jeneratorleri', 'hiz'))
+# etkisi olmayan, satılmaz (mağazada gizli): Serum CPU'su (oyuncuyu enfekte eden bir şey yok), Radar CPU'su (diplomasi renkleri: bot
+# oyuncular)
+NO_EFFECT = ('equipment_extra_cpu_anti-z1', 'equipment_extra_cpu_anti-z1-xl', 'equipment_extra_cpu_rd-x')
 PAY_CURRENCY = {'currency_uridium': ('uridium', 'URI'), 'currency_credits': ('credits', 'CRE'), 'currency_experience': ('ep', 'EP'),
                 'currency_honour': ('honourPoints', 'HON')}
 PRIZE_CURRENCY = {'currency_uridium': 'uridyum', 'currency_credits': 'kredi', 'currency_experience': 'ep', 'currency_honour': 'onur'}
@@ -417,7 +421,7 @@ class Magaza:
             return QF.slots(self.p.ship(sid)['lootId'])
         if slot in PC.SLOTS:                                         # top, kırıcı, sürücü, mercek: istemcinin gemi verisi
             return PC.slots(self.p.ship(sid)['lootId'], slot)
-        ship = ESYA['gemiler'].get(self.p.ship(sid)['lootId'], {})
+        ship = self.p.ship_row(sid)                                  # giyilen tasarımın yuvalarıyla (Tyrannos 15 lazer …)
         bonus = EK.slot_bonus(self.p, sid) if slot == 'extra' else 0      # yuva CPU'su (SL-01..04): config'te en büyüğü
         if slot == 'extra' and self.equip_tpl and 'extra' not in ship:
             return self.equip_tpl.get('extrasSlotsSize1', DEFAULT_SLOTS['extra']) + bonus
@@ -529,10 +533,15 @@ class Magaza:
         return CURRENCY[it['currency']], it['price'][0]
 
     def buy_price(self, loot, level=1):
-        """Satın alma fiyatı: price() x panelin mağaza fiyatı çarpanı (satış ve geri dönüşüm değerleri price()'tan, çarpansız)."""
+        """Satın alma fiyatı: price() x panelin mağaza fiyatı çarpanı (satış ve geri dönüşüm değerleri price()'tan, çarpansız); uridyumla
+        alımlarda Shop Discount."""
         pr = self.price(loot, level)
-        k = AY.carpan('magaza_fiyat')
+        k = AY.carpan('magaza_fiyat') * (1 - self.discount() if pr and pr[0] == 'uridium' else 1)
         return pr if not pr or k == 1.0 else (pr[0], pr[1] * k)
+
+    def discount(self):
+        """Shop Discount sürüyorsa oranı (esyalar.json magaza_indirimi), yoksa 0."""
+        return ESYA['magaza_indirimi']['oran'] if self.p.d.get('magaza_indirimi', 0) > time.time() else 0.0
 
     def gate_ok(self, loot):
         return self.shop_gate(self.extra_entry.get(loot), loot) if self.shop_gate else True
@@ -662,6 +671,8 @@ class Magaza:
     def contents(loot, amount):
         """Satın alınınca verilecekler [(lootId, adet)]: cephane, ekipman ve gemi kendisi, paketler esyalar.json odeme_paketleri'nden.
         None: sunucu bu eşyayı henüz veremiyor (tasarım, anahtar …). Gemi her zaman 1 adet."""
+        if loot in NO_EFFECT:
+            return None
         pk = ESYA['odeme_paketleri'].get(loot)
         if pk:
             if any(l.startswith('ship_') and not design_base(l) and l not in ESYA['gemiler'] for l, n in pk):
@@ -677,11 +688,15 @@ class Magaza:
             return [(loot, amount)]
         if loot == 'resource_logfile' or loot in GN.KEYS or loot in ASSEMBLY_PARTS:   # log diski; ganimet anahtarları; Assembly malzemesi
             return [(loot, amount)]
+        if loot == 'resource_key_access-dse':        # DSE Travel Permit: Deep Space Echoes'un bileti (echoes.py)
+            return [(loot, amount)]
         if loot in PASS_ITEMS or loot in EVENT_ITEMS:                                # Gold Pass, Battle Pass, puan, Monthly Deluxe; etkinlik paraları
             return [(loot, amount)]
         if loot.startswith(('captain_', 'resource_collectable_energy-')) or loot in NEW_RESOURCES or loot in RZ.SOURCES:  # + Ö6 rezonatör kaynakları
             return [(loot, amount)]
         if loot.startswith('ammunition_') or slot_of(loot) or loot in DESIGNS or PETM.slot_for(loot) in ('gears', 'protocols'):
+            return [(loot, amount)]
+        if loot in TK.ITEMS:                         # teknoloji eşyası (Explosive Charging Blob: ek mağaza)
             return [(loot, amount)]
         return None
 
@@ -914,6 +929,12 @@ class Magaza:
             else:
                 msgs += self.money_msgs() + [legacy('0|LM|ST|%s|%d|%d' % (kind, n, self.p.d['pilot'][field]))]
             return msgs
+        if loot in ESYA['magaza_indirimi']['gun']:  # Shop Discount (günlük giriş): indirimin süresi eklenir (gösterge sonraki girişte)
+            with self.p.lock:
+                d = self.p.d
+                d['magaza_indirimi'] = max(d.get('magaza_indirimi', 0), time.time()) + ESYA['magaza_indirimi']['gun'][loot] * 86400 * n
+                self.p.dirty = True
+            return msgs + [legacy('0|LM|ST|LOT|%s|%d' % (loot, n))]
         if loot.startswith('tech_'):                # teknoloji eşyası (Assembly ve paketler): sayaca
             TK.add(self.p, loot, n)
             st = self.p.menu_status(loot)
@@ -1050,9 +1071,14 @@ class Magaza:
     def sale_value(self, loot, n=1):
         """Satış -> (para alanı, tutar) ya da None. İstemcinin kendi değeri (eşyanın "sellable" özelliği, hangarın eşya bilgisinde
         kredi olarak gösterilen; data/istemci_esyalari.json); yoksa fiyatın satis_orani'si (uyarlama), mağazada fiyatı olmayanda
-        ref_value."""
+        ref_value. Alış fiyatından pahalıya (ya da aynına) satılmaz: o zaman fiyatın satis_orani'si (SL-01 3.000 U'ya alınıp istemcinin
+        değeri 1.250.000 C'ye satılıyordu)."""
         v = YK.ITEMS.get(loot, {}).get('satis')
         if v:
+            pr = self.price(loot)
+            cost = pr[1] * (KUR if pr[0] == 'uridium' else 1) if pr else 0
+            if cost and v >= cost:
+                v = cost * ESYA['satis_orani']
             return 'credits', int(v * n)
         pr = self.price(loot) or self.ref_value(loot)
         if not pr:
@@ -1300,7 +1326,7 @@ class Magaza:
         active = sid is None or str(sid) == self.p.d['aktif_gemi']
         eq = self.p.d['ekipman'] if active else self.p.loadout(sid)
         gens = eq.get('generators', [])
-        ship = ESYA['gemiler'].get(self.p.ship(sid)['lootId'])
+        ship = self.p.ship_row(sid) or None                        # giyilen tasarımın temel hızıyla (Centurion 290-315)
         display = speed = None
         if ship:
             display = ship['temel_hiz'] + sum(ESYA['hiz_jeneratorleri'].get(g, {}).get('hiz', 0) for g in gens)
@@ -1332,7 +1358,7 @@ class Magaza:
         total = sum(k for k, e in shields)
         absorb = sum(k * e for k, e in shields) / total if total else 0.8
         absorb = max(0.0, min(1.0, absorb + form.get('emme', 0)))
-        hp = ESYA['gemiler'].get(self.p.ship(sid)['lootId'], {}).get('hp')
+        hp = self.p.ship_row(sid).get('hp')
         total *= 1 + ((active and self.p.lab_bonus(3)) or 0)     # kalkan yükseltmesi (Duranium, Promerium, Seprom, Osmium)
         # panelin geminin canı ve kalkanı çarpanları; kalkan istemciye 32 bitle gider (AttributeShieldUpdateCommand)
         shield_max = min(AY.I32, int(total * (1 + form.get('kalkan', 0)) * AY.carpan('gemi_kalkan')))
@@ -1351,7 +1377,7 @@ class Magaza:
             hull = dict(hp=int(g.get('hitPoints', 0)), maxHp=g.get('hitMax', 0), shield=int(g.get('shield', 0)),
                         nano=int(g.get('nanoHull', 0)), maxNano=g.get('maxNanoHull', 0))
         else:
-            hp = ESYA['gemiler'].get(ship['lootId'], {}).get('hp', 0)
+            hp = self.p.ship_row(sid).get('hp', 0)
             gv = ship.get('govde') or {}
             hull = dict(hp=int(gv.get('hitPoints', hp)), maxHp=hp, shield=0, nano=int(gv.get('nanoHull', 0)), maxNano=hp)
         t.update(hull, hull=round(100 * hull['hp'] / max(hull['maxHp'], 1)),          # gövde bütünlüğü % (kayıt: 115.659/116.000 -> 100)
@@ -1386,7 +1412,7 @@ class Magaza:
                 msgs.append(('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g['shieldMax']}))
             self.p.d['kalkan_emme'] = s['absorb']
             # kargo alanı: geminin kargosu + Logistics yeteneği (yetenek.py); ShipInitializationCommand'da görünür
-            base = ESYA['gemiler'].get(self.p.ship()['lootId'], {}).get('kargo')
+            base = self.p.ship_row().get('kargo')
             if base:
                 cargo = int(base * (1 + self.p.mods().get('kargo_alani', 0)) * EK.cargo_factor(self.p)    # + kargo CPU'su
                             * (1 + (self.pet.proto('kargo') if self.pet.owned else 0))      # + AI-CR (P.E.T. uzayda olmasa da)
@@ -1426,10 +1452,11 @@ class Magaza:
         msgs = [('ShipExtensionsCommand', {'userId': self.p.user_id, 'extensionStage': stage})] if stage != 1 else []
         import yukseltme as YK
         counts = self.count_msgs()
-        disc = [('UserInventoryModule', dict(activePremiumDiscount=0, activeRebateSubDiscount=0,
+        hour, shop = YK.bonus_hour(), self.discount()
+        disc = [('UserInventoryModule', dict(activePremiumDiscount=int(round(shop * 100)), activeRebateSubDiscount=0,
                                              inventoryItemModules=[f['item'] for n, f in counts],
-                                             activeHappyUpgradeDiscount=int(round(YK.bonus_hour() * 100))))] if YK.bonus_hour() else []
-        return msgs + self.drone_msgs() + counts + disc        # Upgrade Hour sürüyorsa indirim (H40)
+                                             activeHappyUpgradeDiscount=int(round(hour * 100))))] if hour or shop else []
+        return msgs + self.drone_msgs() + counts + disc        # Upgrade Hour (H40) ya da Shop Discount sürüyorsa indirim
 
     def count_msgs(self):
         """Girişte istemcinin eşya sayaçları (InventoryItemUpdatedCommand): Assembly malzemeleri buradan sayılır; kayıttaki girişte
@@ -1759,7 +1786,7 @@ class Magaza:
             old = self.p.ship()['lootId']
             self.p.d['aktif_gemi'] = sid
             new = self.p.ship()
-            row = ESYA['gemiler'].get(new['lootId'], {})
+            row = self.p.ship_row(sid)
             hp = row.get('hp', g.get('hitMax', 0))
             gv = new.get('govde') or {'hitPoints': hp, 'nanoHull': 0}
             cargo = row.get('kargo', g.get('cargoSpaceMax', 0))
@@ -1793,12 +1820,17 @@ class Magaza:
             ship = self.p.ship(sid)
             old = self.p.ship_look(sid)
             ship['tasarim'] = None if loot == ship['lootId'] else loot
+            for cfg in ship['konfigler'].values():       # tasarımın yuvası azsa (Tyrannos 15 lazer, *-6 roketsiz) fazlası envantere
+                for slot in ('laser', 'generators', 'rocket'):
+                    del cfg.get(slot, [])[self.capacity(slot, sid):]
             active = sid == self.p.d['aktif_gemi']
             if active:
                 self.p.d['gemi']['typeId'] = self.p.ship_look(sid)
+                self.p.sync_ekipman()
             self.p.dirty = True
         self.log('   görünüm: %s -> %s' % (old, self.p.ship_look(sid)))
-        return [reply(1)], active and old != self.p.ship_look(sid)
+        # tasarımın kendi değerleri (profil.ship_row): hız, can, yuvalar, bonuslar
+        return [reply(1)] + (self.apply_stats() if active else []), active and old != self.p.ship_look(sid)
 
     def switch_config(self, n):
         """İstemcinin "S|CFG|n|…" isteği (kayıt: t≈591 ve 598). Yanıt kayıttaki sırayla: arayüz yenileme, görünüm, can;

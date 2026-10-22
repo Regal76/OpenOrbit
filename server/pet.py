@@ -28,6 +28,7 @@ Değerler data/esyalar.json "pet" (wiki, kayıt ve uyarlamalar; kaynak notu orad
 import json, math, os, random, time
 import rutbe as RT
 import ayar as AY
+import lazer as LAZER
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
@@ -40,16 +41,20 @@ HEAT_ROWS = HEAT['seviyeler']
 HEAT_MAX = HEAT_ROWS[-1]['esik']
 HEATING, STABLE, COOLING = 0, 1, 2       # PetHeatUpdateCommand.heatState (istemci: " +" beyaz, " =" sarı, " --" mavi)
 VM_HEAT_RELEASE = 107                    # VisualModifierCommand.modifier (istemcinin VisualModifier enum'u)
+VM_HP_LINK = 86
 HULL = PET['can_yukseltme']['loot']
 DESIGNS = PET['tasarimlar']
 
 # istemcinin PetGearType enum'u
 PASSIVE, GUARD, AUTO_LOOT, AUTO_RESOURCE, ENEMY_LOCATOR, RESOURCE_LOCATOR = 1, 2, 4, 5, 6, 7
 TRADE_POD, REPAIR_PET, KAMIKAZE, COMBO_REPAIR, COMBO_GUARD = 8, 9, 10, 11, 12
-HEAT_RELEASE = 20
+RETARGETING, HP_LINK, MEGA_MINE, COMBAT_BEACON, HP_BEACON, HEAT_RELEASE = 15, 16, 17, 18, 19, 20
 WORKING = {PASSIVE, GUARD, AUTO_LOOT, AUTO_RESOURCE, ENEMY_LOCATOR, RESOURCE_LOCATOR, TRADE_POD, REPAIR_PET, KAMIKAZE, COMBO_REPAIR,
-           COMBO_GUARD, HEAT_RELEASE}
-FIGHTING = {GUARD, KAMIKAZE, COMBO_GUARD}
+           COMBO_GUARD, HEAT_RELEASE, HP_LINK, COMBAT_BEACON, HP_BEACON}
+FIGHTING = {GUARD, KAMIKAZE, COMBO_GUARD, HP_LINK}
+# beklemeli dişliler -> istemcinin msg_pet_<ad>-gear_cooldown_ready / _not_ready metinlerindeki adı
+TIMED = {HP_LINK: 'hp-link', COMBAT_BEACON: 'combat-beacon', HP_BEACON: 'hp-beacon'}
+BEACONS = (COMBAT_BEACON, HP_BEACON)
 # istemcinin PetRequest.PetRequestType enum'u
 LAUNCH, DEACTIVATE, TOGGLE, HOTKEY_GUARD, REPAIR_DESTROYED, HOTKEY_REPAIR_SHIP, HOTKEY_BUY_FUEL = range(7)
 DESTROYED_NONE, DESTROYED_KAMIKAZE = 0, 1
@@ -162,6 +167,10 @@ class Pet:
         self.fuel_sent, self.next_fuel_msg = 0, 0.0
         self.release_end = 0.0       # G-HR1 (Heat Release) çalışıyorsa bitişi
         self.release_ready = 0.0     # G-HR1 bekleme bitişi
+        self.link_end = 0.0          # G-HPL1 (HP Link) bağlıysa bitişi
+        self.beacon = None           # G-BC1/G-BH1 işareti: (tür, x, y, bitiş)
+        self.in_beacon = False       # gemi işaretin menzilinde: bonusu gemide
+        self.ready = {}              # beklemedeki dişliler (TIMED): tür -> bekleme bitişi
         self.look = None             # istemcinin bildiği görünüm (gemi türü): yalnız değişince PetLevelUpdateCommand
         self.release_wait = False    # bekleme bitince "hazır" iletisi gidecek
         self.heat_sent, self.next_heat_msg = None, 0.0
@@ -252,10 +261,12 @@ class Pet:
     def lasers(self):
         return [l for l in self.loadout()['lasers'] + self.heat_items('lasers') if l in ESYA['lazerler']]
 
-    def laser_damage(self):
-        """Lazerlerin toplam hasarı (LF-PX01 HEAT bonusuyla)."""
+    def laser_damage(self, target=None):
+        """Lazerlerin toplam hasarı (LF-PX01 HEAT bonusuyla; AAP-1 yapay zekâ gemilerine: hedef_carpan, lazer.py)."""
         hl = self.heat_lv()
-        return sum(ESYA['lazerler'][l]['hasar'] * (1 + px_bonus(l, hl)) for l in self.lasers())
+        lz = ESYA['lazerler']
+        return sum(lz[l]['hasar'] * (1 + px_bonus(l, hl)) * (LAZER.name_match(lz[l].get('hedef_carpan', {}), target) or 1)
+                   for l in self.lasers())
 
     def speed(self):
         """P.E.T. gemiyi izler: gemiyle aynı hız (kayıt: başka oyuncunun P.E.T.'i 395)."""
@@ -348,10 +359,14 @@ class Pet:
         return COOLING if self.d.get('isi', 0) > 0 and now >= (self.d.get('isi_bekleme') or 0) else STABLE
 
     def heat_mods(self):
-        """Gemiye HEAT bonusları (profil.mods): yalnız P.E.T. uzaydayken."""
+        """Gemiye HEAT bonusları (profil.mods): yalnız P.E.T. uzaydayken; G-BC1/G-BH1 işaretininki gemi menzilindeyken."""
         if not (self.owned and self.active):
             return {}
-        return heat_bonus(self.heat_lv())
+        out = heat_bonus(self.heat_lv())
+        if self.in_beacon:
+            for k, v in self.gear(self.beacon[0]).get('bonus', {}).items():
+                out[k] = out.get(k, 0) + v
+        return out
 
     def heat_msg(self, now=None):
         h = self.heat()
@@ -593,14 +608,15 @@ class Pet:
         from dunya import Mover
         self.mover = Mover(int(x), int(y))
         self.cool(now)                           # uzakta geçen sürenin soğuması; uzaydayken soğumaz
-        self.release_end = 0.0
+        self.release_end = self.link_end = 0.0
+        self.beacon, self.in_beacon = None, False
         self.active, self.task, self.shooting = True, None, None
         self.tick_t = self.next_second = now
         with self.p.lock:
             self.d['can'] = min(self.d['can'], self.hp_max())
             self.d['kalkan'] = min(self.d['kalkan'], self.shield_max())
             self.p.dirty = True
-        if self.d.get('disli') not in {t for t, lv, ok in self.gear_list() if ok} or self.d.get('disli') in (TRADE_POD, HEAT_RELEASE):
+        if self.d.get('disli') not in {t for t, lv, ok in self.gear_list() if ok} or self.d.get('disli') in (TRADE_POD, HEAT_RELEASE, HP_LINK):
             self.d['disli'] = GUARD
         self.trading = False
         self.fuel_sent = int(self.d['yakit'])
@@ -615,6 +631,9 @@ class Pet:
         now = time.time()
         if self.release_end:
             self.end_release(now, notify=False)
+        if self.link_end:
+            self.end_link(now, notify=False)
+        self.beacon, self.in_beacon = None, False
         self.active, self.task, self.trading = False, None, False
         self.stop_heat(now)                      # soğuma gecikmesi başlar
         msgs = (self.abort_msgs() if self.shooting else []) + self.attackers_abort()
@@ -641,6 +660,16 @@ class Pet:
             self.log('   kargo tüccarı beklemede (%d sn)' % (self.trade_ready - now))
             self.send([self.select_msg()])
             return
+        if t in TIMED:
+            if not (self.active and self.w) or (t == HP_LINK and self.link_end):
+                self.send([self.select_msg()])   # P.E.T. uzayda değil ya da zaten bağlı
+                return
+            if now < self.ready.get(t, 0):
+                self.log('   %s beklemede (%d sn)' % (TIMED[t], self.ready[t] - now))
+                self.send([self.select_msg()] + ([legacy('0|A|STM|msg_pet_%s-gear_cooldown_not_ready' % TIMED[t])] if t in BEACONS else []))
+                return
+            if t in BEACONS:
+                return self.drop_beacon(t, now)   # tek atımlık: seçili dişli değişmez
         if t == HEAT_RELEASE:
             if self.release_end or not (self.active and self.w):
                 self.send([self.select_msg()])   # zaten çalışıyor ya da P.E.T. uzayda değil
@@ -653,6 +682,8 @@ class Pet:
                 return
         elif self.release_end:
             self.end_release(now)                # başka dişli seçildi: Heat Release erken biter
+        if self.link_end:
+            self.end_link(now)                   # başka dişli seçildi: HP Link erken biter
         old = self.d.get('disli')
         with self.p.lock:
             self.d['disli'] = t
@@ -672,6 +703,9 @@ class Pet:
         if t == HEAT_RELEASE:
             self.release_end = now + self.gear(HEAT_RELEASE).get('sure_sn', 4)
             msgs.append(self.release_visual(True))
+        if t == HP_LINK:
+            self.link_end = now + self.gear(HP_LINK).get('sure_sn', 20)
+            msgs.append(self.link_visual(True))
         self.send(msgs)
         self.log('   P.E.T. dişlisi: %s%s' % (t, ' hedef %s' % opt if opt else ''))
 
@@ -713,6 +747,65 @@ class Pet:
         if notify:
             self.send(msgs)
         return msgs
+
+    # ------------------------------------------------------------ G-HPL1, G-BC1, G-BH1
+    def link_visual(self, on):
+        """HP Link görseli: istemcinin VisualModifier HP_LINK'i, P.E.T.'in üstünde, attribute bağlı gemi (doğrulanmadı)."""
+        return ('VisualModifierCommand', dict(userId=self.pid, modifier=VM_HP_LINK, attribute=self.w.hid if self.w else 0,
+                                              additionalAttribute='', count=0, activated=on))
+
+    def link_take(self, dmg):
+        """G-HPL1: bağlıyken gemiye gelen gövde hasarı P.E.T.'in canından düşer -> aktarılan hasar. Can biterse P.E.T. yok olur."""
+        if not (self.link_end and self.active) or dmg <= 0:
+            return 0
+        d = self.d
+        taken = min(dmg, d['can'])
+        with self.p.lock:
+            d['can'] -= taken
+            self.p.dirty = True
+        if d['can'] <= 0:
+            self.destroyed(DESTROYED_NONE)
+        else:
+            self.send([self.hp_msg()])
+        return taken
+
+    def end_link(self, now, notify=True):
+        """HP Link bitti: görsel kapanır, bekleme başlar, P.E.T. korumaya döner."""
+        self.link_end = 0.0
+        self.ready[HP_LINK] = now + self.gear(HP_LINK).get('bekleme_sn', 240)
+        with self.p.lock:
+            self.d['disli'] = GUARD
+            self.p.dirty = True
+        msgs = [self.link_visual(False), self.select_msg(),
+                ('PetGearActivationChangeCommand', dict(gearType=gear_type(HP_LINK), active=False))]
+        if notify:
+            self.send(msgs)
+        return msgs
+
+    def drop_beacon(self, t, now):
+        """G-BC1/G-BH1: P.E.T. bulunduğu yere işaret bırakır (menzildeki gemiye bonus); seçili dişli değişmez, bekleme başlar."""
+        g = self.gear(t)
+        x, y = self.pos(now)
+        self.beacon, self.in_beacon = (t, x, y, now + g.get('sure_sn', 30)), False
+        self.ready[t] = now + g.get('bekleme_sn', 240)
+        self.send([self.select_msg(), ('PetGearActivationChangeCommand', dict(gearType=gear_type(t), active=False))]
+                  + self.beacon_step(now))
+        self.log('   P.E.T. işareti: %s (%d, %d)' % (TIMED[t], x, y))
+
+    def beacon_step(self, now):
+        """İşaretin süresi ve gemi menzilinde mi: değişince gemi değerleri yeniden."""
+        inside = False
+        if self.beacon:
+            t, x, y, end = self.beacon
+            if now >= end:
+                self.beacon = None
+            else:
+                hx, hy = self.w.hero_pos(now)
+                inside = math.hypot(hx - x, hy - y) <= self.gear(t).get('menzil', 0)
+        if inside == self.in_beacon:
+            return []
+        self.in_beacon = inside
+        return self.stats_msgs()
 
     def repair(self):
         """Yok edilmiş P.E.T.'i tamir: seviyeye göre uridyum (wiki: seviye 0-2 ücretsiz)."""
@@ -844,6 +937,13 @@ class Pet:
             self.release_wait = False
             msgs += [legacy('0|A|STM|msg_pet_heat-release-gear_cooldown_ready'),
                      ('PetGearActivationChangeCommand', dict(gearType=gear_type(HEAT_RELEASE), active=True))]
+        if self.link_end and now >= self.link_end:
+            msgs += self.end_link(now, notify=False)
+        msgs += self.beacon_step(now)
+        for t in [t for t, r in self.ready.items() if now >= r]:          # bekleme bitti: dişli yeniden seçilebilir
+            del self.ready[t]
+            msgs += [legacy('0|A|STM|msg_pet_%s-gear_cooldown_ready' % TIMED[t]),
+                     ('PetGearActivationChangeCommand', dict(gearType=gear_type(t), active=True))]
         if int(d['yakit']) != self.fuel_sent and now >= self.next_fuel_msg:
             self.fuel_sent, self.next_fuel_msg = int(d['yakit']), now + 10      # yakıt göstergesi en çok 10 sn'de bir
             msgs.append(self.fuel_msg())
@@ -970,8 +1070,10 @@ class Pet:
                                                                    laserColor=ESYA['lazer_renkleri']['cephane'].get(ammo, 0),
                                                                    isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
         if random.random() < AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + self.proto('isabet'))):      # panel
-            base = self.laser_damage()                                   # LF-PX01: HEAT seviyesine göre
+            base = self.laser_damage(n)                                  # LF-PX01: HEAT seviyesine göre
             base *= 1 + self.row()['hasar'] + self.proto('lazer') + self.proto('uzayli')
+            if self.d.get('disli') == HP_LINK:
+                base *= self.gear(HP_LINK).get('pet_hasar', 1)          # G-HPL1: bağlıyken %25 hasar
             a = ESYA['lazer_cephane'].get(ammo, {'carpan': 1})
             r = random.uniform(*ESYA['hasar_rastgele'])
             shield = int(base * a.get('kalkan_carpan', 0) * r)

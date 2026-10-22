@@ -1629,6 +1629,486 @@
      "bekleme_sn": 600.0
     }
    }
+  },
+  "ship_centurion_design_centurion-ability1": {
+   "yetenekler": [
+    "ability_lightning"
+   ],
+   "ozel": {
+    "ability_lightning": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 300.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability10": {
+   "yetenekler": [
+    "ability_diminisher",
+    "ability_aegis_shield-repair"
+   ],
+   "ozel": {
+    "ability_diminisher": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 240.0
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 240.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability2": {
+   "yetenekler": [
+    "ability_spectrum"
+   ],
+   "ozel": {
+    "ability_spectrum": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 300.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability3": {
+   "yetenekler": [
+    "ability_diminisher"
+   ],
+   "ozel": {
+    "ability_diminisher": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 240.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability4": {
+   "yetenekler": [
+    "ability_aegis_repair-pod"
+   ],
+   "ozel": {
+    "ability_aegis_repair-pod": {
+     "sure_sn": 4.0,
+     "bekleme_sn": 300.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability5": {
+   "yetenekler": [
+    "ability_citadel_protection"
+   ],
+   "ozel": {
+    "ability_citadel_protection": {
+     "sure_sn": 5.0,
+     "bekleme_sn": 240.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability6": {
+   "yetenekler": [
+    "ability_aegis_shield-repair"
+   ],
+   "ozel": {
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 300.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability7": {
+   "yetenekler": [
+    "ability_spectrum",
+    "ability_citadel_protection"
+   ],
+   "ozel": {
+    "ability_spectrum": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 300.0
+    },
+    "ability_citadel_protection": {
+     "sure_sn": 5.0,
+     "bekleme_sn": 240.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability8": {
+   "yetenekler": [
+    "ability_lightning",
+    "ability_spearhead_target-marker"
+   ],
+   "ozel": {
+    "ability_lightning": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 300.0
+    },
+    "ability_spearhead_target-marker": {
+     "sure_sn": 5.0,
+     "bekleme_sn": 240.0
+    }
+   }
+  },
+  "ship_centurion_design_centurion-ability9": {
+   "yetenekler": [
+    "ability_aegis_repair-pod",
+    "ability_citadel_protection"
+   ],
+   "ozel": {
+    "ability_aegis_repair-pod": {
+     "sure_sn": 4.0,
+     "bekleme_sn": 300.0
+    },
+    "ability_citadel_protection": {
+     "sure_sn": 5.0,
+     "bekleme_sn": 240.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-argon": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-arios": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-dusklight": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-elysium": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-empyrian": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-frost": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-neikos": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-nobilis": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-phantasm": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
+  },
+  "ship_hammerclaw-plus_design_hammerclaw-plus-prometheus": {
+   "yetenekler": [
+    "ability_aegis_hp-repair",
+    "ability_aegis_shield-repair",
+    "ability_aegis_repair-pod",
+    "ability_hammerclaw-plus_reallocate"
+   ],
+   "ozel": {
+    "ability_aegis_hp-repair": {
+     "sure_sn": 6.0,
+     "bekleme_sn": 160.0,
+     "etki": {
+      "can_onar": 225000
+     }
+    },
+    "ability_aegis_shield-repair": {
+     "sure_sn": 3.0,
+     "bekleme_sn": 80.0,
+     "etki": {
+      "kalkan_onar": 150000
+     }
+    },
+    "ability_aegis_repair-pod": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 60.0,
+     "etki": {
+      "can_onar": 200000
+     }
+    },
+    "ability_hammerclaw-plus_reallocate": {
+     "sure_sn": 10.0,
+     "bekleme_sn": 180.0
+    }
+   }
   }
  },
  "_ozel": "gemi -> yetenek -> sure_sn/bekleme_sn: istemcinin gemi verisinden (tools/gemi_yetenekleri.py); etki çarpanları (\"carpanlar\") wiki'den kalır, süre ve bekleme ozel'den."

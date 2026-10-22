@@ -4,9 +4,10 @@ gemideki lazerleri sayar (dronlardakiler sayılmaz; wiki "ship only").
   hasar_aralik      [en az, en çok]: her isabette rastgele (Unstable LF-4 128-220; dağılım bilinmiyor, düzgün alındı)
   uzayli_bonus      uzaylılara oransal bonus (LF-3 +%15)
   uzayli_ek         uzaylılara düz ek hasar (LF-4 Paritydrill "+5 PvE"; wiki yüzde mi düz mü demiyor, düz alındı)
-  hedef_carpan      {ad: çarpan}: adı eşleşen uzaylıya bu lazerin hasarı (Prometheus x3,5 Black Light uzaylılarına)
-  ek_hasar_5sn      5 sn'de bir sonraki isabete düz ek, lazer başına (SL-01 +38, Prometheus +200)
-  menzil            lazer menzili değişimi (SL-01 -%25; gemide bir tane bile varsa)
+  hedef_carpan      {ad: çarpan}: adı eşleşen uzaylıya bu lazerin hasarı (Prometheus x3,5 Black Light uzaylılarına, AA-1/AAP-1
+                    yapay zekâ gemilerine: Mimesis)
+  ek_hasar_5sn      5 sn'de bir sonraki isabete düz ek, lazer başına (SL-01 +38, SL-02 +75, SL-03 +150, Prometheus +200)
+  menzil            lazer menzili değişimi (SL-01/02/03 -%25; gemide bir tane bile varsa)
   can_lazer_basina  gemideki her biri için can bonusu (LF-4 Hyperplasmoid +%0,5)                         profil.ship_mods
   set_bonus         gemideki adede göre hasar bonusu (adet-1 sırası; sonrası son değer) (LF-5 Mortifier, Asmodeus)
   ofke              Asmodeus "Fervor": uzaylı öldürdükçe basamak (en çok 5); ilk öldürmeden sonra ilk_sn, sonra sonraki_sn

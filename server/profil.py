@@ -537,6 +537,23 @@ class Profil:
         s = self.ship(sid)
         return s.get('tasarim') or s['lootId']
 
+    def ship_row(self, sid=None):
+        """Geminin değerleri (esyalar.json gemiler: hp, yuvalar, temel_hiz, bonus …) giyilen tasarımın kendi değerleriyle
+        (esyalar.json tasarimlar <- tools/tasarim_degerleri.py: Centurion'un hız ve yuva tasarımları, Holo'nun canı; bonusu
+        geminin bonusuna eklenir)."""
+        s = self.ship(sid)
+        row = esya()['gemiler'].get(s['lootId'], {})
+        over = esya().get('tasarimlar', {}).get(s.get('tasarim') or '')
+        if not over or not row:
+            return row
+        out = dict(row, **{k: v for k, v in over.items() if k != 'bonus'})
+        bonus = dict(row.get('bonus', {}))
+        for k, v in over.get('bonus', {}).items():
+            bonus[k] = bonus.get(k, 0) + v
+        if bonus:
+            out['bonus'] = bonus
+        return out
+
     def ship_by_hangar(self, hangar_id):
         return next((sid for sid, s in self.d['gemiler'].items() if s['hangarId'] == hangar_id), None)
 
@@ -645,13 +662,21 @@ class Profil:
         return out
 
     def ship_mods(self):
-        """Etkin geminin kalıcı bonusu (tasarım türevleri: G-Enforcer +%5 hasar …) ve Leonov'un X-1..X-4 bonusu (esyalar.json)."""
-        row = esya()['gemiler'].get(self.ship()['lootId'], {})
+        """Etkin geminin kalıcı bonusu (tasarım türevleri: G-Enforcer +%5 hasar …; giyilen tasarımınki: Lava Cyborg +%10 hasar …,
+        Solaris Plus Ullrin modül başına) ve Leonov'un X-1..X-4 bonusu (esyalar.json)."""
+        row = self.ship_row()
         out = dict(row.get('bonus', {}))
+        n = min(len(self.config().get('upgrades', [])), row.get('modul_azami', 0))
+        for k, v in row.get('modul_basina', {}).items():
+            out[k] = out.get(k, 0) + v * n
         hp = LAZER.hp_bonus(self.d.get('ekipman', {}).get('laser', []))      # LF-4 Hyperplasmoid: lazer başına can +%0,5
         if hp:
             out['can'] = out.get('can', 0) + hp
-        import gemi_modul as GM                                               # gemi modülleri (normal ve kararsız)
+        launchers = esya()['savas_esyalari']['fircatici']['turler']         # Plus fırlatıcılar: Hydra can/kalkan, Neptune hasar …
+        for l in self.d.get('ekipman', {}).get('rocket', []):
+            for k, v in launchers.get(l, {}).get('bonus', {}).items():
+                out[k] = out.get(k, 0) + v
+        import gemi_modul as GM                                              # gemi modülleri (normal ve kararsız)
         for k, v in GM.mods(self, self.ship()['lootId'], self.config().get('upgrades', []), self.d['pilot'].get('level')).items():
             out[k] = out.get(k, 0) + v
         import qfc as QF                                                      # Quantum Fluid Core'lar (bağlı oldukları gemide)

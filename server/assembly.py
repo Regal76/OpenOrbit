@@ -46,20 +46,21 @@ NO_SOURCE = {'resource_collectable_flower-token', 'resource_collectable_opitite'
              'resource_collectable_quadrothrin'}
 CHAMPION = 'resource_collectable_champion-token'                  # aylık ödül (rutbe.py): jetonlu tarifler elde jeton varken
 TEST = 'recipe_recipe-test'
+BOT = {'recipe_blueprint-ss-cpu'}                                 # Saturn Transmitter: Satürn uzaylıları oyuncu sayılır (bot oyuncular)
 LIST_CHECK_SN = 60                                                # etkinlik başlayınca / bitince tarif listesi
 
 
 def event_recipes(p, now=None):
     """Kayıtta olmayan tarifler: etkinlik parasını isteyenler (takvim.py 'para') etkinlik sürerken ya da elde o paradan varken,
-    Champion Token'lılar elde jeton varken, ötekiler sürekli; kaynağı olmayan malzemeyi isteyenler, test tarifleri ve koşulla
-    açılanlar (UNLOCK) dışarıda."""
+    Champion Token'lılar elde jeton varken, ötekiler sürekli; kaynağı olmayan malzemeyi isteyenler, test tarifleri, koşulla
+    açılanlar (UNLOCK) ve bot oyuncu isteyenler (BOT) dışarıda."""
     import takvim as TKV
     para = {l for e in TKV.EVENTS.values() for l in e.get('para', [])} | {CHAMPION}
     cur = {l for k in TKV.active(now) for l in TKV.EVENTS[k].get('para', [])} | {l for l in para if p.resource(l) > 0}
     out = []
     for k, r in T.items():
         ps = set(r['parcalar'])
-        if 'kayitta' in r or k in UNLOCK or k.startswith(TEST) or ps & NO_SOURCE:
+        if 'kayitta' in r or k in UNLOCK or k in BOT or k.startswith(TEST) or ps & NO_SOURCE:
             continue
         if ps & cur or not ps & para:
             out.append(k)

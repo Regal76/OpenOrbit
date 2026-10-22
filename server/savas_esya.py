@@ -33,6 +33,7 @@ MINES = S['mayinlar']
 LAUNCHERS = S['fircatici']['turler']
 LAUNCHER_AMMO = S['fircatici_cephane']
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
+ALIEN_CPUS = S['uzayli_cpu']                  # Chaos Alien CPU'ları, Cubi Portal -> harita sınıfları, doğan türler
 TOGGLE_DEFAULT = {'nisan': False}             # Xenomit harcar: kendiliğinden açılmaz; ötekiler takılınca açık
 XENOMIT = 3
 TIMERS = 'bekleme_gruplari'                   # profilde: {grup: [bitiş, azami ms]}
@@ -80,7 +81,9 @@ def item_cooldown(loot):
     if loot in MINES:
         m = MINES[loot]
         return m.get('bekleme_grubu', S['mayin']['bekleme_grubu']), m.get('bekleme_sn', S['mayin']['bekleme_sn'])
-    for key in ('akilli_bomba', 'aninda_kalkan', 'emp'):
+    if loot in ALIEN_CPUS:
+        return ALIEN_CPUS[loot]['bekleme_grubu'], ALIEN_CPUS[loot]['bekleme_sn']
+    for key in ('akilli_bomba', 'aninda_kalkan', 'emp', 'hayalet'):
         if loot == S[key]['menu']:
             return S[key]['bekleme_grubu'], S[key]['bekleme_sn']
     r = ROCKETS.get(loot, {})
@@ -162,10 +165,12 @@ def launchers(p):
 
 
 def launcher_upgrade(p):
-    """Fırlatıcının yükseltme çarpanı (yukseltme.py; birden çok fırlatıcıda en yükseği)."""
+    """Fırlatıcının roket hasarı çarpanı: yükseltme (yukseltme.py) x Plus fırlatıcının kendi bonusu (roket_bonus: Neptune +%19 …);
+    birden çok fırlatıcıda en yükseği."""
     import yukseltme as YK
     eq, lv = p.d.get('ekipman', {}).get('rocket', []), p.d.get('ekipman_seviye', {}).get('rocket', [])
-    return max([YK.factor(l, lv[i] if i < len(lv) else 0, YK.ROCKET) for i, l in enumerate(eq) if l in LAUNCHERS] or [1.0])
+    return max([YK.factor(l, lv[i] if i < len(lv) else 0, YK.ROCKET) * (1 + LAUNCHERS[l].get('roket_bonus', 0))
+                for i, l in enumerate(eq) if l in LAUNCHERS] or [1.0])
 
 
 def capacity(p):
@@ -331,6 +336,7 @@ class Esyalar:
         self.next_load = 0.0       # fırlatıcının bir sonraki dolumu
         self.next_lure = 0.0
         self.waiting = {}          # grup -> bitiş: bitince READY bildirimi
+        self.ghost_end = 0.0       # Ghostifier görünümünün bitişi
         self.next_dep = 0.0        # Smart Bomb / Insta-Shield sayacının denetimi (dependent_tick)
         self.born = time.time()    # bu harita yüklemesi (giriş, atlama, portal): atlama CPU'su 10 sn sonra (jump_cpu_failed_time)
         now = time.time()
@@ -405,6 +411,9 @@ class Esyalar:
         self.lure_tick(now)
         self.jump_tick(now)
         self.launcher_tick(now)
+        if self.ghost_end and now >= self.ghost_end:
+            self.ghost_end = 0.0
+            self.send([self.ghost_msg(False)])
 
     # ------------------------------------------------------------ kısayol çubuğu (dunya.menu_action)
     def menu(self, item, now=None):
@@ -428,6 +437,10 @@ class Esyalar:
             self.toggle(item)
         elif item == S['fircatici']['menu']:
             self.launcher_fire(now)
+        elif item in ALIEN_CPUS:
+            self.alien_cpu(item, now)
+        elif item == S['hayalet']['menu']:
+            self.ghostify(now)
         else:
             return False
         return True
@@ -648,6 +661,47 @@ class Esyalar:
             msgs += w.stats_msgs() if w.stats_msgs else []
         self.send(msgs + w.ammo_msgs(loot) + [self.cooldown(loot, now)])
         self.log('   EMP: %d uzaylının hedefi sıfırlandı' % reset)
+
+    # ------------------------------------------------------------ Chaos Alien CPU'ları, Cubi Portal, Ghostifier
+    def alien_cpu(self, loot, now):
+        """Haritası uygunsa (X-3..X-7 sınıfı ya da savaş haritası) yakına kademesinden rastgele bir uzaylı: oyuncunun peşine düşer,
+        yeniden doğmaz. Haritada CPU uzaylısı yaşarken ve güvenli bölgede kullanılmaz (istemcinin metinleri)."""
+        w, p, c = self.w, self.p, ALIEN_CPUS[loot]
+        if w.hero_dead or w.jumping or p.ammo(loot) <= 0 or not self.ready(c['bekleme_grubu'], now):
+            return
+        if H.map_class(w.map_id) not in c['haritalar'] and not H.name(w.map_id).startswith('4-'):
+            self.log('   %s bu haritada kullanılamaz (%s)' % (loot, H.name(w.map_id)))
+            return
+        hx, hy = w.hero_pos(now)
+        if w.in_peace(hx, hy):
+            self.send([stm('msg_aliencpu_dmz')])
+            return
+        if any(n.alive and getattr(n, 'cpu', False) for n in w.npcs.values()):
+            self.send([stm('msg_aliencpu_npc_already_exists')])
+            return
+        p.use_ammo(loot, 1)
+        a = random.uniform(0, 2 * math.pi)
+        x = min(max(600, hx + math.cos(a) * 800), w.map_w - 600)
+        y = min(max(600, hy + math.sin(a) * 800), w.map_h - 600)
+        n = w.spawn_npc_at(random.choice(c['turler']), x, y)
+        n.summoned = n.hunt = n.cpu = True
+        self.send(w.ammo_msgs(loot) + [self.cooldown(loot, now)])
+        self.log('   %s: %s doğdu' % (loot, n.d['ad']))
+
+    def ghost_msg(self, on):
+        return ('VisualModifierCommand', dict(userId=self.w.hid, modifier=S['hayalet']['gorsel'], attribute=0, additionalAttribute='',
+                                              count=0, activated=on))
+
+    def ghostify(self, now):
+        """Ghostifier: gemi bir dakika hayalet görünür (istemcinin VisualModifier GHOST_EFFECT'i)."""
+        w, p, c = self.w, self.p, S['hayalet']
+        loot = c['menu']
+        if w.hero_dead or p.ammo(loot) <= 0 or not self.ready(c['bekleme_grubu'], now):
+            return
+        p.use_ammo(loot, 1)
+        self.ghost_end = now + c['sure_sn']
+        self.send(w.ammo_msgs(loot) + [self.cooldown(loot, now), self.ghost_msg(True)])
+        self.log('   Ghostifier: %d sn' % c['sure_sn'])
 
     # ------------------------------------------------------------ gizlenme CPU'su
     def cloaked(self):

@@ -344,6 +344,7 @@ class World:
         self.next_form_shield = 0.0    # formasyonun kalkan dolumu/erimesi (form_shield_tick)
         self.next_overdrive = 0.0      # SL-01, Prometheus: 5 sn'de bir ek hasar (lazer.py)
         self.ofke = LAZER.Ofke()       # Asmodeus Fervor
+        self.artan = [1.0, 0.0]        # IDB-125: çarpan, son isabet
         self.quick_buy = None          # para değişince kısayol çubuğundaki hızlı alım öğelerinin durumu (magaza.py)
         self.map_msgs = None           # haritanın girişteki nesneleri (istasyon, taretler): yeniden yüklemede tekrar gönderilir
         self.on_home = None            # istasyonsuz haritada istasyonda tamir: oturum firmanın ana haritasına götürür
@@ -1634,6 +1635,8 @@ class World:
             cnt = extra_count(spec, (boost if special else 1.0) * AY.carpan('dusme'))
             if special and cnt > 0:
                 cnt = int(cnt * (1 + bm.get('ozel_miktar', 0)))          # PRM-B01 (PCOMB-B01): miktar x2 (Ö6)
+            if loot == 'resource_collectable_agate-splinter' and cnt > 0:
+                cnt = int(cnt * (1 + bm.get('agat_miktar', 0)))          # AS-B01: Agate Splinter x2
             if cnt <= 0:
                 continue
             if loot.startswith('equipment_'):
@@ -1862,6 +1865,10 @@ class World:
         a = ESYA['lazer_cephane'].get(ammo, {'carpan': 1})
         r = random.uniform(*ESYA['hasar_rastgele'])
         carpan = LAZER.name_match(a.get('hedef_carpan', {}), target) or a.get('carpan', 1)   # SBL-100 x8 Sibelon'a …
+        ramp = a.get('artan')
+        if ramp:                                                  # IDB-125: x1'den isabet başına +1,25, en çok x6; 3 sn'de sıfırlanır
+            carpan = 1.0 if now - self.artan[1] > ramp['sifirlama_sn'] else self.artan[0]
+            self.artan = [min(ramp['azami'], carpan + ramp['adim']), now]
         if target is not None and ammo in (target.d.get('cephane_carpani') or {}):          # Ö4: etkinlik uzaylısının cephane bonusu
             carpan = target.d['cephane_carpani'][ammo]
         return int(base * carpan * r), int(base * a.get('kalkan_carpan', 0) * r)
@@ -1901,7 +1908,7 @@ class World:
         lazer yuvaları aynı lazerle doluysa o setin rengi (bütün LF-3: x1/x2 mavi, x3 yeşil), yoksa cephaneninki (x4 beyaz …)."""
         lr = ESYA['lazer_renkleri']
         lasers = self.lasers()
-        cap = ESYA['gemiler'].get(self.p.ship()['lootId'], {}).get('laser', 0)
+        cap = self.p.ship_row().get('laser', 0)
         if lasers and len(lasers) >= cap and len(set(lasers)) == 1 and ammo in lr['tam_set'].get(lasers[0], {}):
             return lr['tam_set'][lasers[0]][ammo]
         return lr['cephane'].get(ammo, 0)
@@ -2394,7 +2401,8 @@ class World:
         hull = dmg - to_shield
         nano = g.get('nanoHull', 0)
         from_nano = min(nano, hull)                # nano gövde (kapı çekilişi): kalkandan sonra, gövdeden önce erir
-        hp = g.get('hitPoints', 0) - (hull - from_nano)
+        linked = self.pet.link_take(hull - from_nano) if self.pet and not self.invulnerable else 0   # G-HPL1: gövde hasarı P.E.T.'e
+        hp = g.get('hitPoints', 0) - (hull - from_nano - linked)
         floor = self.tech.hp_floor(now)             # Anti-AI Emergency Reserves
         if floor:
             hp = max(hp, floor)

@@ -4332,6 +4332,445 @@
     }
    },
    "_kaynak": "wiki: Hitac 2.5 (rota 1-3 > 1-4 > 3-4 > 3-3 > 2-4 > 2-3); fandom 2012: altı yardımcı yaşarken kalkanlı, yenileri ana gemiden çıkar (vurulunca çağırır; bekleme uyarlama)"
+  },
+  "etk_saimon_aberration": {
+   "ad": "-=[ Saimon Aberration ]=-",
+   "hp": 7500,
+   "kalkan": 7500,
+   "hasar": 250,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 2000,
+    "onur": 10,
+    "kredi": 2000,
+    "uridyum": 5
+   },
+   "kargo": {
+    "0": 40,
+    "2": 40,
+    "1": 40,
+    "4": 2,
+    "5": 2
+   },
+   "npc_kimlik": 200,
+   "model": "229",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Saimon ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_boss_saimon_aberration": {
+   "ad": "..::{ Boss Saimon Aberration }::..",
+   "hp": 30000,
+   "kalkan": 15000,
+   "hasar": 1000,
+   "hiz": 250,
+   "saldirgan": true,
+   "odul": {
+    "ep": 8000,
+    "onur": 40,
+    "kredi": 8000,
+    "uridyum": 20
+   },
+   "kargo": {
+    "0": 160,
+    "2": 160,
+    "1": 160,
+    "4": 8,
+    "5": 8,
+    "6": 1,
+    "3": 2
+   },
+   "npc_kimlik": 201,
+   "model": "230",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban ..::{ Boss Saimon }::.. x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_mordon_aberration": {
+   "ad": "-=[ Mordon Aberration ]=-",
+   "hp": 25000,
+   "kalkan": 12500,
+   "hasar": 488,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 4000,
+    "onur": 20,
+    "kredi": 8000,
+    "uridyum": 10
+   },
+   "kargo": {
+    "0": 80,
+    "2": 80,
+    "1": 80,
+    "4": 8,
+    "5": 8,
+    "6": 1
+   },
+   "npc_kimlik": 202,
+   "model": "231",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Mordon ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_boss_mordon_aberration": {
+   "ad": "..::{ Boss Mordon Aberration }::..",
+   "hp": 100000,
+   "kalkan": 50000,
+   "hasar": 1875,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 16000,
+    "onur": 80,
+    "kredi": 32000,
+    "uridyum": 40
+   },
+   "kargo": {
+    "0": 320,
+    "2": 320,
+    "1": 320,
+    "4": 32,
+    "5": 32,
+    "6": 8,
+    "3": 8
+   },
+   "npc_kimlik": 203,
+   "model": "232",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban ..::{ Boss Mordon }::.. x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_devolarium_aberration": {
+   "ad": "-=[ Devolarium Aberration ]=-",
+   "hp": 125000,
+   "kalkan": 125000,
+   "hasar": 1500,
+   "hiz": 150,
+   "saldirgan": true,
+   "odul": {
+    "ep": 8000,
+    "onur": 40,
+    "kredi": 64000,
+    "uridyum": 20
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "npc_kimlik": 204,
+   "model": "233",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Devolarium ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_kristallin_oddity": {
+   "ad": "-=[ Kristallin Oddity ]=-",
+   "hp": 62500,
+   "kalkan": 50000,
+   "hasar": 2062,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 8000,
+    "onur": 40,
+    "kredi": 16000,
+    "uridyum": 20
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 1
+   },
+   "npc_kimlik": 205,
+   "model": "234",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Kristallin ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_boss_kristallin_oddity": {
+   "ad": "..::{ Boss Kristallin Oddity }::..",
+   "hp": 250000,
+   "kalkan": 200000,
+   "hasar": 5875,
+   "hiz": 280,
+   "saldirgan": true,
+   "odul": {
+    "ep": 32000,
+    "onur": 160,
+    "kredi": 64000,
+    "uridyum": 80
+   },
+   "kargo": {
+    "0": 400,
+    "2": 400,
+    "1": 400,
+    "4": 64,
+    "5": 64,
+    "6": 4,
+    "3": 6
+   },
+   "npc_kimlik": 206,
+   "model": "235",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban ..::{ Boss Kristallin }::.. x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_kristallon_oddity": {
+   "ad": "-=[ Kristallon Oddity ]=-",
+   "hp": 500000,
+   "kalkan": 375000,
+   "hasar": 5562,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 64000,
+    "onur": 320,
+    "kredi": 512000,
+    "uridyum": 160
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 128,
+    "5": 128,
+    "6": 16
+   },
+   "npc_kimlik": 207,
+   "model": "236",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Kristallon ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_boss_kristallon_oddity": {
+   "ad": "..::{ Boss Kristallon Oddity }::..",
+   "hp": 2000000,
+   "kalkan": 1500000,
+   "hasar": 25000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 256000,
+    "onur": 1280,
+    "kredi": 2048000,
+    "uridyum": 640
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 64
+   },
+   "npc_kimlik": 208,
+   "model": "237",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban ..::{ Boss Kristallon }::.. x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_uber_kristallon_oddity": {
+   "ad": "( Uber Kristallon Oddity )",
+   "hp": 4000000,
+   "kalkan": 3000000,
+   "hasar": 50000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 612500,
+    "onur": 2560,
+    "kredi": 4096000,
+    "uridyum": 1280
+   },
+   "kargo": {
+    "0": 2400,
+    "2": 2400,
+    "1": 2400,
+    "4": 512,
+    "5": 512,
+    "6": 128,
+    "3": 128
+   },
+   "npc_kimlik": 209,
+   "model": "238",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban ( UberKristallon ) x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_awakened_lordakium": {
+   "ad": "-=[ Awakened Lordakium ]=-",
+   "hp": 375000,
+   "kalkan": 250000,
+   "hasar": 4500,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 32000,
+    "onur": 160,
+    "kredi": 256000,
+    "uridyum": 80
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 64,
+    "5": 64,
+    "6": 8
+   },
+   "npc_kimlik": 210,
+   "model": "239",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Lordakium ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_awakened_overlord": {
+   "ad": "-=[ Awakened Overlord ]=-",
+   "hp": 1500000,
+   "kalkan": 1000000,
+   "hasar": 20000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 128000,
+    "onur": 640,
+    "kredi": 1024000,
+    "uridyum": 320
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 256,
+    "5": 256,
+    "6": 32,
+    "3": 32
+   },
+   "npc_kimlik": 211,
+   "model": "240",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban ..::{ Boss Lordakium }::... x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_awakened_devourer": {
+   "ad": "-=[ Awakened Devourer ]=-",
+   "hp": 3000000,
+   "kalkan": 2000000,
+   "hasar": 40000,
+   "hiz": 180,
+   "saldirgan": true,
+   "odul": {
+    "ep": 256000,
+    "onur": 1280,
+    "kredi": 2048000,
+    "uridyum": 640
+   },
+   "kargo": {
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 128
+   },
+   "npc_kimlik": 212,
+   "model": "241",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban ( UberLordakium ) x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_sheer_chaos_interceptor": {
+   "ad": "-=[ Sheer Chaos Interceptor ]=-",
+   "hp": 75000,
+   "kalkan": 50000,
+   "hasar": 625,
+   "hiz": 320,
+   "saldirgan": true,
+   "odul": {
+    "ep": 9375,
+    "onur": 50,
+    "kredi": 31250,
+    "uridyum": 25
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 18,
+    "5": 18,
+    "6": 2
+   },
+   "npc_kimlik": 288,
+   "model": "350",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Interceptor ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_sheer_chaos_annihilator": {
+   "ad": "-=[ Sheer Chaos Annihilator ]=-",
+   "hp": 375000,
+   "kalkan": 250000,
+   "hasar": 18750,
+   "hiz": 240,
+   "saldirgan": true,
+   "odul": {
+    "ep": 93750,
+    "onur": 160,
+    "kredi": 312500,
+    "uridyum": 81
+   },
+   "kargo": {
+    "0": 300,
+    "2": 300,
+    "1": 300,
+    "4": 48,
+    "5": 48,
+    "6": 12,
+    "3": 3
+   },
+   "npc_kimlik": 289,
+   "model": "351",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Annihilator ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
+  },
+  "etk_sheer_chaos_protegit": {
+   "ad": "-=[ Sheer Chaos Protegit ]=-",
+   "hp": 62500,
+   "kalkan": 50000,
+   "hasar": 1875,
+   "hiz": 300,
+   "saldirgan": true,
+   "odul": {
+    "ep": 8000,
+    "onur": 40,
+    "kredi": 16000,
+    "uridyum": 20
+   },
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 16,
+    "5": 16,
+    "6": 2
+   },
+   "npc_kimlik": 290,
+   "model": "352",
+   "haritalar": [],
+   "etkinlik": true,
+   "_kaynak": "taban -=[ Protegit ]=- x1.25 (uyarlama; wiki'de yok); görünüm istemcinin game.xml'i; Chaos Alien CPU'su doğurur"
   }
  },
  "haritalar": {

@@ -33,17 +33,24 @@ def state(p):
     return p.d.setdefault('gemi_yetenekleri', {})
 
 
+def row(p):
+    """Geminin yetenek satırı: giyilen tasarımın kendi satırı varsa o (Centurion'un yetenek tasarımları, Holo tasarımlarının
+    beklemesi, Hammerclaw Plus'ın Repair Pod'u; tools/gemi_yetenekleri.py)."""
+    s = p.ship()
+    return SHIPS.get(s.get('tasarim') or '') or SHIPS.get(s['lootId'], {})
+
+
 def ship_items(p):
-    return SHIPS.get(p.ship()['lootId'], {}).get('yetenekler', [])
+    return row(p).get('yetenekler', [])
 
 
 def factor(p, item, key):
-    return SHIPS.get(p.ship()['lootId'], {}).get('carpanlar', {}).get(item, {}).get(key, 1.0)
+    return row(p).get('carpanlar', {}).get(item, {}).get(key, 1.0)
 
 
 def ozel(p, item):
     """Geminin bu yetenek için kendi değerleri (istemcinin gemi verisi: sure_sn, bekleme_sn; wiki: etki)."""
-    return SHIPS.get(p.ship()['lootId'], {}).get('ozel', {}).get(item, {})
+    return row(p).get('ozel', {}).get(item, {})
 
 
 def etki(p, item):
