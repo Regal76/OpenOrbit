@@ -80,7 +80,10 @@
     "1": 20
    },
    "_kaynak": "wiki; hız ve saldırganlık uyarlama",
-   "npc_kimlik": 2
+   "npc_kimlik": 2,
+   "ek_odul": {
+    "resource_collectable_mucosum": 2
+   }
   },
   "24": {
    "ad": "..::{ Boss Lordakia }::..",
@@ -103,7 +106,10 @@
     "3": 1
    },
    "_kaynak": "wiki; hız ve saldırganlık uyarlama",
-   "npc_kimlik": 15
+   "npc_kimlik": 15,
+   "ek_odul": {
+    "resource_collectable_mucosum": 6
+   }
   },
   "23": {
    "ad": "..::{ Boss Streuner }::..",
@@ -148,7 +154,10 @@
     "6": 2
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: devolarium); hız, saldırganlık uyarlama",
-   "npc_kimlik": 3
+   "npc_kimlik": 3,
+   "ek_odul": {
+    "resource_collectable_boltrum": 1
+   }
   },
   "73": {
    "ad": "-=[ Mordon ]=-",
@@ -172,7 +181,10 @@
     "6": 1
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: mordon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 4
+   "npc_kimlik": 4,
+   "ek_odul": {
+    "resource_collectable_scrapium": 2
+   }
   },
   "75": {
    "ad": "-=[ Saimon ]=-",
@@ -195,7 +207,10 @@
     "5": 2
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: saimon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 6
+   "npc_kimlik": 6,
+   "ek_odul": {
+    "resource_collectable_scrapium": 2
+   }
   },
   "31": {
    "ad": "..::{ Boss Mordon }::..",
@@ -220,7 +235,10 @@
     "3": 8
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_mordon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 16
+   "npc_kimlik": 16,
+   "ek_odul": {
+    "resource_collectable_scrapium": 6
+   }
   },
   "25": {
    "ad": "..::{ Boss Saimon }::..",
@@ -245,7 +263,10 @@
     "3": 2
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_saimon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 17
+   "npc_kimlik": 17,
+   "ek_odul": {
+    "resource_collectable_scrapium": 6
+   }
   },
   "26": {
    "ad": "..::{ Boss Devolarium }::..",
@@ -270,7 +291,10 @@
     "3": 8
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_devolarium); hız, saldırganlık uyarlama",
-   "npc_kimlik": 18
+   "npc_kimlik": 18,
+   "ek_odul": {
+    "resource_collectable_boltrum": 3
+   }
   },
   "74": {
    "ad": "-=[ Sibelon ]=-",
@@ -294,7 +318,10 @@
     "6": 4
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: sibelon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 5
+   "npc_kimlik": 5,
+   "ek_odul": {
+    "resource_collectable_boltrum": 1
+   }
   },
   "46": {
    "ad": "..::{ Boss Sibelon }::..",
@@ -319,7 +346,10 @@
     "3": 32
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_sibelon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 20
+   "npc_kimlik": 20,
+   "ek_odul": {
+    "resource_collectable_boltrum": 3
+   }
   },
   "76": {
    "ad": "-=[ Sibelonit ]=-",
@@ -343,7 +373,10 @@
     "6": 1
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: sibelonit); hız, saldırganlık uyarlama",
-   "npc_kimlik": 7
+   "npc_kimlik": 7,
+   "ek_odul": {
+    "resource_collectable_mucosum": 2
+   }
   },
   "77": {
    "ad": "-=[ Lordakium ]=-",
@@ -367,7 +400,10 @@
     "6": 8
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: lordakium); hız, saldırganlık uyarlama",
-   "npc_kimlik": 8
+   "npc_kimlik": 8,
+   "ek_odul": {
+    "resource_collectable_mucosum": 2
+   }
   },
   "27": {
    "ad": "..::{ Boss Sibelonit }::..",
@@ -392,7 +428,10 @@
     "3": 8
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_sibelonit); hız, saldırganlık uyarlama",
-   "npc_kimlik": 19
+   "npc_kimlik": 19,
+   "ek_odul": {
+    "resource_collectable_mucosum": 6
+   }
   },
   "28": {
    "ad": "..::{ Boss Lordakium }::...",
@@ -417,7 +456,10 @@
     "3": 32
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_lordakium); hız, saldırganlık uyarlama",
-   "npc_kimlik": 21
+   "npc_kimlik": 21,
+   "ek_odul": {
+    "resource_collectable_mucosum": 6
+   }
   },
   "78": {
    "ad": "-=[ Kristallin ]=-",
@@ -441,7 +483,10 @@
     "6": 1
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: kristallin); hız, saldırganlık uyarlama",
-   "npc_kimlik": 9
+   "npc_kimlik": 9,
+   "ek_odul": {
+    "resource_collectable_prismatium": 1
+   }
   },
   "79": {
    "ad": "-=[ Kristallon ]=-",
@@ -465,7 +510,10 @@
     "6": 16
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: kristallon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 10
+   "npc_kimlik": 10,
+   "ek_odul": {
+    "resource_collectable_prismatium": 1
+   }
   },
   "80": {
    "ad": "-=[ Cubikon ]=-",
@@ -490,7 +538,10 @@
     "3": 160
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: cubikon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 13
+   "npc_kimlik": 13,
+   "ek_odul": {
+    "resource_collectable_bifenon": 2
+   }
   },
   "29": {
    "ad": "..::{ Boss Kristallin }::..",
@@ -515,7 +566,10 @@
     "3": 6
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallin); hız, saldırganlık uyarlama",
-   "npc_kimlik": 22
+   "npc_kimlik": 22,
+   "ek_odul": {
+    "resource_collectable_prismatium": 3
+   }
   },
   "35": {
    "ad": "..::{ Boss Kristallon }::..",
@@ -540,7 +594,10 @@
     "3": 64
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 23
+   "npc_kimlik": 23,
+   "ek_odul": {
+    "resource_collectable_prismatium": 3
+   }
   },
   "252": {
    "ad": "-=[ Plagued Kristallin ]=-",
@@ -685,7 +742,10 @@
     "3": 2
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakia); hız, saldırganlık uyarlama",
-   "npc_kimlik": 29
+   "npc_kimlik": 29,
+   "ek_odul": {
+    "resource_collectable_mucosum": 10
+   }
   },
   "43": {
    "ad": "( UberMordon )",
@@ -710,7 +770,10 @@
     "3": 8
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_mordon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 30
+   "npc_kimlik": 30,
+   "ek_odul": {
+    "resource_collectable_scrapium": 10
+   }
   },
   "38": {
    "ad": "( UberSaimon )",
@@ -735,7 +798,10 @@
     "3": 4
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_saimon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 31
+   "npc_kimlik": 31,
+   "ek_odul": {
+    "resource_collectable_scrapium": 10
+   }
   },
   "39": {
    "ad": "( UberDevolarium )",
@@ -760,7 +826,10 @@
     "3": 16
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_devolarium); hız, saldırganlık uyarlama",
-   "npc_kimlik": 32
+   "npc_kimlik": 32,
+   "ek_odul": {
+    "resource_collectable_boltrum": 5
+   }
   },
   "40": {
    "ad": "( UberSibelonit )",
@@ -785,7 +854,10 @@
     "3": 16
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_sibelonit); hız, saldırganlık uyarlama",
-   "npc_kimlik": 33
+   "npc_kimlik": 33,
+   "ek_odul": {
+    "resource_collectable_mucosum": 10
+   }
   },
   "47": {
    "ad": "( UberSibelon )",
@@ -810,7 +882,10 @@
     "3": 64
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_sibelon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 34
+   "npc_kimlik": 34,
+   "ek_odul": {
+    "resource_collectable_boltrum": 5
+   }
   },
   "41": {
    "ad": "( UberLordakium )",
@@ -835,7 +910,10 @@
     "3": 128
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakium); hız, saldırganlık uyarlama",
-   "npc_kimlik": 35
+   "npc_kimlik": 35,
+   "ek_odul": {
+    "resource_collectable_mucosum": 10
+   }
   },
   "42": {
    "ad": "( UberKristallin )",
@@ -860,7 +938,11 @@
     "3": 16
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_kristallin); hız, saldırganlık uyarlama",
-   "npc_kimlik": 36
+   "npc_kimlik": 36,
+   "ek_odul": {
+    "resource_collectable_prismatium": 5,
+    "resource_collectable_bifenon": 1
+   }
   },
   "45": {
    "ad": "( UberKristallon )",
@@ -885,7 +967,11 @@
     "3": 128
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_kristallon); hız, saldırganlık uyarlama",
-   "npc_kimlik": 37
+   "npc_kimlik": 37,
+   "ek_odul": {
+    "resource_collectable_prismatium": 5,
+    "resource_collectable_bifenon": 1
+   }
   },
   "44": {
    "ad": "( UberStreuneR )",
@@ -936,7 +1022,8 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: interceptor); hız, saldırganlık uyarlama",
    "npc_kimlik": 58,
    "ek_odul": {
-    "resource_collectable_bifenon": 1
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_aurus": 1
    }
   },
   "112": {
@@ -963,7 +1050,8 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: barracuda); hız, saldırganlık uyarlama",
    "npc_kimlik": 59,
    "ek_odul": {
-    "resource_collectable_bifenon": 1
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_aurus": 1
    }
   },
   "113": {
@@ -990,7 +1078,8 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: saboteur); hız, saldırganlık uyarlama",
    "npc_kimlik": 60,
    "ek_odul": {
-    "resource_collectable_bifenon": 1
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_aurus": 1
    }
   },
   "114": {
@@ -1018,7 +1107,8 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: annihilator); hız, saldırganlık uyarlama",
    "npc_kimlik": 61,
    "ek_odul": {
-    "resource_collectable_bifenon": 1
+    "resource_collectable_bifenon": 1,
+    "resource_collectable_aurus": 2
    }
   },
   "115": {
@@ -1046,7 +1136,8 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: battleray); hız, saldırganlık uyarlama",
    "npc_kimlik": 62,
    "ek_odul": {
-    "resource_collectable_bifenon": 2
+    "resource_collectable_bifenon": 2,
+    "resource_collectable_aurus": 3
    }
   },
   "npc121": {
@@ -1067,7 +1158,8 @@
    "npc_kimlik": 121,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
-    "resource_ore_palladium": 6
+    "resource_ore_palladium": 6,
+    "resource_collectable_aurus": 3
    },
    "model": "115",
    "_model_notu": "istemci: Battleray (115) tasarımı \"Deadly Battleray\""
@@ -1098,7 +1190,9 @@
    "ek_odul": {
     "resource_collectable_bifenon": 1,
     "resource_collectable_darksilver-coin": 1,
-    "resource_ore_palladium": 2
+    "resource_ore_palladium": 2,
+    "resource_collectable_aurus": 5,
+    "resource_collectable_tetrathrin": 1
    }
   },
   "255": {
@@ -1127,7 +1221,9 @@
    "ek_odul": {
     "resource_collectable_bifenon": 1,
     "resource_collectable_darksilver-coin": 1,
-    "resource_ore_palladium": 2
+    "resource_ore_palladium": 2,
+    "resource_collectable_aurus": 5,
+    "resource_collectable_tetrathrin": 1
    }
   },
   "258": {
@@ -1156,7 +1252,9 @@
    "ek_odul": {
     "resource_collectable_bifenon": 1,
     "resource_collectable_darksilver-coin": 1,
-    "resource_ore_palladium": 3
+    "resource_ore_palladium": 3,
+    "resource_collectable_aurus": 5,
+    "resource_collectable_tetrathrin": 1
    }
   },
   "254": {
@@ -1188,7 +1286,8 @@
     "resource_collectable_bifenon": 1,
     "resource_collectable_kyhalon": 1,
     "resource_collectable_tetrathrin": 1,
-    "resource_collectable_darksilver-coin": 1
+    "resource_collectable_darksilver-coin": 1,
+    "resource_collectable_aurus": 10
    }
   },
   "256": {
@@ -1217,7 +1316,8 @@
    "npc_kimlik": 167,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
-    "resource_ore_palladium": 6
+    "resource_ore_palladium": 6,
+    "resource_collectable_aurus": 15
    }
   },
   "217": {

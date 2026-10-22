@@ -11,9 +11,13 @@ Akış (kayıtta giriş listesi var; üretim istekleri istemcinin kodundan):
   AssemblySkipRequest        kalan süre uridyumla (dakikası 1 U, uyarlama)
   AssemblyRecipeSelectRequest  tarif görüldü (isNew kalkar)
   AssemblySetFilterRequest   pencerenin süzgeci profilde
-Hangi tarifler: kayıttaki listede o gün açık olanlar (ALWAYS_VISIBLE ve takvimdeki ON_SCHEDULE; tek oyunculu: hepsi sürekli açık, süreli
-olanlar da süresiz) ve ONLY_WHEN_OWNED olup tarifin kendisi depoda olanlar. Kullanım: ALWAYS_USABLE sınırsız, USABLE_ONCE bir kez,
-USABLE_ONCE_PER_SCHEDULE / USABLE_LIMIT_PER_SCHEDULE günde bir / en_cok kez (tek oyunculu: takvim günü). CostScalingFactor: aynı gün
+Hangi tarifler: kayıttaki listede o gün açık olanlar (ALWAYS_VISIBLE ve takvimdeki ON_SCHEDULE; tek oyunculu: hepsi sürekli açık) ve
+kayıtta olmayanlar (event_recipes): etkinlik parasını isteyenler (takvim.py 'para') etkinlik sürerken ya da elde o paradan varken,
+Champion Token'lılar elde jeton varken, ötekiler (tasarımlar, ONLY_WHEN_OWNED taslakları; tek oyunculu uyarlama) sürekli; kaynağı
+henüz olmayan malzemeyi isteyenler (NO_SOURCE) ve test tarifleri gizli. Etkin etkinliğin parasını isteyen tarif süreli
+(AssemblyRecipeTemporaryTypeModule: etkinliğin kalan süresi); listeden düşen tarif AssemblyRecipeRemoveCommand ile kalkar (üretimi
+sürenler kalır). Kullanım: ALWAYS_USABLE sınırsız, USABLE_ONCE bir kez, USABLE_ONCE_PER_SCHEDULE / USABLE_LIMIT_PER_SCHEDULE dönemde
+bir / en_cok kez (dönem: tarif etkin bir etkinliğe bağlıysa etkinlik dönemi, değilse takvim günü). CostScalingFactor: aynı dönemde
 her üretimde malzemeler bu oranla artar. Gemi isteyen tarifler (Plus gemileri): taban gemi etkin olmayanlardan harcanır; istemcinin
 sayacına etkin olan da sayılır (envanter.client_count), yalnız etkin gemiyle üretimde oyunun "ship in use" uyarısı.
 Profilde: assembly {uretim: {tarif: {adet, bitis, onceki}}, sayac: {tarif: toplam}, gunluk: {tarif: [gün, adet]}, gorulen: [tarif],
@@ -36,14 +40,46 @@ UNLOCK = {'recipe_blueprint-spartan': lambda p: ((p.d.get('kapilar') or {}).get(
           'recipe_blueprint-immunizer-cpu': lambda p: True}        # Quarantine Zone tek oyunculuda kalıcı (Aşama 8)
 SKIP_U_PER_MIN = 1                                                # uyarlama: kalan dakikası 1 uridyum
 NO_LIMIT = 'ALWAYS_USABLE'
+# kaynağı henüz olmayan malzemeler (yol haritası E8: Flower kutu avı, Plutus' Experiments, Permafrost Fissure): tarifleri gizli
+NO_SOURCE = {'resource_collectable_flower-token', 'resource_collectable_opitite', 'resource_collectable_tarnom',
+             'resource_collectable_proxium', 'resource_collectable_duothrin', 'resource_collectable_trittothrin',
+             'resource_collectable_quadrothrin'}
+CHAMPION = 'resource_collectable_champion-token'                  # aylık ödül (rutbe.py): jetonlu tarifler elde jeton varken
+TEST = 'recipe_recipe-test'
+LIST_CHECK_SN = 60                                                # etkinlik başlayınca / bitince tarif listesi
 
 
 def event_recipes(p, now=None):
-    """Etkinlik parasıyla yapılan tarifler (takvim.py 'para'): etkinlik sürerken ya da elde o paradan varken görünür."""
+    """Kayıtta olmayan tarifler: etkinlik parasını isteyenler (takvim.py 'para') etkinlik sürerken ya da elde o paradan varken,
+    Champion Token'lılar elde jeton varken, ötekiler sürekli; kaynağı olmayan malzemeyi isteyenler, test tarifleri ve koşulla
+    açılanlar (UNLOCK) dışarıda."""
     import takvim as TKV
-    cur = {l for k in TKV.active(now) for l in TKV.EVENTS[k].get('para', [])}
-    cur |= {l for e in TKV.EVENTS.values() for l in e.get('para', []) if p.resource(l) > 0}
-    return sorted(k for k, r in T.items() if r.get('gorunurluk') == 'ON_SCHEDULE' and cur & set(r.get('parcalar', {})))
+    para = {l for e in TKV.EVENTS.values() for l in e.get('para', [])} | {CHAMPION}
+    cur = {l for k in TKV.active(now) for l in TKV.EVENTS[k].get('para', [])} | {l for l in para if p.resource(l) > 0}
+    out = []
+    for k, r in T.items():
+        ps = set(r['parcalar'])
+        if 'kayitta' in r or k in UNLOCK or k.startswith(TEST) or ps & NO_SOURCE:
+            continue
+        if ps & cur or not ps & para:
+            out.append(k)
+    return sorted(out)
+
+
+def recipe_event(key, now=None):
+    """Tarifi parasıyla bağlayan etkin etkinlik (takvim.py 'para'; yoksa None)."""
+    import takvim as TKV
+    ps = set(T[key]['parcalar'])
+    return next((k for k in sorted(TKV.active(now)) if ps & set(TKV.EVENTS[k].get('para', []))), None)
+
+
+def period_of(key, now=None):
+    """'Dönemde bir kez / en çok' ve CostScalingFactor'ın dönemi: etkin etkinliğe bağlı tarifte etkinliğin başladığı gün, değilse
+    takvim günü (zorla açılmış etkinliğin dönemi yok: gün)."""
+    import takvim as TKV
+    ev = recipe_event(key, now)
+    span = TKV.period(ev, now) if ev else None
+    return '%s:%s' % (ev, today(span[0])) if span else today(now)
 
 
 def mod(name, **f):
@@ -60,7 +96,8 @@ class Assembly:
         self.p, self.log = profil, log
         self.m = None                 # mağaza (ödül ve envanter güncellemeleri; oturum bağlar)
         self.send = None              # zamanlayıcıyla biten üretimin bildirimi (oturum bağlar)
-        self.next_tick = 0.0
+        self.next_tick = self.next_list = 0.0
+        self.shown = None             # istemcideki tarif listesi (content); etkinlik bitince düşenler kaldırılır
         self.up = YK.Yukseltme(profil, log)   # Upgrade ve Disassembly sekmeleri (yukseltme.py)
 
     @property
@@ -72,16 +109,20 @@ class Assembly:
 
     # ------------------------------------------------------------ tarifler
     def visible(self):
-        """Pencerede görünen tarifler, kayıttaki sırayla; sonra depoda olan ONLY_WHEN_OWNED tarifler."""
+        """Pencerede görünen tarifler, kayıttaki sırayla; sonra depoda olan ONLY_WHEN_OWNED tarifler, koşulla açılanlar, kayıtta
+        olmayanlar (event_recipes) ve üretimi süren ya da toplanmamış olanlar (etkinlik bitse de)."""
         out = sorted((k for k, r in T.items() if 'kayitta' in r), key=lambda k: T[k]['kayitta'])
         out += sorted(k for k, r in T.items() if 'kayitta' not in r and r['gorunurluk'] == 'ONLY_WHEN_OWNED' and self.p.resource(k) > 0)
         out += [k for k, cond in UNLOCK.items() if k not in out and cond(self.p)]
-        out += [k for k in event_recipes(self.p) if k not in out]
-        return out
+        seen = set(out)
+        out += [k for k in event_recipes(self.p) if k not in seen]
+        seen = set(out)
+        return out + sorted(k for k in self.st['uretim'] if k in T and k not in seen)
 
     def used_today(self, key):
+        """Bu dönemdeki üretim adedi (period_of: etkinlik dönemi ya da gün)."""
         g = self.st['gunluk'].get(key)
-        return g[1] if g and g[0] == today() else 0
+        return g[1] if g and g[0] == period_of(key) else 0
 
     def limit_left(self, key):
         """Kalan kullanım (None: sınırsız)."""
@@ -124,12 +165,18 @@ class Assembly:
         return self.used_today(key)
 
     def recipe(self, key, now=None):
-        return mod('AssemblyRecipeModule', recipeLootId=key, targetItemId=0, type=mod('AssemblyRecipeRegularTypeModule'),
-                   status=self.status(key, now))
+        """Etkin etkinliğin parasını isteyen tarif süreli (pencerede kalan süre), öteki tarifler süresiz."""
+        import takvim as TKV
+        ev = recipe_event(key, now)
+        typ = (mod('AssemblyRecipeTemporaryTypeModule', remainingTimeMillis=TKV.time_left(ev, now) * 1000) if ev else
+               mod('AssemblyRecipeRegularTypeModule'))
+        return mod('AssemblyRecipeModule', recipeLootId=key, targetItemId=0, type=typ, status=self.status(key, now))
 
     def content(self):
         """Girişteki tarif listesi (kayıttaki komutun yerine)."""
-        return ('AssemblyRecipeContentModule', {'recipes': [self.recipe(k) for k in self.visible()] + self.up.recipes()})
+        keys = self.visible()
+        self.shown = set(keys)
+        return ('AssemblyRecipeContentModule', {'recipes': [self.recipe(k) for k in keys] + self.up.recipes()})
 
     def update(self, key, target=0, now=None):
         return ('AssemblyRecipeStatusUpdateCommand', dict(targetItemId=target, status=self.status(key, now), lootId=key))
@@ -163,8 +210,7 @@ class Assembly:
             if key not in self.st['gorulen']:
                 self.st['gorulen'].append(key)
             if r['kullanim'] != NO_LIMIT or r['olcek'] != 1:
-                g = self.st['gunluk'].get(key)
-                self.st['gunluk'][key] = [today(), (g[1] if g and g[0] == today() else 0) + amount]
+                self.st['gunluk'][key] = [period_of(key), self.used_today(key) + amount]
             self.p.dirty = True
         self.p.ach('assembly_build', tarif=key, adet=amount)
         self.log('   Assembly: %s x%d başladı (%d sn; %s)' % (key, amount, r['sure_sn'] * amount, need))
@@ -259,10 +305,22 @@ class Assembly:
 
     # ------------------------------------------------------------ zaman
     def tick(self, now):
-        """Saniyede bir: süresi biten üretimler hazır (istemciye ReadyToCollect)."""
+        """Saniyede bir: süresi biten üretimler hazır (istemciye ReadyToCollect); dakikada bir tarif listesi (etkinlik bitti:
+        AssemblyRecipeRemoveCommand, başladı: yeni liste)."""
         if now < self.next_tick:
             return
         self.next_tick = now + 1.0
+        if now >= self.next_list and self.shown is not None and self.send:
+            self.next_list = now + LIST_CHECK_SN
+            keys = self.visible()
+            gone = sorted(self.shown - set(keys))
+            if gone:
+                self.send([('AssemblyRecipeRemoveCommand', {'recipes': [mod('AssemblyRecipeKeyModule', lootId=k, targetId=0)
+                                                                         for k in gone]})])
+                self.log('   Assembly: %d tarif listeden kalktı (%s …)' % (len(gone), gone[0]))
+            if set(keys) - self.shown:
+                self.send([self.content()])
+            self.shown = set(keys)
         self.up.m, self.up.send, self.up.refresh = self.m, self.send, self.content
         self.up.tick(now)
         done = [k for k, b in self.st['uretim'].items() if not b.get('bildirildi') and now >= b['bitis']]

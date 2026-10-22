@@ -498,7 +498,8 @@
    "resource_collectable_tetrathrin",
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
-   "resource_collectable_triskelion-alloy"
+   "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy"
   ],
   "H-05": [
    "resource_collectable_permit",
@@ -511,7 +512,8 @@
    "resource_collectable_tetrathrin",
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
-   "resource_collectable_triskelion-alloy"
+   "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy"
   ],
   "R-01": [
    "resource_collectable_permit",
@@ -525,6 +527,7 @@
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
    "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy",
    "resource_pet-fuel",
    "resource_jumpvoucher",
    "resource_logfile",
@@ -543,6 +546,7 @@
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
    "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy",
    "resource_pet-fuel",
    "resource_jumpvoucher",
    "resource_logfile",
@@ -564,6 +568,7 @@
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
    "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy",
    "resource_pet-fuel",
    "resource_jumpvoucher",
    "resource_logfile",
@@ -585,6 +590,7 @@
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
    "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy",
    "resource_pet-fuel",
    "resource_jumpvoucher",
    "resource_logfile",
@@ -606,6 +612,7 @@
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
    "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy",
    "resource_pet-fuel",
    "resource_jumpvoucher",
    "resource_logfile",
@@ -628,6 +635,7 @@
    "resource_collectable_hydra-alloy",
    "resource_collectable_neptune-alloy",
    "resource_collectable_triskelion-alloy",
+   "resource_collectable_ouroboros-alloy",
    "resource_collectable_isochronate",
    "resource_collectable_axion-beam-regulator",
    "resource_collectable_indoctrineoil",
@@ -666,6 +674,7 @@
   "resource_collectable_hydra-alloy": 2,
   "resource_collectable_neptune-alloy": 2,
   "resource_collectable_triskelion-alloy": 2,
+  "resource_collectable_ouroboros-alloy": 2,
   "resource_collectable_diametrion": 5,
   "resource_collectable_polychromium": 10,
   "resource_collectable_axion-beam-regulator": 5,
@@ -691,7 +700,8 @@
   "resource_collectable_indoctrineoil": 0.4,
   "resource_collectable_hydra-alloy": 0.5,
   "resource_collectable_neptune-alloy": 0.5,
-  "resource_collectable_triskelion-alloy": 0.5
+  "resource_collectable_triskelion-alloy": 0.5,
+  "resource_collectable_ouroboros-alloy": 0.5
  },
  "yuvalar": {
   "baslangic": 2,

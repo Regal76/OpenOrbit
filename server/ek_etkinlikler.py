@@ -7,8 +7,8 @@ demetinde), login_replace(n, f) (giriş demetindeki kayıtlı mesajın yerine; N
 window(item) (pencere açıldı: UIButtonTriggerRequest).
 Sistemler: Chromin Rush (chromin.py), Hitac Word Puzzle ve Capsule Lottery (hitac_piyango.py), Fever (fever.py), Pursuit of Prestige
 (unvan_avi.py), Galaxy Trek (galaxy_trek.py), Fiesta Gate (fiesta.py), Infiltration (sizma.py), Urgent Missions (acil_gorevler.py),
-eski Invasion (istila.py); Ö4: Vortex of Greed (vortex.py), Treacherous Domain / World Boss 2025 (dunya_patronu.py), Mimesis Mutiny
-(mimesis.py). Ö4'ünkiler haritada dünyanın 'kapi'sını kurar (dalgalar, ölüm ekranı, radyasyon kancaları).
+eski Invasion (istila.py), etkinlik sonunda kalan paralar onura (etkinlik_sonu.py); Ö4: Vortex of Greed (vortex.py), Treacherous
+Domain / World Boss 2025 (dunya_patronu.py), Mimesis Mutiny (mimesis.py). Ö4'ünkiler haritada dünyanın 'kapi'sını kurar (dalgalar, ölüm ekranı, radyasyon kancaları).
 """
 import traceback
 
@@ -24,6 +24,7 @@ import istila as IS
 import vortex as VG
 import dunya_patronu as WB
 import mimesis as MM
+import etkinlik_sonu as ES
 
 
 class EkEtkinlikler:
@@ -41,13 +42,14 @@ class EkEtkinlikler:
         self.istila = IS.Istila(profil, magaza, ekapilar, log) if ekapilar else None
         self.sizma = SZ.Sizma(profil, magaza, log)
         self.acil = AG.AcilGorevler(profil, magaza, log)
+        self.sonu = ES.EtkinlikSonu(profil, magaza, log)                   # E3: kalan paralar onura
         self.vortex = VG.Vortex(profil, magaza, ekapilar, log)                  # Ö4
         self.patron = WB.DunyaPatronu(profil, magaza, ekapilar, log)
         self.mimesis = MM.Mimesis(profil, magaza, ekapilar, log)
         for s in (self.vortex, self.patron, self.mimesis):
             s.titles = self.unvan.grant_title
         self.patron.send = lambda msgs: self.send(msgs)
-        self.systems = [self.chromin, self.hitac, self.fever, self.unvan, self.trek, self.sizma, self.acil] + \
+        self.systems = [self.chromin, self.hitac, self.fever, self.unvan, self.trek, self.sizma, self.acil, self.sonu] + \
             [s for s in (self.fiesta, self.istila) if s] + [self.vortex, self.patron, self.mimesis]
         self.send = lambda msgs: None            # oturum bağlar
         self.world = None

@@ -34,6 +34,9 @@ TOP = {'exp': (4, 5, 6, 7), 'onur': (8, 9, 10, 11), 'puan': (0, 1, 2, 3, 16), 'k
 TOP_WEEK, TOP_CLIMB, TOP_MONTH = (2, 6, 10), (3, 7, 11), (16,)
 ORE_NAMES = {0: 'PROMETIUM', 1: 'ENDURIUM', 2: 'TERBIUM', 3: 'XENOMIT', 4: 'PROMETID', 5: 'DURANIUM', 6: 'PROMERIUM', 7: 'SEPROM',
              8: 'PALLADIUM'}
+# Champion Token ("Rewarded to the top pilots of each month"; Assembly'nin şampiyon tasarımları): tek oyunculuda aylık sıralamanın
+# birincisi oyuncu; etkin geçen ayın sonunda rütbeyle orantılı (uyarlama: en üst rütbede bir gemi tasarımı, 120)
+CHAMPION, CHAMPION_MAX = 'resource_collectable_champion-token', 120
 
 
 def stamp(t=None):
@@ -123,7 +126,7 @@ def daily_rank(p, now=None, force=False):
     b = breakdown(p, now)
     rank = rank_for(b['rankPoints'])
     icon = R['kanun_disi']['simge'] if p.d['pilot'].get('honourPoints', 0) <= R['kanun_disi']['onur'] else rank
-    prev = st.get('ay')
+    prev, prev_rank = st.get('ay'), st.get('rutbe') or 1
     monthly = bool(prev and prev != day[:7] and active_month(st.get('gecmis', {}), prev))
     with p.lock:
         st.update(gun=day, puan=b['rankPoints'], rutbe=rank, ay=day[:7])
@@ -135,6 +138,7 @@ def daily_rank(p, now=None, force=False):
         p.dirty = True
     if monthly:
         p.ach('monthly_rank')                       # başarım: aylık sıralama (basarim.SERVER_SIDE)
+        p.add_resource(CHAMPION, max(1, round(CHAMPION_MAX * prev_rank / len(R['esikler']))))
     return icon
 
 
