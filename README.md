@@ -148,6 +148,9 @@ The repository contains neither the game client nor the game's images: you downl
 download server (or the panel does it for you), and the server fetches each image from the official CDN the first time
 the game shows it and keeps it on your computer. The software is provided as is, without any warranty.
 
+The project's own code is released under the [MIT License](LICENSE). It doesn't cover Bigpoint's client, graphics,
+sounds, texts or game data.
+
 ---
 
 ## Türkçe
@@ -279,3 +282,6 @@ derlenmiştir. Resmî sunuculara bağlanmak ya da onlara zarar vermek için kull
 Depoda ne oyun istemcisi ne de oyunun görselleri var: istemciyi Bigpoint'in resmî indirme sunucusundan sen indirirsin (ya
 da panel senin için indirir); sunucu her görseli oyun onu ilk gösterdiğinde resmî CDN'den alır ve bilgisayarında saklar.
 Yazılım olduğu gibi, hiçbir garanti olmadan sunulur.
+
+Projenin kendi kodu [MIT Lisansı](LICENSE) ile yayımlanır. Bigpoint'in istemcisini, grafiklerini, seslerini, metinlerini
+ve oyun verilerini kapsamaz.
