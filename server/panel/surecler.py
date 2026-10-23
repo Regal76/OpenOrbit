@@ -9,7 +9,7 @@ ile durdurulur: dosya belirince profili kaydedip çıkar (zorla kapatmada son ka
 sonlandırılır. Portu başka süreç tutuyorsa (önceki oturumdan kalan sunucu, başka program) kim olduğu bulunur; panel yalnız bu
 projenin web.py / game.py süreçlerini kapatabilir.
 """
-import os, socket, subprocess, sys, threading, time
+import json, os, socket, subprocess, sys, threading, time
 
 from dil import t as _
 
@@ -254,6 +254,8 @@ class Yonetici:
                 cmd = [py, '-I', os.path.join(SERVER, SCRIPTS[ad]), self.logs, '--profil=%s' % profil]
                 durdur = None
                 ortam = None
+                if ad == 'web' and arkadas:          # sunucunun kendi oyuncusunun oturumu (cok_oyunculu AYAR['yerel'])
+                    cmd.append('--oturum=%s' % json.loads(arkadas)['yerel'])
                 if ad == 'oyun':
                     durdur = os.path.join(self.logs, '.durdur_oyun')
                     cmd += ['--ayarlar=%s' % ayarlar, '--durdur=%s' % durdur] + (['--kontrol'] if kontrol else [])

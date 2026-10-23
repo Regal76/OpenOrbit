@@ -562,8 +562,13 @@
    "ad": "Phase Out",
    "sure_sn": 0,
    "bekleme_sn": 60,
-   "etki": {},
-   "_not": "istemci: rastgele yöne 50 birim ışınlar (korsan haritası, Galaksi Kapısı, CSZ, UBA hariç); ışınlanmayı istemci kendisi çiziyor, konumun eşlenmesi canlıda doğrulanmadı: etkisiz"
+   "etki": {
+    "isinla": 50
+   },
+   "gorsel": {
+    "gorunum": 4
+   },
+   "_not": "istemci: rastgele yöne 50 birim ışınlar (korsan haritası, Galaksi Kapısı, CSZ, UBA hariç); VisualModifier PHASE_OUT (4) gemiyi süre boyunca soldurur, bitişte anlık MoveCommand gemiyi yeni yerine koyar (canlı K6)"
   },
   "ability_orcus_assimilate": {
    "ad": "Assimilate",

@@ -22,7 +22,8 @@ ise buraya verir; oyun istemcisinin ilk paketi uzunlukla başlar).
 Gövdeler JSON; "Content-Encoding: gzip" ile sıkıştırılmış da olabilir, "Accept-Encoding: gzip" isteyene yanıt sıkıştırılır.
 Yönetim (yalnız 127.0.0.1'den, panelin anahtarıyla): POST /yonetim/at {anahtar, oturum}: misafiri çıkar.
 İstemci girişte (LoginRequest) web girişinin verdiği sessionID'yi gönderir: misafirinki oturum anahtarı (bul), sunucunun kendi
-oyuncusununki web.py'nin SESSION'ı (YEREL_OTURUM; yalnız bu bilgisayardan).
+oyuncusununki web.py'nin SESSION'ı (AYAR['yerel']: panelin bu açılışta ürettiği belirteç; yalnız bu bilgisayardan).
+Yanlış katılma şifresi adres başına sınırlı (DENEME_SINIR denemeden sonra KILIT_SN kilit, 429).
 Sunucu kapatılırken (panelin "Durdur"u) misafirlerin son hâli yayımlanır ve bekleyen yoklamalara verilir (kapanis).
 """
 import collections, gzip, hmac, json, os, random, secrets, socket, threading, time, zlib
@@ -32,19 +33,25 @@ import profil as PF
 import yollar as YOL
 
 PROTOKOL = 1                    # hesap gönderiminin sürümü: misafirin paneliyle aynı olmalı
-YEREL_OTURUM = 'localtest'      # web.py SESSION: sunucunun kendi oyuncusu
 UID_ALT, UID_UST = 2000000000, 2100000000     # misafirlerin sunucudaki geçici kimlikleri (int32; kayıt kimlikleriyle karışmaz)
-GOVDE_SINIR = 32 * 1024 * 1024
+GOVDE_SINIR = 8 * 1024 * 1024   # hesap gönderimi (kayıtlar ~0,4 MB); şifreden önce okunur
+DENEME_SINIR, KILIT_SN = 5, 60  # adres başına yanlış şifre: bu kadar denemeden sonra bu kadar saniye kilit
 BASLIK_SINIR = 64 * 1024
 BEKLE_EN_COK = 30
 BOSTA_SN = 30 * 60              # bağlı değil ve yoklanmıyor: kayıt bu kadar sonra bırakılır (veri misafirin panelinde)
 BITIS_SN = 120                  # biten oturumun son hâli bu kadar daha alınabilir (yoklama arasında biten oturum kaybolmasın)
 SOHBET_PORTU = 7771
 
-AYAR = {'acik': False, 'sifre': '', 'en_cok': 4, 'anahtar': None, 'kod': '', 'adres': '0.0.0.0'}
+AYAR = {'acik': False, 'sifre': '', 'en_cok': 4, 'anahtar': None, 'kod': '', 'adres': '0.0.0.0', 'yerel': ''}
 COND = threading.Condition()
 MISAFIRLER = {}                 # oturum anahtarı -> Misafir
+HATALI = {}                     # adres -> [yanlış şifre sayısı, kilidin bitişi]
 log = print
+
+
+def esit(a, b):
+    """Gizli değerlerin karşılaştırması (sabit süreli; str'de ASCII dışı karakter TypeError veriyordu)."""
+    return hmac.compare_digest(str(a or '').encode('utf8'), str(b or '').encode('utf8'))
 
 
 def configure(raw, logger=print):
@@ -55,8 +62,16 @@ def configure(raw, logger=print):
         d = json.loads(raw or '{}')
     except ValueError:
         d = {}
+    # yerel: sunucunun kendi oyuncusunun oturumu (panel her açılışta üretir, kendi web.py'sine de verir). Sabit 'localtest'
+    # tünelle açılan sunucuda (bağlantılar 127.0.0.1'den görünür) şifresiz girişti
     AYAR.update(acik=True, sifre=str(d.get('sifre') or ''), en_cok=max(1, min(16, int(d.get('en_cok') or 4))),
-                anahtar=d.get('anahtar') or None, kod=str(d.get('kod') or ''), adres=str(d.get('adres') or '0.0.0.0'))
+                anahtar=d.get('anahtar') or None, kod=str(d.get('kod') or ''), adres=str(d.get('adres') or '0.0.0.0'),
+                yerel=str(d.get('yerel') or '') or secrets.token_urlsafe(24))
+
+
+def yerel_mi(sid):
+    """LoginRequest'in sessionID'si sunucunun kendi oyuncusunun mu."""
+    return bool(AYAR['yerel']) and esit(sid, AYAR['yerel'])
 
 
 def acik():
@@ -162,13 +177,27 @@ def giris(body, ip, tohum, sunucu_uid):
     """POST /misafir/giris -> (durum kodu, yanıt)."""
     if int(body.get('surum') or 0) != PROTOKOL:
         return 409, {'hata': 'surum', 'mesaj': 'Hesap gönderiminin sürümü farklı (sunucu %d): ikiniz de paneli güncelleyin.' % PROTOKOL}
-    if AYAR['sifre'] and not hmac.compare_digest(str(body.get('sifre') or '').encode('utf8'), AYAR['sifre'].encode('utf8')):
-        return 403, {'hata': 'sifre', 'mesaj': 'Katılma şifresi yanlış.'}
+    if AYAR['sifre']:
+        now = time.time()
+        with COND:
+            h = HATALI.get(ip)
+            if h and h[1] > now:
+                return 429, {'hata': 'bekle', 'mesaj': 'Çok fazla yanlış şifre: %d saniye sonra yeniden dene.' % (h[1] - now + 1)}
+        if not esit(body.get('sifre'), AYAR['sifre']):
+            with COND:
+                h = HATALI.setdefault(ip, [0, 0])
+                h[0] += 1
+                if h[0] >= DENEME_SINIR:
+                    h[:] = [0, now + KILIT_SN]
+                    log('arkadaş: %s için yanlış şifre sınırı, %d sn kilit' % (ip, KILIT_SN))
+            return 403, {'hata': 'sifre', 'mesaj': 'Katılma şifresi yanlış.'}
+        with COND:
+            HATALI.pop(ip, None)
     anahtar = str(body.get('anahtar') or '')
     if len(anahtar) < 16:
         return 400, {'hata': 'anahtar', 'mesaj': 'Misafir anahtarı eksik.'}
     with COND:
-        eski = next((m for m in MISAFIRLER.values() if hmac.compare_digest(m.anahtar, anahtar) and not m.bitti), None)
+        eski = next((m for m in MISAFIRLER.values() if esit(m.anahtar, anahtar) and not m.bitti), None)
         if eski:                                  # yeniden giriş: sunucudaki son hâl sürer
             eski.son, eski.ip = time.time(), ip
             eski.adres = str(body.get('adres') or eski.adres)
@@ -195,7 +224,7 @@ def _misafir(q):
     """Oturum ve anahtar tutan misafir ya da None."""
     with COND:
         m = MISAFIRLER.get(str(q.get('oturum') or ''))
-    if m and hmac.compare_digest(m.anahtar, str(q.get('anahtar') or '')):
+    if m and esit(m.anahtar, q.get('anahtar')):
         return m
     return None
 
@@ -394,7 +423,8 @@ def _yanit(c, code, obj, gz=False):
     if gz and len(data) > 2048:
         data = gzip.compress(data, 6)
         extra = 'Content-Encoding: gzip\r\n'
-    status = {200: 'OK', 400: 'Bad Request', 403: 'Forbidden', 404: 'Not Found', 409: 'Conflict', 503: 'Service Unavailable'}.get(code, 'OK')
+    status = {200: 'OK', 400: 'Bad Request', 403: 'Forbidden', 404: 'Not Found', 409: 'Conflict', 429: 'Too Many Requests',
+              503: 'Service Unavailable'}.get(code, 'OK')
     c.sendall(('HTTP/1.1 %d %s\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: %d\r\n%sConnection: close\r\n'
                'X-DarkOrbit: arkadas\r\n\r\n' % (code, status, len(data), extra)).encode('latin-1') + data)
 
@@ -426,7 +456,7 @@ def http(c, addr, game):
         elif u.path == '/misafir/cikis' and method == 'POST':
             code, out = cikis(b, game.kapat_oturum)
         elif u.path == '/yonetim/at' and method == 'POST' and ip in ('127.0.0.1', '::1') and AYAR['anahtar'] \
-                and hmac.compare_digest(str(b.get('anahtar') or ''), AYAR['anahtar']):
+                and esit(b.get('anahtar'), AYAR['anahtar']):
             m = next((x for x in liste() if x.oturum.startswith(str(b.get('oturum') or '-'))), None)
             if m:
                 bitir(m, game.kapat_oturum, 'sunucu çıkardı')

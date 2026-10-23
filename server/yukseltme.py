@@ -22,6 +22,7 @@ import datetime, json, math, os, time
 import envanter as INV
 import ayar as AY
 import takvim as TK
+import rutbe as RT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = json.load(open(os.path.join(HERE, 'data', 'istemci_esyalari.json'), encoding='utf8'))
@@ -199,6 +200,7 @@ class Yukseltme:
         kind, loot, ref = t
         self.set_level(kind, ref, b['seviye'])
         self.p.ach('upgrade', esya=loot, seviye=b['seviye'])
+        RT.note(self.p, 'upgraded_item', loot, b['seviye'])     # seyir defteri: log_message_upgrade_finished (%item% info'dan, %level%)
         self.log('   yükseltme bitti: %s seviye %d' % (loot, b['seviye']))
         return self.item_msgs(kind, loot, ref) + [self.update(key, tid, now)]
 
@@ -287,6 +289,7 @@ class Yukseltme:
             if not self.m:
                 self.p.add_resource(l, n)
         self.log('   Disassembly: %s (seviye %d) söküldü, ücret %s, geri %s' % (loot, lv, fee, back))
+        RT.note(self.p, 'disassembled_item', loot, lv)          # seyir defteri: log_message_disassembly_finished (%item% info'dan)
         return msgs + [self.update(key, iid)]
 
     # ------------------------------------------------------------ istekler

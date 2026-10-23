@@ -47,7 +47,7 @@ KRONOS_PARTS = next((v['parca'] for v in KAPI.values() if 'kaynaklar' in v), 0)
 # istemcinin enum'ları (GalaxyGateBuilder*)
 IN_PROGRESS, FINISHED = 0, 1
 ERR_NONE, ERR_MONEY, ERR_OTHER = 0, 1, 2
-BATTERY, ORE, VOUCHER, PART, HITPOINTS, LOGFILE = 1, 4, 5, 6, 7, 8
+BATTERY, ROCKET, MINE, ORE, VOUCHER, PART, HITPOINTS, LOGFILE = 1, 2, 3, 4, 5, 6, 7, 8
 CAT_AMMO, CAT_RES, CAT_VOUCHER, CAT_PART, CAT_SPECIAL, CAT_LOG = 1, 2, 3, 4, 5, 6
 XENOMIT, XENOMIT_ITEM = 3, 4              # sunucunun cevher türü; istemcinin üretici kimliği (kayıt: ORE 4)
 PORTAL_BASE = 150900000                   # kapı portallarının kimliği: + kapı kimliği (X-1), + 50 + kimlik (kapıdan çıkış),
@@ -172,6 +172,12 @@ def bonus_selection(now=None):
     pick = rng.sample(gates, min(n, len(gates)))
     loots = rng.sample(pool, len(pick)) if len(pool) >= len(pick) else [rng.choice(pool) for _ in pick]
     return {k: (l, bonus_amount(a)) for k, (l, a) in zip(pick, loots)}
+
+
+def ammo_type(loot):
+    """Cephane sonucunun türü. Roket ve mayın LootItemModule'le gider (istemci ParseOutputList: tür 2/3, item_id 3 -> PLT-2021,
+    11 -> ACM-01; AmmoOutputVo.ToStr: log_entry_rocket, log_entry_mine_s/p); lazer cephanesi pille."""
+    return ROCKET if loot.startswith('ammunition_rocket_') else MINE if loot.startswith('ammunition_mine_') else BATTERY
 
 
 def weights():
@@ -435,7 +441,7 @@ class Kapilar:
             if left:                                       # gerekenden fazlası cephane
                 loot, iid, amount = random.choice(K['cephane'])
                 grants[loot] = grants.get(loot, 0) + amount * left
-                out.append(dict(type=BATTERY, item_id=iid, amount=amount * left, mult=left))
+                out.append(dict(type=ammo_type(loot), item_id=iid, amount=amount * left, mult=left))
             return out
         if cat == CAT_PART:
             pid = random.randint(1, g['parca'])
@@ -456,7 +462,7 @@ class Kapilar:
         if cat == CAT_AMMO:
             loot, iid, amount = random.choice(K['cephane'])
             grants[loot] = grants.get(loot, 0) + amount * mult
-            return [dict(type=BATTERY, item_id=iid, amount=amount * mult, mult=mult)]
+            return [dict(type=ammo_type(loot), item_id=iid, amount=amount * mult, mult=mult)]
         if cat == CAT_RES:
             amount = random.randint(*K['xenomit']) * mult
             grants['xenomit'] = grants.get('xenomit', 0) + amount

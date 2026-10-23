@@ -21,6 +21,7 @@ Profilde: kararsiz {itemId: {nitelik: [[ad, değer]], gemiler, hak, onceki}}.
 import json, os, random, re
 
 import envanter as INV
+import rutbe as RT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 M = json.load(open(os.path.join(HERE, 'data', 'gemi_modulleri.json'), encoding='utf8'))['moduller']
@@ -205,6 +206,7 @@ class Moduller:
             rec['hak'] -= 1
             self.p.dirty = True
         self.log('   Restabilize: %s -> %s %s' % (loot, rec['nitelik'], rec['gemiler']))
+        RT.note(self.p, 'his_rerolled_unstable_module', loot, REROLL_COST)    # seyir defteri (%NAME% info'dan, %COUNT%)
         return self.after(iid, [self.result(iid, old, module_msg(self.p, iid))])
 
     def restabilise(self, f):
@@ -264,6 +266,7 @@ class Moduller:
         if not self.m:
             self.p.add_resource(SHARD, RECYCLE)
         self.log('   geri dönüşüm: %s -> %d shard' % (loot, RECYCLE))
+        RT.note(self.p, 'his_recycled_unstable_module', loot, RECYCLE)
         return msgs + [('UnstableModuleRecycleResultCommand', dict(itemId=iid, shardCommand=shard_cmd(self.p))), list_cmd(self.p)]
 
     def after(self, iid, msgs):

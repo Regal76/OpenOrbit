@@ -182,13 +182,15 @@ class HaritaEtkinlik:
         return msgs
 
     # ------------------------------------------------------------ olaylar
-    def on_kill(self, n, x, y, now=None):
+    def on_kill(self, n, x, y, now=None, w=None):
+        """w: öldüren dünya (ortak haritada self.w lider; düşmeler ve ek ödüller öldürenin)."""
+        w = w or self.w
         kt = n.d.get('kutu')                   # türün kutusu (etkinlik kapıları: dalga kutusu, Plutus'un paketi, Synk'in kutusu)
         if kt and random.random() < AY.chance('dusme', kt.get('olasilik', 1.0)):
-            h = self.w.drop_box(kt['tur'], x, y, None, kt.get('omur_sn', 300))
-            self.w.boxes[h]['etk'] = kt
+            h = w.drop_box(kt['tur'], x, y, None, kt.get('omur_sn', 300))
+            w.boxes[h]['etk'] = kt
         now = time.time() if now is None else now
-        w, b, msgs = self.w, base(n.tip), []
+        b, msgs = base(n.tip), []
         trick = (n.tip.startswith('etk_') and w.items is not None
                  and random.random() < max([s.get('hile', {}).get(b, 0) for k, s in self.here(now)] or [0]))
         if trick:                                                       # Trick: sandık yerine toplanamayan mayın

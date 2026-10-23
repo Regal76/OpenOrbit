@@ -347,8 +347,8 @@ class Sohbet:
     def broadcast(self, path, msg, ep, user):
         out = {'t': T_MESSAGE, 'path': path, 'data': {'msg': msg, 'sentAt': str(int(time.time() * 1000))},
                'endpointObject': {'path': '/endpoint/%s/' % ep, 'endpoint': ep, 'data': user}}
-        with self.lock:
-            conns = [x for x in self.conns.values() if path in x.handlers]
+        with self.lock:      # yalnız giriş yapmış bağlantılar: arkadaş sunucusunda 7771 ağa açık, kaydolan herkes dinliyordu
+            conns = [x for x in self.conns.values() if x.user and path in x.handlers]
         for x in conns:
             x.send(out)
         return len(conns)

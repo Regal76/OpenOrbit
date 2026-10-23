@@ -43,6 +43,8 @@ class Sosyal:
     # -------------------------------------------------------- istekler
     def handle(self, name, f, now):
         if name == 'ChatAuthenticateUserRequest':
+            if self.m:
+                self.m.dil = f.get('language')          # istemcinin dili: ham ret metinleri (magaza.neden)
             self.chat_login(f.get('endpointId', ''), f.get('language'))
             return []
         if name in PS.REQUESTS:
@@ -108,13 +110,12 @@ class Sosyal:
         ok = self.sohbet.authenticate(ep, self.chat_user(), self.rooms(), lang)
         if ok and not self.welcomed:                  # harita değişiminde istemci yeniden bağlanabilir: duyuru oturumda bir kez
             self.welcomed = True
-            pl = self.p.d['pilot']
-            if self.sohbet.adres == '127.0.0.1':
-                self.sohbet.duyuru('%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.'
-                                   % pl.get('userName', ''), kim=str(self.p.user_id))
-            else:
-                self.sohbet.duyuru('%s, arkadaş sunucusuna hoş geldin. Sohbet ortak; posta, klan ve müzayede her oyuncunun kendisinin.'
-                                   % pl.get('userName', ''), kim=str(self.p.user_id))
+            yerel = self.sohbet.adres == '127.0.0.1'
+            text = (('%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.' if yerel else
+                     '%s, arkadaş sunucusuna hoş geldin. Sohbet ortak; posta, klan ve müzayede her oyuncunun kendisinin.') if lang == 'tr'
+                    else ('%s, welcome to your local server. Chat, mail, clan and auction are single-player here.' if yerel else
+                          "%s, welcome to your friend's server. Chat is shared; mail, clan and auction are each player's own."))
+            self.sohbet.duyuru(text % self.p.d['pilot'].get('userName', ''), kim=str(self.p.user_id))
         return ok
 
     def clan_changed(self):

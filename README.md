@@ -189,7 +189,7 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 - **Kaydın senin:** sunucu misafirlerin kaydını yalnız bellekte tutar; sunucunun Kayıtlar sayfasında görünmez.
 - **Ortak olanlar:** firma, savaş ve Blacklight haritaları (1-1 … 5-4, BL): uzaylılar, kutular ve cevherler, birbirinizi
   görürsünüz. Sohbet ortak. Kapı, mod ve etkinlik haritaları herkesin kendi kopyası; posta, klan ve müzayede kişisel.
-  Sunucunun oyun ayarları herkese uygulanır. PvP yok.
+  Sunucunun oyun ayarları herkese uygulanır (GM konsolu yalnız sunucuyu kuranda). PvP yok.
 - İki tarafta da panel ve oyun sürümü aynı olmalı.
 
 ### Gereksinimler

@@ -33,8 +33,9 @@ REQUESTS = ('CCInitRequest', 'CCommandRequest')
 ADMIN_RANK = 6000
 
 
-def enabled():
-    return bool(AY.get('gm_konsol'))
+def enabled(profil=None):
+    """Arkadaş sunucusunda yalnız sunucunun oyuncusu (misafire sunucunun ayarı açık olsa da kapalı)."""
+    return bool(AY.get('gm_konsol')) and getattr(profil, 'misafir', None) is None
 
 
 def mod(_cls, **f):
@@ -91,7 +92,7 @@ class Konsol:
         return [screen('GM: ' + text)]
 
     def handle(self, name, f):
-        if not enabled():
+        if not enabled(self.s.profil):
             self.log('   GM konsolu kapalı (panel: Geliştirici > GM konsolu): %s' % name)
             return []
         if name == 'CCInitRequest':

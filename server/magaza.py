@@ -150,6 +150,27 @@ def stack_msg(key, **args):
     return mod('BaseStackCommand', type=0, enumBaseKey=BASEKEY[key], stringBasekey='', argsList=lst)
 
 
+def raw_msg(text):
+    """Ham metin (type 1: stringBasekey olduğu gibi gösterilir; RES_YERINE gibi)."""
+    return mod('BaseStackCommand', type=1, enumBaseKey=0, stringBasekey=text, argsList=[])
+
+
+# istemcinin metinlerinde karşılığı olmayan ret nedenleri (BaseKey'lerde ve 40 metin dosyasında yok; istemci yalnız genel metni
+# gösteriyordu: N4, HAT-7/20) -> (İngilizce, Türkçe); istemcinin dilinde ham metin (Magaza.neden)
+NEDENLER = {
+    'pet_zaten': ('This item is already equipped on your P.E.T.', "Bu eşya P.E.T.'inde zaten takılı."),
+    'pet_dolu': ('Your P.E.T. has no free slot for this item.', "P.E.T.'inde bu eşya için boş yuva yok."),
+    'baska_gemi': ('This item is equipped on another ship. Unequip it there first.', 'Bu eşya başka bir gemide takılı; önce oradan çıkar.'),
+    'ayni_top': ('Your ship already has a cannon of this type.', 'Gemide bu türden bir top zaten takılı.'),
+    'qfc_gemi': ('This Quantum Fluid Core is bound to another ship.', 'Bu Quantum Fluid Core başka bir gemiye bağlı.'),
+    'ayni_qfc': ('Your ship already has a Quantum Fluid Core of this type.', 'Gemide bu türden bir Quantum Fluid Core zaten takılı.'),
+    'takili_satis': ('Equipped items cannot be sold. Unequip it first (check both configurations).',
+                     "Takılı eşya satılamaz; önce çıkar (iki config'e de bak)."),
+    'eksik_yukleme': ('Some equipment were not available to be loaded into the saved configuration.',
+                      "Kayıtlı config'teki bazı eşyalar yüklenemedi (satılmış ya da başka gemide)."),
+}
+
+
 # BaseKey adı istemcide metin bulamayanlar -> yüklenen kaynaktaki eşdeğeri (ve yer tutucuları). İstemci "resource_items_old"
 # kaynağını yüklüyor ama paketteki dosya "resource_item_old" (LocalizationManager): o dosyadaki anahtarlar (drone_have_max)
 # hiç bulunmuyor, hata penceresi boş açılıyordu (canlı test 2026-10-18). clan_errmsg_desc_to_long hiçbir kaynakta yok.
@@ -227,6 +248,7 @@ def copy(x):
 class Magaza:
     def __init__(self, profil, yanitlar, log=print):
         self.p, self.log = profil, log
+        self.dil = None          # istemcinin dili (ChatAuthenticateUserRequest.language; sosyal): ham ret metinleri (neden)
         self.kapilar = None      # Galaksi Kapıları (ödüldeki ücretsiz enerji; oturum bağlar)
         self.quest = None        # görev olayları (oturum: gorev.event; rafine edilen cevher toplama görevlerine sayılır)
         self.biletler = None     # (Season Pass, Battle Pass, günlük ödüller): oturum bağlar; pass eşyaları onlara gider
@@ -635,6 +657,11 @@ class Magaza:
     def feature(self, category, loot, sec=15.0):
         """Bu kategorinin sonraki listelerinde (sec saniye) bu ürün başta."""
         self.featured = (category, loot, time.time() + sec) if loot else None
+
+    def neden(self, key):
+        """NEDENLER'den istemcinin dilinde ham metin (Türkçe istemciye Türkçe, ötekilere İngilizce)."""
+        en, tr = NEDENLER[key]
+        return raw_msg(tr if self.dil == 'tr' else en)
 
     def money_msgs(self):
         pl = self.p.d['pilot']
@@ -1128,7 +1155,8 @@ class Magaza:
     def sell(self, f):
         """HangarShipSellItemRequest {itemList: [{itemId, quantity}]}: envanterdeki takılı olmayan eşya ya da cephane. Hepsi
         satılabiliyorsa satılır (InventoryItemRemovedCommand / sayaç güncellemesi + para), yoksa hiçbiri."""
-        fail = lambda: [('HangarShipSellItemCommand', dict(errorMessage=stack_msg('eqt_error_generic'), resultId=0))]
+        fail = lambda neden=None: [('HangarShipSellItemCommand', dict(
+            errorMessage=self.neden(neden) if neden else stack_msg('eqt_error_generic'), resultId=0))]
         equipped = self.p.equipped_ids()
         ammo_ids = {self.item_id(l): l for l in self.p.d['cephane']}
         plan = []
@@ -1138,7 +1166,7 @@ class Magaza:
             if loot:
                 if iid in equipped:
                     self.log('   satış yok: %s takılı' % loot)
-                    return fail()
+                    return fail('takili_satis')
                 q = 1
             elif iid in ammo_ids:
                 loot = ammo_ids[iid]
@@ -1492,7 +1520,8 @@ class Magaza:
         disc = [('UserInventoryModule', dict(activePremiumDiscount=int(round(shop * 100)), activeRebateSubDiscount=0,
                                              inventoryItemModules=[f['item'] for n, f in counts],
                                              activeHappyUpgradeDiscount=int(round(hour * 100))))] if hour or shop else []
-        return msgs + self.drone_msgs() + counts + disc        # Upgrade Hour (H40) ya da Shop Discount sürüyorsa indirim
+        # hızlı alım öğeleri: şablonun ipucunda kayıttaki hesabın "ttip_currency_missing" satırı vardı, paraya göre (canlı K7)
+        return msgs + self.drone_msgs() + counts + disc + self.quick_buy_msgs()   # Upgrade Hour (H40) ya da Shop Discount sürüyorsa indirim
 
     def count_msgs(self):
         """Girişte istemcinin eşya sayaçları (InventoryItemUpdatedCommand): Assembly malzemeleri buradan sayılır; kayıttaki girişte
@@ -1616,8 +1645,7 @@ class Magaza:
             self.p.dirty = True
             self.p.sync_ekipman()
         self.log('   hangar: %s config yüklendi (%d eşya bulunamadı)' % (ship['lootId'], missing))
-        desc = mod('BaseStackCommand', type=0, enumBaseKey=0, argsList=[],
-                   stringBasekey='Some equipment were not available to be loaded into the saved configuration.') if missing             else stack_msg('popup_load_success_description')
+        desc = self.neden('eksik_yukleme') if missing             else stack_msg('popup_load_success_description')
         msgs = [('HangarShipLoadConfigCommand', {'title': stack_msg('popup_load_success_title'), 'description': desc, 'resultId': 1}),
                 self.equipment_cmd(sid)]
         return msgs + (self.apply_stats() if sid == self.p.d['aktif_gemi'] else [])
@@ -1659,7 +1687,7 @@ class Magaza:
         active = sid == self.p.d['aktif_gemi'] and str(cid) == str(ship['aktif_konfig'])
         to_inv = dst in INVENTORY
         drone = self.p.drone(f.get('droneId') or 0) if dst == 'drone' else None
-        moved, err = [], None
+        moved, err, sebep = [], None, None
         with self.p.lock:
             cfg = self.p.config(cid, sid)
             dcfg = self.p.drone_config(cid, sid)
@@ -1680,9 +1708,10 @@ class Magaza:
                             return True
                 return False
 
-            def fail(why):
-                nonlocal err
+            def fail(why, neden=None):
+                nonlocal err, sebep
                 err = err or 'error_can_not_equip_to_slot'
+                sebep = sebep or neden
                 self.log('   hangar: %s' % why)
 
             for iid in ids:
@@ -1723,11 +1752,11 @@ class Magaza:
                         old = lst.pop()
                         moved.append((old, self.p.d['esyalar'].get(str(old), '')))
                     if busy.get(iid, ship['hangarId']) != ship['hangarId']:
-                        fail('%s başka gemide takılı' % loot)
+                        fail('%s başka gemide takılı' % loot, 'baska_gemi')
                     elif len(lst) >= self.pet.open_slots(pslot):
-                        fail('P.E.T. %s yuvaları dolu (%d)' % (pslot, self.pet.open_slots(pslot)))
+                        fail('P.E.T. %s yuvaları dolu (%d)' % (pslot, self.pet.open_slots(pslot)), 'pet_dolu')
                     elif pslot in PETM.UNIQUE and loot in [self.p.d['esyalar'].get(str(i)) for i in lst]:
-                        fail('%s zaten takılı' % loot)
+                        fail('%s zaten takılı' % loot, 'pet_zaten')
                     elif self.pet.d['seviye'] < PETM.level_need(self.p.item_level(iid)):
                         fail('%s seviye %d: P.E.T. seviyesi %d gerekir' % (loot, self.p.item_level(iid),
                                                                            PETM.level_need(self.p.item_level(iid))))
@@ -1755,13 +1784,14 @@ class Magaza:
                     if iid in lst:
                         continue
                     if busy.get(iid, ship['hangarId']) != ship['hangarId']:
-                        fail('%s başka gemide takılı' % loot)
+                        fail('%s başka gemide takılı' % loot, 'baska_gemi')
                     elif slot == 'upgrades' and not GM.equip_allowed(self.p, iid, ship['lootId']):
                         fail('%s bu gemiye takılmaz (%s)' % (loot, ship['lootId']))      # modülün gemileri
                     elif slot == 'QuantumFluidCore' and QF.equip_allowed(self.p, iid, ship['lootId'], lst):
-                        fail('%s: %s' % (loot, QF.equip_allowed(self.p, iid, ship['lootId'], lst)))     # bağlı gemi, AX/DF birer
+                        fail('%s: %s' % (loot, QF.equip_allowed(self.p, iid, ship['lootId'], lst)),     # bağlı gemi, AX/DF birer
+                             'qfc_gemi' if (QF.state(self.p, iid) or {}).get('gemi') != ship['lootId'] else 'ayni_qfc')
                     elif slot in PC.SLOTS and PC.equip_allowed(self.p, iid, slot, lst):
-                        fail('%s: %s' % (loot, PC.equip_allowed(self.p, iid, slot, lst)))               # her türden bir top
+                        fail('%s: %s' % (loot, PC.equip_allowed(self.p, iid, slot, lst)), 'ayni_top')   # her türden bir top
                     elif len(lst) >= self.capacity(slot, sid):
                         fail('%s yuvaları dolu' % slot)
                     else:
@@ -1778,7 +1808,8 @@ class Magaza:
         self.log('   hangar %s config %s: %s %s -> %s%s%s' % (ship['lootId'], cid, ', '.join(l.rsplit('_', 1)[-1] for i, l in moved) or '-',
                                                             src, dst, where, ' (hata: %s)' % err if err else ''))
         ok = bool(moved) or not err
-        msgs = [('HangarShipMoveItemsCommand', {'result': 1 if ok else 0, 'errorMessage': None if ok else stack_msg(err)})]
+        msg = self.neden(sebep) if sebep and err == 'error_can_not_equip_to_slot' else stack_msg(err) if err else None
+        msgs = [('HangarShipMoveItemsCommand', {'result': 1 if ok else 0, 'errorMessage': None if ok else msg})]
         if moved:
             hm = self.p.hangar_map()
             msgs += [self.inv_item(i, l, 1, hm.get(i, 0)) for i, l in moved]
@@ -1893,6 +1924,8 @@ class Magaza:
                 ('HitpointInfoCommand', dict(hitpoints=int(g.get('hitPoints', 0)), hitpointsMax=g.get('hitMax', 0),
                                              nanoHull=int(g.get('nanoHull', 0)), nanoHullMax=g.get('maxNanoHull', 0))),
                 ('AttributeShieldUpdateCommand', {'shieldNow': int(g.get('shield', 0)), 'shieldMax': g.get('shieldMax', 0)}),
+                # kayıttaki gibi kalkan yeteneği parıltısı yok (shieldSkillId 0: istemci varsa ShieldEffect'i kaldırır; K3)
+                ('AttributeSkillShieldUpdateCommand', {'shieldSkillId': 0, 'minSkinShieldTwinkle': 10, 'maxSkinShieldTwinkle': 100}),
                 legacy('0|n|e|%d|0|0' % uid), stage, legacy('0|n|INV|%d|0' % uid), legacy('0|S|CFG|%d' % n)]
         if s['speed'] is not None:
             msgs.append(('AttributeShipSpeedUpdateCommand', {'newSpeed': s['speed'], 'displaySpeed': s['display']}))

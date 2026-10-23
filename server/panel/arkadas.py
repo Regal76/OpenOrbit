@@ -13,7 +13,7 @@ sonraki katılmada sunucudaki son hâl alınır; yerel kayıt o arada değiştiy
 import gzip, json, os, re, secrets, socket, threading, time, zlib
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
-from urllib.request import ProxyHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from dil import t as _
 
@@ -23,7 +23,14 @@ PROTOKOL = 1                    # server/cok_oyunculu.PROTOKOL: hesap gönderimi
 BEKLE_SN = 25                   # uzun yoklamanın süresi
 YANIT_SINIR = 64 * 1024 * 1024
 GENEL_IP_HIZMETI = 'https://api.ipify.org'
-OPENER = build_opener(ProxyHandler({}))       # yerel ağdaki sunucuya sistemin vekil sunucusu (proxy) üzerinden gidilmesin
+
+
+class _Yonlendirmesiz(HTTPRedirectHandler):
+    def redirect_request(self, *a, **k):
+        return None               # yönlendirme izlenmez (oturum ve anahtar başka adrese gitmesin): 3xx yanıt HTTPError olur
+
+
+OPENER = build_opener(ProxyHandler({}), _Yonlendirmesiz())   # yerel ağdaki sunucuya sistemin vekil sunucusu (proxy) üzerinden gidilmesin
 
 
 class ArkadasHatasi(Exception):
@@ -122,6 +129,7 @@ class Arkadas:
     def __init__(self, cfg, kay, yon, log, kod):
         self.cfg, self.kay, self.yon, self.log, self.kod = cfg, kay, yon, log, kod
         self.anahtar = secrets.token_urlsafe(24)       # yönetim anahtarı (bu panel açılışında sunucuya verilir)
+        self.yerel = secrets.token_urlsafe(24)         # sunucunun kendi oyuncusunun oturumu (oyun sunucusu ve kendi web.py'si)
         self.lock = threading.RLock()
         self.genel = None
         self.m = self._bos()
@@ -135,7 +143,7 @@ class Arkadas:
     def host_ortam(self):
         """Oyun sunucusunun DO_COK_OYUNCULU ortam değişkeni (cok_oyunculu.configure)."""
         return json.dumps({'sifre': self.cfg.get('arkadas_sifre'), 'en_cok': self.cfg.get('arkadas_en_cok'),
-                           'anahtar': self.anahtar, 'kod': self.kod})
+                           'anahtar': self.anahtar, 'kod': self.kod, 'yerel': self.yerel})
 
     def host_durumu(self, canli):
         acik = self.yon.running() and self.yon.arkadas
@@ -341,10 +349,12 @@ class Arkadas:
             m['durum'] = 'ayriliyor'
         slot = m['kayit']
         host, port = adres_coz(m['adres'])
+        ulasti = False
         try:
             code, r = istek(host, port, 'POST', '/misafir/cikis', {'oturum': m['oturum'], 'anahtar': m['anahtar']}, timeout=30)
             if code == 200 and r.get('profil'):
                 self._yaz(slot, r['profil'], int(r.get('surum') or 0))
+            ulasti = True
         except (ArkadasHatasi, OSError) as e:
             self.log('arkadaş sunucusundan ayrılma: son hâl alınamadı: %r' % e)
             if not m['not']:
@@ -357,7 +367,8 @@ class Arkadas:
                 if m['durum'] == 'ayriliyor':
                     m['durum'] = 'hata' if sessiz else 'bitti'
             try:
-                self.kay.set_meta(slot, arkadas=None)
+                if ulasti:                              # ulaşılamadıysa kalır: sonraki katılmada son hâl alınır (_yarim_oturum)
+                    self.kay.set_meta(slot, arkadas=None)
             except OSError:
                 pass
         self.log('arkadaş sunucusundan ayrılındı (kayıt %s, sürüm %s)' % (slot, m['surum']))

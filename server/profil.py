@@ -321,7 +321,7 @@ class Profil:
             f.update(self.captain_energy())                  # takılı N.O.V.A.'nın enerjisi (nova.py)
         f['refreshMap'] = True   # ilk girişte gemiyi kur ve haritaya geç
         import gm_konsol as GMK
-        if GMK.enabled():
+        if GMK.enabled(self):
             f['dailyRank'] = GMK.ADMIN_RANK  # GM konsolu (Ö2): istemci yöneticiyi dailyRank 6000 ile tanıyor (UnitFactory.InitMyUnit)
         return f
 

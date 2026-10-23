@@ -455,6 +455,18 @@ class Session:
         except OSError:
             pass
 
+    def devret(self):
+        """Aynı oyuncu yeniden bağlandı (arkadaş sunucusu): eski bağlantı hemen kesilir, dünyası beklemeden durur. Yalnız kapatınca
+        yarı açık bağlantıda gönderim takılıp okuma bitmiyordu; eski dünya ortak haritada kalıyor, oyuncu orada iki kez oluyordu."""
+        try:
+            self.c.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        if self.kuyruk:
+            self.kuyruk.kapat()
+        if self.world:
+            self.world.stop()
+
     def ach_event(self, kind, **kw):
         """Oyun olayları: rütbe sayaçları (rutbe.py), Pass görevleri, ana görevler (öldürme görev olayından gelir) ve başarımlar
         (basarim.py)."""
@@ -835,16 +847,16 @@ class Session:
         if m:
             old, m.session, m.son = m.session, self, time.time()
             if old is not None and old is not self:
-                old.kapat()
+                old.devret()
             self.misafir = m
             self.bind(m.profil)
             self.sosyal.chat_host = '%s:%d' % (m.adres or self.addr[0], SOHBET.port if SOHBET else CO.SOHBET_PORTU)
             log('   misafir girişi: %s (%s), sunucudaki kimlik %d' % (m.profil.d['pilot'].get('userName'), self.addr[0], m.uid))
             return True
-        if sid == CO.YEREL_OTURUM and self.addr[0] in ('127.0.0.1', '::1'):
+        if CO.yerel_mi(sid) and self.addr[0] in ('127.0.0.1', '::1'):
             old = CURRENT
             if old is not None and old is not self:
-                old.kapat()
+                old.devret()
             self.bind(PROFIL)
             return True
         log('   giriş reddedildi: bilinmeyen oturum (%s)' % (self.addr,))
@@ -1195,6 +1207,11 @@ class Session:
         if CURRENT is self:
             CURRENT = None
         OTURUMLAR.discard(self)
+        if not self.kuyruk:
+            try:
+                self.c.close()
+            except OSError:
+                pass
         m = self.misafir
         if m is not None and m.session is self:      # misafirin son hâli yayımlanır (paneli alır); yeniden bağlanabilir
             self.profil.save(force=True)

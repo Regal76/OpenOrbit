@@ -38,6 +38,24 @@ ALIEN_CPUS = S['uzayli_cpu']                  # Chaos Alien CPU'ları, Cubi Port
 TOGGLE_DEFAULT = {'nisan': False}             # Xenomit harcar: kendiliğinden açılmaz; ötekiler takılınca açık
 XENOMIT = 3
 TIMERS = 'bekleme_gruplari'                   # profilde: {grup: [bitiş, azami ms]}
+# havai fişek (K6): istemcinin fireworkDescriptor kimlikleri 31-35 (canlıda istemcinin sözlüğünden okundu; başkası FireWorkInfo.Init'te
+# NullReference), sıra istemcinin Ammunition'ı gibi (FIREWORK_1-3, COM, RZ); ateşleme öğesi sayaçsız
+FIREWORKS = {'ammunition_firework_fwx-s': 31, 'ammunition_firework_fwx-m': 32, 'ammunition_firework_fwx-l': 33,
+             'ammunition_firework_fwx-com': 34, 'ammunition_firework_fwx-rz': 35}
+IGNITE = 'ammunition_firework_ignite'
+# sprey (K6): istemcide AssetCreateCommand türü SPRAY (69), designId lib_assets.xml'in spray_<n> deseni (sıra oradaki gibi). Bekleme
+# grubu istemcinin menüsünden (57); resmî Mimesis Mutiny SSS'si (2020): "last for 30 seconds and have a 45 second cooldown which
+# applies to all sprays". İstemci konuma
+# (+200, +130) ekleyip resmi 330 birim derine koyuyor: geminin konumu gönderilince resim ekranın altında kalıyordu (canlı K6), SPRAY_KAYMA
+# onu geminin altına getirir
+SPRAY_KAYMA = (-200, -400)
+SPRAY_PREFIX = 'ammunition_specialammo_spray_'
+SPRAYS = ['cross', 'hearts', 'ko', 'like', 'skull', 'eggle', 'space-bunny', 'eggtopia', 'easter-eggs', 'shoot', 'heartbreak',
+          'watchingyou', 'strong', 'biohazard', 'healing', 'wash-hands', 'celebrate', 'peace', 'question', 'crown', 'fist-bump',
+          'hand-shake', 'batman', 'hand', 'turkeydinner', 'frozen-hand', 'snowflake', 'yeti']
+SPRAY_ASSET, SPRAY_GROUP, SPRAY_CD, SPRAY_SN = 69, 57, 45, 30
+FIREWORK_LIMIT = 5                            # aynı anda kurulu kutu (fandom Fireworks: "You can only put down 5 fireworks"); bekleme
+                                              # yok (istemcinin menüsünde bekleme grubu 0)
 ROCKET_FLIGHT = _N['savas']['roket_ucus_sn']
 ATTACK_MINE = 2                               # istemcinin AttackType'ı: MINE
 
@@ -79,6 +97,8 @@ def item_cooldown(loot):
     """Kısayol öğesinin bekleme grubu ve süresi (sn, çarpanlardan önce) ya da None."""
     if loot.startswith(EMOTE_PREFIX):
         return O6['ifadeler']['bekleme_grubu'], O6['ifadeler']['bekleme_sn']
+    if loot.startswith(SPRAY_PREFIX):
+        return SPRAY_GROUP, SPRAY_CD
     if loot in MINES:
         m = MINES[loot]
         return m.get('bekleme_grubu', S['mayin']['bekleme_grubu']), m.get('bekleme_sn', S['mayin']['bekleme_sn'])
@@ -341,6 +361,7 @@ class Esyalar:
     def __init__(self, world):
         self.w, self.p = world, world.p
         self.mines = {}            # hash -> {loot, x, y, sahip, kurulma, bitis}
+        self.fireworks = []        # kurulu havai fişek kutularının karmaları (ateşlenince istemci kaldırır)
         self.seq = 0
         self.jump = None           # CPU atlaması: {hedef, zaman, cpu, basla}
         self.ajp_target = None     # gelişmiş atlamada seçilen harita
@@ -433,6 +454,12 @@ class Esyalar:
         now = now or time.time()
         if item in MINES:
             self.place_mine(item, now)
+        elif item in FIREWORKS:
+            self.place_firework(item, now)
+        elif item == IGNITE:
+            self.ignite()
+        elif item.startswith(SPRAY_PREFIX):
+            self.spray(item, now)
         elif item == S['akilli_bomba']['menu']:
             self.smart_bomb(now)
         elif item == S['aninda_kalkan']['menu']:
@@ -495,6 +522,49 @@ class Esyalar:
                                                                maxSkill5b=False)),
                                        self.cooldown(loot, now)])
         self.log('   mayın: %s (%d, %d)' % (loot, x, y))
+
+    def place_firework(self, loot, now):
+        """Havai fişek kutusu geminin yerine (AddFireworkBoxCommand: typeId fireworkDescriptor kimliği; colourCode'un her basamağı
+        bir aşamanın rengi 1-3; eventModifier boş -> istemcinin 'standart' sınıfı). Ateşleme öğesi hepsini birden ateşler."""
+        w, p = self.w, self.p
+        if w.hero_dead or w.jumping or p.ammo(loot) <= 0 or len(self.fireworks) >= FIREWORK_LIMIT:
+            self.log('   havai fişek konmadı: %s' % loot)
+            return
+        x, y = w.hero_pos(now)
+        p.use_ammo(loot, 1)
+        self.seq += 1
+        h = 'F%d_%d' % (w.hid, self.seq)
+        self.fireworks.append(h)
+        colour = int(''.join(random.choice('123') for _ in range(3)))
+        self.send(w.ammo_msgs(loot) + [('AddFireworkBoxCommand', dict(hash=h, x=int(x), y=int(y), colourCode=colour,
+                                                                       typeId=FIREWORKS[loot], eventModifier=''))])
+        self.log('   havai fişek: %s (%d, %d)' % (loot, x, y))
+
+    def ignite(self):
+        """Kurulu kutuların hepsi (0|n|FWG|karma|…: istemci 3. parçadan itibaren her kutuyu ateşleyip kaldırır)."""
+        if not self.fireworks:
+            return
+        hs, self.fireworks = self.fireworks, []
+        self.send([legacy('0|n|FWG|%s' % '|'.join(hs))])
+        self.log('   havai fişek ateşlendi: %d' % len(hs))
+
+    def spray(self, loot, now):
+        """Sprey geminin yerine (istemci desenin resmini yere çizer), SPRAY_SN sonra kalkar."""
+        w, p = self.w, self.p
+        if w.hero_dead or w.jumping or p.ammo(loot) <= 0 or not self.ready(SPRAY_GROUP, now):
+            return
+        p.use_ammo(loot, 1)
+        x, y = w.hero_pos(now)
+        self.seq += 1
+        uid, kind = 970000 + self.seq, {'_': 'AssetTypeModule', 'typeValue': SPRAY_ASSET}
+        self.send(w.ammo_msgs(loot) + [self.cooldown(loot, now), (
+            'AssetCreateCommand', dict(designId=SPRAYS.index(loot[len(SPRAY_PREFIX):]), clanId=0, showBubble=False, userName='',
+                                       assetId=uid, expansionStage=0, modifier=[], type=kind, detectedByWarnRadar=False,
+                                       invisible=False, posX=int(x) + SPRAY_KAYMA[0], posY=int(y) + SPRAY_KAYMA[1],
+                                       clanRelation={'_': 'ClanRelationModule', 'type': 0},
+                                       clanTag='', factionId=0, visibleOnWarnRadar=False))])
+        w.later(SPRAY_SN, lambda: self.send([('AssetRemoveCommand', {'assetType': kind, 'uid': uid})]))
+        self.log('   sprey: %s (%d, %d)' % (loot, x, y))
 
     def alien_mine(self, loot, x, y, owner, now):
         """Uzaylının mayını (Curcubitor'un Trick'i, Agatus): oyuncu yakınındaysa kurulunca patlar (mine_tick)."""

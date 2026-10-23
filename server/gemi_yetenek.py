@@ -4,17 +4,19 @@
 etkin geminin yetenekleri görünür ve kullanılabilir yapılır, oyuncu çubuğa sürükleyebilir. Tıklayınca MenuActionRequest {menuItemId,
 actionType 0: zamanlayıcı öğesi, istemcinin kodu; testler 1 de gönderir}. Zamanlayıcı MenuItemTimerCommand {activatable, timerState (istemcinin TimerState'i: READY 0, ACTIVE 1, COOLING_DOWN 2),
 menuItemId, maxTime, time}: milisaniye, time kalan süre (roket beklemesindeki MenuItemCooldownGroupTimerCommand gibi).
-Görseller istemcinin kodundan: AbilityEffectActivationCommand {selectedAbilityId: beceri kodu 1 Solace, 2 Diminisher, 3 Spectrum,
-4 Sentinel, 5 Venom, 6 hız efekti; activatorId, isPersistent, targetIds} ve AbilityEffectDeActivationCommand; AbilityStartCommand
+Görseller istemcinin kodundan: beceri kodu 1 Solace, 2 Diminisher, 3 Spectrum, 4 Sentinel, 5 Venom, 6 hız efekti. İstemcinin
+AbilityEffectActivationCommand işleyicisi yalnız 1'i (ve 111, 140, 145) çiziyor; 2-6 eski metinle: 0|n|SD|A ya da D|kod|kalıcı|
+etkinleştiren[|hedef] (SkillAssemblyHelper -> EventAssemblySkills; Frida izi ve canlı görüntü, 2026-10-23). AbilityStartCommand
 (102 Draw Fire, 106 Target Marker, 110 EMP görseli, 111 Recon) ve AbilityStopCommand. Ötekilerin görsel kimliği bulunamadı.
 Kurallar (wiki): bekleme etki bitince başlar; CD boosterı beklemeyi kısaltır; Elite tasarımları süre/bekleme/etki çarpanı. Speed
 Boost aç/kapa (iki basış arası 10 sn). Gizlenme saldırınca, kutu toplayınca, atlayınca biter. Ölünce süren etkiler biter.
 Bekleme süreleri profilde kalır (harita değişimi, yeniden giriş); hedefe bağlı etkiler (Venom, Diminisher, işaret) haritada kalır.
 """
-import json, math, os, time
+import json, math, os, random, time
 
-from eski_protokol import stm
+from eski_protokol import legacy, stm
 import ayar as AY
+import harita as H
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = json.load(open(os.path.join(HERE, 'data', 'gemi_yetenekleri.json'), encoding='utf8'))
@@ -31,6 +33,11 @@ def mod(name, **f):
 
 def state(p):
     return p.d.setdefault('gemi_yetenekleri', {})
+
+
+def sd_msg(op, effect, persistent, activator, target=None):
+    """Eski metin: 0|n|SD|<A aç, D kapa>|<etki>|<kalıcı>|<etkinleştiren>[|<hedef>] (SkillAssemblyHelper; hedefsizse etkinleştirende)."""
+    return legacy('0|n|SD|%s|%d|%d|%d' % (op, effect, persistent, activator) + ('|%d' % target if target else ''))
 
 
 def row(p):
@@ -179,6 +186,12 @@ def menu_status(p, item, st):
     """Kısayol menüsündeki yetenek öğesi: yalnız etkin geminin yetenekleri görünür; Last Stand kuruluyken seçili."""
     owned = item in ship_items(p)
     st.update(visible=owned, available=owned, activatable=owned and timer_fields(p, item)['activatable'])
+    if owned:                                  # ipucundaki %DURATION% (Incinerate, Shield Disarray …): istemci yalnız mağazada doldurur
+        rep = {'_': 'MessageWildcardReplacementModule', 'wildcard': '%DURATION%', 'replacement': '%g' % duration(p, item),
+               'replacementType': {'_': 'ReplacementTypeModule', 'typeValue': 0}}
+        for k in ('toolTipSlotBar', 'toolTipItemBar'):
+            for line_ in (st.get(k) or {}).get('commandList', []):
+                line_['wildCardReplacements'] = [dict(rep)]
     if owned and ABILITIES[item].get('etki', {}).get('son_direnis'):
         st['selected'] = bool(state(p).get(item, {}).get('kurulu'))
     return st
@@ -244,9 +257,11 @@ class Motor:
                                                 clanRelation={'_': 'ClanRelationModule', 'type': 0}, clanTag='',
                                                 factionId=self.p.d['pilot'].get('factionId', 0), visibleOnWarnRadar=False))]
         if 'etki' in g:
+            persistent = duration(self.p, item) > 0 or bool(ABILITIES[item].get('ac_kapa'))
+            if g['etki'] != 1:                    # istemci ikili komutu yalnız Solace'a çiziyor; 2-6 eski "SD" metniyle (EventAssemblySkills)
+                return [sd_msg('A', g['etki'], int(persistent), self.w.hid, target)]
             return [('AbilityEffectActivationCommand', dict(selectedAbilityId=g['etki'], activatorId=self.w.hid,
-                                                            isPersistent=duration(self.p, item) > 0 or bool(ABILITIES[item].get('ac_kapa')),
-                                                            targetIds=[target or self.w.hid]))]
+                                                            isPersistent=persistent, targetIds=[target or self.w.hid]))]
         if 'baslat' in g:
             return [('AbilityStartCommand', dict(selectedAbilityId=g['baslat'], activatorId=self.w.hid, noStopCommand=False))]
         return []
@@ -260,6 +275,8 @@ class Motor:
             uid = self.pods.pop(item, None)
             return [('AssetRemoveCommand', {'assetType': {'_': 'AssetTypeModule', 'typeValue': g['varlik']}, 'uid': uid})] if uid else []
         if 'etki' in g:
+            if g['etki'] != 1:
+                return [sd_msg('D', g['etki'], 0, self.w.hid, target)]
             return [('AbilityEffectDeActivationCommand', dict(selectedAbilityId=g['etki'], activatorId=self.w.hid,
                                                               targetIds=[target or self.w.hid]))]
         if 'baslat' in g:
@@ -332,6 +349,10 @@ class Motor:
         if e.get('yuk') and not st.get('yuk'):     # Momentum, Stockpile, Volt Discharge: yüksüz basılmaz
             self.send([timer_msg(p, item, now)])
             w.log('   yetenek için yük yok: %s' % item)
+            return False
+        if e.get('isinla') and (w.kapi or H.name(w.map_id).startswith('5-')):     # Phase Out: kapıda ve korsan haritasında çalışmaz
+            self.send([timer_msg(p, item, now)])
+            w.log('   yetenek bu haritada çalışmaz: %s' % item)
             return False
         target = None
         if a.get('hedefli'):
@@ -450,7 +471,13 @@ class Motor:
         self.ending.pop(item, None)
         s = state(p).get(item, {})
         e = etki(p, item)
-        msgs = self.visual_off(item, s.get('hedef'))
+        msgs = []
+        if 'isinla' in e and not (w.hero_dead or w.jumping):     # Phase Out: solan gemi rastgele yönde belirir (anlık MoveCommand)
+            (x, y), a = w.hero_pos(now), random.uniform(0, 2 * math.pi)
+            x, y = int(min(max(0, x + e['isinla'] * math.cos(a)), w.map_w)), int(min(max(0, y + e['isinla'] * math.sin(a)), w.map_h))
+            w.hero = type(w.hero)(x, y)
+            msgs.append(('MoveCommand', dict(userId=w.hid, x=x, y=y, timeToTarget=0)))
+        msgs += self.visual_off(item, s.get('hedef'))
         if item in self.charging:
             self.discharge(item, now)
         back = s.pop('kapatilan', 0)

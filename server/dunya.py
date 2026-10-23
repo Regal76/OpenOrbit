@@ -383,6 +383,7 @@ class World:
         self.gorunum = None            # oturum: (x, y) -> bu kahramanın gemisi öteki oyuncuların istemcisinde (game.Session.gorunum)
         self.ortak = OH.al(self.map_id) if paylas else None     # ortak harita: kilit, uzaylılar, kutular, cevherler, doğmalar
         self.ortak_birakildi = False
+        self.durdu = False             # stop bir kez (oturum yeniden bağlanınca girişte de durdurulur, game.Session.devret)
         self.cache_key = self.map_id   # WORLD_CACHE anahtarı (arkadaş sunucusunda oyuncunun kendi kopyası oyuncuya göre; game.start_world)
         if self.ortak:
             o = self.ortak
@@ -876,6 +877,9 @@ class World:
 
     def stop(self):
         self.running = False
+        if self.durdu:
+            return
+        self.durdu = True
         if self.ortak is None:
             self.save_state()
         elif not self.ortak_birakildi:            # ortak harita: durumu son çıkan saklar (WORLD_CACHE), kapsayıcılar boşalır
@@ -989,12 +993,13 @@ class World:
         if not key:
             return
         now = int(time.time())
-        with self.p.lock:
-            done = self.p.d.setdefault('zamanli', {})
-            done[key] = now
-            for k in [k for k, t in done.items() if now - t > 2 * 86400]:
-                del done[k]
-            self.p.dirty = True
+        for w in [self] + [w for w in (self.ortak.uyeler if self.ortak else []) if w is not self]:   # ortak harita: lider de bilsin
+            with w.p.lock:
+                done = w.p.d.setdefault('zamanli', {})
+                done[key] = now
+                for k in [k for k, t in done.items() if now - t > 2 * 86400]:
+                    del done[k]
+                w.p.dirty = True
 
     def pay_key(self):
         """5-4'ün girişi: bir Gümüş Booty Key (KEY_COST) -> ödendi mi."""
@@ -1901,7 +1906,7 @@ class World:
         if not n.gate and not n.summoned:
             self.schedule(random.uniform(*self.respawn_range(n)), 'npc', n.tip)
         self.drifter_killed(n)
-        return msgs + self.alien.on_kill(n, x, y) + self.etkinlik.on_kill(n, x, y) + \
+        return msgs + self.alien.on_kill(n, x, y) + self.etkinlik.on_kill(n, x, y, w=self) + \
             (self.labirent.on_kill(n, x, y) if self.labirent else [])
 
     def lab_spend(self, item, n=1):

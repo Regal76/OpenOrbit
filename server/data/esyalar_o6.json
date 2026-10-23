@@ -36,10 +36,10 @@
    "ammunition_specialammo_emote_snowman-thinking"
   ],
   "bekleme_grubu": 58,
-  "bekleme_sn": 10,
+  "bekleme_sn": 20,
   "sure_sn": 5,
   "fiyat_uridyum": 50,
-  "_uyarlama": "bekleme 10 sn ve fiyat (istemcinin 999 U değeri bilinmeyen eşyanın yer tutucusu)"
+  "_uyarlama": "fiyat (istemcinin 999 U değeri bilinmeyen eşyanın yer tutucusu); süre 5 sn ve ortak bekleme 20 sn resmî Mimesis Mutiny SSS'sinden"
  },
  "boosterlar": {
   "turler": {

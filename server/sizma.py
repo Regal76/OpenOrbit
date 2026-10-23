@@ -38,6 +38,7 @@ class Sizma:
         self.world = None
         self.round = None                          # {harita, sinif, turler, adet, olen, bitis, dogdu}
         self.next_round = 0.0
+        self.disarida = 0                          # ortak haritada öteki oyuncuların öldürdüğü komandolar (on_kill; tick sayar)
 
     def faction(self):
         return self.p.d['pilot'].get('factionId', 2)
@@ -82,7 +83,7 @@ class Sizma:
             def prep(n):
                 n.gizli = True
                 n.odul_carpani = D.get('odul_carpani', 2)
-                n.sizma = True
+                n.sizma = self                     # takımın sahibi (arkadaş sunucusunda öteki oyuncu da vurabilir)
                 n.pasif = True                     # komandolar ateş etmez (resmî SSS 2013)
             n = w.spawn_npc_at(tip, cx + random.randint(-400, 400), cy + random.randint(-400, 400), prep=prep)
             if n is not None:
@@ -100,8 +101,16 @@ class Sizma:
         return [self.status_cmd()] if active() else []
 
     def on_kill(self, w, npc, x, y):
+        owner = getattr(npc, 'sizma', None)
+        if owner is not self:
+            if owner is not None:                # öteki oyuncunun takımı: sayaç onun, mesajları onun turunda (tick)
+                owner.disarida += 1
+            return []
+        return self.killed()
+
+    def killed(self):
         r = self.round
-        if not r or not getattr(npc, 'sizma', False):
+        if not r:
             return []
         r['olen'] += 1
         if r['olen'] >= r['adet']:
@@ -115,6 +124,12 @@ class Sizma:
         return msgs
 
     def tick(self, now):
+        msgs = []
+        while self.disarida > 0:
+            self.disarida -= 1
+            msgs += self.killed()
+        if msgs:
+            return msgs
         if not active(now):
             self.round = None
             return []

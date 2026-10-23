@@ -29,6 +29,7 @@ import envanter as INV
 import ayar as AY
 import teknoloji as TK
 import yukseltme as YK
+import rutbe as RT
 from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -236,6 +237,10 @@ class Assembly:
         for loot, n in T[key]['sonuc'].items():
             msgs += self.grant(loot, n * b['adet'])
         self.p.ach('assembly_collect', tarif=key, adet=b['adet'])
+        # seyir defteri (MSJ-10): istemci (ReturnLogBookInfoText) "his_assembly_…" metnini çevirir; %recipename% info'daki lootId'nin
+        # adı (items_<lootId>_fullname; sonucun adı hepsinde var, tarifin adı 35 tarifte yok), %buildamount% count
+        RT.note(self.p, 'his_assembly_recipe_collected_multi' if b['adet'] > 1 else 'his_assembly_recipe_collected',
+                next(iter(T[key]['sonuc'])), b['adet'])
         self.log('   Assembly: %s x%d toplandı (%s)' % (key, b['adet'], T[key]['sonuc']))
         return msgs + [self.update(key, f.get('targetItemId', 0))]
 
