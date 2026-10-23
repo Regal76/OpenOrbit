@@ -1291,13 +1291,17 @@ class Magaza:
         tasarım ve görünüm design/visual; tasarımlar dronun kendisinde, her config'te aynı)."""
         dc = self.p.drone_config(cid, sid)
         drones = []
+        team = self.p.design_mods().get('dron_lazer', 0)          # Havoc, Cerberus: bütün dronlar o tasarımdayken dron lazerine
         for i, x in enumerate(self.p.d['dronlar']):
             lv = LEVELS[x['seviye'] - 1]
+            shd = DESIGNS.get(self.p.drone_design(x, 'design') or '', {}).get('dron_kalkan', 0)     # Hercules: o dronun kalkanına
+            # istemci (UINewHangarSystem.CreateItemInfo): "Effect: weaponEffect%/shieldEffect%"; ...Bouns > 0 olan değer mavi.
+            # Seviye ve tasarım etkisi savaştakiyle aynı (dunya: dron lazeri, magaza: dron kalkanı); 0/0 gidiyordu (canlı tur 2)
             drones.append(mod('SingleDroneEquipmentMsg', level=x['seviye'], visual=[x['gorunum']] if x.get('gorunum') else [],
-                              shieldBouns=lv['kalkan'] * 100, repairValue='', defaults=list(dc.get(str(x['kimlik']), [])),
-                              weaponBouns=lv['lazer'] * 100, damageUpgradeLevel=YK.drone_level(x), shieldUpgradeLevel=YK.drone_level(x),
-                              design=[x['tasarim']] if x.get('tasarim') else [], shieldEffect=0.0, position=i, droneId=x['kimlik'],
-                              damage=0.0, repairType='', weaponEffect=0.0))
+                              shieldBouns=round(shd * 100, 2), repairValue='', defaults=list(dc.get(str(x['kimlik']), [])),
+                              weaponBouns=round(team * 100, 2), damageUpgradeLevel=YK.drone_level(x), shieldUpgradeLevel=YK.drone_level(x),
+                              design=[x['tasarim']] if x.get('tasarim') else [], shieldEffect=round((lv['kalkan'] + shd) * 100, 2),
+                              position=i, droneId=x['kimlik'], damage=0.0, repairType='', weaponEffect=round((lv['lazer'] + team) * 100, 2)))
         return mod('HangarDroneEquipmentMsg', setId=int(cid), active=active, position=0, setDroneEquipment=drones)
 
     def drone_views(self):
@@ -1752,8 +1756,8 @@ class Magaza:
                         continue
                     if busy.get(iid, ship['hangarId']) != ship['hangarId']:
                         fail('%s başka gemide takılı' % loot)
-                    elif slot == 'upgrades' and not GM.equip_allowed(loot, ship['lootId']):
-                        fail('%s bu gemiye takılmaz (%s)' % (loot, ship['lootId']))      # modülün açıklamasındaki gemiler
+                    elif slot == 'upgrades' and not GM.equip_allowed(self.p, iid, ship['lootId']):
+                        fail('%s bu gemiye takılmaz (%s)' % (loot, ship['lootId']))      # modülün gemileri
                     elif slot == 'QuantumFluidCore' and QF.equip_allowed(self.p, iid, ship['lootId'], lst):
                         fail('%s: %s' % (loot, QF.equip_allowed(self.p, iid, ship['lootId'], lst)))     # bağlı gemi, AX/DF birer
                     elif slot in PC.SLOTS and PC.equip_allowed(self.p, iid, slot, lst):

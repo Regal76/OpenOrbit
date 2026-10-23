@@ -7,7 +7,8 @@ Kararsız modüller (DMG-X1 … XV03, HP-/SHD-/SPC- serileri): her örneğin ras
 boostValue}; adlar istemcinin items_equipment_shipupgrade_modifiertype_* anahtarları) ve geçerli olduğu gemiler (shipDesigns) var;
 istemcinin Restabilize penceresi (istekler istemcinin kodundan):
   girişte / değişince       UnstableModulesListCommand {allModules, shardCommand {chipLeft, shardsLeft}}
-  UnstableModuleRerollRequest {itemId}        Unstable Shard harcanır, nitelikler ve gemiler yeniden çekilir; öncekiler saklanır
+  UnstableModuleRerollRequest {itemId}        Unstable Shard harcanır, yalnız nitelikler yeniden çekilir (gemiler aynı kalır: resmî
+      SSS "only the module stat modifiers will be regenerated, not the ships"); öncekiler saklanır
       -> UnstableModuleRestabilizeResultCommand {itemId, oldModule, newModule, success}
   UnstableModuleRestabiliseRequest {itemId, isSalvage}  isSalvage: Salvage Core vb. ödenip önceki nitelikler geri alınır ("Your
       unstable module has been salvaged to retain the same modifiers"); değilse yenisi kalır
@@ -158,10 +159,12 @@ def mods(p, ship_loot, iids, level=None):
     return out
 
 
-def equip_allowed(loot, ship_loot):
-    """Normal modül yalnız açıklamadaki gemilere takılır; kararsız modül her gemiye (etkisi yalnız kendi gemilerinde)."""
-    info = M.get(loot)
-    return bool(info) and ('kararsiz' in info or ship_loot in info['gemiler'])
+def equip_allowed(p, iid, ship_loot):
+    """Modül yalnız kendi gemilerine takılır: normalde açıklamadaki, kararsızda çekilen gemiler (resmî SSS: ipucunda "the ships it
+    can be equipped on"; canlı tur 2'de DMG-XSP01 listesinde olmayan Solaris Plus'a takılıyordu)."""
+    loot = p.d['esyalar'].get(str(iid))
+    info = M.get(loot or '')
+    return bool(info) and ship_loot in (state(p, iid)['gemiler'] if 'kararsiz' in info else info['gemiler'])
 
 
 # ------------------------------------------------------------ istekler
@@ -197,8 +200,8 @@ class Moduller:
         old = module_msg(self.p, iid)
         self.p.add_resource(SHARD, -REROLL_COST)
         with self.p.lock:
-            rec['onceki'] = dict(nitelik=rec['nitelik'], gemiler=rec['gemiler'])
-            rec.update(roll(loot))
+            rec['onceki'] = dict(nitelik=rec['nitelik'])
+            rec['nitelik'] = roll(loot)['nitelik']             # gemiler değişmez (resmî SSS)
             rec['hak'] -= 1
             self.p.dirty = True
         self.log('   Restabilize: %s -> %s %s' % (loot, rec['nitelik'], rec['gemiler']))
