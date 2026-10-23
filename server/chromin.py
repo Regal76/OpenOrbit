@@ -82,7 +82,7 @@ class Chromin:
             cr = int(extra * CREDITS_PER)
             tot = self.p.gain(kredi=cr, neden='chromin_compensation')
             msgs += self.m.money_msgs() + [legacy('0|LM|ST|CRE|%d|%d' % (cr, tot['kredi']))]
-            RT.note(self.p, 'history_chromin_compensation', args=json.dumps({'%AMOUNT%': str(cr)}))
+            RT.note(self.p, 'history_chromin_compensation', count=cr)    # istemci %AMOUNT%'a count'u koyuyor (canlı tur 2)
             self.log('   Chromin sınırı: %d fazlası %d krediye' % (extra, cr))
         if have + got >= CAP and not self.st.get('tavan_uyarisi'):
             with self.p.lock:
@@ -114,7 +114,7 @@ class Chromin:
             self.p.add_resource(LOOT, -n)
             tot = self.p.gain(onur=hon, neden='chromin_honor')
             msgs += self.m.resource_msgs(LOOT, 0, -n) + [legacy('0|LM|ST|HON|%d|%d' % (hon, tot['onur']))]
-            RT.note(self.p, 'history_msg_event_chromin_honor_converted', args=json.dumps({'%AMOUNT%': str(hon)}))
+            RT.note(self.p, 'history_msg_event_chromin_honor_converted', count=hon)
             self.log('   Chromin Rush bitti: %d Chromin -> %d onur' % (n, hon))
         with self.p.lock:
             self.st.clear()

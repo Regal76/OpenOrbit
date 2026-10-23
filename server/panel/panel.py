@@ -990,6 +990,12 @@ class Handler(BaseHTTPRequestHandler):
         return self._api(h_post, body if isinstance(body, dict) else {})
 
 
+class Sunucu(ThreadingHTTPServer):
+    # HTTPServer SO_REUSEADDR açıyor; Windows'ta bu, dinlenen porta ikinci bir süreci de bağlatıyor: ikinci başlatma açık paneli
+    # görmeden aynı portta ikinci bir panel açıyordu (canlı tur 2). Kapalıyken bağlanamaz, açık panelin penceresini açtırır (main)
+    allow_reuse_address = False
+
+
 def main():
     global PORT
     PORT = next((int(a.split('=', 1)[1]) for a in sys.argv if a.startswith('--port=') and a.split('=', 1)[1].isdigit()), PORT)
@@ -997,12 +1003,12 @@ def main():
     if STATE['guncellendi']:                          # güncellemeden sonra: eski süreç portu bırakana dek bekle
         for _k in range(75):
             try:
-                srv = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
+                srv = Sunucu(('127.0.0.1', PORT), Handler)
                 break
             except OSError:
                 time.sleep(0.2)
     try:
-        srv = srv or ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
+        srv = srv or Sunucu(('127.0.0.1', PORT), Handler)
     except OSError:
         try:                                          # panel zaten açık mı?
             with urlopen('http://127.0.0.1:%d/api/ping' % PORT, timeout=2) as r:
@@ -1011,7 +1017,7 @@ def main():
                     return
         except Exception:
             pass
-        srv = ThreadingHTTPServer(('127.0.0.1', 0), Handler)       # port başka programda: boş bir port
+        srv = Sunucu(('127.0.0.1', 0), Handler)       # port başka programda: boş bir port
         PORT = srv.server_address[1]
     srv.daemon_threads = True
     STATE['srv'] = srv

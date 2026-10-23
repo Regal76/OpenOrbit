@@ -334,4 +334,6 @@ class UnvanAvi:
             with self.p.lock:
                 st['unvanlar'].append(key)
                 self.p.dirty = True
-        return [legacy('0|LM|ST|LOT|%s|1' % key)]          # istemcide "unvan alındı" metni yok; unvanın adı (resource_achievement)
+        # istemcide "unvan alındı" metni yok; LOT satırı adı eşya kaynağında aradığından seyir defterine "You received ." yazıyordu
+        # (canlı tur 2): satır gönderilmez, unvan başarım penceresinde seçilir
+        return []

@@ -12,6 +12,7 @@ MODE_WINDOWS = ('voyagers', 'trinityTrials', 'expedition', 'eternal_blacklight',
 EVENT_WINDOWS = {'plutus': ('plutus',), 'frozen_labyrinth': ('labirent',), 'agatus_event': ('agatus',), 'npc_event': None,
                  'chrominEvent': ('chromin',), 'word_puzzle': ('hitac',), 'titleFrenzy': ('unvan_avi',),        # Ö3
                  'space_search': ('galaxy_trek',), 'birthday_2025': ('fiesta',), 'infiltration': ('infiltration',),
+                 'miniclient_reward': None,
                  'invasion': ('invasion',), 'ship_boost_event': ('fever',), 'diminish_quests': ('acil_gorevler',),
                  'strikeAndExit': ('vortex_of_greed',), 'publicWorldBoss': ('world_boss',), 'payload_escort': ('mimesis_mutiny',),  # Ö4
                  'mileageMarket': ('mileage_market',), 'vipMerchantExchange': ('vip_merchant',),                            # Ö7
@@ -38,6 +39,8 @@ def window_events(item_id):
     keys = EVENT_WINDOWS.get(item_id)
     if keys is not None:
         return keys
+    if item_id == 'miniclient_reward':       # Mini Client ödülü: türlerinde MiniClientReward olanlar (gunluk_odul.py; dışında boş açılırdı)
+        return tuple(k for k, e in TKV.EVENTS.items() if 'MiniClientReward' in e.get('turler', []))
     return tuple(k for k, e in TKV.EVENTS.items() for s in ([e['harita']] if 'harita' in e else []) + e.get('harita_ek', [])
                  if INDICATOR_WINDOWS.get((s.get('bilgi') or {}).get('komut')) == item_id)
 

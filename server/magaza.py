@@ -92,6 +92,10 @@ NEW_RESOURCES = ('resource_collectable_evocation-chip', 'resource_collectable_ca
                  'resource_collectable_pulse-core', 'resource_ignishard-l01', 'resource_beacon-crystal')
 PASS_ITEMS = ('resource_season-pass-point', 'resource_gold-pass', 'resource_ext-gold-pass', 'resource_battle-pass',
               'resource_monthly-deluxe')
+# istemcinin tanımında özelliği (Traits) olmayan eşyalar (data/istemci_esyalari.json'da yalnız tür ve sınıf): kimlikli envanter
+# eşyası olunca Assembly açıkken AssemblyInventoryIndex.UpdateItem NullReferenceException veriyor, eşya listesinin kalanı (girişte
+# UserInventoryModule'ün indirimi dahil) işlenmiyordu (Gold/Extra Gold Pass, Trinity VIP Badge; canlı tur 2). Bu kaynaklar gönderilmez
+NO_TRAITS = {l for l, v in YK.ITEMS.items() if set(v) <= {'tur', 'sinif'}}
 EVENT_ITEMS = ('resource_collectable_voyagers-oath-token', 'resource_voyagers-vip-badge',      # Voyagers (pve_modlari.py)
                'resource_ftl-key', 'resource_collectable_galaxy-coupon', 'resource_lottery-capsule')   # Ö3 etkinlik paraları (market dengesi)
 
@@ -585,11 +589,12 @@ class Magaza:
             prices = PETM.level_prices(it['lootId'])
             if prices:                    # seviye seçicisi: seviye başına fiyat
                 it.update(price=[float(u) for u in prices])
-        k = AY.carpan('magaza_fiyat')
-        if k != 1.0:                      # panelin mağaza fiyatı çarpanı: istemcinin gösterdiği fiyat ve metin
-            for it in t['itemList']:
+        k, disc = AY.carpan('magaza_fiyat'), self.discount()
+        if k != 1.0 or disc:              # panelin mağaza fiyatı çarpanı ve Shop Discount (uridyum): istemcinin gösterdiği fiyat ve metin
+            for it in t['itemList']:      # (istemci UserInventoryModule.activePremiumDiscount'u fiyata uygulamıyor, canlı tur 2)
                 if it.get('price') and it['price'][0] > 0 and it.get('cost') != 'Payment':
-                    it['price'] = [float(math.ceil(u * k - 1e-9)) for u in it['price']]
+                    ki = k * (1 - disc) if it.get('currency') == 'real' else k
+                    it['price'] = [float(math.ceil(u * ki - 1e-9)) for u in it['price']]
                     it['cost'] = '{:,} {}'.format(int(it['price'][0]), 'U.' if it.get('currency') == 'real' else 'C.')
         for it in t['itemList']:
             prices = PETM.level_prices(it['lootId'])
@@ -617,7 +622,9 @@ class Magaza:
                     n = int(self.p.d['pilot'].get(pr[0], 0) // pr[1])
                     it['maxAmount'] = min(n, 2 ** 31 - 1) if n >= 1 else -1
         if self.featured and self.featured[0] == category and time.time() < self.featured[2]:
-            # ödeme düğmesinden açılan mağaza: istemci listenin ilk ürününü seçili açıyor (odeme.py)
+            # ödeme düğmesinden açılan mağaza (odeme.py): istemci mağazayı 'extras,resource_key_access-dse' ile açıp o ürünü, listede
+            # yoksa ilk ürünü seçiyor (ExpeditionBuyTicketCommandHandler, CreateItem): bilet bu listede yok (canlı tur 2)
+            t['itemList'] = [it for it in t['itemList'] if it['lootId'] != 'resource_key_access-dse']
             t['itemList'].sort(key=lambda it: it['lootId'] != self.featured[1])
         if len(t['itemList']) > SHOP_MAX:
             # liste sayacı bir bayt (istemcinin okuması): fazlası kodlanamaz, sekme hiç açılmazdı; sondakiler (ek ürünler) gösterilmez
@@ -1084,7 +1091,8 @@ class Magaza:
         """Depodaki kaynağın sayacı (InventoryItemUpdatedCommand: Assembly malzeme sayaçları buradan; canlı test H31) ve günlük satırı
         (n > 0 ise "… alındı")."""
         iid = self.item_id(loot)
-        return [self.inv_item(iid, loot, total), self.pack([self.hangar_item(iid, loot, total)])] +             ([legacy('0|LM|ST|LOT|%s|%d' % (loot, n))] if n > 0 else [])
+        items = [] if loot in NO_TRAITS else [self.inv_item(iid, loot, total), self.pack([self.hangar_item(iid, loot, total)])]
+        return items + ([legacy('0|LM|ST|LOT|%s|%d' % (loot, n))] if n > 0 else [])
 
     # ------------------------------------------------------------ satış
     def sale_value(self, loot, n=1):
@@ -1271,7 +1279,8 @@ class Magaza:
                 c[slot] = list(pc.get(slot, []))
             c['active'] = c['setId'] == cur
         extra = self.capacity('extra', sid)
-        t.update(currentConfigId=cur, lootId=ship['lootId'], hangarId=ship['hangarId'], shipId=int(sid or self.p.d['aktif_gemi']),
+        # lootId görünümle (tasarım ekli): istemci yuva düzenini gemi listesindeki adla tutup bununla arıyor (ships_cmd)
+        t.update(currentConfigId=cur, lootId=self.p.ship_look(sid), hangarId=ship['hangarId'], shipId=int(sid or self.p.d['aktif_gemi']),
                  extrasSlotsSize1=extra, extrasSlotsSize2=extra,
                  droneConfigs=[self.drone_config_msg(c['setId'], c['setId'] == cur, sid) for c in t['shipConfigs']],
                  petConfigs=self.pet.config_msgs(cur))
@@ -1319,16 +1328,19 @@ class Magaza:
             if loot and m['count'] > 0:
                 items.append(self.hangar_item(self.item_id(loot), loot, m['count']))
         for loot, n in sorted(self.p.d.get('diger_esyalar', {}).items()):   # saklanan kaynaklar (ABR, Schism, anahtar, kupon …)
-            if loot.startswith('resource_') and n > 0:
+            if loot.startswith('resource_') and n > 0 and loot not in NO_TRAITS:
                 items.append(self.hangar_item(self.item_id(loot), loot, n))
         return items
 
     def ships_cmd(self):
-        """Hangar listesi: sahip olunan gemiler (etkin olan işaretli), her biri için tasarım listesi, ortak envanter."""
+        """Hangar listesi: sahip olunan gemiler (etkin olan işaretli), her biri için tasarım listesi, ortak envanter. Gemi adı görünümle
+        (ör. ship_sentinel_design_sentinel-phantasm): istemci (HangarShipsCommandHandlerEvent) yuva düzenini "_design"tan önceki
+        adla bulup bu adı yazıyor, donanım penceresi düzeni HangarShipEquipmentCommand.lootId ile arıyor (CreateTabSlot); taban ad
+        gidince tasarım değişiminden sonraki ilk MANAGE NullReferenceException veriyordu (canlı tur 2)."""
         t = copy(self.ships_tpl)
         t.pop('_m', None)
         sids = sorted(self.p.d['gemiler'], key=int)
-        t['ships'] = [mod('HangarShipBriefCommand', isActive=sid == self.p.d['aktif_gemi'], lootId=self.p.ship(sid)['lootId'],
+        t['ships'] = [mod('HangarShipBriefCommand', isActive=sid == self.p.d['aktif_gemi'], lootId=self.p.ship_look(sid),
                           shipId=int(sid), isFavorite=bool(self.p.ship(sid).get('favori'))) for sid in sids]
         t['allDesignPack'] = [mod('ShipDesignPack', designList=self.designs(sid)) for sid in sids]
         # InventoryItemPack.items sayısı bayt (en çok 255): envanter 255'lik paketlere bölünür. İstemci hepsini okur
@@ -1485,7 +1497,8 @@ class Magaza:
         tarifleri sayılınca bunlar 0 görünüyordu, canlı test H59) ve ekipman örnekleri."""
         import assembly as ASM
         import envanter as INV
-        held = {k for k, v in self.p.d.get('diger_esyalar', {}).items() if v > 0 and k.startswith('resource_')}
+        held = {k for k, v in self.p.d.get('diger_esyalar', {}).items()
+                if v > 0 and k.startswith('resource_') and k not in NO_TRAITS}
         loots = ['currency_credits', 'currency_uridium'] + sorted((ASM.INGREDIENTS | held) - {'currency_credits', 'currency_uridium'})
         out = []
         for loot in loots:

@@ -246,8 +246,11 @@ PASS_LOGIN = dict({n: 'sezon' for n in ('SeasonPassStatusCommand', 'SeasonPassMi
 GOD_REQUESTS = ('MiniClientRewardClaimRequest', 'MonthlyDeluxeClaimRequest', 'ClaimUnityClientRewardRequest')
 # --reklamsiz: girişte kendiliğinden açılan kampanya/tanıtım pencerelerini gönderme
 POPUP_MSGS = {'DisplayOfferCommand', 'HintWindowAddComand', 'HintWindowListInitCommand', 'DailyLoginRewardDayCommand',
-              'MiniClientRewardInfoCommand', 'MonthlyDeluxeInfoCommand', 'CommandCenterDontShowInfoCommand', 'SeasonPassStatusCommand',
+              'MonthlyDeluxeInfoCommand', 'CommandCenterDontShowInfoCommand', 'SeasonPassStatusCommand',
               'SeasonPassMissionInfoCommand', 'SeasonPassRewardInfoCommand'}
+# verisi pencereyi açmayan, girişte düzenden (maximized) açılan pencereler: Mini Client ödülü (MiniClientRewardInfoCommandHandler
+# yalnız veriyi yazar). Veri süzülünce pencere boş açılıyordu (H155): veri hep gider, pencere kapalı gider
+POPUP_WINDOWS = {'miniclient_reward'}
 NO_POPUPS = '--reklamsiz' in sys.argv
 # her zaman: gerçek parayla alışveriş pencereleri (tek oyunculuda işe yaramaz)
 #   EventPaymentActorCommand: "%400 Helix Blitz" uridyum kampanyası; DisplayOfferCommand: paket teklifi penceresi
@@ -257,11 +260,17 @@ PAYMENT_POPUPS = {'EventPaymentActorCommand', 'DisplayOfferCommand'}
 def no_popups(msgs):
     """Girişte kendiliğinden açılan pencereleri ayıklar. Command Center: istemci CommandCenterDontShowInfoCommand.inspected
     false gelirse pencereyi açar (CommandCenterDontShowInfoCommandHandler); hep true gönderilir, menüden açılabilir kalır."""
-    drop = PAYMENT_POPUPS | (POPUP_MSGS if NO_POPUPS or AY.get('reklamsiz') else set())      # seçenek ya da panelin ayarı
+    popups = NO_POPUPS or AY.get('reklamsiz')                                                  # seçenek ya da panelin ayarı
+    drop = PAYMENT_POPUPS | (POPUP_MSGS if popups else set())
     out = []
     for n, f in msgs:
         if n in drop and n != 'CommandCenterDontShowInfoCommand':
             continue
+        if n == 'UILayoutCommand' and popups:
+            for bar in f.get('featureBars', []):
+                for it in bar.get('featureBarItems', []):
+                    if it.get('itemId') in POPUP_WINDOWS:
+                        it['maximized'] = False
         if n == 'CommandCenterDontShowInfoCommand':
             f = dict(f, inspected=True)
         out.append((n, f))
@@ -868,7 +877,7 @@ class Session:
         elif name == 'DailyLoginClaimTodayRequest':
             self.send(self.gunluk.claim(), 'günlük giriş: ödül')
         elif name == 'GalaxyGateBuilderInfoRequest':
-            self.send([self.kapilar.info_cmd()], 'kapı üreticisi: bilgi')
+            self.send(self.kapilar.info_request(), 'kapı üreticisi: bilgi')
         elif name == 'GalaxyGateBuilderGetGatePartsRequest':
             self.send([self.kapilar.parts_cmd(f)], quiet=True)
         elif name == 'GalaxyGateBuilderMultiEnergyRequest':

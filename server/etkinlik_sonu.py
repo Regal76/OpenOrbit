@@ -6,8 +6,6 @@ Luminium 1 ve en çok 10.000 onur (wiki Empyrian March), Battle Pass Key 5.000 (
 bilinmiyor (uyarlama 1). Resmî sunucu 24-48 saat sonra çevirir; burada etkinlik bitince (oturumun ilk adımında).
 Profilde: etkinlik_sonu {etkinlik: dönemin başladığı zaman damgası} (etkinlik sürerken görülenler).
 """
-import json
-
 import rutbe as RT
 import takvim as TK
 from eski_protokol import legacy
@@ -57,7 +55,7 @@ class EtkinlikSonu:
                         msgs += self.m.resource_msgs(loot, 0, -n)
                 tot = self.p.gain(onur=hon, neden='event_honor')
                 msgs.append(legacy('0|LM|ST|HON|%d|%d' % (hon, tot['onur'])))
-                RT.note(self.p, text, args=json.dumps({'%AMOUNT%': str(hon)}))
+                RT.note(self.p, text, count=hon)        # istemci %AMOUNT%'a count'u koyuyor, args'a bakmıyor (canlı tur 2)
                 self.log('   %s bitti: %s -> %d onur' % (TK.EVENTS[ev]['ad'], {k: n for k, n in held.items() if n > 0}, hon))
             with self.p.lock:
                 del self.st[ev]

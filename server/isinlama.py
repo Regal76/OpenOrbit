@@ -107,10 +107,11 @@ class Isinlama:
         _, changed = self.m.activate({'shipId': sid}, in_station=True)
         if not changed:
             return [('ShipWarpCanceledCommand', {})], False
-        import json, rutbe as RT
-        loot = self.p.ship()['lootId']
-        name = RT.R['gemi_puan'].get(loot.split('_design_')[0], {}).get('ad', loot)
-        RT.note(self.p, 'history_ship_warp_completed', loot, args=json.dumps({'%SHIP_NAME%': name, '%MAP_NAME%': H.name(w.map_id)}))
+        import rutbe as RT
+        # seyir defteri: istemci (ReturnLogBookInfoText) infoText'i "_" ile bölüp "ship_warp_completed_<harita>"yı tanıyor, metni
+        # history_ship_warp_completed; %SHIP_NAME% info'daki geminin adı (items_<lootId>_fullname), %MAP_NAME% haritanın adı. args'a
+        # bakmıyor: "history_ship_warp_completed" + args satırı yer tutucularıyla görünüyordu (canlı tur 2)
+        RT.note(self.p, 'ship_warp_completed_%s' % w.map_id, self.p.ship()['lootId'])
         msgs = [('ShipWarpCompletedCommand', {'currentShipLootId': self.p.ship()['lootId']})]
         msgs += INV.update_msgs(self.m, self.p, list(pay)) if pay else []
         return msgs + [self.m.ships_cmd()], True

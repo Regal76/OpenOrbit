@@ -17,9 +17,10 @@ Kayıtta olmayanlar istemcinin koduna ve metinlerine göre (GalaxyGateComponentS
   geri sayım komutları (EpicFightMessageCommand, CountdownStatusCommand) bu sürümde boş işleyicili, kullanılamıyor.
 Kurulu kapı (2026-10-19, kullanıcı bildirimi: kurulu kapıda enerji "Tanımlanamayan bir hata" veriyordu): istemci enerji düğmesini
 kapının durumundan bağımsız açık tutuyor, yanıtta yalnız 0 / uridyum yetmiyor / "unclassified_error" var (ParseProduceResponse);
-kurulu kapıya çekiliş de kabul edilir: her parça kopyadır (çarpan), öteki ödüller olağan. Pencere kurulu kapıda (state FINISHED)
-her açılışta "Kapı ALPHA inşaatı bitti" bildirimini açıyor (UIGalaxyGatesSystem.RefProgress, GATE_DETAILS); kapı hazırlanınca
-(PREPARE JUMP, portalı X-1'de) durum IN_PROGRESS gönderilir, bildirim yalnız hazırlanmamış kurulu kapıda çıkar.
+kurulu kapıya çekiliş de kabul edilir: her parça kopyadır (çarpan), öteki ödüller olağan. Kurulu kapının durumu (state FINISHED)
+Prepare jump'ı açar ve istemci onu aldığı her bilgide "Kapı ALPHA inşaatı bitti" bildirimini açar (UIGalaxyGatesSystem.RefProgress);
+bildirim bir kez çıksın diye istemcide aynı bilgi varken pencerenin isteği yanıtsız kalır (info_request). Kapı hazırlanınca
+(PREPARE JUMP, portalı X-1'de) durum IN_PROGRESS gönderilir.
 Kapı haritası: ana dalgalar, her biri alt dalgalar ("gruplar"; alt dalga temizlenince sonraki). Ana dalgadan sonra ortada eve
 dönüş portalı açılır; mola bitince sonraki dalga başlar. Eve dönülürse ilerleme saklanır. Vurulunca üste tamir olunur, can 1
 azalır; can kalmazsa kapı (parçalarıyla) kaybolur. Değerler data/kapilar.json (tools/kapilar.py).
@@ -202,6 +203,7 @@ class Kapilar:
         self.m = None                 # mağaza (eşya/para mesajları)
         self.world = lambda: None     # oturumun güncel dünyası
         self.info_tpl = None          # kayıttaki GalaxyGateBuilderInfoCommand (diğer kapılar olduğu gibi)
+        self.sent = None              # oturumda istemcinin elindeki kapı bilgisi (info_request)
 
     # ------------------------------------------------------------ profil
     @property
@@ -327,6 +329,25 @@ class Kapilar:
                  spinamount_selected=self.d['cekilis'], spinAmounts=K['cekilis_adetleri'], bonusRewardsDay=TK.is_active('gg_cift_odul'))
         return ('GalaxyGateBuilderInfoCommand', t)
 
+    def info_request(self):
+        """GalaxyGateBuilderInfoRequest: istemci pencereyi her açışta sorar. Kurulu kapının FINISHED'ı Prepare jump'ı açtığı gibi her
+        bilgide "ALPHA gate completed" bildirimini de yeniden açıyordu, Cancel'dan sonra da (UIGalaxyGatesSystem.RefProgress; Cancel bir
+        şey göndermiyor; kullanıcı, canlı tur 2). İstemcide aynı kapı bilgisi varken yanıt yok: pencere elindekiyle açılıyor (Prepare
+        jump etkin, bildirim yok); o arada yalnız uridyum değiştiyse pencere eskisini gösterir."""
+        cmd = self.info_cmd()
+        seen = self.seen(cmd[1])
+        if seen == self.sent and any(g.get('state') == FINISHED for g in cmd[1]['gates']):
+            return []
+        self.sent = seen
+        return [cmd]
+
+    @staticmethod
+    def seen(t):
+        """Karşılaştırılan bölüm: kapılar ve enerji; bonus ödülün geri sayımı her saniye azaldığından dışarıda."""
+        gates = [dict(g, bonusGGRewardModules=[{k: v for k, v in m.items() if k != 'countdown'} for m in g.get('bonusGGRewardModules', [])])
+                 for g in t['gates']]
+        return json.dumps([gates, t['samples']], sort_keys=True)
+
     def part_ids(self, key):
         return sorted(self.gate(key)['parcalar'])
 
@@ -384,6 +405,7 @@ class Kapilar:
             ', '.join('%s %s' % (k, v) for k, v in sorted(grants.items()))))
         if not was_built and self.built(key):
             self.log('   %s kapısı kuruldu' % KAPI[key]['ad'])
+        self.sent = self.seen(self.info_cmd()[1])      # yanıt parçaları, enerjiyi ve kurulmayı (bildirimiyle) istemciye taşıyor
         return reply(ERR_NONE, items, msgs)
 
     def draw(self, key, use_mult, grants):
