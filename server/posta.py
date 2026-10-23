@@ -13,10 +13,11 @@ SetMailItemsInfo) ekleri yalnız bilgi (70) mesajında gösterir; isReceived ü�
 alınmış ("Claimed", düğme kapalı). Liste satırındaki hediye simgesi isReceived > 0 iken görünür (1 mavi, 2 sarı): eksiz gelen mesaj
 0 (canlı tur 2, 2026-10-23; 2'de sarı simge kalıyordu, CANLI_TEST N5). UserMessageLootCommand'ın istemcide işleyicisi yok: alınca liste yeniden gönderilir (canlı deneme
 2026-10-17). Ekli mesaj bu yüzden hep bilgi türüyle eklenir (add).
-Tek oyunculu: alıcı yalnız oyuncunun kendisi olabilir (kendine not gibi); bot oyuncular Aşama 11'de alıcı olur. Rehber ve kara
-liste boş başlar; kara liste profilde saklanır.
+Alıcı oyuncunun kendisi (kendine not gibi) ya da arkadaş sunucusunda öteki oyuncular (topluluk.py; bağlı değilse kaydı sunucuda
+durdukça): mesaj onun gelen kutusuna, bağlıysa mektup simgesi. Rehber rehber.py'de; kara liste profilde saklanır.
 """
 import time
+import topluluk as TP
 
 NOT_SINIRI = 10
 KUTU_SINIRI = 500          # gelen ve giden kutusu başına (seyir defteri ve hesap geçmişiyle aynı)
@@ -29,7 +30,7 @@ TARGETS = [(3, 'condition_level-seven-gap'), (4, 'condition_no-pay-user'), (5, '
 REQUESTS = {'UserMessageInitRequest', 'UserMessageGetTargetRequest', 'UserMessageInboxListRequest', 'UserMessageOutboxListRequest',
             'UserMessageSendRequest', 'UserMessageDeleteRequest', 'UserMessageUpdateStatusRequest', 'UserMessageLootRequest',
             'UserMessageNoteListRequest', 'UserMessageNoteAddRequest', 'UserMessageNoteUpdateRequest', 'UserMessageNoteDeleteRequest',
-            'ContactListRequest', 'ContactRequest', 'BlackListGetRequest', 'BlackListAddRequest', 'BlackListDeleteRequest'}
+            'BlackListGetRequest', 'BlackListAddRequest', 'BlackListDeleteRequest'}
 
 
 def mod(_cls, **f):
@@ -148,11 +149,6 @@ class Posta:
             return self.loot(f.get('ids') or [])
         if name.startswith('UserMessageNote'):
             return self.notes(name, f)
-        if name == 'ContactListRequest':
-            return [('ContactListCommand', {'contactList': [], 'startIndex': int(f.get('startIndex') or 0), 'total': 0})]
-        if name == 'ContactRequest':
-            self.log('   rehber isteği (tek oyunculu: oyuncu yok): tür %s %s' % (f.get('contactRequestType'), f.get('userName')))
-            return [('ContactUiUnblockCommand', {})]
         if name.startswith('BlackList'):
             return self.blacklist(name, f)
         return []
@@ -173,18 +169,26 @@ class Posta:
         if len(body.strip()) < 5:
             return reply(False, 'messaging_errorLayer_bodyTooShort')
         own = me.get('userName', '')
-        if any(n.lower() != own.lower() for n in names):
-            self.log('   posta: alıcı yok (tek oyunculu): %s' % names)
+        alicilar = [None if n.lower() == own.lower() else TP.bul(ad=n) for n in names]     # arkadaş sunucusunda öteki oyuncular
+        if any(n.lower() != own.lower() and k is None for n, k in zip(names, alicilar)):
+            self.log('   posta: alıcı yok: %s' % names)
             return reply(False, 'messaging_errorLayer_noRecipient')
         clan = f.get('recipientType') == 'clan'
-        extra = {'alicilar': [own], 'alici_idler': [self.p.user_id]}
+        extra = {'alicilar': [k.ad if k else own for k in alicilar], 'alici_idler': [k.uid if k else self.p.user_id for k in alicilar]}
         if clan:
             extra['clanTag'] = me.get('clanTag', '')
         sent = self.add(CLAN if clan else USER, subject[:50], body[:5000], sender=own, sender_id=self.p.user_id, extra=extra,
                         inbox=False)
-        got = self.add(CLAN if clan else USER, subject[:50], body[:5000], sender=own, sender_id=self.p.user_id, extra=extra)
-        self.log('   posta gönderildi: %s' % subject[:50])
-        return reply(True, 'messaging_successLayer_messageSent', self.info(sent, False)) + [self.notify(got)]
+        out = reply(True, 'messaging_successLayer_messageSent', self.info(sent, False))
+        for k in {(k.uid if k else 0): k for k in alicilar}.values():
+            box = self if k is None else getattr(getattr(k.oturum, 'sosyal', None), 'posta', None) or Posta(k.profil, self.log)
+            got = box.add(CLAN if clan else USER, subject[:50], body[:5000], sender=own, sender_id=self.p.user_id, extra=extra)
+            if k is None:
+                out.append(self.notify(got))
+            else:
+                k.gonder([box.notify(got)], 'posta: %s' % own)        # bağlıysa mektup simgesi
+        self.log('   posta gönderildi: %s -> %s' % (subject[:50], extra['alicilar']))
+        return out
 
     def delete(self, inbox, ids):
         drop = {r['id'] for r in self.find(inbox, ids)}

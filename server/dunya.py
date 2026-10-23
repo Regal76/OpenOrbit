@@ -381,6 +381,10 @@ class World:
         self.boxes_taken = 0           # bu ziyarette alınan bonus kutuları (mezarlıkta değer azalır)
         self.oyuncular = {}            # istemcinin gördüğü öteki oyuncular: kimlik -> görünüm imzası (ortak harita)
         self.gorunum = None            # oturum: (x, y) -> bu kahramanın gemisi öteki oyuncuların istemcisinde (game.Session.gorunum)
+        self.secim = None              # seçili öteki oyuncunun son gönderilen ShipSelectionCommand'ı (canı değişince yeniden)
+        self.ates = False              # önceki adımda saldırıyor muydu (lazerin bitişi öteki oyunculara: step)
+        self.grup_uyesi = lambda uid: False      # oturum: oyuncu bu kahramanın grubunda mı (grup.py; saldırı uyarısı)
+        self.olum = None               # oturum: kahraman vuruldu (grup üyelerine bildirim)
         self.ortak = OH.al(self.map_id) if paylas else None     # ortak harita: kilit, uzaylılar, kutular, cevherler, doğmalar
         self.ortak_birakildi = False
         self.durdu = False             # stop bir kez (oturum yeniden bağlanınca girişte de durdurulur, game.Session.devret)
@@ -716,7 +720,30 @@ class World:
         msgs += [('RemoveCollectableCommand', {'collected': False, 'hash': h}) for h in list(self.seen_items)
                  if h not in self.boxes and h not in self.ores]
         lim = self.abilities.view_factor(now)
-        return msgs + self.ortak.gorunurluk(self, now, hx, hy, SAVAS['gorus_mesafesi'] * lim, SAVAS['gorus_birakma'] * lim)
+        msgs += self.ortak.gorunurluk(self, now, hx, hy, SAVAS['gorus_mesafesi'] * lim, SAVAS['gorus_birakma'] * lim)
+        if self.secim is not None and self.target == self.secim[1]['userId']:     # seçili öteki oyuncu
+            w = self.oyuncu(self.target)
+            if w is None:                                    # görüşten çıktı (ShipRemoveCommand yukarıda)
+                self.target, self.attacking, self.secim = None, False, None
+                msgs.append(('ShipDeselectionCommand', {}))
+            elif self.oyuncu_secimi(w) != self.secim:        # canı ya da kalkanı değişti (gerçek sunucu da yeniden gönderir)
+                self.secim = self.oyuncu_secimi(w)
+                msgs.append(self.secim)
+        return msgs
+
+    def oyuncu(self, uid):
+        """İstemcinin gördüğü öteki oyuncunun dünyası (ortak harita) ya da None."""
+        if self.ortak is None or uid not in self.oyuncular:
+            return None
+        return next((w for w in self.ortak.uyeler if w.hid == uid and w.running), None)
+
+    def oyuncu_secimi(self, w):
+        """Öteki oyuncunun seçimi: istemci oyuncuyu kimliğiyle seçer (shipType önemsiz), çubuklar kaydından."""
+        g = w.p.d['gemi']
+        return ('ShipSelectionCommand', dict(userId=w.hid, shipType=0, shield=int(g.get('shield', 0)), shieldMax=int(g.get('shieldMax', 0)),
+                                             hitpoints=int(g.get('hitPoints', 0)), hitpointsMax=int(g.get('hitMax', 0)),
+                                             nanoHull=int(g.get('nanoHull', 0)), maxNanoHull=int(g.get('maxNanoHull', 0)),
+                                             shieldSkill=False))
 
     def fixed_spot(self, tip):
         """Türün sabit doğma noktalarından boş olanı (npc.json haritalar.sabit_noktalar; Cubikon'un dört noktası) ya da None."""
@@ -1397,11 +1424,19 @@ class World:
             elif self.asset_at(f.get('targetId')):          # istemci varlığı ShipSelectionCommand + AssetInfoCommand ile seçer
                 self.target = f.get('targetId')
                 self.send(self.asset_targets.asset_select(self.target))
+            elif self.oyuncu(f.get('targetId')):            # öteki oyuncu (arkadaş sunucusu): seçilir, canı izlenir (shared_view)
+                w = self.oyuncu(f.get('targetId'))
+                self.target, self.attacking, self.secim = w.hid, False, self.oyuncu_secimi(w)
+                self.send([self.secim])
 
     def laser_start(self, f):
         with self.lock:
             n = self.npcs.get(f.get('targetId'))
             asset = None if n else self.asset_at(f.get('targetId'))
+            if not n and not asset and self.oyuncu(f.get('targetId')):    # oyuncuya saldırı yok (arkadaş sunucusunda PvP yok)
+                self.send([legacy('0|A|STM|%s' % ('msg_grp_attack_impossible' if self.grup_uyesi(f.get('targetId'))
+                                                  else 'friendlyfire_disabled'))])
+                return
             if (not asset and (not n or not n.alive)) or self.hero_dead:
                 return
             if asset:                                       # varlık (çift tık: AttackLaserRequest) - deflector açıkken vurulamaz
@@ -1425,6 +1460,7 @@ class World:
             was = self.attacking
             self.attacking = False
             if notify:
+                self.ates = False            # bitiş aşağıda herkese gidiyor (step yeniden göndermesin)
                 msgs = [('AttackAbortLaserCommand', {'uid': self.hid})]
                 if was:
                     msgs.append(('UIItemRemoveHighlightCommand', dict(itemId=LASER_AMMO, itemSource=mod('UiItemSourceModule', itemSource=0),
@@ -2756,6 +2792,8 @@ class World:
                        else 'killed_by_npc_%s' % killer.d.get('npc_kimlik', 0) if killer else None)
         if key:
             RT.note(self.p, key)                        # seyir defteri
+        if self.olum:
+            self.olum()                                 # grup üyelerine "vuruldu"
 
     def raid_gate(self):
         """Hades'te canı kalan oyuncu kapı haritasında yeniden doğabilir (ölümden sonra HADES_RESPAWN_SN içinde)."""
@@ -3068,6 +3106,12 @@ class World:
         self.lab_time(now)
         if self.attacking and not self.hero_dead and not self.jumping and now >= self.next_laser:
             self.hero_laser(now)
+        if self.ates and not self.attacking and self.ortak:
+            # lazer bitti (hedef öldü ya da başkası öldürdü, görüşten çıktı, oyuncu atladı …): istemci AttackLaserRunCommand'da
+            # saldıranın hedefini kurup gemiyi ona döndürür, AttackAbortLaserCommand gelmezse öteki oyuncuların ekranında gemi
+            # hedefe dönük kalıyor, burnu dönmüyor ve motor efekti çıkmıyordu (ortak_harita.YANSIYAN)
+            self.ortak.yansit(self, [('AttackAbortLaserCommand', {'uid': self.hid})])
+        self.ates = self.attacking
         if self.pet:
             self.pet.tick(now)
         if self.kapi:

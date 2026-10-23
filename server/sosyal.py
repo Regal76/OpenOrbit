@@ -8,6 +8,7 @@ açılış animasyonunun sonunda); sunucudan pencere açan bir komutun işleyici
 UIWindowUpdateRequest ile gelir (kapatınca maximized=false) ve profilde saklanır (profil.apply): kapatılan pencere sonraki girişte
 açılmaz (canlı deneme 2026-10-17).
 """
+import grup as GR
 import isinlama as IS
 import klan as KL
 import muzayede as MZ
@@ -100,7 +101,9 @@ class Sosyal:
 
     def rooms(self):
         fac = self.p.d['pilot'].get('factionId', 0)
-        return [('global', 'global', 'yerel'), ('faction', 'faction', str(fac))] + self.klan.rooms()
+        g = GR.grubu(self.p.user_id)               # arkadaş sunucusunda grubun odası (istemci gruba girince sohbete yeniden bağlanır)
+        return [('global', 'global', 'yerel'), ('faction', 'faction', str(fac))] + self.klan.rooms() + \
+            ([GR.oda(g.id)] if g is not None else [])
 
     def chat_login(self, ep, lang):
         if not self.sohbet:
@@ -112,9 +115,11 @@ class Sosyal:
             self.welcomed = True
             yerel = self.sohbet.adres == '127.0.0.1'
             text = (('%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.' if yerel else
-                     '%s, arkadaş sunucusuna hoş geldin. Sohbet ortak; posta, klan ve müzayede her oyuncunun kendisinin.') if lang == 'tr'
+                     '%s, arkadaş sunucusuna hoş geldin. Sohbet, posta, grup ve rehber ortak; klan ve müzayede her oyuncunun '
+                     'kendisinin.') if lang == 'tr'
                     else ('%s, welcome to your local server. Chat, mail, clan and auction are single-player here.' if yerel else
-                          "%s, welcome to your friend's server. Chat is shared; mail, clan and auction are each player's own."))
+                          "%s, welcome to your friend's server. Chat, mail, groups and contacts are shared; clan and auction are "
+                          "each player's own."))
             self.sohbet.duyuru(text % self.p.d['pilot'].get('userName', ''), kim=str(self.p.user_id))
         return ok
 

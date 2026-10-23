@@ -23,7 +23,15 @@ SAHIP_SN = 0.1                # sahiplerin yeniden hesaplanma aralığı (döng�
 # yansıtılan mesajlar -> içlerinde geçen gemi kimliklerinin alanları (alıcı hepsini tanıyorsa gider; 0: çevre, ör. radyasyon)
 YANSIYAN = {'MoveCommand': ('userId',), 'AttackLaserRunCommand': ('attackerId', 'targetId'),
             'AttackHitCommand': ('attackerId', 'victimId'), 'AttackMissedCommand': ('targetUserId',),
-            'ShipDestroyedCommand': ('destroyedUserId',), 'VisualModifierCommand': ('userId',)}
+            'ShipDestroyedCommand': ('destroyedUserId',), 'VisualModifierCommand': ('userId',),
+            # lazerin bitişi: istemci AttackLaserRunCommand'da saldıranın hedefini kurar (ShipInfo.Target) ve gemiyi ona döndürür;
+            # bu gelmezse öteki oyuncunun gemisi hedefe dönük kalıyor, burnu dönmüyor ve motor efekti çıkmıyordu (AttackAbortLaser.Run)
+            'AttackAbortLaserCommand': ('uid',)}
+# eski metinle giden görseller (eski_protokol.py) -> içlerindeki gemi kimliklerinin parça sırası (ilk sayı listesi: kalan parçaların
+# hepsi kimlik): roket 0|v|saldıran|hedef|…, Smart Bomb / Insta-Shield / EMP 0|n|SMB|uid, gemi yeteneği 0|n|SD|A|etki|kalıcı|
+# etkinleştiren[|hedef], teknoloji 0|n|A|S|kod|uid ve Chain Impulse 0|n|ECI|1|saldıran|hedef…
+ESKI = {('0', 'v'): (2, 3), ('0', 'n', 'SMB'): (3,), ('0', 'n', 'ISH'): (3,), ('0', 'n', 'EMP'): (3,),
+        ('0', 'n', 'SD'): (6, [7]), ('0', 'n', 'A', 'S'): (5,), ('0', 'n', 'ECI'): (4, [5])}
 
 REG = threading.Lock()
 HARITALAR = {}                # harita kimliği -> Harita (kullanan dünya varken)
@@ -111,13 +119,14 @@ class Harita:
     # ------------------------------------------------------------ mesajlar
     def yansit(self, kaynak, msgs):
         """Kaynak dünyanın herkese görünen mesajları öteki üyelere (tanıdıkları gemilerinkiler)."""
-        out = [m for m in msgs if m[0] in YANSIYAN and not (m[0] == 'VisualModifierCommand' and m[1].get('modifier') == FLASHLIGHT)]
+        out = [(m, kimlikler(m)) for m in msgs if not (m[0] == 'VisualModifierCommand' and m[1].get('modifier') == FLASHLIGHT)]
+        out = [(m, ids) for m, ids in out if ids is not None]
         if not out:
             return
         for w in self.uyeler:
             if w is kaynak or not w.running:
                 continue
-            mine = [m for m in out if all(w.tanir(m[1].get(k)) for k in YANSIYAN[m[0]])]
+            mine = [m for m, ids in out if all(w.tanir(x) for x in ids)]
             if mine:
                 w.teslim(mine)
 
@@ -150,6 +159,25 @@ class Harita:
                 w.oyuncular[uid] = m.imza()
                 msgs += m.gorunum_msgs(now)
         return msgs
+
+
+def kimlikler(m):
+    """Yansıtılan mesajın gemi kimlikleri (alıcı hepsini tanımalı) ya da None (yansıtılmaz)."""
+    if m[0] in YANSIYAN:
+        return [m[1].get(k) for k in YANSIYAN[m[0]]]
+    if m[0] != 'LegacyModule':
+        return None
+    parts = str(m[1].get('message', '')).split('|')
+    for key, pos in ESKI.items():
+        if tuple(parts[:len(key)]) != key:
+            continue
+        fixed = [i for i in pos if not isinstance(i, list)]
+        rest = [j for i in pos if isinstance(i, list) for j in range(i[0], len(parts))]
+        try:
+            return [int(parts[i]) for i in fixed + rest]
+        except (ValueError, IndexError):
+            return None
+    return None
 
 
 def ortak_mi(w):

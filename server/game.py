@@ -78,6 +78,9 @@ import dukkanlar as DK
 import profil as PF
 import envanter as INV
 import cok_oyunculu as CO
+import topluluk as TP
+import grup as GR
+import rehber as RH
 from eski_protokol import legacy, parse as legacy_parse  # noqa: E402         # noqa: E402
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
@@ -224,6 +227,7 @@ SOHBET = None                # yerel sohbet sunucusu (sohbet.py; main başlatır
 OTURUMLAR = set()            # oyuncusu belli olan oturumlar (arkadaş sunucusunda birden çok; cok_oyunculu.py)
 KONTROL = '--kontrol' in sys.argv        # canlı test kontrol kanalı (kontrol.py): mesaj izi ve enjeksiyon
 CURRENT = None               # son bağlanan istemcinin oturumu (kontrol kanalı bunu yönetir)
+TP.OYUN = sys.modules[__name__]          # sunucudaki oyuncular (grup, rehber, fısıltı, posta): PROFIL, CURRENT
 PROFIL_YOLU = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--profil=')), None)
 DURDUR = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--durdur=')), None)    # panel: belirince kaydet ve çık
 # kayıt (Premium'suz hesap): çıkış düğmesinden 19,2 sn sonra 0|l, bağlantı kapanır; Premium'da istemci "Log out ... in just five seconds"
@@ -558,15 +562,19 @@ class Session:
             log('   pilot adı değişmedi: %r' % name)
         return ('InternalPilotBioUpdateResultsCommand', {'success': ok, 'baseStackCommand': None})
 
-    def pilot_bio(self, resp):
-        """InternalPilotBioRequest: kayıttaki profil kartı + oyuncunun kaydettiği bilgiler (InternalPilotBioUpdateRequest)."""
-        bio = self.profil.d.get('pilot_bio', {})
-        self.play_time()
-        k = self.profil.d.get('klan') or {}                                  # tek kişilik klan (klan.py)
-        rank = {'rank': self.profil.d['pilot'].get('dailyRank', 1),            # pilot kartındaki rütbe (sayı)
-                'playTime': int(self.profil.d.get('oynama_sn', 0) // 3600),     # saat
-                'userName': self.profil.d['pilot'].get('userName', ''),          # kayıttaki ad değil, profilinki
-                'userId': self.profil.user_id, 'registrationDate': self.profil.d.get('olusturma', '') + '.0',    # kayıttaki hesabınki değil
+    def pilot_bio(self, resp, uid=None):
+        """InternalPilotBioRequest: kayıttaki profil kartı + oyuncunun kaydettiği bilgiler (InternalPilotBioUpdateRequest). uid:
+        arkadaş sunucusunda başka oyuncunun kartı (rehber, grup, sohbet menüsü: onun kaydından)."""
+        o = TP.bul(uid=uid) if uid and uid != self.profil.user_id else None
+        p = o.profil if o is not None else self.profil
+        bio = p.d.get('pilot_bio', {})
+        if p is self.profil:
+            self.play_time()
+        k = p.d.get('klan') or {}                                  # tek kişilik klan (klan.py)
+        rank = {'rank': p.d['pilot'].get('dailyRank', 1),            # pilot kartındaki rütbe (sayı)
+                'playTime': int(p.d.get('oynama_sn', 0) // 3600),     # saat
+                'userName': p.d['pilot'].get('userName', ''),          # kayıttaki ad değil, profilinki
+                'userId': p.user_id, 'registrationDate': p.d.get('olusturma', '') + '.0',    # kayıttaki hesabınki değil
                 'ranking': 1,                                               # Hall of Fame'de tek oyuncu (rutbe.hof_top)
                 'clanName': k.get('ad', ''), 'clanRank': k.get('sira', 0) if k else 0, 'clanMemberCount': 1 if k else 0}
         return [(n, dict(f, **{k: v for k, v in dict(bio, **rank).items() if k in f})) if n == 'InternalPilotBioUserProfileCommand'
@@ -605,6 +613,8 @@ class Session:
         self.world = World(self.profil, lambda m: self.send(m, quiet=True), log, map_id, SABLON.station(map_id), keep_state=True,
                            test_near='--yakin-npc' in sys.argv or AY.get('yakin_npc'), on_jump=self.change_map, paylas=paylas)
         self.world.gorunum = self.gorunum
+        self.world.grup_uyesi = lambda uid: uid in GR.uyeler(self.profil.user_id)
+        self.world.olum = lambda: GR.oldu(TP.kisi(self.profil))
         if CO.acik() and not paylas:                                  # oyuncunun kendi kopyası: saklanan durumu da kendisinin
             self.world.cache_key = '%s:%s' % (map_id, self.profil.user_id)
         self.world.invulnerable = '--dokunulmaz' in sys.argv
@@ -686,6 +696,9 @@ class Session:
                 out.append(TK.event_cmd())
                 continue
             if n in ('NpcEventInfoCommand', 'NpcEventBossInfoCommand'):    # kayıttaki Halloween göstergesi: harita etkinliği gönderir
+                continue
+            if n == 'ContactListInitializationCommand':  # rehber profilden (rehber.py)
+                out.append(RH.giris_cmd(self.profil))
                 continue
             if n == 'DailyLoginRewardDayCommand' and self.gunluk.claimed_today():
                 continue                              # bugünün ödülü alındı: takvim girişte açılmaz (menüden: DailyLoginRewardDayRequest)
@@ -912,6 +925,9 @@ class Session:
                 self.pass_event('login')         # "oyuna gir" görevleri (Unity ödülü; kayıt: girişten hemen sonra biter)
                 self.pass_event('level', deger=self.profil.d['pilot'].get('level', 1))
                 self.event_tips()                # süren etkinliğin açıklaması (dönemde bir kez)
+                grup = GR.giris_msgs(TP.kisi(self.profil))     # bağlantı kopup dönen üye: grubu ve bekleyen davetler (grup.py)
+                if grup:
+                    self.send(grup, 'grup: giriş')
             else:
                 self.world.resend()
             if self.ready_n > 1:                 # harita yüklendi (portal, ışınlama, yeniden doğma): istemci menüyü yeniden kuruyor
@@ -1055,7 +1071,8 @@ class Session:
                         lst.append(c)
                         self.profil.dirty = True
         elif name == 'InternalPilotBioRequest':
-            self.send(self.pilot_bio(SABLON.yanit(name, f) or []), 'pilot kartı')
+            # kayıtta olmayan kimlik (arkadaş sunucusunda öteki oyuncu): kayıttaki kart şablon olur, alanlar onun profilinden
+            self.send(self.pilot_bio(SABLON.yanit(name, f) or SABLON.yanit(name, {}) or [], int(f.get('userId') or 0)), 'pilot kartı')
         elif name == 'InternalPilotBioUpdateRequest':
             with self.profil.lock:
                 old = self.profil.d.get('pilot_bio', {})
@@ -1075,10 +1092,15 @@ class Session:
                 self.profil.d['davet_engeli'] = not self.profil.d.get('davet_engeli', False)
                 self.profil.dirty = True
             self.send([('InvitationBlockModule', {'active': self.profil.d['davet_engeli']})], 'grup daveti engeli')
-        elif name == 'InvitationCreationRequest':
-            # ada göre grup daveti: bot oyuncular gelene dek kimse yok (kayıttaki yanıt: error 2 CANDIDATE_NONEXISTENT; yanıtsızken
-            # grup penceresi bekleyip boş kalıyordu)
-            self.send([('InvitationErrorCommand', {'inviterId': 0, 'candidateId': 0, 'error': 2})], 'grup daveti: %s' % f.get('name'))
+        elif name in GR.REQUESTS:
+            # grup (grup.py): arkadaş sunucusunda öteki oyuncular; tek oyunculuda kimse yok (davet: error 2 CANDIDATE_NONEXISTENT)
+            resp = GR.handle(TP.kisi(self.profil), name, f)
+            if resp:
+                self.send(resp, 'grup: %s' % name)
+        elif name in RH.REQUESTS:                                    # rehber ve posta penceresinin kişiler sekmesi (rehber.py)
+            resp = RH.handle(TP.kisi(self.profil), name, f)
+            if resp:
+                self.send(resp, 'rehber: %s' % name)
         elif name == 'CommandCenterNewsClickedRequest':              # haberin tıklanması (E8; yanıtı yok): profildeki sayaç
             with self.profil.lock:
                 c = self.profil.d.setdefault('haber_tik', {})
@@ -1204,6 +1226,8 @@ class Session:
         if self.profil is not None:
             self.play_time()
             save_profile(self.profil)
+            if not any(s is not self and s.profil is self.profil for s in list(OTURUMLAR)):
+                RH.unut(self.profil.user_id)              # sonraki girişte rehber baştan gider
         log('disconnect %s' % (self.addr,))
         global CURRENT
         if CURRENT is self:

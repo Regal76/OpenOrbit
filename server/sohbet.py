@@ -313,6 +313,9 @@ class Sohbet:
         elif t == T_REMOVE:
             c.handlers.discard(m.get('path'))
         elif t == T_MESSAGE:
+            if (m.get('path') or '').startswith('/whisper/'):
+                self.whisper(c, m['path'], m.get('data') or {}, rid)
+                return
             self.relay(c, m.get('path') or '', m.get('data') or {})
         elif t == T_REQUEST:
             self.request(c, m)
@@ -343,6 +346,30 @@ class Sohbet:
             return
         self.log('sohbet: %s: %s' % (path, msg))
         self.broadcast(path, msg, c.ep, c.user)
+
+    def whisper(self, c, path, data, rid):
+        """Fısıltı: istemci /whisper/<InstanceID>_<alıcının adı>/ yoluna yazar, alıcının istemcisi kendi adıyla bu yolu dinler
+        (AChat, giriş sonrası). Ad büyük/küçük harf ayırmaz. Alıcı yoksa hata yanıtı: istemci "kullanıcı yok ya da çevrimdışı" yazar."""
+        msg = str(data.get('msg', ''))[:500]
+        want = path.lower()
+        with self.lock:
+            conns = [x for x in self.conns.values() if x.user and x is not c]
+        hits = [(x, p) for x in conns for p in x.handlers if p.lower() == want]
+        if not hits:                       # başka örnek kimliği (InstanceID) ile dinleyen: adın kendisi
+            ad = '_' + want[len('/whisper/'):].split('_', 1)[-1]
+            hits = [(x, p) for x in conns for p in x.handlers if p.startswith('/whisper/') and p.lower().endswith(ad)]
+        if not c.user or not msg or not hits:
+            self.log('sohbet: fısıltı yerine ulaşmadı %s' % path)
+            if rid is not None:
+                c.send({'t': T_RESPONSE, 'requestId': rid, 'errorReason': 'notFound', 'errorMsg': 'no listener',
+                        'errorPath': path})
+            return
+        self.log('sohbet: fısıltı %s -> %s: %s' % (c.user.get('userId'), path, msg))
+        for x, p in hits:
+            x.send({'t': T_MESSAGE, 'path': p, 'data': {'msg': msg, 'sentAt': str(int(time.time() * 1000))},
+                    'endpointObject': {'path': c.path, 'endpoint': c.ep, 'data': c.user}})
+        if rid is not None:
+            c.send({'t': T_RESPONSE, 'requestId': rid})
 
     def broadcast(self, path, msg, ep, user):
         out = {'t': T_MESSAGE, 'path': path, 'data': {'msg': msg, 'sentAt': str(int(time.time() * 1000))},
@@ -382,6 +409,14 @@ class Sohbet:
         for c in conns:
             for room in rooms:
                 self.join(c, *room)
+
+    def oda_birak(self, kim, room_class, name):
+        """Oyuncu odadan çıktı (gruptan ayrıldı): bağlantıları o odanın mesajlarını artık almaz."""
+        prefix = '/room/%s/%s/' % (room_class, name)
+        with self.lock:
+            for c in self.conns.values():
+                if c.user and c.user.get('id') == kim:
+                    c.handlers = {p for p in c.handlers if not p.startswith(prefix)}
 
     def update_user(self, kim=None, **kw):
         with self.lock:
