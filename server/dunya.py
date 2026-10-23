@@ -1,5 +1,5 @@
-"""Harita dünyası (tek oyunculu, bağlantı başına bir dünya): NPC'ler, hareket, yapay zekâ, lazer/roket savaşı,
-ölüm, ödüller, kargo ve bonus kutuları.
+"""Harita dünyası (bağlantı başına bir dünya): NPC'ler, hareket, yapay zekâ, lazer/roket savaşı, ölüm, ödüller, kargo ve bonus
+kutuları. Arkadaş sunucusunda aynı normal haritadaki oyuncuların dünyaları uzaylıları, kutuları ve cevherleri paylaşır (ortak_harita.py).
 
 Mesaj akışları gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md, "Oyun içi kalıplar"):
   seçme   ShipSelectRequest -> ShipSelectionCommand (vuruşlardan sonra güncellenir)
@@ -38,6 +38,7 @@ import ganimet as GN
 import ayar as AY
 import yukseltme as YK
 import ipucu as IP
+import ortak_harita as OH
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CFG = json.load(open(os.path.join(HERE, 'data', 'npc.json'), encoding='utf8'))
@@ -176,6 +177,7 @@ class NPC:
         self.next_regen = 0.0
         self.ab = {}                        # yeteneklerin durumu (uzayli.py: beklemeler, eşikler, kaybolma, hız)
         self.attackers = {}                 # saldıran -> son vuruş anı (Battleray'in öfkesi)
+        self.foe = None                     # ortak haritada yapay zekâsını işleyen dünya (ortak_harita.Harita.sahipler)
 
     def speed(self):
         """Hızı: yeteneğin değiştirdiği (Emperor Sibelon 380) ya da türünki; panelin uzaylı hızı çarpanıyla (hareketsizler 0 kalır)."""
@@ -255,7 +257,8 @@ class World:
     def invulnerable(self, v):
         self._invulnerable = bool(v)
 
-    def __init__(self, profil, send, log, map_id, station=None, test_near=False, on_jump=None, keep_state=False):
+    def __init__(self, profil, send, log, map_id, station=None, test_near=False, on_jump=None, keep_state=False, paylas=False):
+        """paylas: arkadaş sunucusunda normal harita, aynı haritadaki öteki oyuncuların dünyalarıyla ortak (ortak_harita.py)."""
         self.perf = Olcum()                 # döngü adımının süresi (ms): canlı durum ve panel
         self.step_errors = {}               # döngü hatasının son satırı -> en son günlüğe yazıldığı an (step_error)
         self._batch = None                 # döngü adımı sürerken gönderilecekler (adım sonunda tek çerçevede)
@@ -280,7 +283,7 @@ class World:
         self.near_assets = None    # yakındaki nesneler (None: bir sonraki adımda hepsinin durumu gönderilir)
         self.timers = []           # (zaman, işlev)
         self.collect_wish = None   # (kutu, son an): gemi kutuya varınca alınacak kutu (collect)
-        self.next_uid = 150300000
+        self._next_uid = OH.UID_BASE
         k = self.p.d['konum']
         self.hero = Mover(k['x'], k['y'])
         self.target = None
@@ -294,7 +297,7 @@ class World:
         self.test_near = test_near     # test kolaylığı: ilk 4 NPC türünden birer tane oyuncunun yakınında doğar (--yakin-npc)
         self.invulnerable = False      # test kolaylığı: vuruşlar görünür, gövde ve kalkan azalmaz (--dokunulmaz; panelde de)
         self.karanlik = False          # karanlık harita (Trial of Terrors): el feneri etkisi (oturum ayarlar; etkinlik_kapi.DARK_MAPS)
-        self.gates = list(H.gates(map_id))   # bu haritadan başka haritaya giden portallar (istemcinin spacemap-config.xml'i)
+        self.gates = list(H.gates(map_id, self.p.d['pilot'].get('factionId')))   # başka haritaya giden portallar (spacemap-config.xml)
         self.extra_gates = []          # oturumun eklediği portallar (X-1'deki Galaksi Kapıları; kapi.py), girişte bildirilir
         self.kapi = None               # kapı haritasında dalgalar (kapi.Kosu)
         self.low = None                # LoW'un tek kişilik sürümü (low.Low)
@@ -376,6 +379,29 @@ class World:
         self.next_drifter = 0.0
         self.wormhole = None           # 4-5'teki gizli solucan deliği: portal ve yer değiştireceği an
         self.boxes_taken = 0           # bu ziyarette alınan bonus kutuları (mezarlıkta değer azalır)
+        self.oyuncular = {}            # istemcinin gördüğü öteki oyuncular: kimlik -> görünüm imzası (ortak harita)
+        self.gorunum = None            # oturum: (x, y) -> bu kahramanın gemisi öteki oyuncuların istemcisinde (game.Session.gorunum)
+        self.ortak = OH.al(self.map_id) if paylas else None     # ortak harita: kilit, uzaylılar, kutular, cevherler, doğmalar
+        self.ortak_birakildi = False
+        self.cache_key = self.map_id   # WORLD_CACHE anahtarı (arkadaş sunucusunda oyuncunun kendi kopyası oyuncuya göre; game.start_world)
+        if self.ortak:
+            o = self.ortak
+            self.lock = o.lock
+            self.npcs, self.boxes, self.ores, self.pending, self.ore_fields = o.npcs, o.boxes, o.ores, o.pending, o.ore_fields
+            if o.etkinlik is None:
+                o.etkinlik = self.etkinlik
+            self.etkinlik = o.etkinlik             # harita etkinliğinin sayaçları ve patronları herkesin
+
+    @property
+    def next_uid(self):
+        return self.ortak.next_uid if self.ortak else self._next_uid
+
+    @next_uid.setter
+    def next_uid(self, v):
+        if self.ortak:
+            self.ortak.next_uid = v
+        else:
+            self._next_uid = v
 
     # ------------------------------------------------------------ yardımcılar
     @property
@@ -383,6 +409,12 @@ class World:
         return self.p.user_id
 
     def send(self, msgs):
+        if self.ortak is not None and len(self.ortak.uyeler) > 1:
+            self.ortak.yansit(self, msgs)     # herkese görünenler (uzaylının hareketi, vuruşlar, patlamalar) öteki oyunculara da
+        self.teslim(msgs)
+
+    def teslim(self, msgs):
+        """Bu dünyanın istemcisine (görüş süzgeçlerinden geçerek; döngü adımındaysa adım sonunda)."""
         if self.npcs:       # görüş dışındaki NPC'nin hareketi istemciye gitmez (onu tanımıyor)
             msgs = [m for m in msgs if not (m[0] == 'MoveCommand' and m[1]['userId'] in self.npcs and m[1]['userId'] not in self.visible)]
         msgs = [m for m in msgs if self.item_filter(m)]
@@ -395,6 +427,45 @@ class World:
             self.send_raw(msgs)
         except OSError:
             self.running = False
+
+    # ------------------------------------------------------------ ortak harita (arkadaş sunucusu; ortak_harita.py)
+    def lider(self):
+        """Haritanın işlerini (yeniden doğmalar, süresi biten kutular, harita etkinliği) bu dünya mı yürütür."""
+        return self.ortak is None or self.ortak.lider is self
+
+    def sahibi(self, n, now):
+        """Uzaylının yapay zekâsını ve yeteneklerini bu dünya mı işler (tek oyunculuda hep)."""
+        return self.ortak is None or self.ortak.sahibi_mi(self, n, now)
+
+    def bizim(self, n):
+        """Uzaylı bu kahramanla mı ilgili (ölünce, atlayınca peşini bıraksın): tek oyunculuda hepsi."""
+        return self.ortak is None or n.foe in (None, self)
+
+    def gizli(self, now):
+        return self.abilities.cloaked(now) or self.items.cloaked()
+
+    def ulasilir(self, now):
+        """Uzaylılar bu kahramana saldırabilir mi (ölü, atlamada, gizli, güvenli bölgede değil)."""
+        return not (self.hero_dead or self.jumping or self.gizli(now) or self.in_peace(*self.hero_pos(now)))
+
+    def tanir(self, uid):
+        """İstemci bu gemiyi tanıyor mu (kendisi, gördüğü uzaylılar ve oyuncular; 0: çevre)."""
+        return uid == 0 or uid == self.hid or uid in self.visible or uid in self.oyuncular
+
+    def imza(self):
+        """Gemisinin görünümü: değişince öteki oyuncular gemiyi yeniden kurar (hangarda gemi, tasarım, dronlar, unvan)."""
+        pl, g = self.p.d['pilot'], self.p.d['gemi']
+        return (g.get('typeId'), pl.get('userName'), pl.get('clanTag'), self.p.d.get('formasyon'), len(self.p.d.get('dronlar') or ()),
+                self.p.d.get('uzanti_asamasi'), (self.p.d.get('basarimlar') or {}).get('unvan'))
+
+    def gorunum_msgs(self, now):
+        """Öteki oyuncunun istemcisinde bu kahramanın gemisi ve süren hareketi."""
+        x, y = self.hero_pos(now)
+        msgs = list(self.gorunum(int(x), int(y))) if self.gorunum else []
+        m = self.hero
+        if m.t1 > now:
+            msgs.append(('MoveCommand', dict(userId=self.hid, x=int(m.x1), y=int(m.y1), timeToTarget=int((m.t1 - now) * 1000))))
+        return msgs
 
     def defer(self, msgs):
         """Döngü adımı sürerken döngünün iş parçacığından gelen oturum mesajı (session_tick, kancalar) dünyanınkilerle aynı sırada
@@ -415,7 +486,7 @@ class World:
         due = [p for p in self.pending if p[0] <= now]
         if not due:
             return
-        self.pending = [p for p in self.pending if p[0] > now]
+        self.pending[:] = [p for p in self.pending if p[0] > now]       # yerinde: ortak haritada liste paylaşılıyor
         for _, kind, value in due:
             if kind == 'npc':
                 if not str(value).startswith('etk_') or self.etkinlik.active_type(value):     # etkinlik bittiyse doğmaz
@@ -436,15 +507,15 @@ class World:
         with self.lock:
             npcs = [n for n in self.npcs.values() if n.alive and not n.gate]
             for n in npcs:
-                n.engaged, n.flee, n.children = False, False, set()
-            WORLD_CACHE[self.map_id] = dict(an=time.time(), npcs=npcs, boxes=dict(self.boxes), ores=dict(self.ores),
+                n.engaged, n.flee, n.children, n.foe = False, False, set(), None
+            WORLD_CACHE[self.cache_key] = dict(an=time.time(), npcs=npcs, boxes=dict(self.boxes), ores=dict(self.ores),
                                             pending=list(self.pending), ore_fields=list(self.ore_fields), next_uid=self.next_uid)
         while len(WORLD_CACHE) > WORLD_CACHE_MAX:
             del WORLD_CACHE[min(WORLD_CACHE, key=lambda k: WORLD_CACHE[k]['an'])]
 
     def restore_state(self):
         """Saklanmış durum (süresi geçmediyse) -> True: uzaylılar yerinde, kutular ve cevherler aynı, bekleyen doğmalar sürer."""
-        c = WORLD_CACHE.pop(self.map_id, None) if self.keep_state else None
+        c = WORLD_CACHE.pop(self.cache_key, None) if self.keep_state else None
         now = time.time()
         if not c or now - c['an'] > WORLD_CACHE_SN:
             return False
@@ -453,9 +524,10 @@ class World:
             n.mover = Mover(int(x), int(y))
             n.next_think, n.next_shot = now + random.uniform(1, 6), 0.0
             self.npcs[n.id] = n
-        self.boxes = {h: b for h, b in c['boxes'].items() if not b.get('bitis') or b['bitis'] > now}
-        self.ores = {h: o for h, o in c['ores'].items() if not o.get('busy')}
-        self.pending, self.ore_fields = c['pending'], c['ore_fields']
+        # kapsayıcılar yerinde doldurulur: ortak haritada öteki dünyalar da aynılarını tutuyor (ortak_harita.py)
+        self.boxes.update({h: b for h, b in c['boxes'].items() if not b.get('bitis') or b['bitis'] > now})
+        self.ores.update({h: o for h, o in c['ores'].items() if not o.get('busy')})
+        self.pending[:], self.ore_fields[:] = c['pending'], c['ore_fields']
         self.next_uid = max(self.next_uid, c['next_uid'])
         self.log('   harita durumu geri geldi (%d sn önce): %d NPC, %d kutu, %d cevher, %d bekleyen doğma' % (
             now - c['an'], len(self.npcs), len(self.boxes), len(self.ores), len(self.pending)))
@@ -625,8 +697,25 @@ class World:
                     msgs.append(self.item_msg(h))
             elif seen:
                 msgs.append(('RemoveCollectableCommand', {'collected': False, 'hash': h}))
+        if self.ortak:
+            msgs += self.shared_view(now, hx, hy)
         if msgs:
             self.send(msgs)
+
+    def shared_view(self, now, hx, hy):
+        """Ortak harita: başka oyuncunun öldürdüğü ya da çektiği uzaylı, topladığı kutu ve cevher bu istemciden de kalkar; öteki
+        oyuncuların gemileri görüşe göre gösterilir (ortak_harita.Harita.gorunurluk)."""
+        msgs = []
+        for uid in [u for u in self.visible if u not in self.npcs]:
+            self.visible.discard(uid)
+            if self.target == uid:
+                self.target, self.attacking = None, False
+                msgs.append(('ShipDeselectionCommand', {}))
+            msgs.append(('ShipRemoveCommand', {'userId': uid}))
+        msgs += [('RemoveCollectableCommand', {'collected': False, 'hash': h}) for h in list(self.seen_items)
+                 if h not in self.boxes and h not in self.ores]
+        lim = self.abilities.view_factor(now)
+        return msgs + self.ortak.gorunurluk(self, now, hx, hy, SAVAS['gorus_mesafesi'] * lim, SAVAS['gorus_birakma'] * lim)
 
     def fixed_spot(self, tip):
         """Türün sabit doğma noktalarından boş olanı (npc.json haritalar.sabit_noktalar; Cubikon'un dört noktası) ya da None."""
@@ -737,11 +826,12 @@ class World:
             self.log('   dünya: harita %s için NPC listesi yok' % self.map_id)
             m = {'npc': [], 'bonus_kutu': 0}     # yine de döngü çalışsın: portallar, onarım, kalkan
         with self.lock:
-            restored = self.restore_state()
+            joined = bool(self.ortak and self.ortak.uyeler)      # ortak haritada başka oyuncu var: uzaylılar, kutular, cevherler onun
+            restored = joined or self.restore_state()
             for g in ([] if restored else m['npc']):
                 for _ in range(AY.adet('npc_sayi', g['adet'])):
                     self.spawn_npc(g['tip'], announce=False)
-            if self.test_near:
+            if self.test_near and not joined:
                 hx, hy = self.hero_pos()
                 picks, seen = [], set()
                 for n in self.npcs.values():
@@ -766,6 +856,8 @@ class World:
             for g in self.extra_gates:
                 self.add_gate(g)
             self.start_rules()
+            if joined:                    # harita etkinliğinin göstergesi (lider haritaya girdiğinde yalnız ona gitmişti)
+                self.send(self.etkinlik.info_msgs())
             for name, a in (self.map_msgs() if self.map_msgs else []):
                 if name == 'AssetCreateCommand' and a['type']['typeValue'] in H.STATION_ASSETS \
                         and a.get('factionId') in (0, None, self.p.d['pilot'].get('factionId')):   # düşman üssününkiler kullanılmaz
@@ -775,6 +867,8 @@ class World:
                     self.givers.append((a['assetId'], a['posX'], a['posY']))
         self.running = True
         with self.lock:
+            if self.ortak:
+                self.ortak.katil(self)
             self.check_gates(time.time())     # portalda doğduysa atlama hemen mümkün olsun
         RUNNING.add(self)
         threading.Thread(target=self.loop, daemon=True).start()
@@ -782,7 +876,16 @@ class World:
 
     def stop(self):
         self.running = False
-        self.save_state()
+        if self.ortak is None:
+            self.save_state()
+        elif not self.ortak_birakildi:            # ortak harita: durumu son çıkan saklar (WORLD_CACHE), kapsayıcılar boşalır
+            self.ortak_birakildi = True
+            if self.ortak.ayril(self):
+                self.save_state()
+                with self.lock:
+                    for c in (self.npcs, self.boxes, self.ores, self.pending, self.ore_fields):
+                        c.clear()
+            self.ortak.birak()
         if self.hero_etki.d.keys() & {'yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'zayiflik'}:
             self.hero_etki.d.clear()             # haritanın etkileri (mezarlığın yavaşlatması …) kalkar; hız yeni haritaya doğru gider
             if self.stats_msgs:
@@ -809,7 +912,9 @@ class World:
         with self.lock:
             cam = [('CameraLockToHeroCommand', {})] if self.cinema else []
             self.cinema = False
-            return cam + ([('ShipRemoveCommand', {'userId': uid}) for uid in self.npcs if uid in self.visible] +
+            players, self.oyuncular = list(self.oyuncular), {}         # öteki oyuncuların gemileri (ortak harita)
+            return cam + ([('ShipRemoveCommand', {'userId': uid}) for uid in players] +
+                    [('ShipRemoveCommand', {'userId': uid}) for uid in self.npcs if uid in self.visible] +
                     [('RemoveCollectableCommand', {'collected': False, 'hash': h}) for h in list(self.boxes) + list(self.ores)
                      if h in self.seen_items] +
                     [UZ.asset_remove(aid, UZ.BUFF_CAPSULE) for aid in self.alien.capsules] +
@@ -862,7 +967,7 @@ class World:
     def drifter_tick(self, now):
         """Zaman çizelgeli Black Light başıboşları (npc.json haritalar.zamanli; wiki saatleri): saatinden sonra zamanli_sure_sn içinde
         haritada yoksa ve o saatte öldürülmediyse doğar; yeniden doğmaz."""
-        if now < self.next_drifter or self.kapi:
+        if now < self.next_drifter or self.kapi or not self.lider():
             return
         self.next_drifter = now + 5.0
         done = self.p.d.get('zamanli', {})
@@ -907,7 +1012,7 @@ class World:
         if not counts:
             return
         total = sum(counts.values())
-        self.ore_fields = [self.random_spot() for _ in range(max(3, total // ORE['kume_basina']))]
+        self.ore_fields[:] = [self.random_spot() for _ in range(max(3, total // ORE['kume_basina']))]
         for t, n in counts.items():
             for _ in range(AY.adet('maden_bolluk', n)):              # panel: maden bolluğu
                 self.add_ore(int(t), announce=False)
@@ -1219,7 +1324,8 @@ class World:
             self.abilities.reveal()
             self.jumping, self.attacking, self.target = True, False, None
             for n in self.npcs.values():
-                n.engaged = False
+                if self.bizim(n):
+                    n.engaged = False
             self.send([('JumpInitiatedCommand', {'mapId': g['hedef'], 'gateId': g['gateId']})])
             self.log('   portal %d: %s -> %s atlama başladı' % (g['gateId'], H.name(self.map_id), H.name(g['hedef'])))
             if self.on_jump:
@@ -1233,6 +1339,7 @@ class World:
             self.reload_pending = False
             self.near_gate, self.gate_peace, self.station_inside = None, None, None   # bir sonraki check_gates işareti yeniden gönderir
             self.seen_items.clear()                                                    # istemci haritayı temizledi
+            self.oyuncular.clear()                                                     # öteki oyuncular (ortak harita) sonraki adımda
             msgs = self.visible_msgs(time.time()) + \
                    [('AddBoxCommand', dict(hash=h, boxType=b['tip'], x=b['x'], y=b['y'])) for h, b in self.boxes.items()] + \
                    [self.ore_msg(h) for h in self.ores] + [H.jumpgate_create(g) for g in self.gates if 'designId' in g] + \
@@ -1259,7 +1366,9 @@ class World:
     def on_move(self, f):
         with self.lock:
             now = time.time()
-            self.hero.go(f['targetX'], f['targetY'], self.p.d['gemi'].get('speed', 300), now, start=(f['positionX'], f['positionY']))
+            ms = self.hero.go(f['targetX'], f['targetY'], self.p.d['gemi'].get('speed', 300), now, start=(f['positionX'], f['positionY']))
+            if self.ortak:                 # onu gören oyuncular (ortak harita)
+                self.ortak.hareket(self, f['targetX'], f['targetY'], ms)
             if self.sold:                  # kayıt: satıştan sonraki ilk MoveRequest'te 0|UI|W|MIW|ore_trade (pencere küçülür)
                 self.sold = False
                 self.send([legacy('0|UI|W|MIW|ore_trade')])
@@ -1604,6 +1713,8 @@ class World:
             if engage and not n.engaged:
                 n.engaged = True
                 n.next_think = min(n.next_think, time.time())   # saldırıya uğrayan NPC hemen tepki verir
+                if self.ortak:
+                    n.foe = self                                  # ortak harita: vurana döner
             self.last_shield_hit = to_shield
             msgs = [('AttackHitCommand', dict(attackType=attack_type(atype), attackerId=attacker or self.hid, victimId=n.id,
                                               victimHitpoints=int(n.hp),
@@ -2260,6 +2371,8 @@ class World:
 
     def effects_tick(self, now):
         for n in list(self.npcs.values()):
+            if not self.sahibi(n, now):
+                continue                                  # ortak harita: uzaylının etkilerini sahibi işler
             if n.alive and n.etki.d:
                 for dmg in n.etki.poison_due(now):        # zehir (Venom …): gövdeye
                     self.hit_npc(n.id, dmg, 1, hull_only=True)
@@ -2622,7 +2735,8 @@ class World:
             self.later(HADES_RESPAWN_SN + 0.5, self.raid_expired)
         self.p.d['konum'].update(x=x, y=y)
         for n in self.npcs.values():
-            n.engaged = False
+            if self.bizim(n):
+                n.engaged = False
         msgs.append(('ShipDestroyedCommand', dict(destroyedUserId=self.hid, explosionTypeId=0)))
         msgs.append(('KillScreenPostCommand', dict(
             killerName=killer.d['ad'] if killer else '', killerEpppLink='', playerShipAlias=self.p.ship_look(),
@@ -2923,8 +3037,10 @@ class World:
             self.check_assets(now)
             self.view_tick(now)
             self.radiation_tick(now)
+        lider = self.lider()                   # ortak haritada haritanın işleri liderde (ortak_harita.py)
         self.booster_tick(now)
-        self.respawn_tick(now)
+        if lider:
+            self.respawn_tick(now)
         self.auto_tick(now)
         self.effects_tick(now)
         self.abilities.tick(now)
@@ -2932,7 +3048,8 @@ class World:
         self.tech.tick(now)
         self.parcacik.tick(now)
         self.alien.tick(now)
-        self.etkinlik.tick(now)
+        if lider:
+            self.etkinlik.tick(now)
         self.rules_tick(now)
         self.ach_tick(now)
         if self.repairing:
@@ -2955,8 +3072,9 @@ class World:
         if self.session_tick:
             self.session_tick(now)
         for n in list(self.npcs.values()):
-            self.think(n, now)
-        for h, b in list(self.boxes.items()):
+            if self.sahibi(n, now):            # ortak haritada uzaylının sahibi olan dünya (savaştığı ya da en yakın oyuncu)
+                self.think(n, now)
+        for h, b in list(self.boxes.items()) if lider else ():
             if b['bitis'] and now > b['bitis']:
                 del self.boxes[h]
                 self.send([('RemoveCollectableCommand', {'collected': False, 'hash': h})])

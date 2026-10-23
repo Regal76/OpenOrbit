@@ -21,10 +21,14 @@ DEFAULTS = {
     'gunluk_dondur': True,          # büyük günlükler başlatmada .1, .2 … olarak kayar
     'pencere_kapaninca': 'bekle',   # panel penceresi kapanınca: bekle (oyun sürüyorsa bitince kapanır) | kapat (her şeyi kapatır)
     'guncelleme': 'otomatik',       # GitHub'daki yeni sürüm (guncelleme.py): otomatik kur | bildir (yalnız haber ver) | kapali
+    'arkadas_sifre': '',            # Arkadaşlarınla Oyna > Host: katılma şifresi (boş: şifresiz)
+    'arkadas_en_cok': 4,            # Host: en çok misafir
+    'arkadas_son_adres': '',        # Join: son katılınan adres
 }
 CHOICES = {'pencere_modu': ('pencere', 'tam_ekran', 'kenarliksiz'), 'istemci_kapaninca': ('kapat', 'acik'),
            'pencere_kapaninca': ('bekle', 'kapat'), 'guncelleme': ('otomatik', 'bildir', 'kapali')}
-LIMITS = {'genislik': (640, 7680), 'yukseklik': (480, 4320), 'monitor': (0, 8), 'yedek_sayisi': (1, 200), 'yedek_aralik_dk': (0, 600)}
+LIMITS = {'genislik': (640, 7680), 'yukseklik': (480, 4320), 'monitor': (0, 8), 'yedek_sayisi': (1, 200), 'yedek_aralik_dk': (0, 600),
+          'arkadas_en_cok': (1, 16)}
 
 
 def clean(key, v):

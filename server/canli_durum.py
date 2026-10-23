@@ -57,6 +57,9 @@ def snapshot(game):
             d['dunya'] = _world_info(w)
         except Exception as e:                   # harita değişirken dünya yarım olabilir
             d['dunya'] = {'hata': repr(e)}
+    if game.CO.acik():                           # arkadaş sunucusu: misafirler (panelin "Arkadaşlarınla Oyna" sayfası)
+        d['arkadas'] = {'en_cok': game.CO.AYAR['en_cok'], 'misafirler': [
+            dict(m.ozet(), harita=H.name(m.profil.d['konum'].get('mapId'))) for m in game.CO.liste()]}
     return d
 
 

@@ -36,6 +36,7 @@ starts the game and handles your saves, game settings and events.
 - **First-run setup wizard:** language (English or Turkish), game folder (downloaded for you if it isn't on your
   computer), your first pilot and game settings.
 - **Play:** your active save, the PLAY button, launch steps, warnings and live status while you play.
+- **Play with Friends:** host a server or join a friend's; everyone plays with their own save (see below).
 - **Saves:** several save slots; create, rename, copy, export and import (.zip), edit (credits, uridium, give items,
   repair the ship …), and automatic or manual backups that you can restore.
 - **Game Settings:** multipliers and rules (damage, rewards, drop chances, alien and box counts, prices, cooldowns …),
@@ -44,6 +45,24 @@ starts the game and handles your saves, game settings and events.
 - **Client:** game folder, game download, version check, window mode, resolution and display.
 - **Server:** processes, ports, behavior and live logs.
 - **Panel:** language, setup wizard, updates, desktop shortcut and folders.
+
+### Playing with friends
+
+- **Host:** on the Play with Friends page, HOST starts the server for everyone and opens the game with your own save.
+  You can set a join password and the maximum number of guests. The page shows the addresses to give your friends and
+  lists connected guests (you can remove one).
+- **Ports:** TCP 8081 (game and account upload) and TCP 7771 (chat). No UDP port is needed; the web login (80, 8090)
+  stays on your computer. Allow Python through Windows Firewall when it asks. On the same home network nothing else is
+  needed; over the internet forward those two ports on your router, or use a virtual network (Radmin VPN, ZeroTier,
+  Tailscale) if your provider uses CGNAT.
+- **Join:** enter your friend's address (and password), pick a save and press JOIN. Your save is backed up, uploaded to
+  your friend's server and the game opens. While you play, your progress is written back to your own save every few
+  seconds; when you leave or close the game, its final state is saved on your computer.
+- **Your save stays yours:** the host keeps guests' saves in memory only; they never appear on the host's Saves page.
+- **What is shared:** company, battle and Blacklight maps (1-1 … 5-4, BL): aliens, boxes and ores, and you see each
+  other. Chat is shared. Gates, modes and event maps are each player's own copy; mail, clans and the auction stay
+  personal. The host's game settings apply to everyone. There is no PvP.
+- Both sides need the same panel and game version.
 
 ### Requirements
 
@@ -145,6 +164,7 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 - **İlk açılışta kurulum sihirbazı:** dil (Türkçe ya da İngilizce), oyun klasörü (bilgisayarında yoksa indirilir), ilk
   pilotun ve oyun ayarları.
 - **Oyna:** etkin kaydın, OYNA düğmesi, başlatma adımları, uyarılar ve oynarken canlı durum.
+- **Arkadaşlarınla Oyna:** sunucu kur ya da arkadaşının sunucusuna katıl; herkes kendi kaydıyla oynar (aşağıda).
 - **Kayıtlar:** birden çok kayıt yuvası; oluştur, yeniden adlandır, kopyala, dışa ve içe aktar (.zip), düzenle (kredi,
   uridyum, eşya ver, gemiyi onar …), otomatik ya da elle yedekler ve geri yükleme.
 - **Oyun Ayarları:** çarpanlar ve kurallar (hasar, ödüller, düşme şansı, uzaylı ve kutu sayısı, fiyatlar, beklemeler …),
@@ -153,6 +173,24 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 - **İstemci:** oyun klasörü, oyunu indirme, sürüm denetimi, pencere kipi, çözünürlük ve ekran.
 - **Sunucu:** süreçler, portlar, davranış ve canlı günlükler.
 - **Panel:** dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu ve klasörler.
+
+### Arkadaşlarınla oynamak
+
+- **Host:** Arkadaşlarınla Oyna sayfasında SUNUCU KUR herkes için sunucuyu başlatır ve oyunu kendi kaydınla açar. Katılma
+  şifresi ve en çok misafir sayısı seçilebilir. Sayfa arkadaşlarına vereceğin adresleri gösterir ve bağlı misafirleri
+  listeler (birini çıkarabilirsin).
+- **Portlar:** TCP 8081 (oyun ve hesap gönderimi) ve TCP 7771 (sohbet). UDP portu gerekmez; web girişi (80, 8090) senin
+  bilgisayarında kalır. Windows Güvenlik Duvarı sorunca Python'a izin ver. Aynı ev ağında başka bir şey gerekmez;
+  internet üzerinden modeminde bu iki portu yönlendir, sağlayıcın CGNAT kullanıyorsa sanal ağ kur (Radmin VPN, ZeroTier,
+  Tailscale).
+- **Join:** arkadaşının adresini (ve şifreyi) yaz, kaydını seç ve KATIL'a bas. Kaydın yedeklenir, arkadaşının sunucusuna
+  gönderilir ve oyun açılır. Oynarken ilerlemen birkaç saniyede bir kendi kaydına yazılır; ayrılınca ya da oyunu
+  kapatınca son hâli bilgisayarına kaydedilir.
+- **Kaydın senin:** sunucu misafirlerin kaydını yalnız bellekte tutar; sunucunun Kayıtlar sayfasında görünmez.
+- **Ortak olanlar:** firma, savaş ve Blacklight haritaları (1-1 … 5-4, BL): uzaylılar, kutular ve cevherler, birbirinizi
+  görürsünüz. Sohbet ortak. Kapı, mod ve etkinlik haritaları herkesin kendi kopyası; posta, klan ve müzayede kişisel.
+  Sunucunun oyun ayarları herkese uygulanır. PvP yok.
+- İki tarafta da panel ve oyun sürümü aynı olmalı.
 
 ### Gereksinimler
 

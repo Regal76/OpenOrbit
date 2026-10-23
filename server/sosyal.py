@@ -33,6 +33,7 @@ class Sosyal:
         self.send = None                   # oturumun gönderme işlevi (geri sayımla biten ışınlama)
         self.reload = None                 # gemi değişince haritayı yeniden yükletme (dunya.reload_ship)
         self.ep = None                     # sohbet uç kimliği (ChatAuthenticateUserRequest)
+        self.chat_host = None              # arkadaş sunucusunun misafiri: sohbet sunucusunun adresi (host:port; game.giris_bagla)
         self.welcomed = False
         self.last_window = (None, 0.0)     # son pencere bildirimi (istemci açılışta iki kez gönderiyor)
 
@@ -81,7 +82,7 @@ class Sosyal:
         """Giriş demetindeki kayıtlı mesajın yerine (yoksa None): sohbet adresi yerel sunucuya, okunmamış posta profilden."""
         if name == 'ChatParamCommand':
             port = self.sohbet.port if self.sohbet else 7771
-            return [(name, {'moduleList': [dict(m, param1=(CHAT_HOST % port) if m.get('param0') == 'chat_ip' else
+            return [(name, {'moduleList': [dict(m, param1=(self.chat_host or CHAT_HOST % port) if m.get('param0') == 'chat_ip' else
                                                 ('http://127.0.0.1/crossdomain.xml' if m.get('param0') == 'chat_cross_ip'
                                                  else m.get('param1', '')))
                                            for m in f.get('moduleList', [])]})]
@@ -108,14 +109,18 @@ class Sosyal:
         if ok and not self.welcomed:                  # harita değişiminde istemci yeniden bağlanabilir: duyuru oturumda bir kez
             self.welcomed = True
             pl = self.p.d['pilot']
-            self.sohbet.duyuru('%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.'
-                               % pl.get('userName', ''))
+            if self.sohbet.adres == '127.0.0.1':
+                self.sohbet.duyuru('%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.'
+                                   % pl.get('userName', ''), kim=str(self.p.user_id))
+            else:
+                self.sohbet.duyuru('%s, arkadaş sunucusuna hoş geldin. Sohbet ortak; posta, klan ve müzayede her oyuncunun kendisinin.'
+                                   % pl.get('userName', ''), kim=str(self.p.user_id))
         return ok
 
     def clan_changed(self):
         if self.sohbet:
-            self.sohbet.update_user(clanTag=self.p.d['pilot'].get('clanTag', ''))
-            self.sohbet.update_rooms(self.klan.rooms())
+            self.sohbet.update_user(str(self.p.user_id), clanTag=self.p.d['pilot'].get('clanTag', ''))
+            self.sohbet.update_rooms(self.klan.rooms(), str(self.p.user_id))
 
     def duyuru(self, text, room='global'):
-        return self.sohbet.duyuru(text, room) if self.sohbet else 0
+        return self.sohbet.duyuru(text, room, kim=str(self.p.user_id)) if self.sohbet else 0

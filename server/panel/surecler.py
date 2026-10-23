@@ -2,6 +2,8 @@
 
   web   web.py: 80, 8090 (web girişi; 843, 9339, 8082 sahte TCP)
   oyun  game.py: 8081 (oyun), 7771 (sohbet), 8099 (kontrol kanalı, ayarla)
+Arkadaş sunucusu (Arkadaşlarınla Oyna > Host): oyun sunucusu --cok-oyunculu ve DO_COK_OYUNCULU ortam değişkeniyle (arkadas.py).
+Misafir (Join): yalnız web.py, arkadaşın sunucusunu gösteren argümanlarla (start_guest_web); oyun sunucusu açılmaz.
 Sunucular konsolsuz (CREATE_NO_WINDOW) çalışır; çıktıları logs/<ad>_konsol.log'a (çökme izi orada). Oyun sunucusu --durdur=<dosya>
 ile durdurulur: dosya belirince profili kaydedip çıkar (zorla kapatmada son kaydedilmemiş saniyeler gitmesin); yanıt vermezse
 sonlandırılır. Portu başka süreç tutuyorsa (önceki oturumdan kalan sunucu, başka program) kim olduğu bulunur; panel yalnız bu
@@ -130,8 +132,8 @@ def tail(path, lines=200, max_bytes=512 * 1024):
 class Surec:
     """Panelin açtığı bir sunucu süreci."""
 
-    def __init__(self, ad, cmd, konsol, durdur=None):
-        self.ad, self.cmd, self.konsol, self.durdur = ad, cmd, konsol, durdur
+    def __init__(self, ad, cmd, konsol, durdur=None, ortam=None):
+        self.ad, self.cmd, self.konsol, self.durdur, self.ortam = ad, cmd, konsol, durdur, ortam
         self.proc = None
         self.basla = None
         self.durduruldu = False
@@ -143,7 +145,7 @@ class Surec:
         fh = open(self.konsol, 'a', encoding='utf8')
         fh.write('\n==== %s başlatıldı: %s\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), ' '.join(self.cmd[1:])))
         fh.flush()
-        env = dict(os.environ, PYTHONIOENCODING='utf8', PYTHONUNBUFFERED='1')
+        env = dict(os.environ, PYTHONIOENCODING='utf8', PYTHONUNBUFFERED='1', **(self.ortam or {}))
         self.proc = subprocess.Popen(self.cmd, cwd=SERVER, stdout=fh, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
                                      creationflags=NO_WINDOW, env=env)
         fh.close()
@@ -196,6 +198,8 @@ class Yonetici:
         self.sunucular = {}                 # ad -> Surec
         self.profil = None                  # açık sunucuların profil yolu
         self.slot = None
+        self.arkadas = False                # oyun sunucusu arkadaş sunucusu olarak açık (Host)
+        self.misafir = False                # yalnız misafirin web sunucusu açık (Join)
         self.istemci = None                 # Popen
         self.istemci_basla = None
         self.istemci_son = None             # {'sure_sn', 'erken', 'kod'}
@@ -228,11 +232,15 @@ class Yonetici:
                         'bizim': is_our_server(info)})
         return out
 
-    def start_servers(self, profil, ayarlar, kontrol=False, slot=None):
-        """Web ve oyun sunucusu (açık değilse) -> başlatılanların adları. Port doluysa ya da sunucu açılmazsa RuntimeError."""
+    def start_servers(self, profil, ayarlar, kontrol=False, slot=None, arkadas=None):
+        """Web ve oyun sunucusu (açık değilse) -> başlatılanların adları. Port doluysa ya da sunucu açılmazsa RuntimeError.
+        arkadas: arkadaş sunucusunun ayarları (DO_COK_OYUNCULU; verilmezse tek oyunculu)."""
         with self.lock:
-            if self.running() and self.profil and os.path.normcase(self.profil) != os.path.normcase(profil):
-                self.stop_servers()                               # başka kayıt: yeniden başlat
+            if self.misafir:
+                raise RuntimeError(_('Arkadaşının sunucusundasın: önce oradan ayrıl.'))
+            if self.running() and ((self.profil and os.path.normcase(self.profil) != os.path.normcase(profil))
+                                   or self.arkadas != bool(arkadas)):
+                self.stop_servers()                               # başka kayıt ya da kip: yeniden başlat
             started = []
             py = python_exe()
             for ad in ('web', 'oyun'):
@@ -245,12 +253,16 @@ class Yonetici:
                                          '/'.join(map(str, busy)), _(PORT_ADLARI[busy[0]])))
                 cmd = [py, '-I', os.path.join(SERVER, SCRIPTS[ad]), self.logs, '--profil=%s' % profil]
                 durdur = None
+                ortam = None
                 if ad == 'oyun':
                     durdur = os.path.join(self.logs, '.durdur_oyun')
                     cmd += ['--ayarlar=%s' % ayarlar, '--durdur=%s' % durdur] + (['--kontrol'] if kontrol else [])
-                self.sunucular[ad] = Surec(ad, cmd, os.path.join(self.logs, '%s_konsol.log' % ad), durdur).start()
+                    if arkadas:
+                        cmd.append('--cok-oyunculu')
+                        ortam = {'DO_COK_OYUNCULU': arkadas}
+                self.sunucular[ad] = Surec(ad, cmd, os.path.join(self.logs, '%s_konsol.log' % ad), durdur, ortam).start()
                 started.append(ad)
-            self.profil, self.slot = profil, slot
+            self.profil, self.slot, self.arkadas = profil, slot, bool(arkadas)
             deadline = time.time() + 20
             while time.time() < deadline:
                 if all(listening(PORTS[ad][0]) for ad in ('web', 'oyun')):
@@ -264,8 +276,28 @@ class Yonetici:
             else:
                 raise RuntimeError(_('Sunucular 20 saniyede dinlemeye başlamadı (günlükleri inceleyin).'))
             if started:
-                self.log('sunucular başlatıldı: %s (%s)' % (', '.join(started), profil))
+                self.log('sunucular başlatıldı: %s (%s)%s' % (', '.join(started), profil, ' — arkadaş sunucusu' if arkadas else ''))
             return started
+
+    def start_guest_web(self, profil, slot, args):
+        """Misafir: yalnız web.py, arkadaşın sunucusunu gösteren argümanlarla (arkadas.py). Kendi sunucuların açıksa RuntimeError."""
+        with self.lock:
+            if any(s.alive for s in self.sunucular.values()):
+                raise RuntimeError(_('Önce kendi sunucunu durdur (Oyna > Sunucuyu durdur).'))
+            busy = [p for p in PORTS['web'] if listening(p)]
+            if busy:
+                raise RuntimeError(_('%s portu (%s) başka bir süreçte açık. Sunucu sayfasından kapatın ya da o programı kapatın.',
+                                     '/'.join(map(str, busy)), _(PORT_ADLARI[busy[0]])))
+            cmd = [python_exe(), '-I', os.path.join(SERVER, SCRIPTS['web']), self.logs, '--profil=%s' % profil] + list(args)
+            self.sunucular['web'] = s = Surec('web', cmd, os.path.join(self.logs, 'web_konsol.log')).start()
+            self.profil, self.slot, self.misafir = profil, slot, True
+            deadline = time.time() + 15
+            while not listening(PORTS['web'][0]):
+                if not s.alive or time.time() > deadline:
+                    self.stop_servers()
+                    raise RuntimeError(_('%s sunucusu açılırken kapandı:\n%s', _('Web'), '\n'.join(tail(s.konsol, 12))))
+                time.sleep(0.15)
+            self.log('misafirin web sunucusu başlatıldı (%s)' % profil)
 
     def stop_servers(self):
         with self.lock:
@@ -275,6 +307,7 @@ class Yonetici:
                     s.stop()
             self.log('sunucular durduruldu')
             self.profil = self.slot = None
+            self.arkadas = self.misafir = False
 
     # ------------------------------------------------------------ istemci
     def client_alive(self):
@@ -318,4 +351,4 @@ class Yonetici:
             cl.update(pid=self.istemci.pid, sure_sn=int(time.time() - self.istemci_basla))
         cl['son'] = self.istemci_son
         return {'sunucular': srv, 'istemci': cl, 'profil': self.profil, 'kayit': self.slot,
-                'kontrol_kanali': listening(8099, table)}
+                'kontrol_kanali': listening(8099, table), 'arkadas': self.arkadas, 'misafir': self.misafir}

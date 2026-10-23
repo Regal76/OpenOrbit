@@ -216,7 +216,7 @@ class Yetenekler:
     def tick(self, now):
         w = self.w
         for n in list(w.npcs.values()):
-            if not n.alive or not n.davranis and not n.ab:
+            if not n.alive or not n.davranis and not n.ab or not w.sahibi(n, now):     # ortak haritada uzaylının sahibi işler
                 continue
             if 'omur' in n.ab and now >= n.ab['omur']:
                 self.expire(n)

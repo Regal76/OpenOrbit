@@ -3,15 +3,27 @@
 Kullanım: python -I web.py <log_klasörü> [--profil=<yol>]   (--profil: kayıt yuvasının profili; panel ve canlı testler verir;
 game.py ile aynı olmalı. Verilmezse etkin yuvanınki, yollar.py)
 HTTP: 8090 (gömülü tarayıcı), 80 (unityApi). Bilinmeyen her isteği kaydeder.
+Arkadaş sunucusunun misafiri (panelin "Arkadaşlarınla Oyna"sı, panel/arkadas.py): --uzak=<adres:8081> --sohbet=<adres:7771>
+--oturum=<anahtar> --uid=<kimlik> ile istemci oyuna ve sohbete arkadaşın sunucusunda girer (oturum anahtarı profili orada bulur;
+kimlik sunucunun verdiği). --adres: dinlenen yerel adres (öntanımlı 127.0.0.1).
 """
 import sys, os, threading, socket, time, json
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
 log_dir = [a for a in sys.argv[1:] if not a.startswith('--')][0]
-PROFIL_YOLU = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--profil=')), None)
+
+
+def arg(name, default=None):
+    return next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--%s=' % name)), default)
+
+
+PROFIL_YOLU = arg('profil')
 os.makedirs(log_dir, exist_ok=True)
 lock = threading.Lock()
-SESSION = 'localtest'
+SESSION = arg('oturum', 'localtest')
+ADRES = arg('adres', '127.0.0.1')
+CHAT_HOST = arg('sohbet', '127.0.0.1:7771')
+UID = arg('uid')
 
 
 def log(name, text):
@@ -20,7 +32,7 @@ def log(name, text):
             fh.write(time.strftime('%H:%M:%S ') + text + '\n')
 
 
-BASE = 'http://127.0.0.1/'
+BASE = 'http://%s/' % ADRES
 
 
 def default_profile():
@@ -81,11 +93,12 @@ def login_node():
     # DarkOrbit.LoginNodeData alan türleri il2types.py ile doğrulandı (long/bool/Uri/ServerInfo/Hangars)
     now = int(time.time())
     user_id, ship, map_id, use2d = profile()
+    user_id = int(UID) if UID else user_id
     lang = stored_lang() or 'en'
     hangar = {'modelId': 10, 'slotNumber': 1, 'mapId': map_id, 'hangarId': 1, 'shipName': ship.replace('ship_', '').title(), 'tooltipIcon': '',
               'shipDestroyed': False, 'shipId': ship, 'hangarActive': True}
     return {
-        'gameclientHash': 'local', 'chatHost': '127.0.0.1:7771', 'profileXmlHash': '1', 'loadingscreenHash': '1',
+        'gameclientHash': 'local', 'chatHost': CHAT_HOST, 'profileXmlHash': '1', 'loadingscreenHash': '1',
         'pid': 175, 'opid': 0, 'sessionID': SESSION, 'userID': user_id, 'platform': 'client',
         'loadingscreenAssetsXmlHash': '1', 'showAdvertisingHint': False, 'useHash': 0, 'resourceJumpGateXmlHash': '1',
         'browser': 'unity', 'host': BASE, 'useDeviceFonts': 0, 'theme': BASE, 'mapID': map_id, 'lang': lang,
@@ -116,7 +129,7 @@ def login():
     return dict(n, success=1, message='', data=json.dumps(n), loginData=json.dumps(n))
 
 
-GAME_SERVER = '127.0.0.1:8081'
+GAME_SERVER = arg('uzak', '127.0.0.1:8081')
 _MAP_IDS = None
 
 
@@ -273,7 +286,7 @@ class Sunucu(ThreadingHTTPServer):
 
 def serve_http(port):
     try:
-        Sunucu(('127.0.0.1', port), H).serve_forever()
+        Sunucu((ADRES, port), H).serve_forever()
     except OSError as e:
         log('errors.log', 'http %d: %s' % (port, e))
 
@@ -281,7 +294,7 @@ def serve_http(port):
 def serve_tcp(port):
     try:
         s = socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind(('127.0.0.1', port)); s.listen(5)
+        s.bind((ADRES, port)); s.listen(5)
     except OSError as e:
         log('errors.log', 'tcp %d: %s' % (port, e)); return
     while True:

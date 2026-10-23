@@ -36,6 +36,7 @@ from testler import Testler  # noqa: E402
 from protokol import Uyarlayici  # noqa: E402
 from indirme import Indirici, IndirmeHatasi  # noqa: E402
 from guncelleme import Guncelleyici, GuncellemeHatasi  # noqa: E402
+from arkadas import Arkadas, ArkadasHatasi  # noqa: E402
 
 SURUM = '1.0'
 PORT = 8077
@@ -101,7 +102,8 @@ CFG = PanelConfig(YOL.PANEL)
 D.bagla(lambda: CFG.get('dil'))
 YON = SR.Yonetici(YOL.LOGS, log)
 KAY = Kayitlar(CFG, python=SR.python_exe())
-KAY.in_use = lambda slot: YON.running() and YON.slot == slot
+ARK = Arkadas(CFG, KAY, YON, log, SURUM)                        # Arkadaşlarınla Oyna: Host ve Join (arkadas.py)
+KAY.in_use = lambda slot: (YON.running() and YON.slot == slot) or ARK.kullanimda(slot)
 TEST = Testler(SERVER, SR.python_exe(), log, SR.NO_WINDOW)     # panelden testler (testler.py)
 UYAR = Uyarlayici(ROOT, SR.python_exe(), log, SR.NO_WINDOW)    # yeni istemciye protokol uyarlaması (protokol.py)
 UPD = Guncelleyici(ROOT, YOL.SAVE, log)                          # GitHub'dan güncelleme (guncelleme.py)
@@ -293,6 +295,9 @@ def warnings():
     if STATE.get('tasima_bekliyor'):
         out.append({'tur': 'uyari', 'metin': _('Eski kaydın (server/save/profil.json) kayıt yuvasına taşınması bekliyor: önce dışarıda açık '
                                                'olan sunucuyu kapatın (Sunucu > Portlar).'), 'sayfa': 'sunucu'})
+    if ARK.aktif():
+        out.append({'tur': 'uyari', 'metin': _('Arkadaşının sunucusundasın (%s): Oyna kapalı. Ayrılmak için Arkadaşlarınla Oyna sayfası.',
+                                               ARK.m['adres']), 'sayfa': 'arkadas'})
     slot = KAY.active()
     if not slot:
         out.append({'tur': 'hata', 'metin': _('Henüz kayıt yok: Kayıtlar sayfasından yeni bir kayıt oluşturun.'), 'sayfa': 'kayitlar'})
@@ -348,6 +353,7 @@ def status():
     return {'surecler': YON.status(), 'aktif': aktif, 'kayit_sayisi': len(slots),
             'ayar_ozet': settings_summary(vals), 'etkinlikler': ev,
             'uyarilar': warnings(), 'oyna': STATE['oyna'], 'istemci_klasoru': client_folder(),
+            'arkadas': {'host': YON.running() and YON.arkadas, 'misafir': ARK.m['durum'], 'adres': ARK.m['adres']},
             'panel': {'surum': SURUM, 'pencere_kapandi': STATE['pencere_kapandi'], 'dil': CFG.get('dil'),
                       'kurulum_tamam': CFG.get('kurulum_tamam'), 'guncellendi': STATE['guncellendi'],
                       'acik_sn': int(time.time() - STATE['acilis'])}}
@@ -361,10 +367,14 @@ def _step(text, durum='calisiyor'):
     o['adimlar'].append({'metin': text, 'durum': durum, 'zaman': time.strftime('%H:%M:%S')})
 
 
-def launch(sadece_sunucu=False):
+def launch(sadece_sunucu=False, arkadas=False):
     o = STATE['oyna']
     try:
         _step(_('Denetleniyor'))
+        if ARK.aktif():
+            raise Hata(_('Arkadaşının sunucusundasın: önce oradan ayrıl.'))
+        if arkadas and YON.running() and not YON.arkadas and YON.client_alive():
+            raise Hata(_('Önce oyunu kapat: sunucu arkadaş sunucusu olarak yeniden başlamalı.'))
         slot = KAY.active()
         if not slot:
             raise Hata(_('Önce Kayıtlar sayfasından bir kayıt oluşturun.'))
@@ -390,8 +400,11 @@ def launch(sadece_sunucu=False):
             import baslat
             baslat.rotate_logs(YOL.LOGS, names=('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log',
                                                 'panel.log'))
-        _step(_('Sunucular başlatılıyor') if not same else _('Sunucular açık'))
-        YON.start_servers(prof, YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot)
+        arkadas = arkadas or (YON.running() and YON.arkadas)    # açık arkadaş sunucusu Oyna ile kapanmaz (misafirler düşmesin)
+        _step((_('Arkadaş sunucusu başlatılıyor') if arkadas else _('Sunucular başlatılıyor'))
+              if not (same and YON.arkadas == bool(arkadas)) else _('Sunucular açık'))
+        YON.start_servers(prof, YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot,
+                          arkadas=ARK.host_ortam() if arkadas else None)
         if not sadece_sunucu:
             _step(_('Oyun açılıyor'))
             YON.start_client(folder, IST.args(CFG, os.path.join(YOL.LOGS, 'client.log')))
@@ -411,16 +424,41 @@ def launch(sadece_sunucu=False):
         o['calisiyor'] = False
 
 
-def start_launch(sadece_sunucu=False):
+def start_launch(sadece_sunucu=False, arkadas=False):
     o = STATE['oyna']
     if o['calisiyor']:
         raise Hata(_('Başlatma sürüyor.'))
     o.update(calisiyor=True, adimlar=[], hata=None, bitti=None, sadece_sunucu=bool(sadece_sunucu))
-    threading.Thread(target=launch, args=(sadece_sunucu,), daemon=True).start()
+    threading.Thread(target=launch, args=(sadece_sunucu, arkadas), daemon=True).start()
     return o
 
 
+def join_friend(b):
+    """Arkadaşlarınla Oyna > Join: denetimler panelde (istemci, açık oyun ve sunucular), katılma arka planda (arkadas.py)."""
+    if STATE['oyna']['calisiyor']:
+        raise Hata(_('Başlatma sürüyor.'))
+    slot = str(b.get('kayit') or '') or KAY.active()
+    if not slot or not KAY.exists(slot):
+        raise Hata(_('Önce Kayıtlar sayfasından bir kayıt oluşturun.'))
+    folder = client_folder()
+    c = IST.check(folder)
+    if not c['gecerli']:
+        raise Hata(_('İstemci klasörü geçersiz: %s', ' '.join(c['sorunlar'])))
+    if YON.client_alive() or IST.running_clients():
+        raise Hata(_('Oyun zaten açık.'))
+    if YON.running():
+        raise Hata(_('Önce kendi sunucunu durdur (Oyna > Sunucuyu durdur).'))
+
+    def open_client():
+        YON.start_client(folder, IST.args(CFG, os.path.join(YOL.LOGS, 'client.log')))
+        m = KAY.meta(slot)
+        KAY.set_meta(slot, son_oynama=time.strftime('%Y-%m-%d %H:%M:%S'), oynama_sayisi=int(m.get('oynama_sayisi') or 0) + 1)
+    return ARK.katil(str(b.get('adres') or ''), str(b.get('sifre') or ''), slot, c['surum'] or IST.supported(), open_client)
+
+
 def on_client_exit(early):
+    if ARK.istemci_kapandi():                         # arkadaşın sunucusundan ayrılınır, misafirin web sunucusu kapanır
+        return
     if early:
         return
     if CFG.get('istemci_kapaninca') == 'kapat':
@@ -436,7 +474,7 @@ def idle(strict=False):
     """Güncelleme kurulabilir mi: oyun, sunucular, başlatma, istemci indirmesi, protokol aracı ve testler durmuş (strict: panelin
     açmadığı DarkOrbit istemcisi de yok; tasklist çalışır)."""
     busy = (YON.running() or YON.client_alive() or STATE['oyna']['calisiyor'] or DL.running() or UYAR.state()['calisiyor']
-            or TEST.calisiyor)
+            or TEST.calisiyor or ARK.aktif())
     return not busy and not (strict and IST.running_clients())
 
 
@@ -498,6 +536,7 @@ def shutdown():
     try:
         DL.cancel()                                   # indirme: açılmış dosyalar kalır, sonra kaldığı yerden
         if not YON.client_alive():
+            ARK.kapanis()                             # arkadaşın sunucusundaysa ayrılınır (son hâl kayda)
             YON.stop_servers()
         w = STATE.get('pencere')
         if w and w.poll() is None:                    # panelin açtığı uygulama penceresi de kapansın
@@ -669,6 +708,10 @@ def h_get(path, q):
         import takvim as TK
         d['etkinlik_adlari'] = [_(TK.EVENTS.get(k, {}).get('ad', k)) for k in d.get('etkinlikler', [])]
         return {'var': True, 'sunucu_acik': True, 'yas': max(0, time.time() - d.get('zaman', 0)), 'durum': d}
+    if path == '/api/arkadas':                      # Arkadaşlarınla Oyna: Host (sunucu, adresler, misafirler) ve Join (oturum)
+        canli = read_json(os.path.join(YOL.LOGS, 'canli_durum.json'), None) if YON.running() else None
+        return {'host': ARK.host_durumu(canli), 'misafir': ARK.durum(), 'kayitlar': KAY.list(), 'aktif': KAY.active(),
+                'istemci_surumu': IST.check(client_folder()).get('surum') or IST.supported()}
     if path == '/api/hakkinda':
         return {'surum': SURUM, 'python': sys.version.split()[0], 'kok': ROOT, 'sunucu': SERVER, 'kayitlar': YOL.KAYITLAR,
                 'gunlukler': YOL.LOGS, 'ayarlar': YOL.AYARLAR, 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current()}
@@ -679,6 +722,23 @@ def h_post(path, b):
     # ---- oyun ve sunucular
     if path == '/api/oyna':
         return start_launch(b.get('sadece_sunucu'))
+    if path == '/api/arkadas/ayarlar':
+        CFG.update({'arkadas_sifre': str(b.get('sifre') or '')[:64], 'arkadas_en_cok': b.get('en_cok', CFG.get('arkadas_en_cok'))})
+        return h_get('/api/arkadas', {})
+    if path == '/api/arkadas/host':                 # arkadaş sunucusu: Oyna gibi, oyun sunucusu --cok-oyunculu
+        return start_launch(b.get('sadece_sunucu'), arkadas=True)
+    if path == '/api/arkadas/genel_ip':
+        return {'ip': ARK.genel_bul()}
+    if path == '/api/arkadas/at':
+        ARK.at(b.get('oturum'))
+        return {}
+    if path == '/api/arkadas/dene':
+        return ARK.dene(str(b.get('adres') or ''))
+    if path == '/api/arkadas/katil':
+        return join_friend(b)
+    if path == '/api/arkadas/ayril':
+        ARK.ayril()
+        return ARK.durum()
     if path == '/api/sunucu/durdur':
         if YON.client_alive():
             raise Hata(_('Oyun açıkken sunucu durdurulamaz: önce oyunu kapatın.'))
@@ -945,7 +1005,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(403, {'hata': _('Geçersiz belirteç: paneli yeniden açın.')})
         try:
             out = fn(urlparse(self.path).path, arg)
-        except (Hata, KayitHatasi, RuntimeError, ValueError) as e:
+        except (Hata, KayitHatasi, ArkadasHatasi, RuntimeError, ValueError) as e:
             return self._send(400, {'hata': str(e)})
         except Exception as e:
             log('API hatası %s: %s' % (self.path, traceback.format_exc()))

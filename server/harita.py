@@ -209,8 +209,10 @@ def quest_giver(m, map_id):
     return dict(m, designId=design, userName=QUEST_GIVER_NAME[fac])
 
 
-def gates(map_id):
-    return [g for g in GATES.get(int(map_id), []) if not g.get('yalniz_firma') or PLAYER_FACTION in (None, g['yalniz_firma'])]
+def gates(map_id, faction=None):
+    """faction: oyuncunun firması (arkadaş sunucusunda her oyuncunun kendisi; verilmezse PLAYER_FACTION)."""
+    fac = faction if faction is not None else PLAYER_FACTION
+    return [g for g in GATES.get(int(map_id), []) if not g.get('yalniz_firma') or fac in (None, g['yalniz_firma'])]
 
 
 def arrival(src_map, dst_map):

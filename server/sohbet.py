@@ -220,8 +220,9 @@ class Baglanti:
 
 
 class Sohbet:
-    def __init__(self, log=print, port=PORT):
+    def __init__(self, log=print, port=PORT, adres='127.0.0.1'):
         self.log, self.port = log, port
+        self.adres = adres                # arkadaş sunucusunda 0.0.0.0 (misafirler başka bilgisayarlardan bağlanır)
         self.lock = threading.RLock()
         self.conns = {}                   # uç kimliği -> Baglanti
         self.seq = 0
@@ -235,7 +236,7 @@ class Sohbet:
         s = socket.socket()
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
-            s.bind(('127.0.0.1', self.port))
+            s.bind((self.adres, self.port))
         except OSError as e:
             self.log('sohbet: %d dinlenemedi (%r)' % (self.port, e))
             s.close()
@@ -373,27 +374,28 @@ class Sohbet:
                 'data': {'roomType': room_type, 'roomClass': room_class, 'newRoomName': name},
                 'endpointObject': {'path': c.path, 'endpoint': c.ep, 'data': {}}})
 
-    def update_rooms(self, rooms):
-        """Oda değişimi (klan kuruldu/dağıldı): giriş yapmış bağlantılara yeni oda listesi."""
+    def update_rooms(self, rooms, kim=None):
+        """Oda değişimi (klan kuruldu/dağıldı): oyuncunun (kim: kimliği; verilmezse giriş yapmış herkesin) bağlantılarına yeni oda
+        listesi."""
         with self.lock:
-            conns = [x for x in self.conns.values() if x.user]
+            conns = [x for x in self.conns.values() if x.user and kim in (None, x.user.get('id'))]
         for c in conns:
             for room in rooms:
                 self.join(c, *room)
 
-    def update_user(self, **kw):
+    def update_user(self, kim=None, **kw):
         with self.lock:
             for c in self.conns.values():
-                if c.user:
+                if c.user and kim in (None, c.user.get('id')):
                     c.user.update(kw)
 
-    def duyuru(self, text, room_type='global'):
-        """Sistem duyurusu: giriş yapmış oyuncuların o türdeki odalarına -> gönderilen mesaj sayısı. Oda henüz kaydedilmemişse
-        (girişin hemen ardı) duyuru bekler, oda kaydı gelince gider."""
+    def duyuru(self, text, room_type='global', kim=None):
+        """Sistem duyurusu: oyuncunun (kim: kimliği; verilmezse giriş yapmış herkesin) o türdeki odalarına -> gönderilen mesaj
+        sayısı. Oda henüz kaydedilmemişse (girişin hemen ardı) duyuru bekler, oda kaydı gelince gider."""
         text = str(text).replace('|', '/')
         n = 0
         with self.lock:
-            conns = [x for x in self.conns.values() if x.user]
+            conns = [x for x in self.conns.values() if x.user and kim in (None, x.user.get('id'))]
         for c in conns:
             c.pending.append((room_type, text))
             n += self.flush(c)

@@ -59,6 +59,7 @@ const IC = {
   shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
   zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
   globe: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   wand: '<path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/>',
   arrowL: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
   arrowR: '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
@@ -201,6 +202,7 @@ function popMenu(anchor, items) {
 // ------------------------------------------------------------------ sayfalar ve çerçeve
 const PAGES = [
   { id: 'oyna', ad: N('Oyna'), ic: 'play', sub: N('Kaydını gör, ayarlarını kontrol et ve oyunu başlat.') },
+  { id: 'arkadas', ad: N('Arkadaşlarınla Oyna'), ic: 'users', sub: N('Sunucu kur (Host) ya da arkadaşının sunucusuna katıl (Join). Herkes kendi kaydıyla oynar.') },
   { id: 'kayitlar', ad: N('Kayıtlar'), ic: 'save', sub: N('Kayıt yuvaları, yedekler, kopyalama, içe ve dışa aktarma.') },
   { id: 'ayarlar', ad: N('Oyun Ayarları'), ic: 'sliders', sub: N('Çarpanlar ve kurallar. Kendiliğinden kaydedilir; çoğu oyun açıkken anında uygulanır.') },
   { id: 'etkinlikler', ad: N('Etkinlikler'), ic: 'calendar', sub: N('Her etkinlik takvime göre ya da elle açık / kapalı.') },
@@ -250,6 +252,9 @@ function renderChrome() {
     const running = st.istemci === 'acik', srv = st.oyun === 'acik';
     kids.push(h('span', { class: 'pill' }, dot(d.oyna.calisiyor ? 'busy' : running ? 'ok' : srv ? 'warn' : ''),
       d.oyna.calisiyor ? T('Başlatılıyor…') : running ? T('Oyun açık') : srv ? T('Sunucu açık') : T('Kapalı')));
+    const ark = d.arkadas || {};
+    if (ark.host || ARK_AKTIF(ark.misafir)) kids.push(h('span', { class: 'pill', style: { cursor: 'pointer' }, onclick: () => go('arkadas') }, icon('users'),
+      ark.host ? T('Arkadaş sunucusu açık') : T('Arkadaşın sunucusunda:') + ' ', ark.host ? null : h('b', null, ark.adres)));
   }
   tr.replaceChildren(...kids);
   const setBadge = (id, text, cls) => {
@@ -272,6 +277,7 @@ async function poll() {
   renderChrome();
   if (S.page === 'oyna') { renderOynaBody(); liveTick(); }
   if (S.page === 'sunucu') { renderServerCards(); testTick(); }
+  if (S.page === 'arkadas' && ARK.veri) arkTick();
   setTimeout(poll, S.durum?.oyna?.calisiyor ? 500 : 1500);
 }
 window.addEventListener('pagehide', () => navigator.sendBeacon && navigator.sendBeacon('/api/kapandi', '{}'));
@@ -408,6 +414,204 @@ async function switchSaveMenu(anchor) {
     fn: () => act(() => api('/api/kayitlar/aktif', { id: k.id }), T('Etkin kayıt: {0}', k.ad)).then(() => poll()),
   })), '-', { label: T('Yeni kayıt…'), ic: 'plus', fn: () => newSaveModal() }, { label: T('Kayıtları yönet'), ic: 'save', fn: () => go('kayitlar') }]);
 }
+
+// ================================================================== ARKADAŞLARINLA OYNA (arkadas.py, /api/arkadas)
+const IP_TUR = { yerel: [N('Ev ağı'), 'ok'], radmin: [N('Radmin VPN'), 'info'], tailscale: [N('Tailscale'), 'info'], genel: [N('Genel'), 'orange'],
+  baglanti: [N('Yalnız bu ağ'), ''] };
+const ARK_DURUM = { baglaniyor: [N('Bağlanıyor'), 'info'], oyunda: [N('Oyunda'), 'ok'], ayriliyor: [N('Ayrılıyor'), 'orange'], bitti: [N('Ayrıldın'), ''],
+  hata: [N('Hata'), 'err'] };
+const ARK_AKTIF = s => ['baglaniyor', 'oyunda', 'ayriliyor'].includes(s);
+const ARK = { sekme: null, adres: null, sifre: '', kayit: null, bilgi: null, veri: null };
+const copyText = t => navigator.clipboard.writeText(t).then(() => toast(T('Kopyalandı: {0}', t), 'ok'), () => toast(t, 'info'));
+const clock = sec => sec ? new Date(sec * 1000).toLocaleTimeString(LOC(), { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '—';
+
+async function renderArkadas() {
+  const v = await act(() => api('/api/arkadas'));
+  if (!v || S.page !== 'arkadas') return;
+  ARK.veri = v;
+  drawArkadas();
+}
+function drawArkadas() {
+  const v = ARK.veri, d = S.durum;
+  if (!ARK.sekme) ARK.sekme = v.misafir.durum !== 'yok' ? 'join' : 'host';
+  if (ARK.adres == null) ARK.adres = v.misafir.son_adres || '';
+  const tabs = h('div', { class: 'seg' }, [['host', T('Sunucu kur (Host)')], ['join', T('Arkadaşına katıl (Join)')]].map(([k, t]) =>
+    h('button', { class: ARK.sekme === k ? 'on info' : '', onclick: () => { ARK.sekme = k; drawArkadas(); } }, t)));
+  $('#content').replaceChildren(h('div', { class: 'stack', id: 'arkadas' }, h('div', { class: 'row' }, tabs),
+    ...(ARK.sekme === 'host' ? hostView(v) : joinView(v))));
+  S.sig.arkMode = arkMode(v, d); S.sig.arkDyn = arkDyn(v);
+}
+const arkMode = (v, d) => JSON.stringify([ARK.sekme, v.host.acik, v.misafir.durum, d?.oyna, srvState(d), v.kayitlar.map(k => k.id), d?.aktif?.id]);
+const arkDyn = v => JSON.stringify([v.host.misafirler, v.misafir.adimlar, v.misafir.son_esitleme, v.misafir.baglanti, v.misafir.not, v.host.genel_ip]);
+async function arkTick() {
+  if (S.arkBusy) return;
+  S.arkBusy = true;
+  let v;
+  try { v = await api('/api/arkadas'); } catch (e) { return; } finally { S.arkBusy = false; }
+  if (S.page !== 'arkadas') return;
+  ARK.veri = v;
+  if (arkMode(v, S.durum) !== S.sig.arkMode) return drawArkadas();
+  if (arkDyn(v) === S.sig.arkDyn) return;
+  S.sig.arkDyn = arkDyn(v);
+  const g = $('#ark-misafirler'); if (g) g.replaceWith(guestsCard(v.host));
+  const j = $('#ark-join-durum'); if (j) j.replaceWith(joinStatus(v));
+}
+
+function launchSteps(o) {
+  const recent = o.bitti && (Date.now() / 1000 - o.bitti < 45);
+  if (!o.adimlar.length || !(o.calisiyor || o.hata || recent)) return null;
+  return stepList(o.adimlar);
+}
+const stepList = list => h('div', { class: 'steps' }, list.map(s => h('div', { class: 'step ' + s.durum },
+  h('span', { class: 'ic' }, s.durum === 'calisiyor' ? h('span', { class: 'spin' }) : icon(s.durum === 'hata' ? 'x' : 'check')),
+  h('span', null, s.metin), h('span', { class: 'dim small', style: { marginLeft: 'auto' } }, s.zaman))));
+
+// ---- Host
+function hostView(v) {
+  const hs = v.host, d = S.durum, st = srvState(d), busy = d?.oyna?.calisiyor, running = st.istemci === 'acik';
+  const single = st.oyun === 'acik' && !hs.acik, guest = ARK_AKTIF(v.misafir.durum);
+  const left = h('div', null, h('div', { class: 'slot-name' }, T('Arkadaş sunucusu')),
+    h('div', { class: 'pilot' }, hs.acik ? T('Sunucun açık') : T('Sunucu kapalı'),
+      hs.acik ? badge(T('{0} / {1} misafir', hs.misafirler.length, hs.en_cok), 'ok') : null, hs.sifre ? badge(T('Şifreli'), 'info') : null),
+    h('div', { class: 'muted' }, hs.acik ? T('Arkadaşların aşağıdaki adreslerden biriyle katılır. Sen kendi kaydınla oynarsın.')
+      : T('Sunucu kurunca kendi kaydınla oyuna girersin; arkadaşların kendi kayıtlarıyla katılır.')),
+    d?.aktif ? h('div', { class: 'meta' }, h('span', null, T('Kayıt:') + ' ', h('b', null, d.aktif.ad)), h('span', null, T('Pilot') + ' ', h('b', null, d.aktif.pilot))) : null);
+  let main; const sub = [];
+  if (busy) main = h('button', { class: 'play-btn busy', disabled: true }, h('span', { class: 'spin', style: { borderTopColor: '#021120' } }), T('BAŞLATILIYOR'));
+  else if (hs.acik && running) main = h('button', { class: 'play-btn running', disabled: true }, icon('check'), T('OYUN AÇIK'));
+  else main = h('button', { class: 'play-btn', disabled: !d?.aktif || guest || (running && !hs.acik), onclick: () => act(() => api('/api/arkadas/host', {})) },
+    icon(hs.acik ? 'play' : 'users'), hs.acik ? T('OYNA') : T('SUNUCU KUR'));
+  if (hs.acik) sub.push(btn(T('Sunucuyu kapat'), async () => {
+    if (hs.misafirler.length && !await confirmBox(T('Sunucu kapatılsın mı?'), T('Bağlı misafirler oyundan düşer; kayıtları kendi bilgisayarlarında son hâliyle kalır.'),
+      { ok: T('Kapat'), danger: true })) return;
+    act(() => api('/api/sunucu/durdur', {}), T('Sunucular durduruldu.'));
+  }, 'danger sm', 'stop', { disabled: running || busy }));
+  else sub.push(btn(T('Yalnız sunucuyu başlat'), () => act(() => api('/api/arkadas/host', { sadece_sunucu: true })), 'ghost sm', 'server',
+    { disabled: !d?.aktif || guest || busy }));
+  const hint = guest ? T('Şu an arkadaşının sunucusundasın: önce oradan ayrıl.') : single ? T('Tek oyunculu sunucun açık: Sunucu kur onu arkadaş sunucusu olarak yeniden başlatır.')
+    : hs.acik ? (S.panelCfg?.istemci_kapaninca === 'acik' ? T('Oyunu kapatınca sunucu açık kalır.') : T('Oyunu kapatınca sunucu da kapanır (Sunucu > Davranış).')) : null;
+  const hero = h('div', { class: 'hero' }, left, h('div', { class: 'play-col' }, main, h('div', { class: 'play-sub' }, sub), hint ? h('div', { class: 'small muted' }, hint) : null));
+  const steps = d?.oyna ? launchSteps(d.oyna) : null;
+
+  // ayarlar
+  const pw = h('input', { class: 'input', value: hs.sifre, placeholder: T('Şifresiz'), maxlength: 64 });
+  const max = h('select', { class: 'input', style: { width: '110px' } }, Array.from({ length: 16 }, (_, i) => i + 1).map(n => h('option', { value: n, selected: n === hs.en_cok }, n)));
+  const save = () => act(() => api('/api/arkadas/ayarlar', { sifre: pw.value, en_cok: +max.value }), T('Kaydedildi.'))
+    .then(r => { if (r) { ARK.veri = r; } });
+  pw.addEventListener('change', save); max.addEventListener('change', save);
+  const setCard = h('div', { class: 'card' }, h('h2', null, icon('sliders'), T('Sunucu ayarları')),
+    h('div', { class: 'grid g2' }, field(T('Katılma şifresi'), pw), field(T('En çok misafir'), max)),
+    h('p', { class: 'desc', style: { marginTop: '10px' } }, hs.acik ? T('Değişiklikler sunucu yeniden başlayınca geçerli olur.')
+      : T('Şifre, adresini bilen herkesin katılmasını engeller. Misafirler bu şifreyi Arkadaşına katıl bölümünde yazar.')));
+
+  // adresler
+  const ipRow = (ip, tur) => h('div', { class: 'row between' }, h('b', { class: 'mono' }, ip), h('span', { class: 'row', style: { gap: '6px' } },
+    badge(T((IP_TUR[tur] || IP_TUR.genel)[0]), (IP_TUR[tur] || IP_TUR.genel)[1]), btn('', () => copyText(ip), 'ghost sm', 'copy', { title: T('Kopyala') })));
+  const addrCard = h('div', { class: 'card' }, h('h2', null, icon('globe'), T('Arkadaşlarına vereceğin adres')),
+    h('div', { class: 'stack', style: { gap: '8px' } }, hs.ipler.map(x => ipRow(x.ip, x.tur)),
+      hs.genel_ip ? ipRow(hs.genel_ip, 'genel') : h('div', { class: 'row' }, btn(T('Genel IP\'mi bul'), async () => {
+        const r = await act(() => api('/api/arkadas/genel_ip', {})); if (r) { ARK.veri.host.genel_ip = r.ip; drawArkadas(); }
+      }, 'sm', 'search'), h('span', { class: 'small dim' }, T('api.ipify.org\'a sorulur.')))),
+    h('p', { class: 'desc', style: { marginTop: '12px' } }, T('Aynı evdeyseniz (aynı modem) ev ağı adresini ver. İnternet üzerinden bağlanacaklara genel IP\'ni (port yönlendirmesiyle) ya da sanal ağ (Radmin VPN, ZeroTier, Tailscale) adresini ver.')));
+
+  // portlar
+  const portCard = h('div', { class: 'card' }, h('h2', null, icon('shield'), T('Açılması gereken portlar')),
+    h('table', { class: 'table' }, h('thead', null, h('tr', null, h('th', null, T('Protokol')), h('th', null, T('Port')), h('th', null, T('Ne için')))),
+      h('tbody', null, [['TCP', hs.oyun_portu, T('Oyun ve hesap gönderimi')], ['TCP', hs.sohbet_portu, T('Sohbet')]].map(([a, b, c]) =>
+        h('tr', null, h('td', null, h('b', null, a)), h('td', { class: 'mono' }, b), h('td', null, c))))),
+    h('p', { class: 'desc', style: { marginTop: '10px' } }, T('UDP portu gerekmez. Web girişi (80, 8090) yalnız bu bilgisayarda kalır; onları açma.')),
+    h('div', { class: 'stack', style: { gap: '8px', marginTop: '6px' } },
+      h('div', { class: 'note' }, h('b', null, '1. '), T('Windows Güvenlik Duvarı: sunucu ilk açıldığında Python için çıkan pencerede erişime izin ver (Özel ağlar). Pencere çıkmadıysa yönetici olarak açılmış bir komut isteminde:'),
+        h('div', { class: 'cmd', style: { marginTop: '6px' } }, `netsh advfirewall firewall add rule name="DarkOrbit" dir=in action=allow protocol=TCP localport=${hs.oyun_portu},${hs.sohbet_portu}`)),
+      h('div', { class: 'note' }, h('b', null, '2. '), T('Aynı ev ağında başka bir şey gerekmez.')),
+      h('div', { class: 'note' }, h('b', null, '3. '), T('İnternet üzerinden: modeminin arayüzünde TCP {0} ve {1} portlarını bu bilgisayarın ev ağı adresine yönlendir (port yönlendirme / Sanal sunucu / NAT).', hs.oyun_portu, hs.sohbet_portu)),
+      h('div', { class: 'note' }, h('b', null, '4. '), T('İnternet sağlayıcın CGNAT kullanıyorsa (modemdeki WAN adresi genel IP\'nden farklıysa) yönlendirme işe yaramaz: Radmin VPN, ZeroTier ya da Tailscale gibi bir sanal ağ kurun ve o ağdaki adresi verin.'))));
+
+  // ortak evren
+  const share = h('div', { class: 'card' }, h('h2', null, icon('info'), T('Ortak evren')),
+    h('div', { class: 'check-list' }, [N('Firma, savaş ve Blacklight haritaları (1-1 … 5-4, BL) ortak: uzaylılar, kutular ve cevherler paylaşılır, birbirinizi görürsünüz.'),
+      N('Kapı, mod ve etkinlik haritaları herkesin kendi kopyası.'), N('Sohbet ortak; posta, klan ve müzayede her oyuncunun kendisinin.'),
+      N('Oyun ayarların (çarpanlar, etkinlikler) misafirlerine de uygulanır.'),
+      N('Misafirlerin kaydı bu bilgisayara yazılmaz, Kayıtlar sayfasında görünmez: ilerlemeleri kendi bilgisayarlarına kaydedilir.'),
+      N('Oyuncular birbirine saldıramaz (PvP yok).')].map(t => h('div', null, icon('check'), h('span', null, T(t))))));
+  return [hero, steps ? h('div', { class: 'card' }, h('h2', null, icon('zap'), T('Sunucu başlatma')), steps) : null, guestsCard(hs),
+    h('div', { class: 'grid g2' }, addrCard, setCard), h('div', { class: 'grid g2' }, portCard, share)].filter(Boolean);
+}
+function guestsCard(hs) {
+  if (!hs.acik) return h('div', { id: 'ark-misafirler' });
+  const now = Date.now() / 1000;
+  return h('div', { class: 'card', id: 'ark-misafirler' }, h('h2', null, icon('users'), T('Misafirler')),
+    hs.misafirler.length ? h('table', { class: 'table' },
+      h('thead', null, h('tr', null, [T('Pilot'), T('Seviye'), T('Harita'), T('Adres'), T('Durum'), T('Süre'), ''].map(x => h('th', null, x)))),
+      h('tbody', null, hs.misafirler.map(g => h('tr', null, h('td', null, h('b', null, g.ad)), h('td', null, g.seviye), h('td', null, g.harita || '—'),
+        h('td', { class: 'mono' }, g.ip), h('td', null, g.bagli ? badge(T('Oyunda'), 'ok') : badge(T('Bağlı değil'), '')), h('td', null, fmtDur(now - g.giris)),
+        h('td', { class: 'num' }, btn(T('Çıkar'), async () => {
+          if (await confirmBox(T('{0} çıkarılsın mı?', g.ad), T('Bağlantısı kapanır. Kaydı kendi bilgisayarında son hâliyle kalır.'), { ok: T('Çıkar'), danger: true }))
+            act(() => api('/api/arkadas/at', { oturum: g.oturum }), T('{0} çıkarıldı.', g.ad));
+        }, 'ghost sm', 'x')))))) :
+      h('p', { class: 'desc' }, T('Henüz misafir yok. Arkadaşların Arkadaşlarınla Oyna > Arkadaşına katıl bölümünde adresini yazıp bağlanır.')));
+}
+
+// ---- Join
+function joinView(v) {
+  const m = v.misafir;
+  if (ARK_AKTIF(m.durum)) return [joinStatus(v), joinInfo()];
+  const d = S.durum, st = srvState(d);
+  const adres = h('input', { class: 'input', value: ARK.adres, placeholder: '192.168.1.20', oninput: e => { ARK.adres = e.target.value; } });
+  const pw = h('input', { class: 'input', type: 'password', value: ARK.sifre, placeholder: T('Şifre yoksa boş bırak'), oninput: e => { ARK.sifre = e.target.value; } });
+  const slot = h('select', { class: 'input', onchange: e => { ARK.kayit = e.target.value; } },
+    v.kayitlar.map(k => h('option', { value: k.id, selected: k.id === (ARK.kayit || v.aktif) }, `${k.ad} — ${k.pilot} (${lvl(k.seviye)})`)));
+  const info = h('div', { id: 'ark-bilgi' }, ARK.bilgi ? serverInfo(ARK.bilgi, v) : null);
+  const test = btn(T('Bağlantıyı dene'), async ev => {
+    const b = ev.currentTarget; b.disabled = true;
+    const r = await act(() => api('/api/arkadas/dene', { adres: adres.value }));
+    b.disabled = false; ARK.bilgi = r || null;
+    info.replaceChildren(r ? serverInfo(r, v) : '');
+  }, 'sm', 'search');
+  const blocked = st.oyun === 'acik' ? T('Kendi sunucun açık: katılmak için önce onu durdur.') : st.istemci === 'acik' ? T('Oyun açık: önce kapat.')
+    : !v.kayitlar.length ? T('Önce Kayıtlar sayfasından bir kayıt oluştur.') : null;
+  const join = h('button', { class: 'play-btn', disabled: !!blocked, onclick: () =>
+    act(() => api('/api/arkadas/katil', { adres: adres.value, sifre: pw.value, kayit: slot.value })).then(r => { if (r) renderArkadas(); }) }, icon('play'), T('KATIL'));
+  const left = h('div', { class: 'stack', style: { gap: '12px' } }, h('div', { class: 'slot-name' }, T('Arkadaşının sunucusuna katıl')),
+    field(T('Arkadaşının adresi (IP ya da alan adı)'), h('div', { class: 'row' }, adres, test)), h('div', { class: 'grid g2' }, field(T('Şifre'), pw), field(T('Kullanılacak kayıt'), slot)), info);
+  const hero = h('div', { class: 'hero' }, left, h('div', { class: 'play-col' }, join,
+    h('div', { class: 'small muted' }, blocked || T('Kaydın yedeklenir, arkadaşının sunucusuna gönderilir ve oyun açılır.'))));
+  const last = ['bitti', 'hata'].includes(m.durum) ? h('div', { class: 'card' }, h('h2', null, icon(m.durum === 'hata' ? 'alert' : 'check'),
+    m.durum === 'hata' ? T('Katılma başarısız') : T('Son oturum')), stepList(m.adimlar),
+    m.not ? h('div', { class: 'alert uyari', style: { marginTop: '10px' } }, icon('alert'), h('div', null, m.not)) : null,
+    m.son_esitleme ? h('p', { class: 'desc', style: { marginTop: '10px' } }, T('Kaydın son eşitlemesi: {0}', clock(m.son_esitleme))) : null) : null;
+  return [hero, last, joinInfo()].filter(Boolean);
+}
+function serverInfo(r, v) {
+  const sameClient = !r.istemci || r.istemci === v.istemci_surumu;
+  return h('div', { class: 'stack', style: { gap: '10px' } },
+    h('div', { class: 'kv' }, [[T('Sunucu'), r.adres], [T('Sunucunun pilotu'), r.pilot || '—'], [T('Oyuncular'), (r.oyuncular || []).join(', ') || '—'],
+      [T('Misafir'), `${r.misafir} / ${r.en_cok}`], [T('Şifre'), r.sifre ? T('Gerekli') : T('Yok')], [T('Oyun sürümü'), r.istemci || '—']].map(([a, b]) =>
+      h('div', null, h('span', null, a), h('b', null, b)))),
+    h('div', { class: 'wz-summary' }, checkRow(r.uyumlu, r.uyumlu ? T('Panel sürümleri uyumlu') : T('Panel sürümleri farklı: ikiniz de paneli güncelleyin')),
+      checkRow(sameClient, sameClient ? T('Oyun sürümü aynı') : T('Oyun sürümü farklı (seninki {0})', v.istemci_surumu)),
+      checkRow(r.yer, r.yer ? T('Sunucuda yer var') : T('Sunucu dolu'))));
+}
+function joinStatus(v) {
+  const m = v.misafir, [t, c] = ARK_DURUM[m.durum] || [m.durum, ''];
+  const slot = v.kayitlar.find(k => k.id === m.kayit);
+  return h('div', { class: 'card', id: 'ark-join-durum' }, h('div', { class: 'row between wrap' }, h('h2', null, icon('users'), T('Arkadaşının sunucusu')), badge(T(t), c)),
+    h('div', { class: 'kv', style: { margin: '12px 0' } }, [[T('Adres'), m.adres], [T('Sunucunun pilotu'), m.sunucu?.pilot || '—'],
+      [T('Kayıt'), slot ? `${slot.ad} — ${slot.pilot}` : m.kayit], [T('Son eşitleme'), clock(m.son_esitleme)],
+      [T('Bağlantı'), m.baglanti ? T('İyi') : T('Kesik, yeniden deneniyor…')]].map(([a, b]) => h('div', null, h('span', null, a), h('b', null, b)))),
+    stepList(m.adimlar),
+    m.not ? h('div', { class: 'alert uyari', style: { marginTop: '10px' } }, icon('alert'), h('div', null, m.not)) : null,
+    h('div', { class: 'row', style: { marginTop: '14px' } }, btn(T('Ayrıl'), async () => {
+      if (await confirmBox(T('Arkadaşının sunucusundan ayrılınsın mı?'), T('Oyun kapanır, kaydının son hâli bu bilgisayara yazılır.'), { ok: T('Ayrıl'), danger: true }))
+        act(() => api('/api/arkadas/ayril', {})).then(() => arkTick());
+    }, 'danger', 'power', { disabled: m.durum === 'ayriliyor' }), h('span', { class: 'small muted' }, T('Oyunu kapatınca da ayrılırsın.'))));
+}
+const joinInfo = () => h('div', { class: 'card' }, h('h2', null, icon('info'), T('Kaydın nerede?')),
+  h('div', { class: 'check-list' }, [N('Katılmadan önce kaydın yedeklenir (Kayıtlar > Yedekler).'),
+    N('Oyun sürerken ilerlemen birkaç saniyede bir bu bilgisayardaki kaydına yazılır; ayrılınca son hâli kaydedilir.'),
+    N('Arkadaşının bilgisayarına kaydın yazılmaz, onun Kayıtlar sayfasında görünmez.'),
+    N('Arkadaşının oyun ayarları (çarpanlar, etkinlikler) onun sunucusunda geçerlidir.'),
+    N('Arkadaşının sunucusu: TCP 8081 (oyun) ve 7771 (sohbet) portları ona açık olmalı.')].map(t => h('div', null, icon('check'), h('span', null, T(t))))));
 
 // ================================================================== KAYITLAR
 async function renderKayitlar() {
@@ -1350,7 +1554,7 @@ const WZ_PAGES = {
   },
 };
 
-const RENDER = { oyna: renderOyna, kayitlar: renderKayitlar, ayarlar: renderAyarlar, etkinlikler: () => renderEtkinlikler(), istemci: () => renderIstemci(),
+const RENDER = { oyna: renderOyna, arkadas: renderArkadas, kayitlar: renderKayitlar, ayarlar: renderAyarlar, etkinlikler: () => renderEtkinlikler(), istemci: () => renderIstemci(),
   sunucu: renderSunucu, panel: renderPanel };
 
 // ------------------------------------------------------------------ başlangıç

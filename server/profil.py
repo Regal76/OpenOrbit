@@ -45,10 +45,12 @@ def window_events(item_id):
                  if INDICATOR_WINDOWS.get((s.get('bilgi') or {}).get('komut')) == item_id)
 
 
-def event_window_visible(item_id, now=None):
+def event_window_visible(item_id, now=None, hooks=None):
+    """hooks: profilin kendi kancaları (Profil.window_hooks; arkadaş sunucusunda her oyuncunun oturumu kendininkini bağlar)."""
     import takvim as TKV
-    if item_id in WINDOW_HOOKS:
-        return bool(WINDOW_HOOKS[item_id]())
+    for hk in (hooks or {}, WINDOW_HOOKS):
+        if item_id in hk:
+            return bool(hk[item_id]())
     return any(TKV.is_active(k, now) for k in window_events(item_id))
 
 import booster as BOOSTER
@@ -157,15 +159,19 @@ class Profil:
     # onarım robotu x2 (dunya), P.E.T. tamiri ücretsiz (pet), çıkış 5 sn (game.LOGOUT_SN). Gemi tamiri panelin tamir ücretiyle.
     premium = True
 
-    def __init__(self, tohum=None, path=None):
+    def __init__(self, tohum=None, path=None, d=None):
+        """d: dosyadan değil bu sözlükten (arkadaş sunucusunda misafirin gönderdiği kayıt; cok_oyunculu.MisafirProfil)."""
         self.path = path = path or YOL.profile_path()
         self.lock = threading.Lock()
         self.dirty = False
         self.ach = lambda kind, **kw: []      # başarım olayları (basarim.py; oturum bağlar). Profil kilidi tutulurken çağrılmaz
         self.hint = lambda kind: []           # ipucu penceresi bir kez (ipucu.py; oturum bağlar) -> mesajlar
+        self.window_hooks = {}                # menü öğesinin görünürlüğü (event_window_visible; oturum bağlar)
         self.tohum = tohum or {}
-        created = not os.path.exists(path)
-        if not created:
+        created = d is None and not os.path.exists(path)
+        if d is not None:
+            self.d = d
+        elif not created:
             self.d = json.load(open(path, encoding='utf8'))
         else:
             self.d = self._from_seed(self.tohum)
@@ -353,7 +359,7 @@ class Profil:
                     if it.get('itemId') in MODE_WINDOWS:          # Aşama 8'in modları (pve_modlari.py): pencereleri hep görünür
                         it['visible'] = True
                     if it.get('itemId') in EVENT_WINDOWS:         # etkinlik pencereleri etkinlik sürerken (canlı test H47)
-                        it['visible'] = event_window_visible(it['itemId'])
+                        it['visible'] = event_window_visible(it['itemId'], hooks=self.window_hooks)
                     if it.get('itemId') in CLOSED_AT_LOGIN:
                         it['maximized'] = False
                     if it.get('itemId') in HIDDEN_WINDOWS:
