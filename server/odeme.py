@@ -32,6 +32,7 @@ URUNLER = {
     'mileageMarket': ('Mileage Packs', []),
     'vipMerchantExchange': ('VIP Merchant Packs', []),
     'returnee_login': ('Returnee Bundles', []),
+    'recallBattlePass': ('Return VIP Badge', ['package_event-deal-return-pass-vip-badge', 'package_event-deal-return-vip-special']),
 }
 GENEL = 'Payment pages are offline: packages are sold in the Shop > Extras for uridium.'
 # 443'e giden ödeme dışı istekler (TLS içindeki yol görünmez): kupon kodu (UIVouchersSystem -> JavascriptHelper.PostVoucherUrl),

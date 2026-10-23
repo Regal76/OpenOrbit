@@ -152,7 +152,9 @@
   "ifade": 50,
   "resource_ftl-key": 8284.8,
   "resource_collectable_galaxy-coupon": 601.1,
-  "resource_lottery-capsule": 6867.2
+  "resource_lottery-capsule": 6867.2,
+  "resource_booty-key-apotheosis": 5000,
+  "resource_recall-pass-vip-badge": 150000
  },
  "fiyatlar": {
   "ammunition_slug_cos-a04": {
@@ -2971,6 +2973,42 @@
    "kategori": "shipdesign",
    "eski": 50000,
    "kaynak": "payment"
+  },
+  "package_event-deal-ap-boody-key-s": {
+   "deger": 10000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 8500,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:surum_115"
+  },
+  "package_event-deal-ap-boody-key-m": {
+   "deger": 100000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 85000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:surum_115"
+  },
+  "package_event-deal-return-pass-vip-badge": {
+   "deger": 150000,
+   "kural": "tek",
+   "para": "U",
+   "fiyat": 150000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:surum_115"
+  },
+  "package_event-deal-return-vip-special": {
+   "deger": 650000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 550000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:surum_115"
   }
  },
  "eksik": {

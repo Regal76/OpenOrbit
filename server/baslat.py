@@ -6,7 +6,7 @@ profil yedeği, günlük döndürme, web ve oyun sunucuları, orijinal istemci.
 - Profil yedeği: <yuva>/yedek/oto_YYYYmmdd_HHMMSS.json (eski düzende save/yedek/profil_…); en yeni YEDEK_SAYISI kalır.
 - Günlük döndürme: logs/gs.log, http.log, client.log büyükse .1, .2, .3'e kayar (açık bir sunucu dosyayı tutuyorsa atlanır).
 - Sunucular: 8081 (oyun) ve 8090 (web) zaten dinleniyorsa yeniden başlatılmaz, onlar kullanılır ve sonda kapatılmaz.
-- İstemci: DarkOrbit_Version1.1.114\\DarkOrbit.exe yalnız başlatma argümanıyla (resmi sunuculara bağlanmaz, dosyalar değişmez).
+- İstemci: DarkOrbit_Version1.1.115\\DarkOrbit.exe yalnız başlatma argümanıyla (resmi sunuculara bağlanmaz, dosyalar değişmez).
   İstemci kapanınca bu başlatıcının açtığı sunucular kapanır. İstemci hemen kapanırsa (başka pencere açtıysa) sunucular açık kalır.
 Kullanım: python -I baslat.py [oyun sunucusu seçenekleri: --reklamsiz, --dokunulmaz …]
 """
@@ -17,7 +17,7 @@ sys.path.insert(0, HERE)
 import yollar as YOL  # noqa: E402
 LOGS = os.path.join(HERE, 'logs')
 SAVE = os.path.join(HERE, 'save')
-CLIENT = os.path.join(HERE, '..', 'DarkOrbit_Version1.1.114', 'DarkOrbit.exe')
+CLIENT = os.path.join(HERE, '..', 'DarkOrbit_Version1.1.115', 'DarkOrbit.exe')
 CLIENT_ARGS = ['http://127.0.0.1:8090/#darkorbit://', '-screen-fullscreen', '0', '-screen-width', '1440', '-screen-height', '900']
 YEDEK_SAYISI = 10
 GUNLUK_SINIRI = 5 * 1024 * 1024

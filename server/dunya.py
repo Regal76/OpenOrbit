@@ -1379,7 +1379,9 @@ class World:
                 self.send([legacy('0|UI|W|MIW|ore_trade')])
 
     def selection(self, n):
-        return ('ShipSelectionCommand', dict(userId=n.id, shipType=int(n.model), shield=int(n.shield), shieldMax=n.d['kalkan'],
+        # dize modelli patronlarda (DREADFYRE_FORTRESS, EMPEROR_KRISTALLON_BOSS_2) shipType istemcinin npcId'si
+        stype = int(n.model) if str(n.model).isdigit() else int(n.d.get('npc_kimlik', 0))
+        return ('ShipSelectionCommand', dict(userId=n.id, shipType=stype, shield=int(n.shield), shieldMax=n.d['kalkan'],
                                              hitpoints=int(n.hp), hitpointsMax=n.d['hp'], nanoHull=0, maxNanoHull=0, shieldSkill=False))
 
     def asset_at(self, uid):

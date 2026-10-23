@@ -818,19 +818,19 @@
      "ammunition_laser_ucb-100",
      10,
      10,
-     12.0001
+     11.8891
     ],
     [
      "ammunition_laser_mcb-50",
      10,
      10,
-     12.0001
+     11.8891
     ],
     [
      "ammunition_laser_mcb-25",
      10,
      10,
-     12.0001
+     11.8891
     ],
     [
      "ammunition_laser_sab-50",
@@ -873,6 +873,36 @@
      5,
      5,
      3.044
+    ],
+    [
+     "equipment_generator_speed_g3n-7900",
+     1,
+     1,
+     0.0666
+    ],
+    [
+     "equipment_weapon_laser_lf-4-hp",
+     1,
+     1,
+     0.0666
+    ],
+    [
+     "equipment_weapon_laser_lf-4-pd",
+     1,
+     1,
+     0.0666
+    ],
+    [
+     "equipment_weapon_laser_lf-4-unstable",
+     1,
+     1,
+     0.0666
+    ],
+    [
+     "equipment_weapon_laser_lf-4-md",
+     1,
+     1,
+     0.0666
     ]
    ]
   },
@@ -1309,7 +1339,7 @@
    ]
   ],
   "gunluk_gorev_jetonu": 10,
-  "_uyarlama": "Dönem başlangıcı (2026-01-01), dönemin gemileri (listeden sırayla üçer), Helios/Nidhogg sırası (çift dönem Helios), kilitlenen geminin dönem bitince de kalması (tek oyunculu: 1.200 çekiliş bir dönemde bitmez), Season Pass günlük görevi başına 10 Armory Token (SSS: günlük görevler)."
+  "_uyarlama": "Dönem başlangıcı (2026-01-01), dönemin gemileri (listeden sırayla üçer), Helios/Nidhogg sırası (çift dönem Helios), kilitlenen geminin dönem bitince de kalması (tek oyunculu: 1.200 çekiliş bir dönemde bitmez), Season Pass günlük görevi başına 10 Armory Token (SSS: günlük görevler). Lucky Draw'da gösterilip havuzda olmayan eşyaların oranı (%0,0666, kırmızı satırdaki MR-T03 gibi; eksiği en sık üç cephaneden)."
  },
  "qfc": {
   "turler": {

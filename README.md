@@ -68,7 +68,7 @@ starts the game and handles your saves, game settings and events.
 
 - Windows 10 or 11.
 - [Python](https://www.python.org/downloads/windows/) 3.10 or newer. Nothing else is needed to play.
-- The **original DarkOrbit Unity client**, version **1.1.114** (not included). If the panel doesn't find it on your
+- The **original DarkOrbit Unity client**, version **1.1.115** (not included). If the panel doesn't find it on your
   computer, the setup wizard downloads it from the game's official download server and installs it into the project
   folder: about 3.5 GB to download and 4.4 GB of free disk space. A stopped download resumes where it left off. If you
   install it yourself, the folder must contain `DarkOrbit.exe` and `DarkOrbit_Data`.
@@ -115,7 +115,7 @@ On the **Panel** page you can choose *Only notify* or turn it off, and check by 
 | `server/save/ayarlar.json` | Game settings and event choices |
 | `server/save/panel.json` | Panel settings (language, game folder, display, backups) |
 | `server/logs/` | Server, client and panel logs |
-| `DarkOrbit_Version1.1.114/` | The game client, if the panel downloaded it (`istemci_indiriliyor/` while downloading) |
+| `DarkOrbit_Version1.1.115/` | The game client, if the panel downloaded it (`istemci_indiriliyor/` while downloading) |
 | `server/save/guncelleme/` | Old versions of the files that updates replaced (last two updates) |
 
 All of these are created on first run and stay on your computer.
@@ -124,7 +124,7 @@ All of these are created on first run and stay on your computer.
 
 - Don't run `DarkorbitLauncher.exe` from the client folder: it may update the client from the official servers and break
   compatibility. Start the game from the panel.
-- The server is written for client version 1.1.114. For another version the panel warns you and can adapt the protocol
+- The server is written for client version 1.1.115. For another version the panel warns you and can adapt the protocol
   from the new client's code (Client page; needs `capstone`).
 - Bot players are not in yet: missions that need other players don't progress.
 
@@ -196,7 +196,7 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 
 - Windows 10 ya da 11.
 - [Python](https://www.python.org/downloads/windows/) 3.10 ya da daha yenisi. Oynamak için başka bir şey gerekmez.
-- **Orijinal DarkOrbit Unity istemcisi**, sürüm **1.1.114** (depoda yok). Panel onu bilgisayarında bulamazsa kurulum
+- **Orijinal DarkOrbit Unity istemcisi**, sürüm **1.1.115** (depoda yok). Panel onu bilgisayarında bulamazsa kurulum
   sihirbazı oyunun resmî indirme sunucusundan indirip proje klasörüne kurar: yaklaşık 3,5 GB indirme ve 4,4 GB boş disk
   alanı. Durdurulan indirme kaldığı yerden sürer. Kendin kurarsan klasörde `DarkOrbit.exe` ve `DarkOrbit_Data` olmalı.
 - Panel penceresi için Microsoft Edge ya da Google Chrome (yoksa varsayılan tarayıcın açar).
@@ -241,7 +241,7 @@ sayfasından *Yalnız haber ver*'i seçebilir, kapatabilir ve elle denetleyebili
 | `server/save/ayarlar.json` | Oyun ayarları ve etkinlik seçimleri |
 | `server/save/panel.json` | Panel ayarları (dil, oyun klasörü, görüntü, yedekleme) |
 | `server/logs/` | Sunucu, istemci ve panel günlükleri |
-| `DarkOrbit_Version1.1.114/` | Oyun istemcisi, panel indirdiyse (inerken `istemci_indiriliyor/`) |
+| `DarkOrbit_Version1.1.115/` | Oyun istemcisi, panel indirdiyse (inerken `istemci_indiriliyor/`) |
 | `server/save/guncelleme/` | Güncellemelerin değiştirdiği dosyaların eski hâlleri (son iki güncelleme) |
 
 Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
@@ -250,7 +250,7 @@ Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 
 - İstemci klasöründeki `DarkorbitLauncher.exe`'yi çalıştırma: istemciyi resmî sunuculardan güncelleyip uyumu bozabilir.
   Oyunu panelden başlat.
-- Sunucu 1.1.114 istemcisi için yazıldı. Başka bir sürümde panel uyarır ve protokolü yeni istemcinin kodundan uyarlayabilir
+- Sunucu 1.1.115 istemcisi için yazıldı. Başka bir sürümde panel uyarır ve protokolü yeni istemcinin kodundan uyarlayabilir
   (İstemci sayfası; `capstone` gerekir).
 - Bot oyuncular henüz yok: başka oyuncu gerektiren görevler ilerlemez.
 

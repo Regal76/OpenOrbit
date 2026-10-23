@@ -16,7 +16,11 @@ EVENT_WINDOWS = {'plutus': ('plutus',), 'frozen_labyrinth': ('labirent',), 'agat
                  'invasion': ('invasion',), 'ship_boost_event': ('fever',), 'diminish_quests': ('acil_gorevler',),
                  'strikeAndExit': ('vortex_of_greed',), 'publicWorldBoss': ('world_boss',), 'payload_escort': ('mimesis_mutiny',),  # Ö4
                  'mileageMarket': ('mileage_market',), 'vipMerchantExchange': ('vip_merchant',),                            # Ö7
-                 'preBlackFridaySales': ('pre_prometheus',), 'return_of_hero': ('return_of_hero',), 'returnee_login': ()}
+                 'preBlackFridaySales': ('pre_prometheus',), 'return_of_hero': ('return_of_hero',), 'returnee_login': (),
+                 'apotheosis': ('kristallon_apotheosis',), 'recallBattlePass': ('return_of_hero',)}                       # 1.1.115
+# 1.1.115'in pencereleri kayıttaki arayüzde yok: profile Return of Hero öğesinin kopyası olarak eklenir (başlık, boyut game.xml'den);
+# istemci pencereyi açmadan önce menü öğesini adıyla arıyor (FeatureMenuHelper.GetFeatureItemById)
+NEW_WINDOWS = {'apotheosis': ('title_kristallon_apotheosis', 728, 460), 'recallBattlePass': ('return_pass_name', 800, 440)}
 # görünürlüğü takvimden değil oyuncunun durumundan olanlar: itemId -> () -> bool (Ö7: Returnee Login kampanyası, dukkanlar.py)
 WINDOW_HOOKS = {}
 # Urgent Missions'ın penceresini (diminish_quests) istemci görev gelince kendisi açıyor (DiminishingQuestHandler.OpenWindow); öğe
@@ -273,7 +277,26 @@ class Profil:
             v = q['qualityExplosion']
             q['qualityExplosion'] = (v >> 8 & 0xFF) | (v << 8 & 0xFF00)
             self.dirty = True
+        self.add_windows()
         self.sync_ekipman()
+
+    def add_windows(self):
+        """Kayıttaki arayüzde olmayan yeni pencerelerin menü öğeleri (NEW_WINDOWS), Return of Hero öğesinin yanına."""
+        for bar in self.d.get('arayuz', {}).get('featureBars', []):
+            items = bar.get('featureBarItems', [])
+            ref = next((it for it in items if it.get('itemId') == 'return_of_hero'), None)
+            if not ref:
+                continue
+            have = {it.get('itemId') for b in self.d['arayuz']['featureBars'] for it in b.get('featureBarItems', [])}
+            for item_id, (title, w, h) in NEW_WINDOWS.items():
+                if item_id in have:
+                    continue
+                it = json.loads(json.dumps(ref))
+                it.update(itemId=item_id, windowTitle=title, width=w, height=h, maximized=False, visible=False)
+                for m in it['toolTip']['commandList']:
+                    m['baseKey'] = title
+                items.insert(items.index(ref) + 1, it)
+                self.dirty = True
 
     def save(self, force=False):
         with self.lock:

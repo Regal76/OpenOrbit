@@ -1014,7 +1014,7 @@ function dlBox(st, refresh, { haveClient = false } = {}) {      // haveClient: g
     : st.durum === 'hata' ? st.hata
     : haveClient && st.yarim ? T('Seçili istemci kullanılıyor; yarım kalan dosyaları silebilirsin.')
     : st.durum === 'durdu' || st.yarim ? T('Sürdürünce yalnız eksik dosyalar iner.')
-    : st.durum === 'bos' ? T('DarkOrbit {0} istemcisi oyunun resmî indirme sunucusundan alınıp proje klasörüne kurulur: yaklaşık 3,5 GB indirme, diskte 4,3 GB. İstemci dosyaları değiştirilmez.', '1.1.114')
+    : st.durum === 'bos' ? T('DarkOrbit {0} istemcisi oyunun resmî indirme sunucusundan alınıp proje klasörüne kurulur: yaklaşık 3,5 GB indirme, diskte 4,3 GB. İstemci dosyaları değiştirilmez.', '1.1.115')
     : '';
   const btns = run ? [btn(T('Durdur'), () => call('/api/istemci/indir_durdur', T('İndirme durduruluyor…')), 'ghost sm', 'stop')]
     : st.durum === 'bitti' ? []

@@ -9,6 +9,7 @@ Sistemler: Chromin Rush (chromin.py), Hitac Word Puzzle ve Capsule Lottery (hita
 (unvan_avi.py), Galaxy Trek (galaxy_trek.py), Fiesta Gate (fiesta.py), Infiltration (sizma.py), Urgent Missions (acil_gorevler.py),
 eski Invasion (istila.py), etkinlik sonunda kalan paralar onura (etkinlik_sonu.py); Ö4: Vortex of Greed (vortex.py), Treacherous
 Domain / World Boss 2025 (dunya_patronu.py), Mimesis Mutiny (mimesis.py). Ö4'ünkiler haritada dünyanın 'kapi'sını kurar (dalgalar, ölüm ekranı, radyasyon kancaları).
+1.1.115: Kristallon Apotheosis (apotheosis.py; patron haritasında 'kapi'), Recall Battle Pass (donus_pass.py).
 """
 import traceback
 
@@ -25,6 +26,8 @@ import vortex as VG
 import dunya_patronu as WB
 import mimesis as MM
 import etkinlik_sonu as ES
+import apotheosis as APO
+import donus_pass as DP
 
 
 class EkEtkinlikler:
@@ -46,11 +49,13 @@ class EkEtkinlikler:
         self.vortex = VG.Vortex(profil, magaza, ekapilar, log)                  # Ö4
         self.patron = WB.DunyaPatronu(profil, magaza, ekapilar, log)
         self.mimesis = MM.Mimesis(profil, magaza, ekapilar, log)
-        for s in (self.vortex, self.patron, self.mimesis):
+        self.apo = APO.Apotheosis(profil, magaza, ekapilar, log)                # 1.1.115
+        self.rbp = DP.DonusPass(profil, magaza, log)
+        for s in (self.vortex, self.patron, self.mimesis, self.apo):
             s.titles = self.unvan.grant_title
         self.patron.send = lambda msgs: self.send(msgs)
         self.systems = [self.chromin, self.hitac, self.fever, self.unvan, self.trek, self.sizma, self.acil, self.sonu] + \
-            [s for s in (self.fiesta, self.istila) if s] + [self.vortex, self.patron, self.mimesis]
+            [s for s in (self.fiesta, self.istila) if s] + [self.vortex, self.patron, self.mimesis, self.apo, self.rbp]
         self.send = lambda msgs: None            # oturum bağlar
         self.world = None
         self.requests = {}

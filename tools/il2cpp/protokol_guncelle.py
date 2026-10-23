@@ -25,7 +25,7 @@ DATA = os.path.join(SERVER, 'data')
 VDIR = os.path.join(DATA, 'protokol')
 SURUM = os.path.join(VDIR, 'surum.txt')
 FILES = ('protocol.json', 'protocol_read.json')
-VARSAYILAN_SURUM = '1.1.114'
+VARSAYILAN_SURUM = '1.1.115'
 
 
 def active_version():

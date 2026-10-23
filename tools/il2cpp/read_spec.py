@@ -288,7 +288,11 @@ class Extract:
         return self.events
 
 
-DTOL = 0x1024e060
+# double -> long yardımcısı (MSVC _dtol3; SSE3 varsa fisttp): adresi sürümle kayıyor (1.1.114 0x1024e060, 1.1.115 0x1024ed50),
+# bayt kalıbından bulunur. Bulunamazsa long alanlar "double?" çıkar.
+_DTOL = re.search(rb'\x83\x3d....\x02\x7c\x15\x8b\xcc\x83\xc4\xf8\x83\xe4\xf8\xdd\x0c\x24\x8b\x04\x24\x8b\x54\x24\x04\x8b\xe1\xc3',
+                  S.pe.b, re.S)
+DTOL = S.pe.off2va(_DTOL.start()) if _DTOL else None
 
 
 def expr_vars(e):
@@ -446,7 +450,8 @@ def type_ok(step_t, field_t):
 
 # (sınıf, alan) -> (sağa, sola) kaydırma; istemcinin read() kodundan (canlı test H50)
 MANUAL_X = {('SkylabModuleProductivityCommand', 'bonus'): (8, 24), ('SkylabModuleProductivityCommand', 'maxActive'): (22, 10),
-            ('SkylabModuleProductivityCommand', 'inStorage'): (17, 15), ('ExchangesShopItem', 'maxLimit'): (12, 20),
+            ('SkylabModuleProductivityCommand', 'inStorage'): (17, 15), ('SkylabModuleProductivityCommand', 'active'): (3, 29),
+            ('ExchangesShopItem', 'maxLimit'): (12, 20),
             ('ExchangesShopItem', 'limit'): (26, 6), ('ExchangesShopItem', 'eid'): (9, 23),
             ('ExpeditionInfoCommand', 'timeLimit'): (20, 12), ('ExpeditionInfoCommand', 'myRank'): (20, 12),
             ('DisplayOfferCommand', 'percentage'): (23, 9)}

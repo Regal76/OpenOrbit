@@ -4036,6 +4036,186 @@
     ]
    ],
    "_arac": "yeni_sistemler"
+  },
+  "APOTHEOSIS": {
+   "ad": "Apotheosis Booty Box",
+   "anahtar": "resource_booty-key-apotheosis",
+   "kod": "BKAPO",
+   "yok_mesaji": "msg_loot_failed_no_booty-key-apotheosis",
+   "haritalar": [],
+   "adet": 0,
+   "yeniden_sn": null,
+   "takvim": null,
+   "defter": null,
+   "odul": [
+    [
+     "equipment_weapon_laser_lf-4",
+     1,
+     1.91
+    ],
+    [
+     "equipment_weapon_laser_lf-4-md",
+     1,
+     1.91
+    ],
+    [
+     "equipment_weapon_laser_lf-4-hp",
+     1,
+     1.91
+    ],
+    [
+     "equipment_weapon_laser_lf-4-pd",
+     1,
+     1.91
+    ],
+    [
+     "equipment_weapon_laser_lf-5",
+     1,
+     1.91
+    ],
+    [
+     "equipment_weapon_laser_am-l",
+     1,
+     0.22
+    ],
+    [
+     "equipment_weapon_laser_os-l",
+     1,
+     0.21
+    ],
+    [
+     "equipment_weapon_laser_lf-5-mf",
+     1,
+     0.16
+    ],
+    [
+     "equipment_weapon_rocketlauncher_hst-2",
+     1,
+     9.96
+    ],
+    [
+     "equipment_weapon_cannon_r-helios",
+     1,
+     0.64
+    ],
+    [
+     "equipment_weapon_cannon_ep-helios",
+     1,
+     0.21
+    ],
+    [
+     "equipment_cannon_shield_mr-t03",
+     1,
+     6.36
+    ],
+    [
+     "equipment_cannon_shield_mr-t04",
+     1,
+     1.27
+    ],
+    [
+     "equipment_weapon_drive_igd-l01",
+     1,
+     0.47
+    ],
+    [
+     "equipment_weapon_drive_igd-l02",
+     1,
+     0.2
+    ],
+    [
+     "equipment_lens_gl-chron",
+     1,
+     0.57
+    ],
+    [
+     "equipment_lens_gl-omega",
+     1,
+     0.29
+    ],
+    [
+     "resource_collectable_horizon-shard",
+     300,
+     9.08
+    ],
+    [
+     "resource_collectable_containment-node",
+     10,
+     8.59
+    ],
+    [
+     "ammunition_laser_rsb-75",
+     1000,
+     8.59
+    ],
+    [
+     "ammunition_laser_spacecup_group-c",
+     1000,
+     8.59
+    ],
+    [
+     "ammunition_slug_ths-a04",
+     200,
+     8.59
+    ],
+    [
+     "ammunition_spool_gsp-300",
+     100,
+     8.59
+    ],
+    [
+     "ammunition_rocketlauncher_ubr-100",
+     500,
+     8.59
+    ],
+    [
+     "resource_collectable_diametrion",
+     10,
+     8.59
+    ],
+    [
+     "equipment_shipupgrade_hp-x1",
+     1,
+     0.13
+    ],
+    [
+     "equipment_shipupgrade_shd-x1",
+     1,
+     0.13
+    ],
+    [
+     "equipment_shipupgrade_dmg-x1",
+     1,
+     0.13
+    ],
+    [
+     "equipment_shipupgrade_spc-x1",
+     1,
+     0.13
+    ],
+    [
+     "equipment_shipupgrade_hp-x2",
+     1,
+     0.03
+    ],
+    [
+     "equipment_shipupgrade_shd-x2",
+     1,
+     0.03
+    ],
+    [
+     "equipment_shipupgrade_dmg-x2",
+     1,
+     0.03
+    ],
+    [
+     "equipment_shipupgrade_spc-x2",
+     1,
+     0.03
+    ]
+   ],
+   "_arac": "surum_115",
+   "_kaynak": "board-en 130459 (FAQ Kristallon Apotheosis): Emperor Kristallon yenilince 20 kutu; istemcinin box_APOTHEOSIS varlığı, HUD sayacı BKAPO"
   }
  },
  "_etkinlik_kutulari": "EMPYRIAN_BOOTY_BOX, PROSPEROUS_BOOTY_BOX, LUCENT_ALIEN_EGG_BOOTY_BOX tools/etkinlik_kutulari.py ile; takvim = etkinlik adı."

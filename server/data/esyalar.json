@@ -2816,6 +2816,34 @@
     "resource_collectable_unstable-shard",
     185
    ]
+  ],
+  "package_event-deal-ap-boody-key-s": [
+   [
+    "resource_booty-key-apotheosis",
+    2
+   ]
+  ],
+  "package_event-deal-ap-boody-key-m": [
+   [
+    "resource_booty-key-apotheosis",
+    20
+   ]
+  ],
+  "package_event-deal-return-pass-vip-badge": [
+   [
+    "resource_recall-pass-vip-badge",
+    1
+   ]
+  ],
+  "package_event-deal-return-vip-special": [
+   [
+    "resource_recall-pass-vip-badge",
+    1
+   ],
+   [
+    "resource_booty-key-apotheosis",
+    100
+   ]
   ]
  },
  "lazer_cephane": {
@@ -5541,6 +5569,7 @@
    "pet_designs_mirage-orange": 167,
    "pet_designs_mirage-red": 168,
    "pet_designs_pet-a-elite-blaze": 169,
+   "pet_designs_pet-a-elite-dusklight": 401,
    "pet_designs_pet-a-elite-empyrian": 342,
    "pet_designs_pet-a-elite-lava": 170,
    "pet_designs_pet-a-elite-nobilis": 337,
@@ -8016,6 +8045,38 @@
     "uridyum": 250,
     "sablon": "resource_collectable_luminaflux-alloy",
     "_arac": "parcacik"
+   },
+   {
+    "lootId": "package_event-deal-ap-boody-key-s",
+    "uridyum": 0,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "kristallon_apotheosis",
+    "bir_kez": false,
+    "_arac": "surum_115"
+   },
+   {
+    "lootId": "package_event-deal-ap-boody-key-m",
+    "uridyum": 0,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "kristallon_apotheosis",
+    "bir_kez": false,
+    "_arac": "surum_115"
+   },
+   {
+    "lootId": "package_event-deal-return-pass-vip-badge",
+    "uridyum": 0,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "return_of_hero",
+    "bir_kez": true,
+    "_arac": "surum_115"
+   },
+   {
+    "lootId": "package_event-deal-return-vip-special",
+    "uridyum": 0,
+    "sablon": "package_event-deal-stellar2022-1",
+    "takvim": "return_of_hero",
+    "bir_kez": true,
+    "_arac": "surum_115"
    }
   ],
   "ammunition": [

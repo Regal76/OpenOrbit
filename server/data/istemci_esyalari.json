@@ -52626,6 +52626,23 @@
     "ship_upgrades": 3,
     "QuantumFluidCore": 2
    }
+  },
+  "pet_designs_pet-a-elite-dusklight": {
+   "tur": "DUSKLIGHT_A_ELITE",
+   "sinif": "PetCustomizationType",
+   "takilir": [
+    "PET"
+   ],
+   "satis": 50000.0
+  },
+  "resource_booty-key-apotheosis": {
+   "tur": "BOOTY_KEY",
+   "sinif": "ItemType",
+   "yigin": 1000000000.0
+  },
+  "resource_recall-pass-vip-badge": {
+   "tur": "RECALL_PASS_VIP_BADGE",
+   "sinif": "ItemType"
   }
  }
 }

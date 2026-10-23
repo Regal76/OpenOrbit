@@ -409,8 +409,10 @@ class Session:
         self.dukkan = DK.Dukkanlar(self.profil, self.magaza, log)              # Ö7: uridyumla çalışan dükkân pencereleri
         self.ek.add(self.dukkan)
         self.profil.window_hooks['returnee_login'] = self.dukkan.returnee_active
+        self.ek.rbp.hero = lambda: bool(self.dukkan.rh().get('bagli'))           # Recall Battle Pass: Return of Hero'daki durum
         self.profil.window_hooks['diminish_quests'] = self.ek.acil.menu_visible   # Urgent Missions: yalnız görev varken (acil_gorevler.py)
-        for kind, s in (('vortex', self.ek.vortex), ('dunya_patronu', self.ek.patron), ('mimesis', self.ek.mimesis)):   # Ö4
+        for kind, s in (('vortex', self.ek.vortex), ('dunya_patronu', self.ek.patron), ('mimesis', self.ek.mimesis),   # Ö4
+                        ('apotheosis', self.ek.apo)):                                                       # 1.1.115
             s.change_map = self.change_map
             self.pve.extra_windows[kind] = s.portal_window
         self.ek.send = lambda m: self.send(m, 'etkinlik')
@@ -1273,9 +1275,9 @@ def sunucu_bilgisi():
     ms = CO.liste()
     names = sorted({s.profil.d['pilot'].get('userName', '?') for s in list(OTURUMLAR) if s.profil is not None})
     try:
-        client = open(os.path.join(DATA, 'protokol', 'surum.txt'), encoding='utf8').read().strip() or '1.1.114'
+        client = open(os.path.join(DATA, 'protokol', 'surum.txt'), encoding='utf8').read().strip() or '1.1.115'
     except OSError:
-        client = '1.1.114'
+        client = '1.1.115'
     return {'sunucu': 'darkorbit', 'protokol': CO.PROTOKOL, 'kod': CO.AYAR['kod'], 'istemci': client,
             'pilot': PROFIL.d['pilot'].get('userName', ''), 'oyuncular': names, 'misafir': len(ms), 'en_cok': CO.AYAR['en_cok'],
             'sifre': bool(CO.AYAR['sifre']), 'yer': len(ms) < CO.AYAR['en_cok']}

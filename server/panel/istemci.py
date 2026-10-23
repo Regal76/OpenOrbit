@@ -1,8 +1,8 @@
 """Oyun istemcisi (orijinal Unity istemcisi): klasör doğrulama, kendiliğinden bulma, sürüm, başlatma argümanları.
 
-Klasör: içinde DarkOrbit.exe ve DarkOrbit_Data/ olan klasör (DarkOrbit_Version1.1.114 gibi). Panel ayarı boşsa proje kökündeki
+Klasör: içinde DarkOrbit.exe ve DarkOrbit_Data/ olan klasör (DarkOrbit_Version1.1.115 gibi). Panel ayarı boşsa proje kökündeki
 en yeni sürüm klasörü kullanılır; güncelleme gelirse ya da klasör taşınırsa panelden seçilir. Bilgisayarda yoksa panel indirir
-(indirme.py; yarım indirmenin geçici klasörü aday sayılmaz). Sunucu 1.1.114'ün protokolüyle
+(indirme.py; yarım indirmenin geçici klasörü aday sayılmaz). Sunucu 1.1.115'in protokolüyle
 yazıldı (data/protocol*.json istemcinin kodundan): başka sürümde panel uyarır.
 İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090).
 """
@@ -16,7 +16,7 @@ SERVER = os.path.dirname(PANEL_DIR)
 ROOT = os.path.dirname(SERVER)
 EXE = 'DarkOrbit.exe'
 DATA_DIR = 'DarkOrbit_Data'
-DESTEKLENEN = '1.1.114'          # etkin protokolün sürümü yoksa (server/data/protokol/surum.txt; protokol_guncelle.py yazar)
+DESTEKLENEN = '1.1.115'          # etkin protokolün sürümü yoksa (server/data/protokol/surum.txt; protokol_guncelle.py yazar)
 SURUM_DOSYASI = os.path.join(SERVER, 'data', 'protokol', 'surum.txt')
 
 
@@ -31,7 +31,7 @@ COZUNURLUKLER = [(1280, 720), (1366, 768), (1440, 900), (1600, 900), (1680, 1050
 
 
 def version_of(folder):
-    """Sürüm: klasör adından (DarkOrbit_Version1.1.114), yoksa exe'nin dosya sürümünden; bilinmiyorsa None."""
+    """Sürüm: klasör adından (DarkOrbit_Version1.1.115), yoksa exe'nin dosya sürümünden; bilinmiyorsa None."""
     m = re.search(r'(\d+\.\d+\.\d+)', os.path.basename(os.path.normpath(folder)))
     if m:
         return m.group(1)
