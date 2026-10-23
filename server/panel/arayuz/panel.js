@@ -1314,6 +1314,11 @@ async function renderPanel() {
       h('div', { class: 'card' }, h('h2', null, icon('wand'), T('Kurulum sihirbazı')),
         h('p', { class: 'desc' }, T('Dil, oyun klasörü, ilk pilot ve oyun ayarları adımlarını yeniden aç.')),
         btn(T('Sihirbazı aç'), () => openWizard(0), 'primary', 'wand'))),
+    h('div', { class: 'card' }, h('h2', null, icon('users'), 'Discord'),
+      h('p', { class: 'desc' }, T('Topluluk sunucusu: duyurular, yardım, hata bildirimi ve öneriler; Türkçe ve İngilizce kanallar.')),
+      h('div', { class: 'row wrap' },
+        btn(T("Discord'a katıl"), () => act(() => api('/api/discord', {}), T('Davet bağlantısı tarayıcıda açıldı.')), 'primary', 'users'),
+        h('span', { class: 'small muted mono' }, r.discord))),
     updCard(),
     h('div', { class: 'grid g2' },
       h('div', { class: 'card' }, h('h2', null, icon('star'), T('Masaüstü kısayolu')),
@@ -1330,7 +1335,7 @@ async function renderPanel() {
       pathRow(T('Oyun ayarları dosyası'), r.ayarlar), pathRow(T('Panel ayarları dosyası'), r.panel)),
     h('div', { class: 'card' }, h('h2', null, icon('info'), T('Hakkında')),
       h('div', { class: 'kv', style: { maxWidth: '520px' } }, h('div', null, T('Panel sürümü'), h('b', null, r.surum)), h('div', null, 'Python', h('b', null, r.python)),
-        h('div', null, T('Panel adresi'), h('b', null, '127.0.0.1:' + r.port)), h('div', null, T('İnternet'), h('b', null, T('yalnız güncelleme ve oyunu indirme için')))),
+        h('div', null, T('Panel adresi'), h('b', null, '127.0.0.1:' + r.port)), h('div', null, T('İnternet'), h('b', null, T('güncelleme, oyunu indirme ve oyun görselleri için')))),
       h('p', { class: 'desc', style: { marginTop: '14px' } }, T("DarkOrbit Server Emulator: tek oyunculu, çevrimdışı yerel sunucu. İstemci, grafikler ve metinler Bigpoint GmbH'ye aittir; yalnız kişisel kullanım içindir.")))));
 }
 

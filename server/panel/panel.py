@@ -39,6 +39,7 @@ from guncelleme import Guncelleyici, GuncellemeHatasi  # noqa: E402
 from arkadas import Arkadas, ArkadasHatasi  # noqa: E402
 
 SURUM = '1.0'
+DISCORD = 'https://discord.gg/BUb9rNTKNt'         # topluluk sunucusu (Panel sayfası, README); süresiz davet
 PORT = 8077
 ARAYUZ = os.path.join(PANEL_DIR, 'arayuz')
 SABLONLAR = os.path.join(YOL.SAVE, 'ayar_sablonlari.json')
@@ -714,7 +715,7 @@ def h_get(path, q):
                 'istemci_surumu': IST.check(client_folder()).get('surum') or IST.supported()}
     if path == '/api/hakkinda':
         return {'surum': SURUM, 'python': sys.version.split()[0], 'kok': ROOT, 'sunucu': SERVER, 'kayitlar': YOL.KAYITLAR,
-                'gunlukler': YOL.LOGS, 'ayarlar': YOL.AYARLAR, 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current()}
+                'gunlukler': YOL.LOGS, 'ayarlar': YOL.AYARLAR, 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current(), 'discord': DISCORD}
     raise Hata(_('Bilinmeyen istek: %s', path))
 
 
@@ -959,6 +960,9 @@ def h_post(path, b):
             open_folder(paths[what])
         else:
             raise Hata(_('Bilinmeyen klasör.'))
+        return {}
+    if path == '/api/discord':                      # davet varsayılan tarayıcıda (panel penceresinin profili Discord'a girişli değil)
+        os.startfile(DISCORD)
         return {}
     if path == '/api/kisayol':
         return {'yol': create_shortcut()}

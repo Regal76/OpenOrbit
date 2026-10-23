@@ -1,6 +1,8 @@
 # DarkOrbit Server Emulator
 
-**[English](#english)** · **[Türkçe](#türkçe)**
+**[English](#english)** · **[Türkçe](#türkçe)** · **[Discord](https://discord.gg/BUb9rNTKNt)**
+
+[![Discord](https://img.shields.io/badge/Discord-Join%20%C2%B7%20Kat%C4%B1l-5865F2?logo=discord&logoColor=white)](https://discord.gg/BUb9rNTKNt)
 
 A single-player, offline server for the original DarkOrbit Unity client, with a desktop management panel.
 Orijinal DarkOrbit Unity istemcisi için tek oyunculu, çevrimdışı sunucu ve masaüstü yönetim paneli.
@@ -53,7 +55,7 @@ images). A management panel starts the game and handles your saves, game setting
 - **Events:** each event by calendar, or on / off by hand.
 - **Client:** game folder, game download, version check, window mode, resolution and display.
 - **Server:** processes, ports, behavior and live logs.
-- **Panel:** language, setup wizard, updates, desktop shortcut and folders.
+- **Panel:** language, setup wizard, updates, desktop shortcut, folders and a button to join the Discord server.
 
 ### Playing with friends
 
@@ -138,6 +140,12 @@ All of these are created on first run and stay on your computer.
   from the new client's code (Client page; needs `capstone`).
 - Bot players are not in yet: missions that need other players don't progress.
 
+### Community
+
+Join the [Discord server](https://discord.gg/BUb9rNTKNt) for announcements, help, bug reports and suggestions. It has
+Turkish and English channels, and channels for screenshots and finding people to play with. You can also join from the
+panel's **Panel** page.
+
 ### Legal
 
 This is a fan project for personal, offline use. It is not affiliated with or endorsed by Bigpoint GmbH. DarkOrbit, the
@@ -190,7 +198,7 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 - **Etkinlikler:** her etkinlik takvime göre ya da elle açık / kapalı.
 - **İstemci:** oyun klasörü, oyunu indirme, sürüm denetimi, pencere kipi, çözünürlük ve ekran.
 - **Sunucu:** süreçler, portlar, davranış ve canlı günlükler.
-- **Panel:** dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu ve klasörler.
+- **Panel:** dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu, klasörler ve Discord sunucusuna katılma düğmesi.
 
 ### Arkadaşlarınla oynamak
 
@@ -272,6 +280,12 @@ Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 - Sunucu 1.1.115 istemcisi için yazıldı. Başka bir sürümde panel uyarır ve protokolü yeni istemcinin kodundan uyarlayabilir
   (İstemci sayfası; `capstone` gerekir).
 - Bot oyuncular henüz yok: başka oyuncu gerektiren görevler ilerlemez.
+
+### Topluluk
+
+Duyurular, yardım, hata bildirimi ve öneriler için [Discord sunucusuna](https://discord.gg/BUb9rNTKNt) katıl. Türkçe ve
+İngilizce kanalların yanında ekran görüntüleri ve birlikte oynayacak arkadaş bulmak için kanallar var. Panelin **Panel**
+sayfasından da katılabilirsin.
 
 ### Yasal not
 
