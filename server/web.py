@@ -9,6 +9,7 @@ kimlik sunucunun verdiği). --adres: dinlenen yerel adres (öntanımlı 127.0.0.
 """
 import sys, os, threading, socket, time, json
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+from urllib.request import Request, urlopen
 
 log_dir = [a for a in sys.argv[1:] if not a.startswith('--')][0]
 
@@ -208,17 +209,37 @@ ROUTES = {
 CDN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cdn')
 CDN_TYPES = {'.xml': 'application/xml', '.php': 'text/xml;charset=UTF-8', '.png': 'image/png', '.jpg': 'image/jpeg',
              '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.json': 'application/json', '.webm': 'video/webm'}
+CDN_RESMI = 'https://darkorbit-22.bpsecure.com/'      # oyunun görselleri (Bigpoint'in) depoda yok: ilk istenişte buradan
+cdn_olmayan = set()                                    # inmeyenler (internet yok, resmî CDN'de yok): yeniden denenmez
+
+
+def cdn_fetch(rel, p):
+    """Yerelde olmayan oyun görseli (do_img/) resmî CDN'den bir kez indirilip saklanır; olmazsa False (istemci görselsiz)."""
+    if not rel.startswith('do_img/') or rel in cdn_olmayan:
+        return False
+    try:
+        with urlopen(Request(CDN_RESMI + rel, headers={'User-Agent': 'Mozilla/5.0'}), timeout=8) as r:
+            data = r.read()
+    except Exception as e:
+        cdn_olmayan.add(rel)
+        log('unknown.log', 'CDN indirilemedi: %s (%s)' % (rel, e))
+        return False
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    with open(p + '.part', 'wb') as fh:
+        fh.write(data)
+    os.replace(p + '.part', p)
+    return True
 
 
 def cdn_file(base):
-    """İstemcinin CDN isteği yerel kopyada varsa (cdn_indir.py indirir) -> (içerik türü, baytlar)."""
+    """İstemcinin CDN isteği yerel kopyada varsa (oyunun görselleri ilk istenişte resmî CDN'den iner) -> (içerik türü, baytlar)."""
     rel = base.lstrip('/')
     while '//' in rel:
         rel = rel.replace('//', '/')
     if not rel or '..' in rel.split('/'):
         return None
     p = os.path.join(CDN_DIR, *rel.split('/'))
-    if not os.path.isfile(p):
+    if not os.path.isfile(p) and not cdn_fetch(rel, p):
         return None
     return CDN_TYPES.get(os.path.splitext(p)[1].lower(), 'application/octet-stream'), open(p, 'rb').read()
 

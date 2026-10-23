@@ -13,7 +13,10 @@ DarkOrbit_Version*/
 istemci_indiriliyor/
 
 # Protocol versions built by the Client page (tools/il2cpp/protokol_guncelle.py) / İstemci sayfasının ürettiği protokol sürümleri
-server/data/protokol/*/
+server/data/protokol/
+
+# Game images, downloaded from the official CDN when the game first asks for them / Oyunun görselleri, oyun ilk istediğinde resmî CDN'den iner
+server/cdn/do_img/
 
 # Caches / Önbellekler
 __pycache__/

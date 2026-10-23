@@ -3344,4 +3344,50 @@
 		</planets>
 		
 	</map>
+  <!-- Kristallon Apotheosis: all factions share maps 510-519 and reuse the Public World Boss map prefab. -->
+  <map id="510" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <backgrounds> 
+      <background typeID="2001" pFactor="10" layer="0" hideLensflare="false" scale="1" maskID="11"/>  
+      <background typeID="510" pFactor="10" layer="1" scale="0.5" isMain="true" isMinimap="false" region="2048,1400"/>
+      <background typeID="2022" pFactor="8" layer="2" hideLensflare="false" scale="1" maskID="5"/>  
+      <background typeID="2011" pFactor="6" layer="4" hideLensflare="false" scale="0.75" maskID="22"/> 
+    </backgrounds>  
+    <!-- <lensflares> 
+      <lensflare id="0" typeID="2" x="860" y="360" pFactor="10" star="true"/> 
+    </lensflares>   -->
+    <planets> 
+      <planet typeID="143" x="777" y="82" pFactor="8" layer="3"/>  
+      <planet typeID="142" x="539" y="72" pFactor="6" layer="5"/>  
+      <planet typeID="141" x="199" y="172" pFactor="5" layer="6"/>  
+      <planet typeID="140" x="224" y="405" pFactor="3" layer="7"/> 
+    </planets>  
+    <level min="0" habitant="0" foreign="0"/>
+  </map>
+  <map id="511" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="512" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="513" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="514" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="515" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="516" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="517" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="518" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
+  <map id="519" name="Kristallon Apotheosis" groupSystemName="Kristallon Apotheosis" music="0" minimap="510" scaleFactor="0.5" resKey="map_510">
+    <reference selector="map WHERE id==510" children="true"/>
+  </map>
 </maps>

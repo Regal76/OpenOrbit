@@ -548,7 +548,7 @@
 "Rahat": "Relaxed",
 "Rakip yok: teklifleri yalnız sen verirsin.": "No rivals: only you place bids.",
 "Rekabetçi": "Competitive",
-"Resmî sunuculara bağlanılmaz, istemci dosyaları değiştirilmez, internet gerekmez. Her şeyi sonra panelden değiştirebilirsin.": "It never connects to the official servers, never changes the client's files and needs no internet. You can change everything later in the panel.",
+"Oyun resmî sunuculara bağlanmaz, istemci dosyaları değiştirilmez; internet yalnız oyunun görsellerini ilk gösterildiklerinde indirmek için kullanılır. Her şeyi sonra panelden değiştirebilirsin.": "The game never connects to the official servers and the client's files are never changed; internet is only used to download the game's images the first time they are shown. You can change everything later in the panel.",
 "Roket bekleme süresi": "Rocket cooldown",
 "Roketlerin ve roket fırlatıcısının bekleme ve dolma süresi. Düşük değer: daha sık atış.": "Cooldown and reload time of rockets and the rocket launcher. Lower value: more frequent shots.",
 "Saatle açılan etkinlikler (Vortex of Greed, Treacherous Domain, Mimesis Mutiny) etkinlik süresince her an açık: portal hep açık, seans/savaş/sefer girince başlar. Etkinlik uzaylıları (Curcubitor, Agatus, Lanatum, Chaos Protegit) da oyundaki saat pencerelerinin dışında doğar.": "Events that open at set hours (Vortex of Greed, Treacherous Domain, Mimesis Mutiny) stay open for the whole event: the portal is always open, and a session, battle or run starts when you enter. Event aliens (Curcubitor, Agatus, Lanatum, Chaos Protegit) also spawn outside the game's hourly windows.",

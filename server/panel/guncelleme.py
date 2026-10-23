@@ -4,9 +4,10 @@ Kurulum biçimi kendiliğinden seçilir:
   git  proje bir git klonu ve git kurulu: `git fetch` + yalnız ileri sarma (`merge --ff-only`). İzlenen dosyalarda yerel değişiklik,
        başka dal ya da gönderilmemiş commit varsa (geliştirici kopyası) dokunulmaz, yalnız bildirilir.
   zip  elle indirilmiş (Code > Download ZIP) ya da git yok: kurulu sürüm SURUM_DOSYASI'ndan (GitHub'ın arşivi .gitattributes'taki
-       export-subst ile commit'i yazar) ya da DURUM'dan (son güncellemenin kaydı). Yeni sürümün arşivi (≈33 MB) indirilir, değişen
+       export-subst ile commit'i yazar) ya da DURUM'dan (son güncellemenin kaydı). Yeni sürümün arşivi (≈2 MB) indirilir, değişen
        dosyalar yazılır, yeni sürümde olmayanlar kaldırılır (eski sürümün listesi: son güncellemenin listesi, yoksa GitHub'daki ağacı).
-Kullanıcı verisine hiç dokunulmaz (korunan(): save/, logs/, kişisel giriş şablonları, istemci klasörü, protokol sürümleri, .git).
+Kullanıcı verisine hiç dokunulmaz (korunan(): save/, logs/, kişisel giriş şablonları, istemci klasörü, protokol sürümleri, resmî
+CDN'den inen oyun görselleri, .git).
 Değişen ve kaldırılan dosyaların eski hâli save/guncelleme/yedek_<eski sürüm>/'e taşınır (son YEDEK_SAYISI yedek). Kurulumdan sonra
 paneli yeniden başlatmak panelin işi (panel.py). Özel depo için (geliştirici) DO_GITHUB_TOKEN ortam değişkeni; belirteç yalnız
 api.github.com'a gönderilir.
@@ -36,7 +37,8 @@ class GuncellemeHatasi(Exception):
 def korunan(rel):
     """Güncellemenin hiç yazmadığı ve silmediği yollar (kullanıcı verisi, üretilen dosyalar)."""
     r = rel.replace('\\', '/').lstrip('/').lower()
-    return (r.startswith(('server/save/', 'server/logs/', 'server/data/protokol/', '.git/', 'istemci_indiriliyor/'))
+    return (r.startswith(('server/save/', 'server/logs/', 'server/data/protokol/', 'server/cdn/do_img/', '.git/',
+                          'istemci_indiriliyor/'))
             or r in ('server/data/giris.json', 'server/data/haritalar.json', 'server/data/yanitlar.json', '.git')
             or bool(re.match(r'darkorbit_version[^/]*(/|$)', r)) or '/__pycache__/' in '/' + r)
 
@@ -273,7 +275,7 @@ class Guncelleyici:
         son.update(surum=remote)
 
     def _download(self, sha):
-        """Sürümün arşivini indir -> bayt (bellekte açılır; ≈33 MB)."""
+        """Sürümün arşivini indir -> bayt (bellekte açılır; ≈2 MB)."""
         r = self._request('%s/repos/%s/zipball/%s' % (API, DEPO, sha), accept='application/vnd.github+json')
         try:
             self._set(toplam=int(r.headers.get('Content-Length') or 0))

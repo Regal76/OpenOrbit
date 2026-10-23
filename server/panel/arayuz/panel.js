@@ -1431,7 +1431,7 @@ const WZ_PAGES = {
         ['ship', T('İlk pilotunu oluştur'), T('Pilot adı ve firma: MMO, EIC ya da VRU.')],
         ['sliders', T('Oyun ayarlarını seç'), T('Hazır bir zorluk ve oyun penceresinin görüntüsü.')]].map(([ic, a, b], i) =>
         h('div', { class: 'wz-item' }, h('span', { class: 'wz-num' }, String(i + 1)), icon(ic), h('div', null, h('b', null, a), h('div', { class: 'muted small' }, b))))),
-      h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Resmî sunuculara bağlanılmaz, istemci dosyaları değiştirilmez, internet gerekmez. Her şeyi sonra panelden değiştirebilirsin.')))),
+      h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Oyun resmî sunuculara bağlanmaz, istemci dosyaları değiştirilmez; internet yalnız oyunun görsellerini ilk gösterildiklerinde indirmek için kullanılır. Her şeyi sonra panelden değiştirebilirsin.')))),
     next: { label: T('Başla') },
   }),
   // ---- 3. oyun klasörü

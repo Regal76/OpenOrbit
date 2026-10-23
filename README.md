@@ -5,6 +5,14 @@
 A single-player, offline server for the original DarkOrbit Unity client, with a desktop management panel.
 Orijinal DarkOrbit Unity istemcisi için tek oyunculu, çevrimdışı sunucu ve masaüstü yönetim paneli.
 
+![The original client on the local server · Yerel sunucuda orijinal istemci](docs/img/game.jpg)
+
+| Play · Oyna | Play with Friends · Arkadaşlarınla Oyna |
+| --- | --- |
+| ![Play page · Oyna sayfası](docs/img/play.jpg) | ![Play with Friends page · Arkadaşlarınla Oyna sayfası](docs/img/friends.jpg) |
+| **Game Settings · Oyun Ayarları** | **Setup wizard · Kurulum sihirbazı** |
+| ![Game Settings page · Oyun Ayarları sayfası](docs/img/settings.jpg) | ![Setup wizard · Kurulum sihirbazı](docs/img/setup.jpg) |
+
 ---
 
 ## English
@@ -13,8 +21,9 @@ Orijinal DarkOrbit Unity istemcisi için tek oyunculu, çevrimdışı sunucu ve 
 
 DarkOrbit Server Emulator runs a local server on your computer and starts the **original DarkOrbit client** against it.
 You play alone and offline: the client never connects to the official servers and its files are never changed. Internet
-is needed only to download the game (once, if the panel does it for you) and to check for updates. A management panel
-starts the game and handles your saves, game settings and events.
+is needed only to download the game (once, if the panel does it for you), to check for updates and to fetch the game's
+images from the official CDN the first time they are shown (without internet the game still runs, without those
+images). A management panel starts the game and handles your saves, game settings and events.
 
 ### Features
 
@@ -92,12 +101,12 @@ The panel checks this repository for a newer version shortly after it starts and
 installs the update by itself once the game and the servers are closed, then restarts; the open panel window reloads.
 On the **Panel** page you can choose *Only notify* or turn it off, and check by hand.
 
-- **Downloaded as a ZIP** (no Git needed): the new version's archive (about 33 MB) is downloaded, changed files are
+- **Downloaded as a ZIP** (no Git needed): the new version's archive (about 2 MB) is downloaded, changed files are
   replaced and files that were removed from the project are taken out. Their old versions are kept in
   `server/save/guncelleme/` (last two updates).
 - **Cloned with Git:** the panel fast-forwards with `git`. If you changed tracked files or have commits of your own, it
   changes nothing and only tells you.
-- Your saves, settings, logs, personal login templates and the game client are never changed.
+- Your saves, settings, logs, personal login templates, downloaded game images and the game client are never changed.
 
 ### In-game tips
 
@@ -117,6 +126,7 @@ On the **Panel** page you can choose *Only notify* or turn it off, and check by 
 | `server/logs/` | Server, client and panel logs |
 | `DarkOrbit_Version1.1.115/` | The game client, if the panel downloaded it (`istemci_indiriliyor/` while downloading) |
 | `server/save/guncelleme/` | Old versions of the files that updates replaced (last two updates) |
+| `server/cdn/do_img/` | Game images downloaded from the official CDN (news, event and window artwork) |
 
 All of these are created on first run and stay on your computer.
 
@@ -134,6 +144,10 @@ This is a fan project for personal, offline use. It is not affiliated with or en
 client, graphics, sounds and texts belong to Bigpoint GmbH; part of the game data is compiled from darkorbitwiki.com.
 Don't use it to connect to or harm the official servers.
 
+The repository contains neither the game client nor the game's images: you download the client from Bigpoint's official
+download server (or the panel does it for you), and the server fetches each image from the official CDN the first time
+the game shows it and keeps it on your computer. The software is provided as is, without any warranty.
+
 ---
 
 ## Türkçe
@@ -142,7 +156,8 @@ Don't use it to connect to or harm the official servers.
 
 DarkOrbit Server Emulator bilgisayarında yerel bir sunucu çalıştırır ve **orijinal DarkOrbit istemcisini** ona bağlar.
 Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, dosyaları değiştirilmez. İnternet yalnız oyunu
-indirmek (panel senin için indirirse, bir kez) ve güncellemeleri denetlemek için gerekir. Bir yönetim paneli oyunu başlatır;
+indirmek (panel senin için indirirse, bir kez), güncellemeleri denetlemek ve oyunun görsellerini ilk gösterildiklerinde
+resmî CDN'den almak için gerekir (internet yoksa oyun yine çalışır, o görseller olmadan). Bir yönetim paneli oyunu başlatır;
 kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 
 ### Özellikler
@@ -219,11 +234,11 @@ Panel açıldıktan kısa süre sonra ve sonra altı saatte bir bu depoda yeni s
 oyun ve sunucular kapanınca güncellemeyi kendisi kurar ve yeniden başlar; açık panel penceresi kendini yeniler. **Panel**
 sayfasından *Yalnız haber ver*'i seçebilir, kapatabilir ve elle denetleyebilirsin.
 
-- **ZIP olarak indirdiysen** (Git gerekmez): yeni sürümün arşivi (yaklaşık 33 MB) indirilir, değişen dosyalar yenilenir,
+- **ZIP olarak indirdiysen** (Git gerekmez): yeni sürümün arşivi (yaklaşık 2 MB) indirilir, değişen dosyalar yenilenir,
   projeden kaldırılan dosyalar çıkarılır. Eski hâlleri `server/save/guncelleme/`'de saklanır (son iki güncelleme).
 - **Git ile klonladıysan:** panel `git` ile ileri sarar. İzlenen dosyaları değiştirdiysen ya da kendi commit'lerin varsa hiçbir
   şeye dokunmaz, yalnız haber verir.
-- Kayıtların, ayarların, günlüklerin, kişisel giriş şablonların ve oyun istemcisi hiç değişmez.
+- Kayıtların, ayarların, günlüklerin, kişisel giriş şablonların, inen oyun görselleri ve oyun istemcisi hiç değişmez.
 
 ### Oyun içi ipuçları
 
@@ -243,6 +258,7 @@ sayfasından *Yalnız haber ver*'i seçebilir, kapatabilir ve elle denetleyebili
 | `server/logs/` | Sunucu, istemci ve panel günlükleri |
 | `DarkOrbit_Version1.1.115/` | Oyun istemcisi, panel indirdiyse (inerken `istemci_indiriliyor/`) |
 | `server/save/guncelleme/` | Güncellemelerin değiştirdiği dosyaların eski hâlleri (son iki güncelleme) |
+| `server/cdn/do_img/` | Resmî CDN'den inen oyun görselleri (haber, etkinlik ve pencere görselleri) |
 
 Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 
@@ -259,3 +275,7 @@ Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 Kişisel, çevrimdışı kullanım için bir hayran projesidir; Bigpoint GmbH ile bağlantısı yoktur, onun onayını taşımaz.
 DarkOrbit, istemci, grafikler, sesler ve metinler Bigpoint GmbH'ye aittir; oyun verilerinin bir kısmı darkorbitwiki.com'dan
 derlenmiştir. Resmî sunuculara bağlanmak ya da onlara zarar vermek için kullanma.
+
+Depoda ne oyun istemcisi ne de oyunun görselleri var: istemciyi Bigpoint'in resmî indirme sunucusundan sen indirirsin (ya
+da panel senin için indirir); sunucu her görseli oyun onu ilk gösterdiğinde resmî CDN'den alır ve bilgisayarında saklar.
+Yazılım olduğu gibi, hiçbir garanti olmadan sunulur.
