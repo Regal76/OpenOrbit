@@ -327,8 +327,8 @@ class Gorevler:
 
     def event(self, kind, **kw):
         """Oyun olayı (görev olayları: kill, cargo, bonus, loot, sell, map, giver …; başarım olayları: damage, distance, gate, level …)
-        -> koşul güncellemeleri, işaretler, tamamlanan görevler."""
-        msgs = self.broken(kind, **kw) if kind in ('kill_player', 'kill', 'damage_taken') else []
+        -> koşul güncellemeleri, işaretler, tamamlanan görevler. Grup üyesinin öldürdüğü (grup) sayılır, kısıtı bozmaz."""
+        msgs = self.broken(kind, **kw) if kind in ('kill_player', 'kill', 'damage_taken') and not kw.get('grup') else []
         for qs in list(self.st['aktif']):
             qid = int(qs)
             if qid not in QUESTS or qs not in self.st['aktif']:

@@ -170,6 +170,10 @@ class AcilGorevler:
         return self.show(now) if self.icon else []
 
     def on_kill(self, w, npc, x, y):
+        return self.kill(npc.d.get('npc_kimlik'))
+
+    def kill(self, npc_id):
+        """Uzaylı öldü (kendisi ya da grup üyesi aynı haritada; game.Session.quest_event) -> mesajlar."""
         q = self.st
         with self.p.lock:
             q['sayac'] = q.get('sayac', 0) + 1
@@ -177,7 +181,7 @@ class AcilGorevler:
         if q.get('durum') != RUNNING:
             return []
         import gorev_takip as GT
-        msgs, done = GT.advance(self.p, q['gorev']['rootCase'], q['deger'], 'kill', {'npc': npc.d.get('npc_kimlik'), 'avatar': 'NPC'})
+        msgs, done = GT.advance(self.p, q['gorev']['rootCase'], q['deger'], 'kill', {'npc': npc_id, 'avatar': 'NPC'})
         if done:
             with self.p.lock:
                 q['durum'] = COMPLETED

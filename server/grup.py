@@ -14,7 +14,17 @@ Gerçek sunucudaki gibi:
     HeroMoveCommand (istemci kahramanı oraya uçurur). Başka haritadaysa GroupErrorCommand.
 Üyelerin durumu (can, konum, hedef, savaşta mı, gizli mi, çevrimiçi mi, seviye, gemi) GUNCELLEME_SN'de bir karşılaştırılır, değişen
 GroupMemberUpdateCommand ile gider. Misafir bağlantısı kopunca üye "çevrimdışı" kalır (kaydı sunucuda durdukça; aynı anahtarla dönünce
-kimliği aynı); kaydı bitince gruptan düşer. Grup bellekte: sunucu kapanınca dağılır. Gerçek sunucunun ganimet paylaşımı yok.
+kimliği aynı); kaydı bitince gruptan düşer. Grup bellekte: sunucu kapanınca dağılır.
+Aynı ortak haritadaki üyeler (ortak_harita.py; kapı ve mod haritaları herkesin kendi kopyası, oralarda paylaşım yok):
+  - Birbirini haritanın her yerinde görür (Harita.gorunurluk: görüş mesafesi grup üyesine uygulanmaz; ölü, atlamadaki, gizli yine görünmez).
+  - Bir üyenin öldürdüğü uzaylının ödülü paylaşılır (dunya.World.paydaslar, npc_reward; wiki "Uridium, Cr, XP and honor of kills
+    shared"): ödülü öldürenle birlikte haritada yaşayan, atlamada olmayan üyeler alır (uzaklık önemsiz; asıl oyunun ~20 sn ateş
+    şartı yok). Her paydaşın ödülü kendi çarpanlarıyla hesaplanır, EP, onur, kredi ve uridyum paydaş sayısına bölünür (yukarı
+    yuvarlanır). Ganimet herkese tam ve kendi şansıyla: kargo kutusu ve patron sandıkları her üyeye ayrı düşer, kutu sahibinindir
+    (öteki oyuncular görmez, P.E.T.'leri de toplamaz), ek ödüller (Palladium …), booster ve harita etkinliğinin düşmeleri de.
+  - Görevler: üyelerin öldürdüğü uzaylı herkesin görevine sayılır (wiki "All aliens killed by group members count towards our
+    mission"): ana, günlük ve haftalık görevler, Season/Battle Pass, etkinlik görevleri ve Urgent Missions. Başkasının öldürmesi
+    "şunu öldürme" kısıtını bozmaz; başarımlar, rütbe, seri öldürme, dron EP'si ve etkinlik kancaları (unvan, Hitac …) öldürenindir.
 """
 import json, os, threading, time
 import topluluk as TP

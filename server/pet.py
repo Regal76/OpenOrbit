@@ -1064,7 +1064,8 @@ class Pet:
         hx, hy = w.hero_pos(now)
         if g == AUTO_LOOT:
             full = self.p.cargo_free() < 1
-            cands = [(h, b) for h, b in w.boxes.items() if not (full and b['tip'] in ('FROM_SHIP', 'CANDY_CARGO')) and not b.get('anahtarli')]
+            cands = [(h, b) for h, b in w.boxes.items() if not (full and b['tip'] in ('FROM_SHIP', 'CANDY_CARGO')) and not b.get('anahtarli')
+                     and w.benim(b)]
         else:
             if self.p.cargo_free() < 1:
                 return False

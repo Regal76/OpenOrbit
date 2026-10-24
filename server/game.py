@@ -505,10 +505,12 @@ class Session:
             self.send(msgs, 'etkinlik bildirimi')
 
     def quest_event(self, kind, **kw):
-        """Dünyanın görev olayları: görevler ve Pass görevleri (öldürme Pass'lere başarım olayından gider)."""
-        if kind in ('cargo', 'loot', 'sell', 'bonus', 'map'):
+        """Dünyanın görev olayları: görevler ve Pass görevleri (öldürme Pass'lere başarım olayından gider; grup üyesinin aynı
+        haritada öldürdüğü uzaylı başarım değil, yalnız görev: Pass, etkinlik ve Urgent Missions görevleri de buradan)."""
+        grup = kind == 'kill' and kw.get('grup')
+        if kind in ('cargo', 'loot', 'sell', 'bonus', 'map') or grup:
             self.pass_event(kind, **kw)
-            msgs = self.ek.event(kind, kw)
+            msgs = self.ek.event(kind, kw) + (self.ek.acil.kill(kw.get('npc')) if grup else [])
             if msgs:
                 self.send(msgs, 'etkinlik görevi')
         return self.gorev.event(kind, **kw)

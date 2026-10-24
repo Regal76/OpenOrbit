@@ -182,13 +182,17 @@ class HaritaEtkinlik:
         return msgs
 
     # ------------------------------------------------------------ olaylar
-    def on_kill(self, n, x, y, now=None, w=None):
-        """w: öldüren dünya (ortak haritada self.w lider; düşmeler ve ek ödüller öldürenin)."""
+    def on_kill(self, n, x, y, now=None, w=None, pay=None):
+        """w: öldüren dünya (ortak haritada self.w lider; düşmeler ve ek ödüller öldürenin). pay: ödülü paylaşanların dünyaları
+        (öldüren dahil; grup: dunya.paydaslar): düşen kutular ve ek ödüller her birine kendi şansıyla, grupta kutu sahibinin."""
         w = w or self.w
+        pay = pay or [w]
+        sahip = lambda v: v.hid if len(pay) > 1 else None
         kt = n.d.get('kutu')                   # türün kutusu (etkinlik kapıları: dalga kutusu, Plutus'un paketi, Synk'in kutusu)
-        if kt and random.random() < AY.chance('dusme', kt.get('olasilik', 1.0)):
-            h = w.drop_box(kt['tur'], x, y, None, kt.get('omur_sn', 300))
-            w.boxes[h]['etk'] = kt
+        for v in pay:
+            if kt and random.random() < AY.chance('dusme', kt.get('olasilik', 1.0)):
+                h = v.drop_box(kt['tur'], x, y, None, kt.get('omur_sn', 300), sahip(v))
+                v.boxes[h]['etk'] = kt
         now = time.time() if now is None else now
         b, msgs = base(n.tip), []
         trick = (n.tip.startswith('etk_') and w.items is not None
@@ -197,9 +201,10 @@ class HaritaEtkinlik:
             w.items.alien_mine(TRICK_MINE, x, y, n.id, now)
         for k, s in self.here(now):
             kd = s.get('kutu_dusme', {}).get(b)
-            if kd and not trick and random.random() < AY.chance('dusme', kd.get('olasilik', 1.0)):    # uzaylının kutusu (Treat …)
-                h = w.drop_box(kd['tur'], x, y, None, kd.get('omur_sn', 300))
-                w.boxes[h]['etk'] = kd
+            for v in pay if kd and not trick else ():
+                if random.random() < AY.chance('dusme', kd.get('olasilik', 1.0)):    # uzaylının kutusu (Treat …)
+                    h = v.drop_box(kd['tur'], x, y, None, kd.get('omur_sn', 300), sahip(v))
+                    v.boxes[h]['etk'] = kd
         for rk, g in [r for k in sorted(TK.active(now)) for r in rovers(k)]:
             if n.tip == g['tur']:
                 ROVER[rk] = now + g.get('bekleme_sn', 1800)
@@ -212,6 +217,9 @@ class HaritaEtkinlik:
             drops = s.get('dusme', {}).get(b)
             if drops:
                 msgs += w.extra_loot(n, drops)
+                for v in pay:
+                    if v is not w:
+                        v.send(v.extra_loot(n, drops))
             if n.id in st['patron']:
                 st['patron'].remove(n.id)
                 if not st['patron']:

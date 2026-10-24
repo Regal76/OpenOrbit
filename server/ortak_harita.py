@@ -3,15 +3,16 @@
 Tek oyunculuda her oturumun kendi dünyası (dunya.World) vardır. Arkadaş sunucusunda aynı normal haritadaki oyuncuların dünyaları
 bir Harita'yı paylaşır: uzaylılar, kutular, cevherler, bekleyen doğmalar, uzaylı kimlik sayacı, takvimin harita etkinliği ve dünya
 kilidi ortaktır (dünyaların döngü adımları sırayla işler). Her dünya kendi kahramanını sürer: konum, hedef, ateş, etkiler, P.E.T.,
-portallar, ödüller (uzaylıyı kim öldürürse ödül onun).
+portallar, ödüller (uzaylıyı kim öldürürse ödül onun; grupta aynı haritadaki üyelerle paylaşılır: dunya.World.paydaslar, grup.py).
   - Uzaylının yapay zekâsını (dunya.think), yeteneklerini (uzayli.py), zehir ve onarımını "sahibi" olan dünya işler: savaştığı
     oyuncu (vuran oyuncu sahibi olur), savaşmıyorsa ulaşılabilir en yakın oyuncu (sahipler).
   - Haritanın işleri (yeniden doğmalar, süresi biten kutular, zaman çizelgeli uzaylılar, takvimin harita etkinliği) liderin döngüsünde:
     haritaya ilk giren, o çıkınca sıradaki.
   - Herkesin görmesi gereken mesajlar (uzaylının hareketi, lazer ve vuruşlar, patlamalar, görsel etkiler) gönderen dünyadan öteki
     üyelere yansıtılır (yansit); her alıcı yalnız tanıdığı gemilerinkini alır (World.tanir).
-  - Oyuncular birbirini görüş mesafesinde görür (gorunurluk): ShipCreateCommand, unvan, dronlar ve modüller (kayıttaki başka oyuncunun
-    mesajları; game.Session.gorunum), kahramanın hareketi MoveCommand olarak (hareket). Ölü, atlamadaki ya da gizli oyuncu görünmez.
+  - Oyuncular birbirini görüş mesafesinde, grup üyeleri haritanın her yerinde görür (gorunurluk): ShipCreateCommand, unvan, dronlar
+    ve modüller (kayıttaki başka oyuncunun mesajları; game.Session.gorunum), kahramanın hareketi MoveCommand olarak (hareket). Ölü,
+    atlamadaki ya da gizli oyuncu görünmez.
 Kapı, mod ve etkinlik haritaları (oturumun kendi koşusu olanlar) paylaşılmaz: her oyuncunun kendi kopyası (game.Session.start_world).
 Son oyuncu çıkınca harita durumu tek oyunculudaki gibi saklanır (dunya.WORLD_CACHE) ve ortak durum bırakılır.
 """
@@ -139,14 +140,14 @@ class Harita:
 
     def gorunurluk(self, w, now, hx, hy, gorus, birakma):
         """Öteki oyuncuların w'nin istemcisindeki gemileri: görüşe gireni göster, çıkanı (ölen, atlayan, gizlenen, ayrılan, görünümü
-        değişen) kaldır -> mesajlar."""
+        değişen) kaldır -> mesajlar. Grup üyesi haritanın neresinde olursa olsun görünür (grup.py)."""
         cur = {}
         for m in self.uyeler:
             if m is w or not m.running or m.hero_dead or m.jumping or m.reload_pending or m.gizli(now):
                 continue
             mx, my = m.hero_pos(now)
             lim = birakma if m.hid in w.oyuncular else gorus
-            if math.hypot(mx - hx, my - hy) <= lim:
+            if math.hypot(mx - hx, my - hy) <= lim or w.grup_uyesi(m.hid):
                 cur[m.hid] = m
         msgs = []
         for uid in list(w.oyuncular):

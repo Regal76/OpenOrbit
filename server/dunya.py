@@ -611,6 +611,8 @@ class World:
         return (it['x'], it['y']) if it else None
 
     def item_in_view(self, h, hx, hy):
+        if h in self.boxes and not self.benim(self.boxes[h]):     # başkasının ganimeti (grup)
+            return False
         p = self.item_pos(h)
         lim = SAVAS['kutu_birakma' if h in self.seen_items else 'kutu_gorus']
         return bool(p) and math.hypot(p[0] - hx, p[1] - hy) <= lim
@@ -819,20 +821,27 @@ class World:
             self.near_gate = None
         self.send([('JumpGateRemoveCommand', {'gateId': gid})])
 
-    def drop_box(self, kind, x, y, content, life):
+    def drop_box(self, kind, x, y, content, life, sahip=None):
+        """sahip: kutu yalnız bu kahramanın (grupta herkese düşen ganimet; öteki oyuncular görmez, toplayamaz)."""
         h = rand_hash()
         while h in self.boxes:
             h = rand_hash()
         self.boxes[h] = dict(tip=kind, x=int(x), y=int(y), icerik=content, bitis=time.time() + life if life else None)
+        if sahip is not None:
+            self.boxes[h]['sahip'] = sahip
         self.send([('AddBoxCommand', dict(hash=h, boxType=kind, x=int(x), y=int(y)))])
         return h
 
-    def drop_chests(self, sd, x, y):
+    def benim(self, b):
+        """Kutuyu bu kahraman görür ve toplayabilir mi (sahipsiz ya da kendisinin)."""
+        return b.get('sahip') in (None, self.hid)
+
+    def drop_chests(self, sd, x, y, sahip=None):
         """Patron sandıkları: tek oyunculuda bütün hasar oyuncunun, en iyi kademeden en çok adet; uzaylının çevresine dizilir,
         içerik etkinlik kutusu gibi açılınca ('kesin' satırlar; etkinlik_harita.roll)."""
         for k in range(sd['adet']):
             a = 2 * math.pi * k / sd['adet']
-            h = self.drop_box(sd['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200, None, sd.get('omur_sn', 600))
+            h = self.drop_box(sd['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200, None, sd.get('omur_sn', 600), sahip)
             self.boxes[h]['etk'] = sd
 
     def spawn_bonus_box(self):
@@ -1538,7 +1547,7 @@ class World:
         kendisi, 2D'de Y'si hep 0 (2D'de kutular toplanmıyordu, H80). Gemi henüz yoldaysa kutu varınca alınır."""
         with self.lock:
             h = f.get('itemHash')
-            if h not in self.boxes or self.hero_dead or self.jumping:
+            if h not in self.boxes or not self.benim(self.boxes[h]) or self.hero_dead or self.jumping:
                 return
             if not self.box_near(h):
                 self.collect_wish = (h, time.time() + COLLECT_WAIT_SN)
@@ -1574,7 +1583,7 @@ class World:
         collected by your P.E.T.")."""
         with self.lock:
             b = self.boxes.get(h)
-            if not b or (by_pet and b.get('pet_yok')):      # Vortex of Greed kutularını P.E.T. toplayamaz (Ö4)
+            if not b or not self.benim(b) or (by_pet and b.get('pet_yok')):      # Vortex of Greed kutularını P.E.T. toplayamaz (Ö4)
                 return False
             boost = 1 + (self.pet.proto('kutu') if by_pet and self.pet else 0)
             m = self.p.mods()          # pilot yetenekleri: Tractor Beam I/II (kargo/bonus kutusu), Luck (bonus kutusu uridyumu)
@@ -1899,6 +1908,32 @@ class World:
             msgs.append(('ShipRemoveCommand', {'userId': n.id}))
         msgs = pet_stop + msgs
         self.ofke.kill(self.lasers(), time.time())          # Asmodeus Fervor
+        pay = self.paydaslar()
+        for w in pay:
+            w.npc_reward(n, x, y, len(pay), own=w is self)
+        for sp in n.davranis.get('olunce_dogur', []):       # ölünce doğanlar (Lordakium sporları …): yeniden doğmazlar
+            for k in range(sp.get('adet', 1)):
+                a = 2 * math.pi * k / max(1, sp.get('adet', 1))
+                c = self.spawn_npc_at(sp['tur'], x + math.cos(a) * 120, y + math.sin(a) * 120)
+                self.alien.adopt(n, c)          # kapıda dalganın uzaylısı sayılır
+                c.engaged = n.engaged
+        if not n.gate and not n.summoned:
+            self.schedule(random.uniform(*self.respawn_range(n)), 'npc', n.tip)
+        self.drifter_killed(n)
+        return msgs + self.alien.on_kill(n, x, y) + self.etkinlik.on_kill(n, x, y, w=self, pay=pay) + \
+            (self.labirent.on_kill(n, x, y) if self.labirent else [])
+
+    def paydaslar(self):
+        """Uzaylının ödülünü paylaşanlar: öldüren ve ortak haritada grubundan aynı haritada yaşayan üyeler (uzaklık önemsiz;
+        grup.py). Tek oyunculuda, kapıda ve grupsuz yalnız öldüren."""
+        if self.ortak is None:
+            return [self]
+        return [self] + [w for w in self.ortak.uyeler if w is not self and w.running and not w.hero_dead and not w.jumping
+                         and self.grup_uyesi(w.hid)]
+
+    def kill_reward(self, n):
+        """Uzaylının bu kahramana ödülü {ep, onur, kredi, uridyum}: türünki, formasyon ve pilot yetenekleri, X-1 kesintisi, panelin
+        çarpanları."""
         o = dict(n.d['odul'])
         k = getattr(n, 'odul_carpani', 1)                          # tek uzaylının çarpanı (Infiltration komandosu: sizma.py)
         if k != 1:
@@ -1914,38 +1949,44 @@ class World:
             o = {a: int(v * f) for a, v in o.items()}
         for k in ('ep', 'onur', 'kredi', 'uridyum'):
             o[k] = AY.miktar(k, o.get(k, 0))                       # panelin ödül çarpanları
+        return o
+
+    def npc_reward(self, n, x, y, share=1, own=True):
+        """Uzaylının ödülü ve ganimeti bu kahramana (kill; grupta her paydaşın dünyası kendisininkini verir). EP, onur, kredi ve
+        uridyum paydaşlar arasında bölünür (yukarı yuvarlanır; P.E.T.'in EP'si de); kargo kutusu, sandıklar, ek ödüller ve
+        booster herkese tam, grupta kutular sahibinin (yalnız o görür ve toplar). own: öldüren; başarım, seri, dron EP'si, gemi
+        yeteneğinin yükü, seyir defteri, kapı puanı ve etkinlik kancaları onun; öteki paydaşlara görev olarak sayılır (grup)."""
+        o = self.kill_reward(n)
+        if share > 1:
+            o = dict(o, **{k: -(-o[k] // share) for k in ('ep', 'onur', 'kredi', 'uridyum')})
         in_rad = self.radiation_since is not None
+        sahip = self.hid if share > 1 else None
 
         def reward():
-            self.p.ach('kill', avatar='NPC', npc=n.d.get('npc_kimlik'), radyasyon=in_rad, ad=n.d.get('ad'))
-            GY.charge(self.p, 'oldurme')                 # Momentum, Stockpile: öldürme başına bir yük
+            if own:
+                self.p.ach('kill', avatar='NPC', npc=n.d.get('npc_kimlik'), radyasyon=in_rad, ad=n.d.get('ad'))
+                GY.charge(self.p, 'oldurme')                 # Momentum, Stockpile: öldürme başına bir yük
             tot = self.p.gain(ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum'], neden='bonus_abschussAlien')
-            RT.note_kill(self.p, n.d.get('npc_kimlik', 0), o['ep'], o['onur'])     # seyir defteri
-            points = self.kapi.points(n) if n.d.get('puan') and hasattr(self.kapi, 'points') else []    # Plutus'un etkinlik puanı
-            self.send(self.reward_msgs(tot, ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum']) + self.drone_points(n)
-                      + self.quest('kill', npc=n.d.get('npc_kimlik')) + (self.pet.gain_xp(o['ep']) if self.pet else [])
-                      + self.booster_drop(n) + self.extra_loot(n) + points + self.kill_streak() + self.p.hint(IP.WEALTHY_FAMOUS)
-                      + [m for hk in self.kill_hooks for m in hk(self, n, x, y)])
-            self.log('   %s yok edildi: +%d EP, +%d onur, +%d kredi, +%d uridyum (seviye %d)' % (
-                n.d['ad'], o['ep'], o['onur'], o['kredi'], o['uridyum'], tot['seviye']))
+            if own:
+                RT.note_kill(self.p, n.d.get('npc_kimlik', 0), o['ep'], o['onur'])     # seyir defteri
+            points = self.kapi.points(n) if own and n.d.get('puan') and hasattr(self.kapi, 'points') else []    # Plutus'un puanı
+            quest = self.quest('kill', npc=n.d.get('npc_kimlik')) if own else \
+                self.quest('kill', npc=n.d.get('npc_kimlik'), avatar='NPC', radyasyon=in_rad, ad=n.d.get('ad'), grup=True)
+            self.send(self.reward_msgs(tot, ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum'])
+                      + (self.drone_points(n) if own else []) + quest + (self.pet.gain_xp(o['ep']) if self.pet else [])
+                      + self.booster_drop(n) + self.extra_loot(n) + points
+                      + (self.kill_streak() + self.p.hint(IP.WEALTHY_FAMOUS) + [m for hk in self.kill_hooks for m in hk(self, n, x, y)]
+                         if own else []))
+            self.log('   %s yok edildi%s: +%d EP, +%d onur, +%d kredi, +%d uridyum (seviye %d)' % (
+                n.d['ad'], ' (grup payı 1/%d%s)' % (share, '' if own else ', grup üyesi vurdu') if share > 1 else '',
+                o['ep'], o['onur'], o['kredi'], o['uridyum'], tot['seviye']))
         self.later(0.3, reward)
         cargo = {} if ETK.no_cargo(n) else self.cargo_of(n)        # Curcubitor: yalnız sandığı (etkinlik_harita)
         if cargo:
             kind = 'CANDY_CARGO' if TKV.has_type('CandyCargo') else 'FROM_SHIP'
-            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_box(kind, x, y, cargo, SAVAS['kutu_omur_sn']))
+            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_box(kind, x, y, cargo, SAVAS['kutu_omur_sn'], sahip))
         if n.d.get('sandik'):                              # hasara göre sandıklar (Invoke XVI, Mindfire Behemoth; npc.json)
-            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_chests(n.d['sandik'], x, y))
-        for sp in n.davranis.get('olunce_dogur', []):       # ölünce doğanlar (Lordakium sporları …): yeniden doğmazlar
-            for k in range(sp.get('adet', 1)):
-                a = 2 * math.pi * k / max(1, sp.get('adet', 1))
-                c = self.spawn_npc_at(sp['tur'], x + math.cos(a) * 120, y + math.sin(a) * 120)
-                self.alien.adopt(n, c)          # kapıda dalganın uzaylısı sayılır
-                c.engaged = n.engaged
-        if not n.gate and not n.summoned:
-            self.schedule(random.uniform(*self.respawn_range(n)), 'npc', n.tip)
-        self.drifter_killed(n)
-        return msgs + self.alien.on_kill(n, x, y) + self.etkinlik.on_kill(n, x, y, w=self) + \
-            (self.labirent.on_kill(n, x, y) if self.labirent else [])
+            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_chests(n.d['sandik'], x, y, sahip))
 
     def lab_spend(self, item, n=1):
         """Yükseltmeden harca: lazer turu, roket, motor/kalkan dakikası. Bitince hız/kalkan eski hâline döner; otomatik laboratuvar
