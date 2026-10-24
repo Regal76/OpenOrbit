@@ -1637,17 +1637,18 @@ class Magaza:
         return [('HangarShipFavouriteCommand', {'resultId': 1, 'errorMessage': None}), self.ships_cmd()]
 
     def clear_config(self, f):
-        """HangarShipClearConfigRequest {wipe, configId, shipId}: config'teki bütün eşyalar envantere (gemi yuvaları; wipe ise dronlar
-        ve P.E.T. de). İstemci başarıda (resultId 1) donanımı yeniden ister (HangarShipClearConfigCommandHandler)."""
+        """HangarShipClearConfigRequest {wipe, configId, shipId}: config'teki bütün eşyalar envantere (gemi yuvaları, dronlar
+        ve P.E.T.). İstemci başarıda (resultId 1) donanımı yeniden ister (HangarShipClearConfigCommandHandler)."""
+        # The client's clear button always sends wipe=0 (gs.log), so drones and P.E.T. are cleared regardless of that flag.
+        # Only this config is touched: the other config keeps its ship, drone and P.E.T. items.
         sid = self.ship_sid(f.get('shipId'))
         ship = self.p.ship(sid)
         cid = str(f.get('configId')) if str(f.get('configId')) in ship['konfigler'] else str(ship['aktif_konfig'])
         ids = [i for lst in self.p.config(cid, sid).values() for i in lst]
-        if f.get('wipe'):
-            ids += [i for lst in self.p.drone_config(cid, sid).values() for i in lst]
-            ids += [i for x in self.p.d['dronlar'] for s in ('design', 'visual') for i in [self.p.drone_design_id(x, s, cid)] if i]
-            if self.pet.owned:
-                ids += [i for lst in self.pet.config(cid).values() for i in lst]
+        ids += [i for lst in self.p.drone_config(cid, sid).values() for i in lst]
+        ids += [i for x in self.p.d['dronlar'] for s in ('design', 'visual') for i in [self.p.drone_design_id(x, s, cid)] if i]
+        if self.pet.owned:
+            ids += [i for lst in self.pet.config(cid).values() for i in lst]
         msgs = self.move({'items': ids, 'source': 'ship', 'destination': 'inventory', 'hangarId': ship['hangarId'],
                           'configId': int(cid)}) if ids else []
         self.log('   hangar: %s config %s temizlendi (%d eşya)' % (ship['lootId'], cid, len(ids)))
