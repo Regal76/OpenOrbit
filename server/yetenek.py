@@ -30,6 +30,19 @@ def level(p, sid):
     return state(p)['seviye'].get(sid, 0)
 
 
+def maxed(p, sid):
+    """Yetenek son seviyesinde mi (istemcinin görselleri: kalın lazer, roket izi ve güdümü; dunya.skilled_laser, rocket_look)."""
+    return level(p, sid) >= len(SKILLS[sid]['degerler'])
+
+
+def shield_cmd(p):
+    """Kalkanın görünümü (AttributeSkillShieldUpdateCommand; istemci ShieldEffect: shieldSkillId 1 shield1_2D, 2 shield2_2D, 0 yok):
+    resmî SSS'ye göre Shield Engineering (17) son seviyesinde baloncuk, Shield Mechanics (8) son seviyesinde beyaz kalkan. Girişte,
+    config değişince ve yetenek değişince gider (kayıttaki yeteneksiz hesapta hep 0)."""
+    sid = 2 if maxed(p, '8') else 1 if maxed(p, '17') else 0
+    return ('AttributeSkillShieldUpdateCommand', {'shieldSkillId': sid, 'minSkinShieldTwinkle': 10, 'maxSkinShieldTwinkle': 100})
+
+
 def mods(p):
     """Yeteneklerin bonusları (profil.mods'a eklenir): yüzdeler oran, Ship Hull mutlak can. II basamağı I'in devamı (skilltree
     successor; değerler kesintisiz: Ship Hull 5.000, 10.000 → 15.000, 25.000, 50.000): II açıksa I sayılmaz."""
@@ -116,7 +129,7 @@ class Yetenekler:
             msgs += [('AttributeOreCountUpdateCommand', {'oreCountList': totals}), self.m.ore_pack([SEPROM])]
         self.log('   yetenek %s (%s) seviye %d (-%d kredi, -%d Seprom)' % (sid, s['ad'], cur + 1, cost['kredi'], cost['seprom']))
         return ([('UpLevelSkillTreeCommand', dict(id=sid, researchPoints=st['puan'], stack=None, success=True, curLevel=cur + 1))]
-                + self.m.money_msgs() + msgs + self.m.apply_stats())
+                + self.m.money_msgs() + msgs + self.m.apply_stats() + ([shield_cmd(self.p)] if sid in ('8', '17') else []))
 
     def reset(self):
         """ResetSkillTreeRequest: bütün seviyeler sıfırlanır, harcanan puanlar geri gelir; ücret uridyum, her seferinde iki katı."""
@@ -136,4 +149,4 @@ class Yetenekler:
         msgs = [('ResetSkillTreeCommand', dict(resetPrice=self.reset_price(), stack=None if ok else self.m.stack('eqt_error_generic'),
                                                list=self.info_list(), logFiles=self.logs(), researchPoints=st['puan'],
                                                resetCount=st['sifirlama'], success=ok))]
-        return msgs + (self.m.money_msgs() + self.m.apply_stats() if ok else [])
+        return msgs + (self.m.money_msgs() + self.m.apply_stats() + [shield_cmd(self.p)] if ok else [])

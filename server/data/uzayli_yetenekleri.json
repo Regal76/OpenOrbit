@@ -1,11 +1,11 @@
 {
- "_aciklama": "Uzaylı yetenekleri (yol haritası Aşama 4; uzayli.py ve dunya.py uygular). Anahtar istemcinin npcId'si (npc.json npc_kimlik, kapilar.json npc_kimlik): aynı uzaylı haritada da kapıda da aynı yetenekle gelir. Kaynak belgeler/wiki/aliens.md (wiki); wiki'nin sayı vermediği yerler '_uyarlama' notunda. Alanlar: vurulunca_cagir {tur, adet, en_cok, bekleme_sn}, yenilenme {can_sn, kalkan_sn, bekleme_sn}, olunce_dogur [{tur, adet}], cagrilar_yasarken_dokunulmaz, cagrilar_yasarken_onarim {can_sn}, ofke {saldiran, sure_sn, hasar_carpani, ek_cagri, onarim_can_sn}, can_esiginde_cagir [{oran, tur, adet}], gizlenme_bozar {menzil}, yavaslatan_atis {hiz | oran, sn, menzil}, coklu_hedef {can_orani}, roket {hasar, bekleme_sn, firlatici, adet}, tekillik {sn_hasar, azami, sure_sn, menzil, bekleme_sn, gorsel (girdap; yoksa var)}, temasla_patla {hasar, yaricap}, kaybolma {hasar, sahte, uzaklik, patlama, patlama_yaricap, sahte_omur_sn, can_sn, kalkan_sn}, yapiskan_bomba {hasar, aralik_sn, gecikme_sn, grup}, hiz_becerisi {hiz, kalkan_orani}, kapsuller {adet, aralik_sn, toplama_ms, toplama_mesafe, can, kalkan, hasar}.",
+ "_aciklama": "Uzaylı yetenekleri (yol haritası Aşama 4; uzayli.py ve dunya.py uygular). Anahtar istemcinin npcId'si (npc.json npc_kimlik, kapilar.json npc_kimlik): aynı uzaylı haritada da kapıda da aynı yetenekle gelir. Kaynak belgeler/wiki/aliens.md (wiki); wiki'nin sayı vermediği yerler '_uyarlama' notunda. Alanlar: vurulunca_cagir {tur, adet, en_cok, bekleme_sn}, yenilenme {can_sn, kalkan_sn, bekleme_sn}, olunce_dogur [{tur, adet}], cagrilar_yasarken_dokunulmaz, cagrilar_yasarken_onarim {can_sn}, ofke {saldiran, sure_sn, hasar_carpani, ek_cagri, onarim_can_sn}, can_esiginde_cagir [{oran, tur, adet}], gizlenme_bozar {menzil}, yavaslatan_atis {hiz | oran, sn, menzil}, coklu_hedef {can_orani}, roket {hasar, bekleme_sn, firlatici, adet, tur (eski roket kimliği; yoksa 1)}, tekillik {sn_hasar, azami, sure_sn, menzil, bekleme_sn, gorsel (girdap; yoksa var)}, temasla_patla {hasar, yaricap}, kaybolma {hasar, sahte, uzaklik, patlama, patlama_yaricap, sahte_omur_sn, can_sn, kalkan_sn}, yapiskan_bomba {hasar, aralik_sn, gecikme_sn, grup}, hiz_becerisi {hiz, kalkan_orani}, kapsuller {adet, aralik_sn, toplama_ms, toplama_mesafe, can, kalkan, hasar}, olunce_cagrilar_dagilir {omur_sn}, kamikaze_esik {oran, bekle_sn, yaklas_sn, yaricap, hasar_can_orani}, ters_kontrol {kalkan_orani | can_orani, sn}.",
  "yetenekler": {
   "13": {
    "_ad": "Cubikon",
    "vurulunca_cagir": {
     "tur": "81",
-    "adet": 3,
+    "adet": 25,
     "en_cok": 30,
     "bekleme_sn": 4
    },
@@ -14,8 +14,14 @@
     "kalkan_sn": 0,
     "bekleme_sn": 10
    },
-   "_kaynak": "aliens.md: vurulunca Protegit salar (tabloda 30x Protegit), saldırılmazken saniyede 125.000'e kadar can",
-   "_uyarlama": "çağrı başına 3 Protegit, 4 sn bekleme; yenilenme 10 sn vurulmayınca"
+   "_kaynak": "aliens.md: vurulunca Protegit salar (tabloda 30x Protegit), saldırılmazken saniyede 125.000'e kadar can; fandom: Protegit'ler 20-30'luk sürüyle hemen çıkar, Cubikon ölünce kimseyi kovalamadan dolaşır ve sonra kaybolur",
+   "_uyarlama": "çağrıda 25 Protegit (en çok 30), 4 sn bekleme; yenilenme 10 sn vurulmayınca; Cubikon ölünce Protegit'ler 60-120 sn dolaşıp kaybolur",
+   "olunce_cagrilar_dagilir": {
+    "omur_sn": [
+     60,
+     120
+    ]
+   }
   },
   "8": {
    "_ad": "Lordakium",
@@ -51,8 +57,8 @@
    "_ad": "Battleray",
    "vurulunca_cagir": {
     "tur": "111",
-    "adet": 2,
-    "en_cok": 2,
+    "adet": 3,
+    "en_cok": 3,
     "bekleme_sn": 15
    },
    "cagrilar_yasarken_dokunulmaz": true,
@@ -67,12 +73,12 @@
     "onarim_can_sn": 30000
    },
    "_kaynak": "aliens.md: Interceptor çağırır; çağırdıkları yaşarken anında kalkan (ISH) ve saniyede 600 onarım; iki ya da daha çok saldıran (P.E.T. 10 sayılır) öfkelendirir: UCB-100 yerine RSB-75, daha çok Interceptor, 30.000 onarım",
-   "_uyarlama": "çağrıda 2 Interceptor, 15 sn bekleme; öfke son 10 sn'deki saldıranlarla; RSB-75/UCB-100 = x1,5 hasar"
+   "_uyarlama": "çağrıda 3 Interceptor (fandom: Deadly Battleray en çok 2 ile \"daha az\" çağırır), 15 sn bekleme; öfke son 10 sn'deki saldıranlarla; RSB-75/UCB-100 = x1,5 hasar"
   },
   "167": {
    "_ad": "Uber Battleray",
    "vurulunca_cagir": {
-    "tur": "111",
+    "tur": "257",
     "adet": 2,
     "en_cok": 2,
     "bekleme_sn": 15
@@ -88,7 +94,8 @@
     "ek_cagri": 2,
     "onarim_can_sn": 30000
    },
-   "_uyarlama": "wiki yetenek yazmıyor: Battleray'inkiler"
+   "_uyarlama": "wiki yetenek yazmıyor: Battleray'inkiler",
+   "_kaynak": "fandom: Uber Interceptor çağırır (saldırgan)"
   },
   "121": {
    "_ad": "Deadly Battleray",
@@ -125,8 +132,15 @@
    "coklu_hedef": {
     "can_orani": 0.25
    },
-   "_kaynak": "aliens.md: yakındaki gizli pilotları hemen görünür kılar; Saboteur gibi yavaşlatan mermiler; kritik canda birden çok hedef",
-   "_uyarlama": "gizlenme bozma 1.500 birim; yavaşlatma %50, 3 sn; birden çok hedef canın %25'inde (oyuncu ve P.E.T.). Şok dalgası (+/- işaretli pilotlar) birden çok oyuncu ister: bot oyuncularla."
+   "_kaynak": "aliens.md: yakındaki gizli pilotları hemen görünür kılar; Saboteur gibi yavaşlatan mermiler; kritik canda birden çok hedef; fandom: canının %50'sini kaybedince 4 Attend IX",
+   "_uyarlama": "gizlenme bozma 1.500 birim; yavaşlatma %50, 3 sn; birden çok hedef canın %25'inde (oyuncu ve P.E.T.). Şok dalgası (+/- işaretli pilotlar) birden çok oyuncu ister: bot oyuncularla.",
+   "can_esiginde_cagir": [
+    {
+     "tur": "217",
+     "oran": 0.5,
+     "adet": 4
+    }
+   ]
   },
   "11": {
    "_ad": "StreuneR",
@@ -141,20 +155,20 @@
    "_ad": "Annihilator",
    "roket": {
     "hasar": 12000,
-    "bekleme_sn": 12,
+    "bekleme_sn": 5,
     "firlatici": true,
-    "adet": 5
+    "adet": 3
    },
    "_kaynak": "aliens.md: 15.000 / +12.000 roket fırlatıcı",
-   "_uyarlama": "12 sn'de bir 5 roketlik salvo, toplam 12.000"
+   "_uyarlama": "fandom (Hellstorm): 5 sn'de 3 roket yükler, salvo toplam 12.000"
   },
   "166": {
    "_ad": "Uber Annihilator",
    "roket": {
     "hasar": 12000,
-    "bekleme_sn": 12,
+    "bekleme_sn": 5,
     "firlatici": true,
-    "adet": 5
+    "adet": 3
    },
    "_kaynak": "aliens.md: 90.000 / +12.000 roket fırlatıcı"
   },
@@ -163,16 +177,17 @@
    "yavaslatan_atis": {
     "hiz": 120,
     "sn": 5,
-    "menzil": 600
+    "menzil": 300
    },
-   "_uyarlama": "wiki Saboteur'ün yavaşlatmasını anıyor (Mindfire Behemoth sayfası) ama sayı vermiyor: Barb'ın yavaşlatma küresi, menzili ateş menzili"
+   "_uyarlama": "Barb'ın yavaşlatma küresi gibi",
+   "_kaynak": "fandom (Saboteur, Slowdown Orb): hızı 120 yapar, 5 sn, menzil ~300, birikmez"
   },
   "165": {
    "_ad": "Uber Saboteur",
    "yavaslatan_atis": {
     "hiz": 120,
     "sn": 5,
-    "menzil": 600
+    "menzil": 300
    },
    "_uyarlama": "Saboteur'ünki"
   },
@@ -297,6 +312,57 @@
    },
    "_kaynak": "aliens.md: lazer ve radyasyon hasarı (10 sn boyunca saniyede 10.000)",
    "_uyarlama": "menzil 800, 30 sn bekleme; tekilliğin girdabı gösterilmez"
+  },
+  "38": {
+   "_ad": "Uber StreuneR",
+   "roket": {
+    "hasar": 4000,
+    "bekleme_sn": 6,
+    "tur": 3
+   },
+   "_kaynak": "fandom: PLT-2021 roketi, 4.000 hasar",
+   "_uyarlama": "6 sn'de bir (StreuneR'ınki)"
+  },
+  "59": {
+   "_ad": "Barracuda",
+   "kamikaze_esik": {
+    "oran": 0.2,
+    "bekle_sn": 5,
+    "yaklas_sn": 5,
+    "yaricap": 500,
+    "hasar_can_orani": 1.0
+   },
+   "_kaynak": "fandom (Kamikaze): canı %20'ye inince kırmızı parlar, 5 sn yerinde durur, sonra hedefe yaklaşır ve yeniden dener; menzildeyse kalan canına göre alan hasarıyla patlar",
+   "_uyarlama": "patlama yarıçapı 500, hasar kalan canı kadar; yaklaşma 5 sn"
+  },
+  "164": {
+   "_ad": "Uber Barracuda",
+   "kamikaze_esik": {
+    "oran": 0.2,
+    "bekle_sn": 5,
+    "yaklas_sn": 5,
+    "yaricap": 500,
+    "hasar_can_orani": 1.0
+   },
+   "_kaynak": "fandom: Barracuda'nın yetenekleri"
+  },
+  "24": {
+   "_ad": "Boss StreuneR",
+   "ters_kontrol": {
+    "kalkan_orani": 0,
+    "sn": 5
+   },
+   "_kaynak": "fandom: kalkanı bitince geminin yönünü ters çevirir",
+   "_uyarlama": "5 sn (Boss Saimon'unki), bir kez"
+  },
+  "17": {
+   "_ad": "Boss Saimon",
+   "ters_kontrol": {
+    "can_orani": 0.25,
+    "sn": 5
+   },
+   "_kaynak": "fandom: canı azken hareketi 5 sn ters çevirir (Boss StreuneR gibi)",
+   "_uyarlama": "düşük can %25, bir kez"
   }
  },
  "kapsul_turleri": [

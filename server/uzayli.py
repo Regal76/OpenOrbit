@@ -14,6 +14,9 @@ Yetenekler (veri alanları uzayli_yetenekleri.json'un açıklamasında):
   temasla patlama (Kamikaze Mimesis)                   lazer atmaz; yaklaşınca patlar (bomba hasarı), ödülsüz kalkar
   kaybolma (Emperor Lordakium)                         belli hasardan sonra uzağa ışınlanır, iki sahte belirir (vurulunca patlar);
                                                        gizliyken can ve kalkan doldurur
+  can eşiğinde kamikaze (Barracuda)                    canı azalınca kırmızı parlar, yerinde bekler, sonra yaklaşır ve patlar
+  ters kontrol (Boss StreuneR, Boss Saimon)            kalkanı bitince / canı azalınca oyuncunun hareketi bir süre ters
+  ölünce çağırdıkları dağılır (Cubikon)                Protegit'ler kimseyi kovalamadan dolaşır, sonra kaybolur
   yapışkan bomba (Emperor Kristallon)                  aralıkla gecikmeli büyük hasar (tek oyunculu: grup boyuna bölünür)
   hız becerisi ve kapsüller (Emperor Sibelon)          kalkanı biterken hızlanır; haritada kapsüller belirir, Emperor toplarsa
                                                        güçlenir (can, kalkan, hasar), oyuncu yakınından geçerse kapsül yok olur
@@ -30,6 +33,8 @@ BUFF_CAPSULE = 45                  # AssetTypeModule.AssetType (istemci): BUFF_C
 RING_RADIUS = 300                  # kapsül toplanınca Emperor'un çevresindeki halka (birim; uyarlama, canlıda ayarlanacak)
 EMP_NOISE_SN = 5                   # Behemoth'un gizlenme bozan EMP'sinde mini harita paraziti (saniye; uyarlama)
 SINGULARITY_TARGET = 21            # VisualModifierCommand.VisualModifier (istemci): tekilliğin hedefindeki altın girdap
+MIRRORED_CONTROLS = 27             # VisualModifier: istemci oyuncunun hareketini ters çevirir (ters kontrol)
+RED_GLOW = 30                      # VisualModifier: kırmızı parıltı (Barracuda'nın kamikaze beklemesi)
 CAPSULE_BASE = 152000000           # kapsül varlık kimlikleri
 
 
@@ -111,12 +116,28 @@ class Yetenekler:
             if key not in n.ab and n.hp <= n.d['hp'] * c['oran']:
                 n.ab[key] = now
                 self.summon(n, c['tur'], c['adet'], now)
+        t = n.davranis.get('ters_kontrol')
+        if t and 'ters' not in n.ab and n.hp > 0 and (n.shield <= n.d['kalkan'] * t['kalkan_orani'] if 'kalkan_orani' in t
+                                                      else n.hp <= n.d['hp'] * t['can_orani']):
+            n.ab['ters'] = now                                   # bir kez
+            self.reverse_controls(n, t['sn'])
         k = n.davranis.get('kaybolma')
         if k and dmg > 0 and n.alive and n.hp > 0:
             n.ab['kayip'] = n.ab.get('kayip', 0) + dmg
             if n.ab['kayip'] >= k['hasar']:
                 n.ab['kayip'] = 0
                 self.vanish(n, k, now)
+
+    def visual(self, uid, modifier, on):
+        return ('VisualModifierCommand', dict(userId=uid, modifier=modifier, attribute=0, additionalAttribute='', count=0,
+                                              activated=on))
+
+    def reverse_controls(self, n, sec):
+        """Ters kontrol (Boss StreuneR, Boss Saimon): oyuncunun hareketi sec saniye ters (istemci çevirir: MIRRORED_CONTROLS)."""
+        w = self.w
+        w.send([self.visual(w.hid, MIRRORED_CONTROLS, True)])
+        w.later(sec, lambda: w.send([self.visual(w.hid, MIRRORED_CONTROLS, False)]))
+        w.log('   %s kontrolleri ters çevirdi (%d sn)' % (n.d['ad'], sec))
 
     def summon(self, n, tur, count, now):
         w = self.w
@@ -234,6 +255,8 @@ class Yetenekler:
                 self.bomb(n, now)
             if 'temasla_patla' in d:
                 self.kamikaze(n, now)
+            if 'kamikaze_esik' in d:
+                self.threshold_kamikaze(n, now)
             if 'hiz_becerisi' in d:
                 self.speed_skill(n, now)
             if 'kaybolma' in d and n.ab.get('gizli'):
@@ -300,7 +323,7 @@ class Yetenekler:
                                                     rocketType=mod('AmmunitionTypeModule', typeValue=tur)))])
         else:
             from eski_protokol import legacy
-            w.send([legacy('0|v|%d|%d|%s|1|0|0' % (n.id, w.hid, 'H' if hit else 'M'))])
+            w.send([legacy('0|v|%d|%d|%s|%d|0|0' % (n.id, w.hid, 'H' if hit else 'M', r.get('tur', 1)))])
         dmg = int(r['hasar'] * random.uniform(0.85, 1.0))
         uid = n.id
 
@@ -336,9 +359,45 @@ class Yetenekler:
         w.send(w.hurt_hero(t['hasar'], n, atype=0) + boom + w.remove_npc(n))
         w.log('   %s patladı: %d hasar' % (n.d['ad'], t['hasar']))
 
+    def threshold_kamikaze(self, n, now):
+        """Barracuda: canı oran'a inince kırmızı parlar ve bekle_sn yerinde durur (donuk: ateş etmez), sonra oyuncuya yaklaşır;
+        yaricap içindeyse kalan canına göre alan hasarıyla patlar (ödülsüz; haritadaysa yeniden doğar), yaklas_sn içinde
+        ulaşamazsa yeniden parlar (fandom: Barracuda, Kamikaze)."""
+        t, w = n.davranis['kamikaze_esik'], self.w
+        until = n.ab.get('kamikaze')
+        if until is None:
+            if n.hp <= 0 or n.hp > n.d['hp'] * t['oran']:
+                return
+            self.glow(n, t, now)
+            return
+        if now < until:
+            if now >= n.ab.get('parilti', 0):          # parıltı bir anlık (istemci ShipGlowEffect3D): beklerken saniyede bir yanıp söner
+                n.ab['parilti'] = now + 1.0
+                w.send([self.visual(n.id, RED_GLOW, True)])
+            return
+        if 'yaklas' not in n.ab:
+            n.ab['yaklas'] = now + t['yaklas_sn']
+            n.engaged, n.next_think = True, now
+            w.send([self.visual(n.id, RED_GLOW, False)])
+        if self.hero_open(now) and self.dist(n, now) <= t['yaricap']:
+            dmg = int(n.hp * t['hasar_can_orani'])
+            boom = [('ShipDestroyedCommand', dict(destroyedUserId=n.id, explosionTypeId=0))] if n.id in w.visible else []
+            w.send(w.hurt_hero(dmg, n, atype=0) + boom + w.remove_npc(n))
+            if not n.gate and not n.summoned:
+                w.schedule(random.uniform(*w.respawn_range(n)), 'npc', n.tip)
+            w.log('   %s kendini patlattı: %d hasar' % (n.d['ad'], dmg))
+        elif now >= n.ab['yaklas']:
+            self.glow(n, t, now)                            # ulaşamadı: yeniden parlar ve bekler
+
+    def glow(self, n, t, now):
+        n.ab['kamikaze'], n.ab['parilti'] = now + t['bekle_sn'], now + 1.0
+        n.ab.pop('yaklas', None)
+        self.w.npc_effect(n, 'donuk', t['bekle_sn'], source='kamikaze')
+        self.w.send([self.visual(n.id, RED_GLOW, True)])
+        self.w.log('   %s kamikazeye hazırlanıyor (can %%%d)' % (n.d['ad'], 100 * n.hp // max(1, n.d['hp'])))
+
     def singularity_visual(self, on):
-        return ('VisualModifierCommand', dict(userId=self.w.hid, modifier=SINGULARITY_TARGET, attribute=0, additionalAttribute='',
-                                              count=0, activated=on))
+        return self.visual(self.w.hid, SINGULARITY_TARGET, on)
 
     def dot_tick(self, now):
         w = self.w
@@ -485,7 +544,8 @@ class Yetenekler:
 
     # ------------------------------------------------------------ ölüm
     def on_kill(self, n, x, y):
-        """Uzaylı öldü: patlayan (sahte Emperor) yakındaki oyuncuyu vurur; DMG kapsülünün oyuncudaki etkisi kalkar."""
+        """Uzaylı öldü: patlayan (sahte Emperor) yakındaki oyuncuyu vurur; çağırdıkları dağılır (Cubikon); DMG kapsülünün oyuncudaki
+        etkisi kalkar."""
         w = self.w
         p = n.davranis.get('olunce_patla')
         msgs = []
@@ -494,6 +554,14 @@ class Yetenekler:
             if math.hypot(x - hx, y - hy) <= p['yaricap']:
                 msgs += w.hurt_hero(p['hasar'], n, atype=0)
                 w.log('   %s patladı: %d hasar' % (n.d['ad'], p['hasar']))
+        g = n.davranis.get('olunce_cagrilar_dagilir')
+        if g:
+            end = time.time()
+            for cid in n.children:
+                c = w.npcs.get(cid)
+                if c and c.alive:
+                    c.pasif, c.engaged = True, False                    # kimseyi kovalamadan dolaşır (dunya.think)
+                    c.ab['omur'] = end + random.uniform(*g['omur_sn'])
         if w.hero_etki.get('zayiflik'):
             w.hero_etki.remove('zayiflik', source='kapsul_%d' % n.id)
         left = [d for d in self.hero_dots if d['npc'] != n.id]

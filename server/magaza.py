@@ -54,6 +54,7 @@ import ayar as AY
 import etkinlik_gorunumleri as EG
 import ipucu as IP
 import sezon as SZ
+import yetenek as YT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
@@ -1561,6 +1562,9 @@ class Magaza:
         """Harita yüklendikten sonra: ekipmana bağlı görünüm (kayıttaki giriş 1 ile gelir), dronlar ve eşya sayaçları."""
         stage = self.p.d.get('uzanti_asamasi', 1)
         msgs = [('ShipExtensionsCommand', {'userId': self.p.user_id, 'extensionStage': stage})] if stage != 1 else []
+        shield = YT.shield_cmd(self.p)
+        if shield[1]['shieldSkillId']:
+            msgs.append(shield)                     # kalkan yeteneğinin görünümü (yetenek.shield_cmd)
         import yukseltme as YK
         counts = self.count_msgs()
         hour, shop = YK.bonus_hour(), self.discount()
@@ -2066,8 +2070,8 @@ class Magaza:
                 ('HitpointInfoCommand', dict(hitpoints=int(g.get('hitPoints', 0)), hitpointsMax=g.get('hitMax', 0),
                                              nanoHull=int(g.get('nanoHull', 0)), nanoHullMax=g.get('maxNanoHull', 0))),
                 ('AttributeShieldUpdateCommand', {'shieldNow': int(g.get('shield', 0)), 'shieldMax': g.get('shieldMax', 0)}),
-                # kayıttaki gibi kalkan yeteneği parıltısı yok (shieldSkillId 0: istemci varsa ShieldEffect'i kaldırır; K3)
-                ('AttributeSkillShieldUpdateCommand', {'shieldSkillId': 0, 'minSkinShieldTwinkle': 10, 'maxSkinShieldTwinkle': 100}),
+                # kalkan yeteneğinin görünümü (kayıttaki yeteneksiz hesapta shieldSkillId 0: istemci varsa ShieldEffect'i kaldırır; K3)
+                YT.shield_cmd(self.p),
                 legacy('0|n|e|%d|0|0' % uid), stage, legacy('0|n|INV|%d|0' % uid), legacy('0|S|CFG|%d' % n)]
         if s['speed'] is not None:
             msgs.append(('AttributeShipSpeedUpdateCommand', {'newSpeed': s['speed'], 'displaySpeed': s['display']}))

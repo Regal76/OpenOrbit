@@ -5521,7 +5521,10 @@
        "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
        "_tahmin": [
         "ödül"
-       ]
+       ],
+       "davranis": {
+        "kamikaze_esik": null
+       }
       },
       {
        "tur": "114",

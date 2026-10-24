@@ -27,7 +27,7 @@
    "kalkan": 800,
    "hasar": 40,
    "hiz": 200,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 500,
     "onur": 3,
@@ -38,7 +38,7 @@
     "0": 12,
     "2": 12
    },
-   "_kaynak": "wiki; hız uyarlama",
+   "_kaynak": "wiki; hız uyarlama; saldırgan (fandom)",
    "npc_kimlik": 152
   },
   "153": {
@@ -58,8 +58,9 @@
     "0": 15,
     "2": 15
    },
-   "_kaynak": "wiki; hız kayıttan (478 birim / 2.250 ms = 212)",
-   "npc_kimlik": 153
+   "_kaynak": "wiki; hız kayıttan (478 birim / 2.250 ms = 212); kalkan emme %90 (fandom)",
+   "npc_kimlik": 153,
+   "kalkan_emme": 0.9
   },
   "71": {
    "ad": "-=[ Lordakia ]=-",
@@ -384,7 +385,7 @@
    "kalkan": 200000,
    "hasar": 3600,
    "hiz": 200,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 25600,
     "onur": 128,
@@ -399,7 +400,7 @@
     "5": 64,
     "6": 8
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: lordakium); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lordakium); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 8,
    "ek_odul": {
     "resource_collectable_mucosum": 2
@@ -439,7 +440,7 @@
    "kalkan": 800000,
    "hasar": 16000,
    "hiz": 180,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 102400,
     "onur": 512,
@@ -455,7 +456,7 @@
     "6": 32,
     "3": 32
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_lordakium); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_lordakium); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 21,
    "ek_odul": {
     "resource_collectable_mucosum": 6
@@ -494,7 +495,7 @@
    "kalkan": 300000,
    "hasar": 4450,
    "hiz": 200,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 51200,
     "onur": 256,
@@ -509,18 +510,19 @@
     "5": 128,
     "6": 16
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: kristallon); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: kristallon); hız uyarlama; vurulmadıkça saldırmaz (fandom); kalkan emme %90 (fandom)",
    "npc_kimlik": 10,
    "ek_odul": {
     "resource_collectable_prismatium": 1
-   }
+   },
+   "kalkan_emme": 0.9
   },
   "80": {
    "ad": "-=[ Cubikon ]=-",
    "hp": 1600000,
    "kalkan": 1200000,
    "hasar": 0,
-   "hiz": 0,
+   "hiz": 30,
    "saldirgan": false,
    "odul": {
     "ep": 536200,
@@ -537,11 +539,12 @@
     "6": 64,
     "3": 160
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: cubikon); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: cubikon); hız fandom (30), saldırganlık uyarlama; kalkan emme %80 (fandom)",
    "npc_kimlik": 13,
    "ek_odul": {
     "resource_collectable_bifenon": 2
-   }
+   },
+   "kalkan_emme": 0.8
   },
   "29": {
    "ad": "..::{ Boss Kristallin }::..",
@@ -577,7 +580,7 @@
    "kalkan": 1200000,
    "hasar": 20000,
    "hiz": 180,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 204800,
     "onur": 1024,
@@ -593,7 +596,7 @@
     "6": 64,
     "3": 64
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallon); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallon); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 23,
    "ek_odul": {
     "resource_collectable_prismatium": 3
@@ -893,7 +896,7 @@
    "kalkan": 1600000,
    "hasar": 32000,
    "hiz": 180,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 204800,
     "onur": 1024,
@@ -909,7 +912,7 @@
     "6": 64,
     "3": 128
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakium); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_lordakium); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 35,
    "ek_odul": {
     "resource_collectable_mucosum": 10
@@ -950,7 +953,7 @@
    "kalkan": 2400000,
    "hasar": 40000,
    "hiz": 180,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 490000,
     "onur": 2048,
@@ -966,12 +969,13 @@
     "6": 128,
     "3": 128
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_kristallon); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_kristallon); hız uyarlama; vurulmadıkça saldırmaz (fandom); kalkan emme %90 (fandom)",
    "npc_kimlik": 37,
    "ek_odul": {
     "resource_collectable_prismatium": 5,
     "resource_collectable_bifenon": 1
-   }
+   },
+   "kalkan_emme": 0.9
   },
   "44": {
    "ad": "( UberStreuneR )",
@@ -1185,7 +1189,7 @@
     "5": 72,
     "6": 16
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_interceptor); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_interceptor); hız, saldırganlık uyarlama; kalkan emme %60 (fandom)",
    "npc_kimlik": 163,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -1193,7 +1197,8 @@
     "resource_ore_palladium": 2,
     "resource_collectable_aurus": 5,
     "resource_collectable_tetrathrin": 1
-   }
+   },
+   "kalkan_emme": 0.6
   },
   "255": {
    "ad": "( Uber Barracuda )",
@@ -1201,7 +1206,7 @@
    "kalkan": 800000,
    "hasar": 48000,
    "hiz": 280,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 60000,
     "onur": 100,
@@ -1216,7 +1221,7 @@
     "5": 100,
     "6": 10
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_barracuda); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_barracuda); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 164,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -1232,7 +1237,7 @@
    "kalkan": 1200000,
    "hasar": 32000,
    "hiz": 260,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 90000,
     "onur": 130,
@@ -1247,7 +1252,7 @@
     "5": 120,
     "6": 32
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_saboteur); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_saboteur); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 165,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -1263,7 +1268,7 @@
    "kalkan": 1600000,
    "hasar": 90000,
    "hiz": 240,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 300000,
     "onur": 200,
@@ -1279,7 +1284,7 @@
     "6": 48,
     "3": 8
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_annihilator); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_annihilator); hız uyarlama; vurulmadıkça saldırmaz (fandom); kalkan emme %85 (fandom)",
    "npc_kimlik": 166,
    "ek_odul": {
     "resource_ore_palladium": 4,
@@ -1288,7 +1293,8 @@
     "resource_collectable_tetrathrin": 1,
     "resource_collectable_darksilver-coin": 1,
     "resource_collectable_aurus": 10
-   }
+   },
+   "kalkan_emme": 0.85
   },
   "256": {
    "ad": "( Uber Battleray )",
@@ -1296,7 +1302,7 @@
    "kalkan": 2080000,
    "hasar": 51200,
    "hiz": 200,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 320000,
     "onur": 300,
@@ -1312,7 +1318,7 @@
     "6": 80,
     "3": 8
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_battleray); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: uber_battleray); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 167,
    "ek_odul": {
     "resource_collectable_bifenon": 1,
@@ -1493,7 +1499,7 @@
    "kalkan": 0,
    "hasar": 12000,
    "hiz": 300,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 57750,
     "onur": 200,
@@ -1501,7 +1507,7 @@
     "uridyum": 5
    },
    "kargo": {},
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: purpose_xxi); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: purpose_xxi); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 174,
    "_model_notu": "istemci: npcId 174 = Unidentified Black Light yellow (214)"
   },
@@ -1534,7 +1540,7 @@
    "hp": 4000,
    "kalkan": 4000,
    "hasar": 160,
-   "hiz": 260,
+   "hiz": 242,
    "saldirgan": true,
    "odul": {
     "ep": 400,
@@ -1547,10 +1553,10 @@
     "2": 40,
     "1": 40
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: lordakium_spore); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lordakium_spore); hız Lordakia'nınki (aynı gövde), saldırganlık uyarlama",
    "npc_kimlik": 173,
-   "model": "77",
-   "_model_notu": "istemci: Lordakium (77) tasarımı \"Lordakium Spore\""
+   "model": "71",
+   "_model_notu": "istemci: game.xml'de kendi türü yok; görünüm Lordakia (71): fandom ve darkorbitwiki görseli küçük Lordakia"
   },
   "90": {
    "ad": "-=[ Century Falcon ]=-",
@@ -6769,7 +6775,7 @@
     },
     {
      "tip": "80",
-     "adet": 1
+     "adet": 4
     },
     {
      "tip": "29",
@@ -6781,7 +6787,7 @@
     }
    ],
    "bonus_kutu": 12,
-   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6)",
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6), 4 Cubikon fandom",
    "sabit_noktalar": {
     "80": [
      [
@@ -6939,7 +6945,7 @@
     },
     {
      "tip": "80",
-     "adet": 1
+     "adet": 4
     },
     {
      "tip": "29",
@@ -6951,7 +6957,7 @@
     }
    ],
    "bonus_kutu": 12,
-   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6)",
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6), 4 Cubikon fandom",
    "sabit_noktalar": {
     "80": [
      [
@@ -7109,7 +7115,7 @@
     },
     {
      "tip": "80",
-     "adet": 1
+     "adet": 4
     },
     {
      "tip": "29",
@@ -7121,7 +7127,7 @@
     }
    ],
    "bonus_kutu": 12,
-   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6)",
+   "_kaynak": "türler spacemap-config.xml; adetler uyarlama (X-6), 4 Cubikon fandom",
    "sabit_noktalar": {
     "80": [
      [
@@ -7717,6 +7723,7 @@
   "roket_isabet": 0.8,
   "_roket_isabet": "roketin kendi isabeti yoksa taban (esyalar.json roketler.<id>.isabet: R-310 %70, PLT-2026 %80, PLT-2021 %90, PLT-3030 %65, BDR-1211 %100; özel cephane bu taban, uyarlama); Heat-Seeking Missiles yeteneği (roket_isabet) ve DMG-H01 boosterı (isabet) artırır, PLD-8 gibi etkiler düşürür",
   "npc_kalkan_emme": 0.7,
+  "_npc_kalkan_emme": "Varsayılan kalkan emme oranı; türün kalkan_emme değeri varsa o (fandom: Aider Streuner, Kristallon, Uber Kristallon %90, Cubikon %80, Uber Annihilator %85, Uber Interceptor %60)",
   "npc_isabet": 0.6,
   "npc_menzil": 600,
   "npc_saldiri_aralik_sn": 1.1,
@@ -7799,15 +7806,23 @@
     600
    ],
    "225": [
-    1800,
-    2700
+    900,
+    960
    ],
    "320": [
-    1800,
-    2700
+    900,
+    960
+   ],
+   "115": [
+    420,
+    600
+   ],
+   "npc121": [
+    300,
+    330
    ]
   },
-  "_yeniden_dogma_ozel": "Boss/Uber, Cubikon (80) ve Mindfire Behemoth (225) sıradan uzaylı gibi 12-25 sn'de dönmesin (değerler uyarlama; wiki süre vermiyor). Anahtar: tür ya da ada göre \"boss\" (..::{), \"uber\"; Strokelight Barrage (320) Behemoth gibi",
+  "_yeniden_dogma_ozel": "Boss/Uber, Cubikon (80), Battleray (115), Deadly Battleray (npc121) ve Mindfire Behemoth (225) sıradan uzaylı gibi 12-25 sn'de dönmesin. Anahtar: tür ya da ada göre \"boss\" (..::{), \"uber\". Battleray 7-10 dk, Deadly Battleray 5-5,5 dk, Behemoth 15-16 dk fandom; Strokelight Barrage (320) Behemoth gibi; Boss/Uber ve Cubikon uyarlama",
   "zamanli_sure_sn": 3600,
   "_zamanli": "Zaman çizelgeli Black Light başıboşları (haritalar.zamanli; wiki saatleri, yerel saat): saatinden sonra bu kadar saniye içinde haritaya gelinirse doğar (uyarlama); ölünce o saat bir daha doğmaz (profil zamanli)."
  },

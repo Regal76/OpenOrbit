@@ -81,10 +81,12 @@ class Arena:
         cls = H.map_class(map_id)
         if cls not in self.D['giris'] or H.company(map_id) != self.p.d['pilot'].get('factionId'):
             return []
-        sx, sy = (station['posX'], station['posY']) if station else (KAPI.MAP_W // 2, KAPI.MAP_H // 2)
-        a = math.atan2(KAPI.MAP_H // 2 - sy, KAPI.MAP_W // 2 - sx) + 1.3 + self.slot * 0.45
-        d = KAPI.K['portal_uzaklik'] + 1800
-        return [dict(gateId=PORTAL_BASE + self.slot, x=int(sx + math.cos(a) * d), y=int(sy + math.sin(a) * d), hedef=0,
+        # haritanın üst ortasında yan yana (resmî sunucu kaydı: 2-1'de Trinity Trials portalı (10700, 3000)); üs üst ortadaysa (2-8)
+        # alt ortada
+        x, y = KAPI.MAP_W // 2 + 200 - (2 - self.slot) * 1400, 3000
+        if station and math.hypot(x - station['posX'], y - station['posY']) < 2500:
+            y = KAPI.MAP_H - y
+        return [dict(gateId=PORTAL_BASE + self.slot, x=x, y=y, hedef=0,
                      designId=self.D['portal'], kapi=self.key, pencere=self.key, giris=cls)]
 
     # ------------------------------------------------------------ koşu

@@ -369,6 +369,7 @@ class Profil:
         b = dict(self.tohum.get('BeaconCommand') or {})
         rep = next((e for e in self.d.get('ekipman', {}).get('extra', []) if e.startswith('equipment_extra_repbot_')), None)
         b['repairRobotActive'] = repairing
+        b['repairBotSkilled'] = YETENEK.maxed(self, '13')       # Engineering 5/5: mavi tamir robotu (resmî SSS)
         if rep:
             b['repairRobotLootId'] = rep
         x, y = pos if pos else (self.d['konum']['x'], self.d['konum']['y'])

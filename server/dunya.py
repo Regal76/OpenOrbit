@@ -4,7 +4,7 @@ kutuları. Arkadaş sunucusunda aynı normal haritadaki oyuncuların dünyaları
 Mesaj akışları gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md, "Oyun içi kalıplar"):
   seçme   ShipSelectRequest -> ShipSelectionCommand (vuruşlardan sonra güncellenir)
   lazer   AttackLaserRequest -> her ~1,1 sn AttackLaserRunCommand + AttackHitCommand(attackType 1) | AttackMissedCommand
-  roket   AttackRocketRequest -> "0|v|<saldıran>|<hedef>|H|1|0|0" + 4 sn bekleme, ~0,8 sn sonra AttackHitCommand(attackType 0)
+  roket   AttackRocketRequest -> "0|v|<saldıran>|<hedef>|H|1|<iz>|<güdüm>" + 4 sn bekleme, ~0,8 sn sonra AttackHitCommand(attackType 0)
   ölüm    AttackHitCommand(hp 0) + ShipDestroyedCommand + ShipDeselectionCommand + ShipRemoveCommand
   ödül    "0|LM|ST|EP|<kazanç>|<toplam>|<seviye>", HON, CRE (+ InventoryItemUpdatedCommand), URI
   kutu    AddBoxCommand(FROM_SHIP) ölüm yerinde (CandyCargo etkinliğinde, Halloween, CANDY_CARGO: aynı kutu, şekerli görünüm; kayıt);
@@ -39,6 +39,7 @@ import ayar as AY
 import yukseltme as YK
 import ipucu as IP
 import ortak_harita as OH
+import yetenek as YT
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CFG = json.load(open(os.path.join(HERE, 'data', 'npc.json'), encoding='utf8'))
@@ -79,6 +80,9 @@ def ore_prices(honor):
     return out
 DRONE_POINTS = ESYA['dron_puanlari']
 INVINCIBILITY = 33                             # VisualModifierCommand.modifier (istemcinin VisualModifier enum'u)
+# Evasive Maneuvers'ın sağladığı ıska (AttackMissedCommand.skillColorId -> DamageReceivedEffect'in rengi; game.xml hitpointColors:
+# 3 0066CC mavi). Resmî SSS: kaçınma yeteneğiyle ıskalar mor yerine mavi
+EVADE_COLOR = 3
 STREAK_GAP_SN = 10.0                           # seri öldürme: iki öldürme arası en çok (kill_streak)
 STREAKS = [(3, 'epic_msg_killstreak_triplekill'), (6, 'epic_msg_killstreak_unstoppable'), (10, 'epic_msg_killstreak_godlike'),
            (15, 'epic_msg_killstreak_likeaboss')]
@@ -1520,9 +1524,10 @@ class World:
                      * EK.rocket_factor(self.p) * AY.carpan('roket_bekleme'))                          # R0K-T01: yarıya; panel
             ms = self.abilities.rocket_ms(ms, now)                  # Rapid Fire (Tartarus)
             self.rocket_ready = now + ms / 1000
-            hit = random.random() < self.rocket_hit(rocket)
-            self.send(self.ammo_msgs(rocket) + [legacy('0|v|%d|%d|%s|%d|0|0' % (self.hid, n.id, 'H' if hit else 'M',
-                                                                            ESYA['roketler'].get(rocket, {}).get('kimlik', 1))),
+            roll = random.random()
+            hit = roll < self.rocket_hit(rocket)
+            saved = hit and roll >= self.rocket_hit(rocket, skill=False)
+            self.send(self.ammo_msgs(rocket) + [self.rocket_msg(n.id, hit, ESYA['roketler'].get(rocket, {}).get('kimlik', 1), saved),
                        ('MenuItemCooldownGroupTimerCommand', dict(timerState=mod('TimerStateModule', timerStateValue=2),
                                                                   cooldownType=mod('CooldownTypeModule', typeValue=4), maxTime=ms, time=ms))])
             dmg = int(ESYA['roketler'].get(rocket, {'hasar': 1000})['hasar'] * random.uniform(0.85, 1.0)   # kayıt: R-310 853/991
@@ -1538,13 +1543,15 @@ class World:
                 timerState=mod('TimerStateModule', timerStateValue=0), cooldownType=mod('CooldownTypeModule', typeValue=4),
                 maxTime=ms, time=0))]))
 
-    def rocket_hit(self, rocket):
-        """Roketin isabet şansı: taban (npc.json roket_isabet; BDR-1211 %100) x (1 + Heat-Seeking Missiles + DMG-H01 + durum)."""
+    def rocket_hit(self, rocket, skill=True):
+        """Roketin isabet şansı: taban (npc.json roket_isabet; BDR-1211 %100) x (1 + Heat-Seeking Missiles + DMG-H01 + durum).
+        skill False: Heat-Seeking Missiles sayılmadan (güdüm görseli: yeteneksiz ıskalayacak roket; rocket_look)."""
         if self.tech.full_rocket_hit():
             return 1.0                                      # Precision Targeter
         m = self.p.mods()
         base = ESYA['roketler'].get(rocket, {}).get('isabet', SAVAS['roket_isabet'])
-        return AY.chance('oyuncu_isabet', min(1.0, base * max(0.0, 1 + m.get('roket_isabet', 0) + m.get('isabet', 0))))     # panel
+        bonus = m.get('roket_isabet', 0) + m.get('isabet', 0) - (0 if skill else YT.mods(self.p).get('roket_isabet', 0))
+        return AY.chance('oyuncu_isabet', min(1.0, base * max(0.0, 1 + bonus)))     # panel
 
     def collect(self, f):
         """CollectBoxRequest {itemHash, boxX/Y, posX/Y}: istemci gemiyi kutuya götürüp gönderir. Mesafe sunucunun bildiği gemi
@@ -1771,7 +1778,7 @@ class World:
                 dmg = int(dmg * max(0.0, 1 - red()))
             if shield_only:
                 dmg = min(dmg, int(n.shield))
-            absorb = SAVAS['npc_kalkan_emme'] * n.etki.shield_factor(now)      # Diminisher: zayıf kalkan
+            absorb = n.d.get('kalkan_emme', SAVAS['npc_kalkan_emme']) * n.etki.shield_factor(now)   # türün emmesi; Diminisher
             if not attacker:                                                     # kalkan delme (Moth +%20, Double Arrow +%10, Pincer -%10)
                 absorb *= max(0.0, 1 - self.p.mods().get('kalkan_delme', 0))
             if split:                                                            # mayın (savas_esya.py)
@@ -1948,6 +1955,7 @@ class World:
                 c = self.spawn_npc_at(sp['tur'], x + math.cos(a) * 120, y + math.sin(a) * 120)
                 self.alien.adopt(n, c)          # kapıda dalganın uzaylısı sayılır
                 c.engaged = n.engaged
+                c.next_think = time.time()      # doğar doğmaz düşünür (sporlar beklemeden saldırır)
         if not n.gate and not n.summoned:
             self.schedule(random.uniform(*self.respawn_range(n)), 'npc', n.tip)
         self.drifter_killed(n)
@@ -2181,6 +2189,25 @@ class World:
             return lr['tam_set'][lasers[0]][ammo]
         return lr['cephane'].get(ammo, 0)
 
+    def skilled_laser(self):
+        """AttackLaserRunCommand.skilledLaser: Bounty Hunter II (22b) son seviyesinde (3/3) istemci lazeri kalın çizer (game.xml
+        <laserDefinitions>: her salvonun skillResKey'i, ör. laser1 -> skillLaser1; resmî Türkçe forumun "21 arge ile kalın sıkma" yolu
+        Bounty Hunter II 3/3'ün ön koşulları; fandom Battery). Renk aynı kalır (laser_color)."""
+        return YT.maxed(self.p, '22b')
+
+    def rocket_look(self, saved=False):
+        """Roketin görünümü -> (iz, güdüm): eski metnin 0|v|…|iz|güdüm alanları (istemci NetConnectionHelper.OnData 'v': 7. alan
+        rocketSmoke kimliği, 8. alan 1 ise AttackRocketRun/BezierRocketEffect isHeatSeeking: kavisli uçuş ve kırmızı parıltı). İz
+        (canlıda görüldü): 0 turuncu-kırmızı alev (resmî sunucu kaydında yeteneksiz hesabın izi), 1 mor-mavi: Rocket Fusion (6) son
+        seviyesinde (resmî SSS: "purple trail"), 2 ince gri: Precision Targeter açıkken; güdüm: saved, Heat-Seeking Missiles (20)
+        olmasa ıskalayacak roket (resmî SSS: "red glow on missiles that would have missed")."""
+        smoke = 2 if self.tech.full_rocket_hit() else 1 if YT.maxed(self.p, '6') else 0
+        return smoke, int(saved)
+
+    def rocket_msg(self, target, hit, kind, saved=False):
+        """Oyuncunun roket görseli (eski metin 0|v|saldıran|hedef|H/M|tür|iz|güdüm)."""
+        return legacy('0|v|%d|%d|%s|%d|%d|%d' % ((self.hid, target, 'H' if hit else 'M', kind) + self.rocket_look(saved)))
+
     def asset_laser(self, now):
         """Lazer bir harita varlığına (rakip Battle Station modülü): menzil, cephane, isabet; hasarı varlığın sahibi uygular
         (asset_targets.asset_hit: kalkan, can, yıkılma ve ödül)."""
@@ -2220,7 +2247,8 @@ class World:
         if cooldown:
             self.ammo_ready[ammo] = now + cooldown
         self.send(self.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid, laserColor=self.laser_color(ammo),
-                                                                         isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
+                                                                         isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
+                                                                         visualType=0))])
         self.p.ach('shot', silah='LASER')
         m_ = self.p.mods()
         if random.random() < self.items.aim(AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + m_.get('isabet', 0) + m_.get('lazer_isabet', 0)))):
@@ -2272,7 +2300,8 @@ class World:
             self.ammo_ready[ammo] = now + cooldown
         self.send(self.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=n.id,
                                                                          laserColor=self.laser_color(ammo),
-                                                                         isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
+                                                                         isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
+                                                                         visualType=0))])
         self.p.ach('shot', silah='LASER')
         self.ammo_seen[ammo] = now                      # başarım "lazer şovu": 60 sn içinde 6 temel cephane
         recent = [AMMO_TYPE_IDS[a] for a, t in self.ammo_seen.items() if a in AMMO_TYPE_IDS and now - t <= 60]
@@ -2461,7 +2490,7 @@ class World:
             a = random.uniform(0, 2 * math.pi)
             c = self.spawn_npc_at(v['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200)
             self.alien.adopt(n, c)
-            c.engaged = True
+            c.engaged, c.next_think = True, now      # sürü hemen saldırır (fandom: Protegit'ler bir anda üstüne gelir)
             n.children.add(c.id)
         self.log('   %s yardım çağırdı: %d %s' % (n.d['ad'], min(room, v.get('adet', 1)), CFG['tipler'][v['tur']]['ad']))
 
@@ -2641,7 +2670,9 @@ class World:
         msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.hid, laserColor=0,
                                                isDiminishedBySkillShield=m.get('alinan_lazer', 0) < 0,     # Spectrum
                                                skilledLaser=False, visualType=0))]
-        if random.random() < AY.chance('npc_isabet', n.d.get('isabet', SAVAS['npc_isabet'])) * (1 - m.get('kacinma', 0)) * (1 - n.etki.accuracy_loss(now)):
+        aim = AY.chance('npc_isabet', n.d.get('isabet', SAVAS['npc_isabet'])) * (1 - n.etki.accuracy_loss(now))
+        roll = random.random()
+        if roll < aim * (1 - m.get('kacinma', 0)):
             raw = n.d['hasar'] * random.uniform(0.8, 1.0) * self.alien.laser_factor(n, now)      # kayıt: x0,8-1,0; öfke, DMG kapsülü
             dmg = int(raw * max(0.0, 1 + m.get('alinan_lazer', 0)))                              # Spectrum
             self.hurt_hero(dmg, n, msgs=msgs, now=now)
@@ -2651,7 +2682,9 @@ class World:
         else:
             self.last_combat = now
             self.stop_repair()
-            msgs.append(('AttackMissedCommand', dict(attackType=attack_type(1), targetUserId=self.hid, skillColorId=0)))
+            evaded = roll < aim * (1 - (m.get('kacinma', 0) - YT.mods(self.p).get('kacinma', 0)))     # yeteneksiz vururdu
+            msgs.append(('AttackMissedCommand', dict(attackType=attack_type(1), targetUserId=self.hid,
+                                                     skillColorId=EVADE_COLOR if evaded else 0)))
         self.send(msgs)
 
     def hurt_hero(self, dmg, killer=None, atype=1, msgs=None, now=None, cause=None):

@@ -107,12 +107,18 @@ OUTPOST = {46: 47, 48: 49, 50: 51, 53: 54, 55: 56, 57: 58}
 OUTPOST_MAPS = {20, 24, 28}
 TPL_CENTER = (19000, 2000)          # kayıttaki 2-1 istasyonunun merkezi (SpaceStationCommand)
 CORNERS = [(19000, 2000), (2000, 2000), (19000, 11100), (2000, 11100)]
+# istasyonun ve yapının oyundaki yeri (merkez); yazılmayan haritada portallardan en uzak köşe. 2-8: üst orta (oyuncuların
+# bildirdiği resmî sunucu mini haritası: üs simgesi 2-8 104/19, oyuncu 108/32'de üssün hangar bölgesinde: x 10.590-11.010);
+# 1-8 sol, 3-8 sağ kenarın ortası (fandom 1-8/3-8; Kalaazu ve 2009 emülatörü y 6000); 5-2 pazarı ortada (fandom 5-2, darkorbitwiki
+# harita görseli)
+STATION_POS = {24: (10650, 2000), 20: (2000, 6550), 28: (19000, 6550), 92: (10500, 6550)}
 
 
 def map_world(map_id, tpl):
     """Kayıtta olmayan haritanın dünya mesajları {'giris', 'hazir'} ('_m' anahtarlı): portallar istemcinin spacemap-config.xml'inden.
-    İstasyonlu haritalarda kayıttaki 2-1 istasyonu (tpl) portallardan en uzak köşeye taşınır; firma, nesne kimlikleri ve bölge
-    adları haritaya göre değişir. Görev verici de taşınır (tasarımı ve adı haritanın firmasına göre: quest_giver)."""
+    İstasyonlu haritalarda kayıttaki 2-1 istasyonu (tpl) oyundaki yerine (STATION_POS), yoksa portallardan en uzak köşeye
+    taşınır; firma, nesne kimlikleri ve bölge adları haritaya göre değişir. Görev verici de taşınır (tasarımı ve adı haritanın
+    firmasına göre: quest_giver)."""
     gs = gates(map_id)
     gate_msgs = [dict(jumpgate_create(g)[1], _m='JumpgateCreateCommand') for g in gs]
     fac = STATION_MAPS.get(int(map_id))
@@ -123,7 +129,8 @@ def map_world(map_id, tpl):
             hazir.append({'_m': 'SpaceStationCommand', 'posX': w // 2, 'posY': h // 2, 'peaceRadius': 0, 'id': 0,
                           'type': LOW_STATION[int(map_id)]})
         return {'giris': giris, 'hazir': hazir + gate_msgs}
-    cx, cy = max(CORNERS, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs), default=0))
+    cx, cy = STATION_POS.get(int(map_id)) or max(CORNERS, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
+                                                                            default=0))
     dx, dy = cx - TPL_CENTER[0], cy - TPL_CENTER[1]
     base = 151000000 + int(map_id) * 100
     ids, giris, hazir = {}, [], []
@@ -180,7 +187,8 @@ def structure(map_id, tpl, gs):
     if not kind or not src:
         return [], []
     spots = CORNERS + [(10500, 6550), (10500, 2000), (10500, 11100), (2000, 6550), (19000, 6550)]   # köşeler, kenar ortaları, merkez
-    cx, cy = max(spots, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs), default=0))
+    cx, cy = STATION_POS.get(int(map_id)) or max(spots, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
+                                                                          default=0))
     aid = 151000000 + int(map_id) * 100 + 90
     giris = [quest_giver(dict(src, assetId=aid, posX=cx, posY=cy, factionId=src['factionId'] if kind == QUEST_GIVER else company(map_id) or 0),
                          map_id)]

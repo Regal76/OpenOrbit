@@ -11,7 +11,7 @@ dunya.menu_action'dan, roket AttackRocketRequest'ten gelir.
   0|A|JCPU|S|sn|harita                      CPU atlamasının geri sayımı (-1|0 iptal); sonra portal atlamasındaki harita değişimi
   0|A|JCPU|I|…  0|A|JCPU|C|…  0|A|JV|n      gelişmiş atlama (AJP-01): harita listesi, seçim yanıtı, kupon sayısı
   0|RL|S|tür|roket|dolu                     fırlatıcı doldukça (ses); HellstormAttackCommand: fırlatıcı atışı
-  0|v|saldıran|hedef|H|roket|0|0            roket (roket = görsel kimliği)
+  0|v|saldıran|hedef|H|roket|iz|güdüm       roket (roket = görsel kimliği; iz ve güdüm dunya.rocket_look)
   0|n|fx|start ya da end|ICY_CUBE|uid       donma, SABOTEUR_DEBUFF yavaşlama görseli
 Beklemeler MenuItemCooldownGroupTimerCommand ile (grup: istemcinin CooldownType'ı); bitişler profilde (harita değişince de sürer).
 """
@@ -21,6 +21,7 @@ import ekstra as EK
 import harita as H
 import ayar as AY
 import takvim as TKV
+import yetenek as YT
 from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -519,8 +520,9 @@ class Esyalar:
         self.mines[h] = dict(loot=loot, x=x, y=y, sahip=w.hid, kurulma=now + cfg.get('kurulma_sn', M['kurulma_sn']),   # SLM-01 1 sn
                              bitis=now + cfg.get('omur_sn', M['omur_sn']))
         p.ach('shot', silah='MINE')
-        self.send(w.ammo_msgs(loot) + [('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=cfg['tip'], maxSkill1=False,
-                                                               maxSkill5b=False)),
+        # mayının görseli: Explosives (1) ve Detonation II (5b) son seviyesinde (resmî SSS: "mine visuals")
+        self.send(w.ammo_msgs(loot) + [('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=cfg['tip'],
+                                                               maxSkill1=YT.maxed(p, '1'), maxSkill5b=YT.maxed(p, '5b'))),
                                        self.cooldown(loot, now)])
         self.log('   mayın: %s (%d, %d)' % (loot, x, y))
 
@@ -949,9 +951,10 @@ class Esyalar:
         w.last_combat = now
         w.stop_repair()
         p.ach('shot', silah='ROCKET_LAUNCHER')
-        hit = random.random() < w.rocket_hit(rocket)
-        self.send(w.ammo_msgs(rocket) + [legacy('0|v|%d|%d|%s|%d|0|0' % (w.hid, n.id, 'H' if hit else 'M', r.get('kimlik', 1))),
-                                         self.cooldown(rocket, now)])
+        roll = random.random()
+        hit = roll < w.rocket_hit(rocket)
+        saved = hit and roll >= w.rocket_hit(rocket, skill=False)             # güdüm görseli (dunya.rocket_look)
+        self.send(w.ammo_msgs(rocket) + [w.rocket_msg(n.id, hit, r.get('kimlik', 1), saved), self.cooldown(rocket, now)])
         uid = n.id
         if hit:
             w.later(ROCKET_FLIGHT, lambda: self.special_hit(rocket, uid))

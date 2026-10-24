@@ -149,13 +149,6 @@ class EtkinlikKapilari:
         """Bu haritadaki etkinlik kapısı portalları (etkinlik sürerken ve girilebilirken) ve X-1'de Frozen Labyrinth'inki."""
         now = time.time() if now is None else now
         out = []
-        sx, sy = (station['posX'], station['posY']) if station else (KAPI.MAP_W // 2, KAPI.MAP_H // 2)
-        cx, cy = KAPI.MAP_W // 2, KAPI.MAP_H // 2
-        base = math.atan2(cy - sy, cx - sx) + math.pi        # üretici kapılarının karşı yanında, yay üzerinde
-        dist = KAPI.K['portal_uzaklik'] + 600
-        slots = sorted(GATES) + ['labirent']
-        spot = lambda key: (int(sx + math.cos(base + (slots.index(key) - len(slots) / 2.0) * 0.4) * dist),
-                            int(sy + math.sin(base + (slots.index(key) - len(slots) / 2.0) * 0.4) * dist))
         for key in sorted(GATES):
             g = GATES[key]
             if g.get('kural', {}).get('pencere'):
@@ -165,15 +158,20 @@ class EtkinlikKapilari:
             G = self.gate(key)
             order = self.order(key)
             dest = g['dalgalar'][order[min(G['dalga'], len(order) - 1)]]['harita'] if G.get('hazir') else g['dalgalar'][0]['harita']
-            x, y = spot(key)
-            out.append(dict(gateId=PORTAL_BASE + g['kimlik'], x=x, y=y, hedef=dest, designId=g['portal'], kapi=key,
+            out.append(dict(gateId=PORTAL_BASE + g['kimlik'], x=0, y=0, hedef=dest, designId=g['portal'], kapi=key,
                             etkinlik_kapisi=True, varis=center(dest)))
         if self.here(LAB['giris'], map_id) and TK.is_active(LAB['etkinlik'], now):
             import labirent as LB
             dest = random.choice(LAB['baslangic'])
-            x, y = spot('labirent')
-            out.append(dict(gateId=LAB_ENTRY, x=x, y=y, hedef=dest, designId=LAB['portal'], kapi='labirent',
+            out.append(dict(gateId=LAB_ENTRY, x=0, y=0, hedef=dest, designId=LAB['portal'], kapi='labirent',
                             varis=LB.arrival_spot(dest)))
+        # açık portallar haritanın ortasının üst yanında, yay üzerinde yan yana (wiki: Level Invasion kapıları haritanın ortasında;
+        # resmî sunucu kaydı: 2-1'deki etkinlik portalları orta sütunda, (10700, 3000) ile (11210, 6310) arası). Önceden üssün
+        # arkasında köşeye doğru diziliyordu.
+        cx, cy = KAPI.MAP_W // 2, KAPI.MAP_H // 2
+        for i, g in enumerate(out):
+            a = -math.pi / 2 + (i - (len(out) - 1) / 2.0) * 0.55
+            g['x'], g['y'] = int(cx + math.cos(a) * 2400), int(cy + math.sin(a) * 2400)
         return out
 
     def enter(self, key, now=None):

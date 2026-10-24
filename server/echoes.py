@@ -70,7 +70,8 @@ class Echoes:
         out = []
         if H.map_class(map_id) == D['giris'] and int(map_id) == KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5):
             w, h = H.map_size(map_id)
-            out.append(dict(gateId=PORTAL, x=w // 2 - 2500, y=h // 2 + 2200, hedef=D['salon'], designId=D['portal'], kapi='echoes',
+            # resmî sunucu kaydı: 2-1'de bu tasarımın (300) portalı (11210, 6310), haritanın ortasında
+            out.append(dict(gateId=PORTAL, x=w // 2 + 710, y=h // 2 - 240, hedef=D['salon'], designId=D['portal'], kapi='echoes',
                             pencere='echoes_giris', varis=(10500, 6550)))
         elif int(map_id) == D['salon']:
             home = KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5)
