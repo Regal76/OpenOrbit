@@ -637,6 +637,10 @@ class Magaza:
                 for r, u in zip(rows, it['price']):
                     if u:                                  # 0: mağazada satılmaz (kayıttaki satır kalır)
                         r.update(price=int(u), cost='{:,} U.'.format(int(u)))
+            if it['lootId'] == PETM.HULL and it.get('LevelDataList'):
+                # G-HP1 G-REP1'in kopyası (ek_magaza sablon): detay paneli ve onay penceresi LevelDataList'ten okuyor, kopyada G-REP1'in
+                # fiyatları kalıyordu (2.500 U. gösterilip 25.000 U. alınıyordu, canlı 2026-10-24): her satırda yükseltmenin fiyatı
+                it['LevelDataList'] = [dict(r, price=int(it['price'][0]), cost=it['cost']) for r in it['LevelDataList']]
         if category == 'ammunition':
             for it in t['itemList']:
                 pr = self.buy_price(it['lootId'])
