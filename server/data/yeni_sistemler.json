@@ -1562,6 +1562,8 @@
  "otopilot": {
   "premium_sn": 2592000,
   "lazer_menzil": 562,
+  "menzil_orani": 0.9,
+  "_menzil_orani": "Share of the real laser range sent to the bot (laserRange), bonuses and SL-01 included. A lower share makes the bot fight closer, so it stays in range when the target moves or positions drift.",
   "_uyarlama": "Tek oyunculuda herkes Premium (profilin premium alanı): kalan süre her açılışta 30 gün; lazer menzili kayıttaki 562."
  }
 }
