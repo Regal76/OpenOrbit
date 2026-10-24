@@ -1,3 +1,6 @@
+# IDE
+.idea
+
 # Your saves, settings and logs stay on your computer / Kayıtlar, ayarlar ve günlükler bilgisayarında kalır
 server/save/
 server/logs/
