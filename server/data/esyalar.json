@@ -2862,11 +2862,13 @@
   "ammunition_laser_rsb-75": {
    "carpan": 6,
    "aralik_sn": 3.0,
+   "bekleme_grubu": 10,
    "_not": "yavaş ateş: darkorbitwiki.com \"Beginners - how to fight\" rehberi \"x6 (cooldown 3 sec.)\""
   },
   "ammunition_laser_rcb-140": {
    "carpan": 7,
    "aralik_sn": 3.0,
+   "bekleme_grubu": 10,
    "_not": "aynı rehber: \"x7 (cooldown 3 sec.)\""
   },
   "ammunition_laser_job-100": {
