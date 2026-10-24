@@ -248,13 +248,29 @@ class Skylab:
         return [mod('SkylabActiveRobotsLeftTimeCommand', uridium=1 if t == 2 else 0, leftTime=max(0, int(b - now)))
                 for t, b in self.st['robotlar'].get(key, [])]
 
+    def robot_price(self, kind):
+        """Robotun para birimi ve alınan fiyatı (panelin hizmet ücreti çarpanıyla; pencerede de bu görünür)."""
+        cur, price = ROBOTS[kind]['fiyat']
+        return cur, AY.fiyat('hizmet_fiyat', price, 'skylab')
+
+    def productivity(self, key, now=None):
+        """Toplayıcının Productivity sekmesi (robotlar, verim, fiyatlar)."""
+        price = lambda kind: mod('SkylabRobotPriceCommand', priceType=ROBOTS[kind]['fiyat'][0], value=self.robot_price(kind)[1])
+        return mod('SkylabModuleProductivityCommand', type1Price=price('1'), efficienty=self.efficiency(key),
+                   active=len(self.st['robotlar'].get(key, [])), robotsLeftTimeList=self.robots_left(key, now), type2Price=price('2'),
+                   bonus=self.bonus(key), maxActive=ROBOTS['azami'], inStorage=len(self.st['yedek'].get(key, [])))
+
     def receipt(self, construction='', subaction='', errors=(), success=()):
         """İstemci (UISkylabSystem.ShowTips) yalnız errorId'yi açılır pencerede gösterir; sucessId gelince pencere boş açılıyordu.
-        Başarı metinleri de errorId'de; %module% / %level% / %date% yer tutucuları ArgStackCommand ile (canlı test H37)."""
+        Başarı metinleri de errorId'de; %module% / %level% / %date% yer tutucuları ArgStackCommand ile (canlı test H37).
+        İstemci (SetSkylabActionHandler.Run) construction boş değilse pencereyi açar: metin yoksa construction boş gider (robot
+        alımında, kapanmayan modülü aç/kapada metinsiz "Ok" penceresi çıkıyordu; kullanıcı 2026-10-24). Kod yerine hazır metin de
+        verilebilir (BaseStackCommand)."""
+        texts = [c if isinstance(c, dict) else self.stack_args(c, construction) for c in list(errors) + list(success)]
         return ('SkylabUnifiedReceiptCommand', dict(
-            construction=construction, resultId=0, transportPrice=TRANSPORT['hizli_uridyum'],
+            construction=construction if texts else '', resultId=0, transportPrice=TRANSPORT['hizli_uridyum'],
             robotsLeftTimeList=self.robots_left(construction) if construction in COLLECTORS else [], subaction=subaction,
-            errorId=[self.stack_args(c, construction) for c in list(errors) + list(success)], sucessId=[]))
+            errorId=texts, sucessId=[]))
 
     def stack_args(self, code, key):
         import magaza as MG
@@ -294,12 +310,7 @@ class Skylab:
         prod, xeno, ores = None, mod('SkylabXenoInfoCommand', activeEfficiency=0, activeConsumption=0, inactiveConsumption=0,
                                      activeEnergy=0), []
         if key in COLLECTORS:
-            prod = mod('SkylabModuleProductivityCommand',
-                       type1Price=mod('SkylabRobotPriceCommand', priceType=ROBOTS['1']['fiyat'][0], value=ROBOTS['1']['fiyat'][1]),
-                       efficienty=self.efficiency(key), active=len(self.st['robotlar'].get(key, [])),
-                       robotsLeftTimeList=self.robots_left(key, now),
-                       type2Price=mod('SkylabRobotPriceCommand', priceType=ROBOTS['2']['fiyat'][0], value=ROBOTS['2']['fiyat'][1]),
-                       bonus=self.bonus(key), maxActive=ROBOTS['azami'], inStorage=len(self.st['yedek'].get(key, [])))
+            prod = self.productivity(key, now)
             ores = [self.ore_info(COLLECTORS[key], self.production(key))]
         elif key in REFINERIES:
             out, inputs, _ = REFINERIES[key]
@@ -483,16 +494,29 @@ class Skylab:
         return [], [52, 53] if mode == 'fast' else [52], msgs
 
     # ------------------------------------------------------------ robotlar
+    def robots_bought(self):
+        """"Skylab robots bought" (istemcinin metni; BaseKey'lerde yok: ham "XXX" + çevrilen değeri, magaza.RES_YERINE gibi)."""
+        import magaza as MG
+        return mod('BaseStackCommand', type=1, enumBaseKey=0, stringBasekey='XXX', argsList=[
+            mod('ArgStackCommand', type=0, value2=None, key=MG.ARG_KEYS['XXX'], value=MG.res('skylab_history_robots_bought'))])
+
+    def productivity_msg(self, key, now):
+        f = dict(self.productivity(key, now))
+        f.pop('_')
+        return ('SkylabModuleProductivityCommand', f)
+
     def buy_robot(self, f, now):
+        """Robot alımı. Yanıtta modül sayfası (SkylabViewModuleBackCommand) yok: istemci sayfayı açarken (ShowSecondPage) sekmeyi
+        Info'ya döndürüyordu, Productivity'de kalınamıyordu (kullanıcı 2026-10-24). Sekme SkylabModuleProductivityCommand'la yenilenir
+        (RefreshSkyInfoRobotEvent -> UISkylabSystem.WriteProductivity)."""
         key, kind = f.get('construction', ''), str(f.get('robotType') or 1)
         if key not in COLLECTORS or kind not in ('1', '2'):
             return []
-        cur, price = ROBOTS[kind]['fiyat']
-        price = AY.fiyat('hizmet_fiyat', price, 'skylab')                         # panel
+        cur, price = self.robot_price(kind)                                       # panel
         loot = 'currency_' + cur
         if INV.missing(self.p, {loot: price}):
             self.log('   Skylab: robot için %s yetmiyor' % cur)
-            return self.out(key, 'purchase', [32 if cur == 'credits' else 44], [], [], now) + [self.view(key, now)]
+            return self.out(key, 'purchase', [32 if cur == 'credits' else 44], [], [], now) + [self.productivity_msg(key, now)]
         INV.spend(self.p, {loot: price}, reason='buy_SPECIAL', detail='skylab_robot')
         with self.p.lock:
             rs = self.st['robotlar'].setdefault(key, [])
@@ -502,7 +526,7 @@ class Skylab:
                 self.st['yedek'].setdefault(key, []).append(int(kind))
             self.p.dirty = True
         self.log('   Skylab: %s robotu (%s) alındı, etkin %d, depoda %d' % (key, cur, len(rs), len(self.st['yedek'].get(key, []))))
-        return self.out(key, 'purchase', [], [], [loot], now) + [self.view(key, now)]
+        return self.out(key, 'purchase', [], [self.robots_bought()], [loot], now) + [self.productivity_msg(key, now)]
 
     # ------------------------------------------------------------ istekler
     def out(self, key, sub, errors, success, spent, now, extra=()):

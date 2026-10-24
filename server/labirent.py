@@ -237,10 +237,11 @@ class Labirent:
 
     def info_msgs(self, now=None):
         now = time.time() if now is None else now
-        st = state(self.p)
-        me = dict(_='FrozenLabyrinthRankModule', kills=int(st.get('avlar', 0)), name=self.p.d['pilot'].get('userName', ''), rank=1,
-                  lastKillTime=st.get('son_av', ''))
-        rank = dict(_='FrozenLabyrinthRankInfoCommand', myRank=me, topRankers=[me])
+        import topluluk as TP                          # sunucudaki oyuncular (Synk avları)
+        row = lambda r: dict(_='FrozenLabyrinthRankModule', kills=int(r[2]), name=r[1].d['pilot'].get('userName', ''), rank=r[0] or 1,
+                             lastKillTime=(r[1].d.get('labirent') or {}).get('son_av', ''))
+        top, me = TP.siralama(self.p, lambda x: int((x.d.get('labirent') or {}).get('avlar', 0)))
+        rank = dict(_='FrozenLabyrinthRankInfoCommand', myRank=row(me), topRankers=[row(r) for r in top] or [row(me)])
         left = int(max(0, TK.time_left(L['etkinlik'], now)))
         times = dict(_='FrozenLabyrinthTimeInfoCommand', timeToEndLabyrinth=left, timeToNextLabyrinth=0)
         return [('FrozenLabyrinthInfoCommand', dict(rankInfo=rank, labyrinthKeys=keys(self.p), timeInfo=times)), self.synk_cmd(now)]

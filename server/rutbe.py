@@ -18,8 +18,9 @@ Profilde:
     (kill_npcID_<kimlik>, experience_points_<n>, honour_points_<n>, received_item, killed_by_npc_<kimlik>, killed_by_radiation …).
   - Hesap geçmişi: BalanceInfoListRequest {page: 1'den} -> amountType GOLD/PEARL _PLUS/_MINUS, description istemcinin anahtarı
     (bonus_abschussAlien, quest_won, buy_BATTERY_id …; internalInfo eşya, infoText adet).
-Tek oyunculu uyarlama: şirkette başka oyuncu yok; rütbe puan eşiklerine göre, Hall of Fame listelerinde yalnız oyuncu (klan
-listelerinde oyuncunun tek kişilik klanı, Aşama 10; puanı oyuncunun rütbe puanı).
+Yerel uyarlama: rütbe puan eşiklerine göre; Hall of Fame listelerinde sunucudaki oyuncular (tek oyunculuda yalnız oyuncu; çoklu
+istemci ve arkadaş sunucusunda bütün bağlı oyuncular: her istemci aynı listeyi görür), klan listelerinde sunucunun klanları (klan.py;
+puanı üyelerin rütbe puanlarının toplamı).
 """
 import json, math, os, time
 
@@ -160,7 +161,7 @@ def _since(p, field, days, now=None):
 
 # ------------------------------------------------------------ Hall of Fame
 def _row(p, rank, points, value):
-    return {'_': 'HallOfFameDataCommand', 'userId': p.d['pilot'].get('userId', 0), 'rank': rank, 'time': '', 'points': int(points),
+    return {'_': 'HallOfFameDataCommand', 'userId': p.user_id, 'rank': rank, 'time': '', 'points': int(points),
             'value': int(value), 'userName': p.d['pilot'].get('userName', '')}
 
 
@@ -190,8 +191,36 @@ def _page(page_type, rows, total=1, cur=1):
             'currentPage': cur, 'totalPage': total}
 
 
+def oyuncular(p):
+    """Hall of Fame'e girenler: sunucudaki oyuncuların profilleri (tek oyunculuda yalnız oyuncu; sunucuda olmayan profil tek başına)."""
+    import topluluk as TP
+    lst = [k.profil for k in TP.hepsi().values()]
+    return lst if any(x is p for x in lst) else [p]
+
+
+def _sorted(p, value):
+    """Oyuncular değere göre (büyükten; eşitte ada göre) -> [(profil, değer)]."""
+    return sorted(((x, value(x)) for x in oyuncular(p)), key=lambda xv: (-xv[1], str(xv[0].d['pilot'].get('userName', '')).lower()))
+
+
+def _ranked(p, value, extra=None):
+    """-> (bütün satırlar, oyuncunun satırı). extra(x, v): satırın value'su (verilmezse değerin kendisi)."""
+    rows, mine = [], []
+    for i, (x, v) in enumerate(_sorted(p, value)):
+        row = _row(x, i + 1, v, extra(x, v) if extra else v)
+        rows.append(row)
+        if x is p:
+            mine = [row]
+    return rows, mine
+
+
+def hof_sira(p, now=None):
+    """Pilot kartının sırası: sunucudaki oyuncular arasında rütbe puanına göre."""
+    _, mine = _ranked(p, lambda x: breakdown(x, now)['rankPoints'])
+    return mine[0]['rank'] if mine else 1
+
+
 def hof_top(p, f, now=None):
-    """HallOfFameTopRequest -> HallOfFameTopDataListCommand (tek oyunculu: listelerde yalnız oyuncu)."""
     t = int(f.get('type') or 0)
     out = dict(myRankingPoints=_zero_points(), type=t, allRankList=[], pages=[], myRankList=[])
     if t == 17:
@@ -204,36 +233,52 @@ def hof_top(p, f, now=None):
         out.update(myRankingPoints=ranking_points(p, now),
                    pages=[_page('npcPointsDetails', pg, len(pages), i + 1) for i, pg in enumerate(pages)] + [_page('playerPointsDetails', ships)])
     elif t == 18:                                                    # ana sayfa: puan, ad, sıra; value firma simgesi
-        row = _row(p, 1, breakdown(p, now)['rankPoints'], p.d['pilot'].get('factionId', 0))
-        out.update(allRankList=[row], myRankList=[row])
-    elif t in TOP['klan']:                                           # tek kişilik klan (klan.py): klan yoksa liste boş
-        k = p.d.get('klan')
-        if k:
-            span = {14: 7, 15: 7}.get(t)                             # 14 haftalık, 15 yükselenler (kullanıcıdaki 2/3 gibi)
-            value = _since(p, 'puan', span, now) if span else breakdown(p, now)['rankPoints']
-            row = dict(_row(p, 1, value, k.get('firma', 0)), userId=k['id'], userName='[%s] %s' % (k['etiket'], k['ad']))
-            out.update(allRankList=[row], myRankList=[row])
+        rows, mine = _ranked(p, lambda x: breakdown(x, now)['rankPoints'], lambda x, v: x.d['pilot'].get('factionId', 0))
+        out.update(allRankList=rows[:50], myRankList=mine)
+    elif t in TOP['klan']:                                           # sunucunun klanları (klan.py): üyelerin rütbe puanları
+        import klan as KL
+        span = {14: 7, 15: 7}.get(t)                                 # 14 haftalık, 15 yükselenler (kullanıcıdaki 2/3 gibi)
+        if span:
+            who = {KL.ad(x): x for x in oyuncular(p)}
+            with KL.LOCK:
+                lst = sorted(((k, sum(_since(who[a], 'puan', span, now) for a in k['uyeler'] if a in who)) for k in KL.KLANLAR.values()),
+                             key=lambda kv: (-kv[1], kv[0]['id']))
+        else:
+            lst = KL.siralama()
+        own = KL.klani(p)
+        rows, mine = [], []
+        for i, (k, v) in enumerate(lst):
+            row = dict(_row(p, i + 1, v, k.get('firma', 0)), userId=k['id'], userName='[%s] %s' % (k['etiket'], k['ad']))
+            rows.append(row)
+            if k is own:
+                mine = [row]
+        out.update(allRankList=rows[:50], myRankList=mine)
     else:
         field = 'ep' if t in TOP['exp'] else 'onur' if t in TOP['onur'] else 'puan'
-        if t in TOP_WEEK + TOP_CLIMB:
-            value = _since(p, field, 7, now)
-        elif t in TOP_MONTH:
-            value = _since(p, field, 30, now)
-        else:
-            value = (breakdown(p, now)['rankPoints'] if field == 'puan'
-                     else int(p.d['pilot'].get('ep' if field == 'ep' else 'honourPoints', 0)))
-        row = _row(p, 1, value, value)
-        out.update(allRankList=[row], myRankList=[row])
+
+        def value(x):
+            if t in TOP_WEEK + TOP_CLIMB:
+                return _since(x, field, 7, now)
+            if t in TOP_MONTH:
+                return _since(x, field, 30, now)
+            return (breakdown(x, now)['rankPoints'] if field == 'puan'
+                    else int(x.d['pilot'].get('ep' if field == 'ep' else 'honourPoints', 0)))
+        rows, mine = _ranked(p, value)
+        out.update(allRankList=rows[:50], myRankList=mine)
     return [('HallOfFameTopDataListCommand', out)]
 
 
 def hof_pages(p, f, now=None):
     """HallOfFamePagesRequest {type 1 kullanıcı, 2 EP, 3 onur; page} -> HallOfFamePages (satır: sıra, ad, puan, rütbe)."""
     t = int(f.get('type') or 1)
-    pts = (breakdown(p, now)['rankPoints'] if t == 1 else int(p.d['pilot'].get('ep', 0)) if t == 2
-           else int(p.d['pilot'].get('honourPoints', 0)))
-    row = _row(p, 1, pts, p.d['pilot'].get('dailyRank', 1))
-    return [('HallOfFamePages', dict(pageType='', myList=[row], dataList=[row], type=t, pageSize=50, currentPage=1, totalPage=1))]
+    value = ((lambda x: breakdown(x, now)['rankPoints']) if t == 1 else (lambda x: int(x.d['pilot'].get('ep', 0))) if t == 2
+             else (lambda x: int(x.d['pilot'].get('honourPoints', 0))))
+    rows, mine = _ranked(p, value, lambda x, v: x.d['pilot'].get('dailyRank', 1))
+    size = 50
+    total = max(1, (len(rows) + size - 1) // size)
+    page = min(max(1, int(f.get('page') or 1)), total)
+    return [('HallOfFamePages', dict(pageType='', myList=mine, dataList=rows[(page - 1) * size:page * size], type=t, pageSize=size,
+                                     currentPage=page, totalPage=total))]
 
 
 def _runs(p, n):
@@ -256,13 +301,19 @@ HOF_TIMES = {3: _ebl_time}          # Time sütunu: en ileri dalganın zamanı (
 
 
 def hof_events(p, f):
-    """HallOfFameDataListRequest {requested: istemcinin HallOfFameType'ı}: etkinlik sıralamaları. Tek oyunculu: Frozen Labyrinth
-    (Synk avları), Eternal Gate (Eternal Black Light'ın en ileri dalgası), Mimesis Mutiny (en iyi 10 seferin toplamı), Payload Escort
-    (en iyi sefer) ve World Boss (etkinlik boyu hasar) listelerinde yalnız oyuncu; Galactic Strife boş."""
+    """HallOfFameDataListRequest {requested: istemcinin HallOfFameType'ı}: etkinlik sıralamaları. Frozen Labyrinth (Synk avları),
+    Eternal Gate (Eternal Black Light'ın en ileri dalgası), Mimesis Mutiny (en iyi 10 seferin toplamı), Payload Escort (en iyi sefer)
+    ve World Boss (etkinlik boyu hasar) listelerinde sunucudaki oyuncular (puanı olanlar); Galactic Strife boş."""
     t = int(f.get('requested') or 0)
-    v = HOF_EVENTS.get(t, lambda p: 0)(p)
-    rows = [dict(_row(p, 1, v, v), time=HOF_TIMES.get(t, lambda p: '')(p))] if v else []
-    return [('HallOfFameDataListCommand', dict(dataList=rows, type=t, pages=[], myList=rows))]
+    rows, mine = [], []
+    for x, v in _sorted(p, HOF_EVENTS.get(t, lambda x: 0)):
+        if not v:
+            continue
+        row = dict(_row(x, len(rows) + 1, v, v), time=HOF_TIMES.get(t, lambda x: '')(x))
+        rows.append(row)
+        if x is p:
+            mine = [row]
+    return [('HallOfFameDataListCommand', dict(dataList=rows[:50], type=t, pages=[], myList=mine))]
 
 
 # ------------------------------------------------------------ seyir defteri

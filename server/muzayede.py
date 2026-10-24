@@ -17,8 +17,10 @@ adı lot, dönem ve seviye tohumlu (yeniden hesaplanır, saklanmaz).
   Rekabetçi, Agresif: oyuncu geçince bir tepki süresi sonra karşılık verir (oyuncunun teklifi + artış, bütçeye kadar; dönemin
   son 5 saniyesine kalmadan). Bütçeyi aşan teklif kazanır; kaybedilen lotun kredisi dönem sonunda geri gelir.
 Bot oyuncular gelince (Aşama 11) teklifleri rival() döndürecek.
+Çok oyunculu sunucuda lotlar herkes için aynı: öteki oyuncuların teklifleri de yarışır (en yüksek teklif; eşitse önce veren), dönemin
+kazananı ilk hesaplayan oturumda bir kez belirlenir (SONUC): önce her oyuncu kendi teklifiyle aynı lotu kazanabiliyordu.
 """
-import json, os, random, time
+import json, os, random, threading, time
 
 import ayar as AY
 
@@ -54,6 +56,23 @@ def period_end(kind, now):
 R = D['rakipler']
 SPAN = {'hour': 3600, 'day': 86400, 'week': 7 * 86400}
 SON_SN = 5                      # rakip karşılığını dönemin bitiminden en geç bu kadar önce verir
+LOCK = threading.Lock()
+SONUC = {}                      # (tür, lot, bitiş) -> dönemin en yüksek oyuncu teklifi (teklif, zaman, ad, kimlik)
+
+
+def bids(lot, end, skip=None):
+    """Sunucudaki oyuncuların bu lotun bu dönemine teklifleri -> [(teklif, zaman, ad, kimlik)] (skip: bu profil hariç)."""
+    import topluluk as TP
+    key, out = '%s|%s' % (lot['tur'], lot['loot']), []
+    for k in TP.hepsi().values():
+        b = ((k.profil.d.get('muzayede') or {}).get('teklifler') or {}).get(key)
+        if k.profil is not skip and b and b.get('bitis') == end:
+            out.append((int(b['teklif']), int(b.get('zaman', 0)), k.ad, k.uid))
+    return out
+
+
+def best(lst):
+    return max(lst, key=lambda x: (x[0], -x[1]), default=None)
 
 
 def rival_level():
@@ -140,7 +159,11 @@ class Muzayede:
     def data(self, lot, now):
         b = self.bid_rec(lot, now)
         mine = b['teklif'] if b else 0
-        riv, rname, rid = rival(lot, period_end(lot['tur'], now), now, b)
+        end = period_end(lot['tur'], now)
+        riv, rname, rid = rival(lot, end, now, b)
+        o = best(bids(lot, end, self.p))                       # öteki oyuncuların en yüksek teklifi
+        if o and o[0] > riv and (o[0] > mine or (o[0] == mine and b and o[1] < b.get('zaman', 0))):
+            riv, rname, rid = o[0], o[2], o[3]
         lead = mine and mine > riv
         pl = self.p.d['pilot']
         return mod('AuctionDataCommand', instantBuy=lot['anlik'], price=lot['fiyat'], highestBid=max(mine, riv),
@@ -215,7 +238,7 @@ class Muzayede:
         end = period_end(lot['tur'], now)
         rec = self.bid_rec(lot, now)
         mine = rec['teklif'] if rec else 0
-        top = max(mine, rival(lot, end, now, rec)[0])
+        top = max([mine, rival(lot, end, now, rec)[0]] + [x[0] for x in bids(lot, end, self.p)])
         if price < D['en_az_teklif'] or price <= top or (mine and price < mine + D['artis']):
             return fail('auction_bid_minBid_not_reached', _MINIMUM_BID_='{:,}'.format(D['artis']))
         import envanter as INV
@@ -260,7 +283,14 @@ class Muzayede:
                 continue
             span = SPAN[kind]
             riv, rname, rid = rival(lot, b['bitis'], b['bitis'], b)
-            if b['teklif'] <= riv:                                      # rakip kazandı: kredi geri, geçmişte rakibin adı
+            with LOCK:                                                   # oyuncuların kazananı dönemde bir kez
+                win = SONUC.get((kind, loot, b['bitis']))
+                if win is None:
+                    me = (int(b['teklif']), int(b.get('zaman', 0)), self.p.d['pilot'].get('userName', ''), self.p.user_id)
+                    win = SONUC[(kind, loot, b['bitis'])] = best(bids(lot, b['bitis'], self.p) + [me])
+            if win[3] != self.p.user_id and win[0] > riv:                # başka oyuncu kazandı
+                riv, rname, rid = win[0], win[2], win[3]
+            if b['teklif'] <= riv or win[3] != self.p.user_id:         # rakip ya da oyuncu kazandı: kredi geri, geçmişte onun adı
                 self.p.gain(kredi=b['teklif'], neden='auction_bookMoneyBack', detay=loot)
                 with self.p.lock:
                     self.d['gecmis'].insert(0, {'grup': lot['grup'], 'kim': rid, 'teklif': riv, 'tarih': stamp(b['bitis'] - span),

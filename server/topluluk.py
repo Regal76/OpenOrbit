@@ -66,6 +66,18 @@ def bul(ad=None, uid=None):
     return next((k for k in kisiler.values() if ad and k.ad.lower() == ad), None) if ad else None
 
 
+def siralama(p, deger, en_cok=10):
+    """Etkinlik sıralaması: sunucudaki oyuncular (değeri olanlar) değere göre -> ([(sıra, profil, değer)] ilk en_cok, oyuncunun
+    (sıra, profil, değer) ya da değeri yoksa (0, p, 0)). Tek oyunculuda yalnız oyuncu."""
+    lst = [k.profil for k in hepsi().values()]
+    if all(x is not p for x in lst):                    # sunucuda olmayan profil tek başına
+        lst = [p]
+    vals = sorted(((x, deger(x)) for x in lst), key=lambda xv: (-xv[1], str(xv[0].d['pilot'].get('userName', '')).lower()))
+    rows = [(i + 1, x, v) for i, (x, v) in enumerate(xv for xv in vals if xv[1])]
+    me = next((r for r in rows if r[1] is p), (0, p, 0))
+    return rows[:en_cok], me
+
+
 def kisi(profil):
     """Profilin Kisi'si (oturumuyla) ya da yalnız profille (sunucudan düşmüş)."""
     return hepsi().get(profil.user_id) or Kisi(profil, None)

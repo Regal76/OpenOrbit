@@ -79,6 +79,7 @@ import profil as PF
 import envanter as INV
 import cok_oyunculu as CO
 import topluluk as TP
+import klan as KL
 import grup as GR
 import rehber as RH
 from eski_protokol import legacy, parse as legacy_parse  # noqa: E402         # noqa: E402
@@ -553,14 +554,19 @@ class Session:
             self.profil.d['oynama_sn'] = self.profil.d.get('oynama_sn', 0) + max(0, now - start)
 
     def rename(self, name):
-        """Pilot adını değiştir (tek oyunculu: ücretsiz; adı yalnız oyuncu kullanıyor). Yeni ad harita değişiminde gemide görünür
-        (istemcinin NameChangeCommand işleyicisi yok). Geçersiz ad: InternalPilotBioUpdateResultsCommand success=False."""
+        """Pilot adını değiştir (ücretsiz). Yeni ad harita değişiminde gemide görünür (istemcinin NameChangeCommand işleyicisi yok).
+        Geçersiz ad ya da sunucudaki başka oyuncunun adı (sohbet, posta, grup, klan oyuncuyu adıyla bulur):
+        InternalPilotBioUpdateResultsCommand success=False."""
         name = str(name or '').strip()
         ok = NAME_MIN <= len(name) <= NAME_MAX and '|' not in name and name.isprintable()
+        o = TP.bul(ad=name) if ok else None
+        ok = ok and (o is None or o.profil is self.profil)
         if ok:
+            old = self.profil.d['pilot'].get('userName', '')
             with self.profil.lock:
                 self.profil.d['pilot']['userName'] = name
                 self.profil.dirty = True
+            KL.ad_degisti(old, name)
             log('   pilot adı: %s' % name)
         else:
             log('   pilot adı değişmedi: %r' % name)
@@ -574,13 +580,15 @@ class Session:
         bio = p.d.get('pilot_bio', {})
         if p is self.profil:
             self.play_time()
-        k = p.d.get('klan') or {}                                  # tek kişilik klan (klan.py)
+        k = KL.klani(p) or {}                                       # ortak klan (klan.py)
+        sira = KL.siralama() if k else []
         rank = {'rank': p.d['pilot'].get('dailyRank', 1),            # pilot kartındaki rütbe (sayı)
                 'playTime': int(p.d.get('oynama_sn', 0) // 3600),     # saat
                 'userName': p.d['pilot'].get('userName', ''),          # kayıttaki ad değil, profilinki
                 'userId': p.user_id, 'registrationDate': p.d.get('olusturma', '') + '.0',    # kayıttaki hesabınki değil
-                'ranking': 1,                                               # Hall of Fame'de tek oyuncu (rutbe.hof_top)
-                'clanName': k.get('ad', ''), 'clanRank': k.get('sira', 0) if k else 0, 'clanMemberCount': 1 if k else 0}
+                'ranking': RT.hof_sira(p),                                  # sunucudaki oyuncular arasında (rutbe.hof_top)
+                'clanName': k.get('ad', ''), 'clanRank': next((i + 1 for i, (c, _) in enumerate(sira) if c is k), 0),
+                'clanMemberCount': len(k.get('uyeler', ()))}
         return [(n, dict(f, **{k: v for k, v in dict(bio, **rank).items() if k in f})) if n == 'InternalPilotBioUserProfileCommand'
                 else (n, f) for n, f in resp]
 
@@ -847,7 +855,7 @@ class Session:
                 st = SABLON.station(dest)
                 pos = (st['posX'], st['posY']) if st else None
             pos = pos or (gate or {}).get('varis')      # kapı portalları: kapı haritasının ortasına / X-1'de kapının yanına
-            x, y = pos or H.arrival(old, dest)
+            x, y = pos or H.arrival(old, dest, self.profil.d['pilot'].get('factionId'))
             self.profil.d['konum'].update(mapId=dest, x=x, y=y, portalda=pos is None)
             self.profil.dirty = True
             save_profile(self.profil)
@@ -1175,6 +1183,14 @@ class Session:
                           + self.gorev.event('slot_bar', **self.profil.slot_bar_state(tpl['slotBars'])), 'kısayol çubuğu')
         elif name in PVM.REQUESTS:
             self.send(self.pve.handle(name, f), 'mod: %s' % name)      # Aşama 8'in modları (pve_modlari.py)
+        elif name == 'ChangeClanFirmaRequest':                         # şirket değiştirme (klan.switch_company): yeni firmanın X-1'i
+            msgs, home = self.sosyal.klan.switch_company(f)
+            self.send(msgs, 'şirket değişimi')
+            if home:
+                if self.profil is PROFIL:
+                    H.PLAYER_FACTION = self.profil.d['pilot'].get('factionId')
+                st = SABLON.station(home)
+                self.change_map(home, None, pos=(st['posX'], st['posY']) if st else None)
         elif name in SO.REQUESTS:
             resp = self.sosyal.handle(name, f, time.time())             # Aşama 10: sosyal bölüm (sosyal.py)
             if resp:
@@ -1398,6 +1414,7 @@ def main():
     if '--cok-oyunculu' in sys.argv:  # arkadaş sunucusu: oyun ve sohbet bütün ağlardan (cok_oyunculu.py); ayarlar ortam değişkeninde
         CO.configure(os.environ.get('DO_COK_OYUNCULU'), log)
         adres = CO.AYAR['adres']
+        KL.configure(os.path.join(YOL.SAVE, 'klanlar.json'))     # ortak klanlar: çevrimdışı üyeye olanlar sonraki girişte
     SOHBET = SH.Sohbet(log, adres=adres)
     SOHBET.start()                # yerel sohbet (7771); istemci girişteki ChatParamCommand ile buraya bağlanır
     threading.Thread(target=autosave, daemon=True).start()

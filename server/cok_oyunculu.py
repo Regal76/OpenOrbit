@@ -185,8 +185,8 @@ def gecerli_profil(d):
     return None
 
 
-def giris(body, ip, tohum, sunucu_uid):
-    """POST /misafir/giris -> (durum kodu, yanıt)."""
+def giris(body, ip, tohum, sunucu_uid, ana=None):
+    """POST /misafir/giris -> (durum kodu, yanıt). ana: sunucunun kendi profili (adı başka oyuncuyla aynı olamaz)."""
     if int(body.get('surum') or 0) != PROTOKOL:
         return 409, {'hata': 'surum', 'mesaj': 'Hesap gönderiminin sürümü farklı (sunucu %d): ikiniz de paneli güncelleyin.' % PROTOKOL}
     if AYAR['sifre']:
@@ -221,6 +221,12 @@ def giris(body, ip, tohum, sunucu_uid):
     err = gecerli_profil(d)
     if err:
         return 400, {'hata': 'profil', 'mesaj': 'Kayıt geçersiz: %s.' % err}
+    ad = str((d.get('pilot') or {}).get('userName') or '').strip().lower()
+    with COND:
+        adlar = {_ad(m.profil) for m in MISAFIRLER.values() if not m.bitti and m.profil is not None} |             {_ad(y.profil) for y in YERELLER.values()} | ({_ad(ana)} if ana is not None else set())
+    if ad in adlar:                               # sohbet, posta, grup, rehber ve klan oyuncuyu adıyla bulur (yerel_ekle gibi)
+        return 409, {'hata': 'ad', 'mesaj': 'Sunucuda "%s" adlı bir pilot zaten var: aynı adla iki oyuncu sohbette, postada, grupta ve '
+                                            'klanda karışır. Pilot adını değiştirip yeniden katıl.' % d['pilot']['userName']}
     with COND:
         uid = _yeni_uid({sunucu_uid} | {m.uid for m in MISAFIRLER.values()} | {y.uid for y in YERELLER.values()})
         m = Misafir(secrets.token_urlsafe(18), anahtar, uid, d['pilot']['userId'], str(body.get('adres') or ''), ip)
@@ -609,7 +615,7 @@ def http(c, addr, game):
         elif u.path == '/misafir/bilgi':
             code, out = 200, game.sunucu_bilgisi()
         elif u.path == '/misafir/giris' and method == 'POST':
-            code, out = giris(b, ip, game.SABLON.giris.get('tohum'), game.PROFIL.user_id)
+            code, out = giris(b, ip, game.SABLON.giris.get('tohum'), game.PROFIL.user_id, game.PROFIL)
         elif u.path == '/misafir/profil':
             code, out = profil_yokla(q)
         elif u.path == '/misafir/cikis' and method == 'POST':

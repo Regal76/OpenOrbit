@@ -272,10 +272,12 @@ class Ebl:
         return time.strftime('%Y-%m-%d %H:%M', time.localtime(float(t) / (1000.0 if float(t) > 1e11 else 1.0)))
 
     def rank_cmd(self):
-        best = int(self.st.get('en_iyi', 0))
-        me = mod('EternalBlacklightRankModule', waves=best, name=self.p.d['pilot'].get('userName', ''), rank=1 if best else 0,
-                 lastUpdateTime=self.when())
-        info = mod('EternalBlacklightRankInfoCommand', topRankers=[me] if best else [], myRank=me)
+        """Rank sekmesi: sunucudaki oyuncular (en ileri dalga)."""
+        import topluluk as TP
+        row = lambda r: mod('EternalBlacklightRankModule', waves=int(r[2]), name=r[1].d['pilot'].get('userName', ''), rank=r[0],
+                            lastUpdateTime=self.when() if r[1] is self.p else '')
+        top, me = TP.siralama(self.p, lambda x: int(((x.d.get('pve') or {}).get('ebl') or {}).get('en_iyi', 0)))
+        info = mod('EternalBlacklightRankInfoCommand', topRankers=[row(r) for r in top], myRank=row(me))
         # Rank sekmesi yalnız etkinlik sarmalını tanıyor (Astral'ın RogueLiteRankEventInfoCommand'ı gibi); isEventEnabled olmadan
         # "No ranking boards are available at the moment." (canlı test H76)
         return ('EternalBlacklightRankingEventInfoCommand', dict(playerRankRanges=SR.ranges(SR.EBL), rankInfoCommand=info,

@@ -159,8 +159,10 @@ class Posta:
         reply = lambda ok, key, info=None: [('UserMessageSendCommand', {
             'textCommand': stack(key + '_text'), 'success': ok, 'messageInfoCommand': info,
             'titleCommand': stack(key + '_title'), 'captchaStatus': 0})]
-        if f.get('recipientType') == 'clan':
-            names = [me.get('userName', '')] if self.p.d['pilot'].get('clanId') else []
+        if f.get('recipientType') == 'clan':                   # klanın sunucudaki üyeleri (çevrimdışı kaydı yüklü olmayan atlanır)
+            import klan as KL
+            k = KL.klani(self.p)
+            names = [u['ad'] for a, u in k['uyeler'].items() if a == KL.ad(self.p) or TP.bul(ad=a) is not None] if k else []
         if not names:
             return reply(False, 'messaging_errorLayer_noRecipient')
         if len(subject) < 3:

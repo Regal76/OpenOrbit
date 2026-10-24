@@ -43,6 +43,7 @@ HEAT = PET['isi']
 HEAT_ROWS = HEAT['seviyeler']
 HEAT_MAX = HEAT_ROWS[-1]['esik']
 HEATING, STABLE, COOLING = 0, 1, 2       # PetHeatUpdateCommand.heatState (istemci: " +" beyaz, " =" sarı, " --" mavi)
+PID_ORTAK = 160000000                    # arkadaş sunucusunda P.E.T. kimliklerinin başlangıcı (uzaylılar 150300000, CBS 157000000)
 VM_HEAT_RELEASE = 107                    # VisualModifierCommand.modifier (istemcinin VisualModifier enum'u)
 VM_HP_LINK = 86
 HULL = PET['can_yukseltme']['loot']
@@ -196,7 +197,9 @@ class Pet:
 
     @property
     def pid(self):
-        return self.d['kimlik']
+        """Kayıttaki 7001; arkadaş sunucusunda oyuncuya göre (öteki oyuncuların P.E.T.'leriyle aynı haritada karışmasın)."""
+        import cok_oyunculu as CO
+        return PID_ORTAK + self.p.user_id % 10 ** 7 if CO.acik() else self.d['kimlik']
 
     @property
     def alive(self):
@@ -623,6 +626,19 @@ class Pet:
         lock = self.w.lock if self.w else _NoLock()
         with lock:
             self.select(t, f.get('optParam') or 0)
+
+    def view_msgs(self, now):
+        """Öteki oyuncunun istemcisinde bu P.E.T. (ortak harita; kayıt: başka oyuncunun P.E.T.'i PetActivationCommand, petDesignId
+        game.xml türü) ve süren hareketi."""
+        pl, (x, y), m = self.p.d['pilot'], self.pos(now), self.mover
+        msgs = [('PetActivationCommand', dict(
+            ownerId=self.p.user_id, petId=self.pid, petDesignId=self.look, expansionStage=1, petName=self.d['ad'],
+            petFactionId=pl.get('factionId', 1), petClanID=pl.get('clanId', 0), petLevel=self.d['seviye'], clanTag=pl.get('clanTag', ''),
+            clanRelationship=mod('ClanRelationModule', type=0), x=int(x), y=int(y), petSpeed=self.speed(), isInIdleMode=False,
+            isVisible=True, minimapStrategyModule=mod('MinimapStrategyModule', minimapStrategy=0)))]
+        if m.t1 > now:
+            msgs.append(('MoveCommand', dict(userId=self.pid, x=int(m.x1), y=int(m.y1), timeToTarget=int((m.t1 - now) * 1000))))
+        return msgs
 
     def launch(self):
         w = self.w

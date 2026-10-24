@@ -15,7 +15,7 @@ dunya.menu_action'dan, roket AttackRocketRequest'ten gelir.
   0|n|fx|start ya da end|ICY_CUBE|uid       donma, SABOTEUR_DEBUFF yavaşlama görseli
 Beklemeler MenuItemCooldownGroupTimerCommand ile (grup: istemcinin CooldownType'ı); bitişler profilde (harita değişince de sürer).
 """
-import json, math, os, random, time
+import itertools, json, math, os, random, time
 
 import ekstra as EK
 import harita as H
@@ -54,6 +54,7 @@ SPRAYS = ['cross', 'hearts', 'ko', 'like', 'skull', 'eggle', 'space-bunny', 'egg
           'watchingyou', 'strong', 'biohazard', 'healing', 'wash-hands', 'celebrate', 'peace', 'question', 'crown', 'fist-bump',
           'hand-shake', 'batman', 'hand', 'turkeydinner', 'frozen-hand', 'snowflake', 'yeti']
 SPRAY_ASSET, SPRAY_GROUP, SPRAY_CD, SPRAY_SN = 69, 57, 45, 30
+SPRAY_SIRA = itertools.count(1)        # sprey kimlikleri sunucuda tek (ortak haritada öteki oyuncuların spreyleri de görünür)
 FIREWORK_LIMIT = 5                            # aynı anda kurulu kutu (fandom Fireworks: "You can only put down 5 fireworks"); bekleme
                                               # yok (istemcinin menüsünde bekleme grubu 0)
 ROCKET_FLIGHT = _N['savas']['roket_ucus_sn']
@@ -555,8 +556,7 @@ class Esyalar:
             return
         p.use_ammo(loot, 1)
         x, y = w.hero_pos(now)
-        self.seq += 1
-        uid, kind = 970000 + self.seq, {'_': 'AssetTypeModule', 'typeValue': SPRAY_ASSET}
+        uid, kind = 970000 + next(SPRAY_SIRA), {'_': 'AssetTypeModule', 'typeValue': SPRAY_ASSET}
         self.send(w.ammo_msgs(loot) + [self.cooldown(loot, now), (
             'AssetCreateCommand', dict(designId=SPRAYS.index(loot[len(SPRAY_PREFIX):]), clanId=0, showBubble=False, userName='',
                                        assetId=uid, expansionStage=0, modifier=[], type=kind, detectedByWarnRadar=False,

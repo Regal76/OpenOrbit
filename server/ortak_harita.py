@@ -27,12 +27,25 @@ YANSIYAN = {'MoveCommand': ('userId',), 'AttackLaserRunCommand': ('attackerId', 
             'ShipDestroyedCommand': ('destroyedUserId',), 'VisualModifierCommand': ('userId',),
             # lazerin bitişi: istemci AttackLaserRunCommand'da saldıranın hedefini kurar (ShipInfo.Target) ve gemiyi ona döndürür;
             # bu gelmezse öteki oyuncunun gemisi hedefe dönük kalıyor, burnu dönmüyor ve motor efekti çıkmıyordu (AttackAbortLaser.Run)
-            'AttackAbortLaserCommand': ('uid',)}
+            'AttackAbortLaserCommand': ('uid',),
+            # emote, seviye atlama, gemi yetenekleri, parçacık topu, Hellstorm (liste alanları: içindeki her kimlik)
+            'EmoteActivationCommand': ('userId',), 'LevelUpCommand': ('uid',),
+            'AbilityEffectActivationCommand': ('activatorId', 'targetIds'), 'AbilityEffectDeActivationCommand': ('activatorId', 'targetIds'),
+            'AbilityStartCommand': ('activatorId',), 'AbilityStopCommand': ('activatorId', 'targetIds'),
+            'PlayVisualEffectCommand': ('activatorId', 'targetIds'), 'CannonAttackCommand': ('attackerId', 'attackedId'),
+            'HellstormAttackCommand': ('attackerId', 'targetId')}
+# oyuncunun mayınları ve havai fişekleri (savas_esya.py; karmaları M<kimlik>_<sıra>, F<kimlik>_<sıra>) ve spreyi herkese görünür;
+# uzaylının mayını (U…) yalnız onu kuran dünyanın kahramanını vurur, yansıtılmaz
+OYUNCU_KARMA = ('M', 'F')
+SPREY = 69                    # AssetCreateCommand türü (savas_esya.SPRAY_ASSET)
 # eski metinle giden görseller (eski_protokol.py) -> içlerindeki gemi kimliklerinin parça sırası (ilk sayı listesi: kalan parçaların
 # hepsi kimlik): roket 0|v|saldıran|hedef|…, Smart Bomb / Insta-Shield / EMP 0|n|SMB|uid, gemi yeteneği 0|n|SD|A|etki|kalıcı|
-# etkinleştiren[|hedef], teknoloji 0|n|A|S|kod|uid ve Chain Impulse 0|n|ECI|1|saldıran|hedef…
+# etkinleştiren[|hedef], teknoloji 0|n|A|S|kod|uid, Chain Impulse 0|n|ECI|1|saldıran|hedef…, donma/yavaşlama 0|n|fx|start|tür|uid,
+# Battle Repair Bot/NPC Nuke şok dalgası 0|n|BT|uid, 0|n|NNK|uid, toplama ışını 0|A|SLA|kip|birim, iyileşme sayısı 0|A|HL|iyileştiren|
+# hedef|… ve görünmezlik 0|n|INV|uid|açık
 ESKI = {('0', 'v'): (2, 3), ('0', 'n', 'SMB'): (3,), ('0', 'n', 'ISH'): (3,), ('0', 'n', 'EMP'): (3,),
-        ('0', 'n', 'SD'): (6, [7]), ('0', 'n', 'A', 'S'): (5,), ('0', 'n', 'ECI'): (4, [5])}
+        ('0', 'n', 'SD'): (6, [7]), ('0', 'n', 'A', 'S'): (5,), ('0', 'n', 'ECI'): (4, [5]), ('0', 'n', 'fx'): (5,),
+        ('0', 'n', 'BT'): (3,), ('0', 'n', 'NNK'): (3,), ('0', 'A', 'SLA'): (4,), ('0', 'A', 'HL'): (3, 4), ('0', 'n', 'INV'): (3,)}
 
 REG = threading.Lock()
 HARITALAR = {}                # harita kimliği -> Harita (kullanan dünya varken)
@@ -152,23 +165,59 @@ class Harita:
         msgs = []
         for uid in list(w.oyuncular):
             m = cur.get(uid)
-            if m is None or w.oyuncular[uid] != m.imza():
+            if m is None or w.oyuncular[uid] != imza(w, m):
                 del w.oyuncular[uid]
                 msgs.append(('ShipRemoveCommand', {'userId': uid}))
+        for uid in list(w.petler):         # P.E.T. sahibiyle görünür; sahibi kalkınca ya da P.E.T. değişince (durdu, yeni tasarım) kalkar
+            if uid not in w.oyuncular or w.petler[uid] != pet_imza(w, cur[uid]):
+                msgs.append(('ShipRemoveCommand', {'userId': w.petler.pop(uid)[0]}))
         for uid, m in cur.items():
             if uid not in w.oyuncular:
-                w.oyuncular[uid] = m.imza()
-                msgs += m.gorunum_msgs(now)
+                w.oyuncular[uid] = sig = imza(w, m)
+                msgs += [(n, dict(f, clanDiplomacy=dict(f['clanDiplomacy'], type=sig[1]))) if n == 'ShipCreateCommand' and f.get('userId') == m.hid
+                         else (n, f) for n, f in m.gorunum_msgs(now)]
+        for uid, m in cur.items():
+            sig = pet_imza(w, m)
+            if sig and uid not in w.petler:
+                w.petler[uid] = sig
+                msgs += [(n, dict(f, clanRelationship=dict(f['clanRelationship'], type=sig[-1]))) if n == 'PetActivationCommand' else (n, f)
+                         for n, f in m.pet.view_msgs(now)]
         return msgs
+
+
+def imza(w, m):
+    """m'nin w'nin istemcisindeki gemisi: görünümü ve klan ilişkisi (bakana göre; diplomasi değişince gemi yeniden kurulur)."""
+    import klan as KL
+    return m.imza(), KL.iliski(w.p, m.p)
+
+
+def pet_imza(w, m):
+    """m'nin uzaydaki P.E.T.'i w'nin istemcisinde: kimlik, görünüm, ad, seviye ve klan ilişkisi; P.E.T. uzayda değilse None."""
+    pet = m.pet
+    if not (pet and pet.active and pet.w is m):
+        return None
+    import klan as KL
+    return pet.pid, pet.look, pet.d['ad'], pet.d['seviye'], KL.iliski(w.p, m.p)
 
 
 def kimlikler(m):
     """Yansıtılan mesajın gemi kimlikleri (alıcı hepsini tanımalı) ya da None (yansıtılmaz)."""
     if m[0] in YANSIYAN:
-        return [m[1].get(k) for k in YANSIYAN[m[0]]]
+        ids = []
+        for k in YANSIYAN[m[0]]:
+            v = m[1].get(k)
+            ids += v if isinstance(v, list) else [v]
+        return ids
+    if m[0] in ('AddMineCommand', 'RemoveMineCommand', 'AddFireworkBoxCommand'):
+        return [] if str(m[1].get('hash', '')).startswith(OYUNCU_KARMA) else None
+    if m[0] in ('AssetCreateCommand', 'AssetRemoveCommand'):
+        kind = m[1].get('type') or m[1].get('assetType') or {}
+        return [] if kind.get('typeValue') == SPREY else None
     if m[0] != 'LegacyModule':
         return None
     parts = str(m[1].get('message', '')).split('|')
+    if parts[:3] in (['0', 'n', 'MIN'], ['0', 'n', 'FWG']):          # mayının patlaması, havai fişeklerin ateşlenmesi (karmalarıyla)
+        return [] if len(parts) > 3 and all(h.startswith(OYUNCU_KARMA) for h in parts[3:]) else None
     for key, pos in ESKI.items():
         if tuple(parts[:len(key)]) != key:
             continue

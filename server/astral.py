@@ -474,8 +474,11 @@ class Astral:
         return self.m.apply_stats() + [self.inventory_cmd()]
 
     def rank_cmd(self):
-        me = mod('RankModule', lastUpdateTime=int(time.time() * 1000), name=self.p.d['pilot'].get('userName', ''),
-                 rank=1 if self.best3() else 0, points=int(self.best3()))
-        info = mod('RogueLiteRankInfoCommand', topRankers=[me] if self.best3() else [], myRank=me)
+        """Rank sekmesi: sunucudaki oyuncular (en iyi üç koşunun toplamı)."""
+        import topluluk as TP
+        row = lambda r: mod('RankModule', lastUpdateTime=int(time.time() * 1000), name=r[1].d['pilot'].get('userName', ''), rank=r[0],
+                            points=int(r[2]))
+        top, me = TP.siralama(self.p, lambda x: sum(((x.d.get('pve') or {}).get('astral') or {}).get('kosular', [])[:3]))
+        info = mod('RogueLiteRankInfoCommand', topRankers=[row(r) for r in top], myRank=row(me))
         return ('RogueLiteRankEventInfoCommand', dict(playerRankRanges=SR.ranges(SR.ASTRAL), rankInfoCommand=info,
                                                          isEventEnabled=True))

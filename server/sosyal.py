@@ -1,5 +1,6 @@
 """Sosyal bölümün oturum düzeyi (yol haritası Aşama 10): sohbet (sohbet.py; sunucusu oyun sürecinde, game.py başlatır), posta,
-notlar, rehber ve kara liste (posta.py), tek kişilik klan (klan.py), yerel müzayede (muzayede.py), gemi ışınlama (isinlama.py).
+notlar, rehber ve kara liste (posta.py), klan (klan.py; sunucudaki oyuncuların ortak klanları), yerel müzayede (muzayede.py), gemi
+ışınlama (isinlama.py).
 
 Oturum bağları: istekler (REQUESTS, handle), girişteki kayıtlı mesajların yerine profildekiler (login_replace: sohbet adresi,
 okunmamış posta sayısı), zamanlı işler (tick: müzayede dönem sonları), ChatAuthenticateUserRequest (sohbete giriş ve odalar).
@@ -31,6 +32,7 @@ class Sosyal:
             x.m = magaza
         self.muzayede.posta = self.posta
         self.klan.on_change = self.clan_changed
+        self.clan_rooms = self.klan.rooms()  # sohbette katıldığı klan odası (clan_changed)
         self.world = None
         self.send = None                   # oturumun gönderme işlevi (geri sayımla biten ışınlama)
         self.reload = None                 # gemi değişince haritayı yeniden yükletme (dunya.reload_ship)
@@ -116,22 +118,30 @@ class Sosyal:
             self.welcomed = True
             kip = 'tek' if not CO.acik() else 'arkadas' if CO.AYAR['misafir'] else 'coklu'    # coklu: çoklu istemci (bu bilgisayar)
             text = {'tek': '%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.',
-                    'arkadas': '%s, arkadaş sunucusuna hoş geldin. Sohbet, posta, grup ve rehber ortak; klan ve müzayede her oyuncunun '
-                               'kendisinin.',
-                    'coklu': '%s, yerel sunucuya hoş geldin. Bu bilgisayardaki öteki kayıtlarınla aynı evrendesin: sohbet, posta, grup '
-                             've rehber ortak; klan ve müzayede her oyuncunun kendisinin.'}[kip] if lang == 'tr' else {
+                    'arkadas': '%s, arkadaş sunucusuna hoş geldin. Sohbet, posta, grup, rehber, klanlar ve sıralamalar ortak; '
+                               'müzayede her oyuncunun kendisinin.',
+                    'coklu': '%s, yerel sunucuya hoş geldin. Bu bilgisayardaki öteki kayıtlarınla aynı evrendesin: sohbet, posta, grup, '
+                             'rehber, klanlar ve sıralamalar ortak; müzayede her oyuncunun kendisinin.'}[kip] if lang == 'tr' else {
                     'tek': '%s, welcome to your local server. Chat, mail, clan and auction are single-player here.',
-                    'arkadas': "%s, welcome to your friend's server. Chat, mail, groups and contacts are shared; clan and auction are "
-                               "each player's own.",
+                    'arkadas': "%s, welcome to your friend's server. Chat, mail, groups, contacts, clans and rankings are shared; "
+                               "auction is each player's own.",
                     'coklu': '%s, welcome to your local server. You share this universe with your other saves on this computer: chat, '
-                             "mail, groups and contacts are shared; clan and auction are each player's own."}[kip]
+                             "mail, groups, contacts, clans and rankings are shared; auction is each player's own."}[kip]
             self.sohbet.duyuru(text % self.p.d['pilot'].get('userName', ''), kim=str(self.p.user_id))
         return ok
 
     def clan_changed(self):
+        """Klana girdi, çıktı ya da etiket değişti: sohbetteki etiket ve klan odası (eski klanın odası bırakılır; yalnız katılınca
+        ayrılan oyuncu klan sohbetini almaya devam ediyordu)."""
         if self.sohbet:
-            self.sohbet.update_user(str(self.p.user_id), clanTag=self.p.d['pilot'].get('clanTag', ''))
-            self.sohbet.update_rooms(self.klan.rooms(), str(self.p.user_id))
+            kim = str(self.p.user_id)
+            self.sohbet.update_user(kim, clanTag=self.p.d['pilot'].get('clanTag', ''))
+            rooms = self.klan.rooms()
+            for old in self.clan_rooms:
+                if old not in rooms:
+                    self.sohbet.oda_birak(kim, old[1], old[2])
+            self.sohbet.update_rooms(rooms, kim)
+            self.clan_rooms = rooms
 
     def duyuru(self, text, room='global'):
         return self.sohbet.duyuru(text, room, kim=str(self.p.user_id)) if self.sohbet else 0

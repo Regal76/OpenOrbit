@@ -215,9 +215,9 @@ def gates(map_id, faction=None):
     return [g for g in GATES.get(int(map_id), []) if not g.get('yalniz_firma') or fac in (None, g['yalniz_firma'])]
 
 
-def arrival(src_map, dst_map):
-    """Hedef haritada, kaynak haritaya geri götüren portalın konumu (gemi oraya iner)."""
-    back = next((g for g in gates(dst_map) if g['hedef'] == int(src_map)), None)
+def arrival(src_map, dst_map, faction=None):
+    """Hedef haritada, kaynak haritaya geri götüren portalın konumu (gemi oraya iner). faction: oyuncunun firması (gates)."""
+    back = next((g for g in gates(dst_map, faction) if g['hedef'] == int(src_map)), None)
     if back:
         return back['x'], back['y']
     w, h = map_size(dst_map)          # tek yönlü giriş (5-1, 5-3, 4-4): haritanın gerçek ortası (büyük haritalar)

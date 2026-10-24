@@ -380,6 +380,7 @@ class World:
         self.wormhole = None           # 4-5'teki gizli solucan deliği: portal ve yer değiştireceği an
         self.boxes_taken = 0           # bu ziyarette alınan bonus kutuları (mezarlıkta değer azalır)
         self.oyuncular = {}            # istemcinin gördüğü öteki oyuncular: kimlik -> görünüm imzası (ortak harita)
+        self.petler = {}               # onların uzaydaki P.E.T.'leri: sahibin kimliği -> (P.E.T. kimliği, …) (ortak_harita.pet_imza)
         self.gorunum = None            # oturum: (x, y) -> bu kahramanın gemisi öteki oyuncuların istemcisinde (game.Session.gorunum)
         self.secim = None              # seçili öteki oyuncunun son gönderilen ShipSelectionCommand'ı (canı değişince yeniden)
         self.ates = False              # önceki adımda saldırıyor muydu (lazerin bitişi öteki oyunculara: step)
@@ -454,14 +455,14 @@ class World:
         return not (self.hero_dead or self.jumping or self.gizli(now) or self.in_peace(*self.hero_pos(now)))
 
     def tanir(self, uid):
-        """İstemci bu gemiyi tanıyor mu (kendisi, gördüğü uzaylılar ve oyuncular; 0: çevre)."""
-        return uid == 0 or uid == self.hid or uid in self.visible or uid in self.oyuncular
+        """İstemci bu gemiyi tanıyor mu (kendisi ve P.E.T.'i, gördüğü uzaylılar, oyuncular ve P.E.T.'leri; 0: çevre)."""
+        return (uid == 0 or uid == self.hid or uid in self.visible or uid in self.oyuncular
+                or (self.pet is not None and self.pet.active and uid == self.pet.pid) or any(p[0] == uid for p in self.petler.values()))
 
     def imza(self):
-        """Gemisinin görünümü: değişince öteki oyuncular gemiyi yeniden kurar (hangarda gemi, tasarım, dronlar, unvan)."""
-        pl, g = self.p.d['pilot'], self.p.d['gemi']
-        return (g.get('typeId'), pl.get('userName'), pl.get('clanTag'), self.p.d.get('formasyon'), len(self.p.d.get('dronlar') or ()),
-                self.p.d.get('uzanti_asamasi'), (self.p.d.get('basarimlar') or {}).get('unvan'))
+        """Gemisinin öteki oyuncuların istemcisindeki görünümü (game.Session.gorunum: gemi, tasarım, klan, unvan, dronların tür, seviye
+        ve tasarımları, modüller): değişince öteki oyuncular gemiyi yeniden kurar."""
+        return repr(self.gorunum(0, 0)) if self.gorunum else None
 
     def gorunum_msgs(self, now):
         """Öteki oyuncunun istemcisinde bu kahramanın gemisi ve süren hareketi."""
@@ -953,7 +954,8 @@ class World:
         with self.lock:
             cam = [('CameraLockToHeroCommand', {})] if self.cinema else []
             self.cinema = False
-            players, self.oyuncular = list(self.oyuncular), {}         # öteki oyuncuların gemileri (ortak harita)
+            players = list(self.oyuncular) + [p[0] for p in self.petler.values()]     # öteki oyuncuların gemileri ve P.E.T.'leri (ortak harita)
+            self.oyuncular, self.petler = {}, {}
             return cam + ([('ShipRemoveCommand', {'userId': uid}) for uid in players] +
                     [('ShipRemoveCommand', {'userId': uid}) for uid in self.npcs if uid in self.visible] +
                     [('RemoveCollectableCommand', {'collected': False, 'hash': h}) for h in list(self.boxes) + list(self.ores)
@@ -1382,6 +1384,7 @@ class World:
             self.near_gate, self.gate_peace, self.station_inside = None, None, None   # bir sonraki check_gates işareti yeniden gönderir
             self.seen_items.clear()                                                    # istemci haritayı temizledi
             self.oyuncular.clear()                                                     # öteki oyuncular (ortak harita) sonraki adımda
+            self.petler.clear()
             msgs = self.visible_msgs(time.time()) + \
                    [('AddBoxCommand', dict(hash=h, boxType=b['tip'], x=b['x'], y=b['y'])) for h, b in self.boxes.items()] + \
                    [self.ore_msg(h) for h in self.ores] + [H.jumpgate_create(g) for g in self.gates if 'designId' in g] + \

@@ -14,6 +14,8 @@ bırakır; puanları da böyle birikir. Unvan haritada değil başka haritada uz
 gelince bir Underling unvanı taşır (gemi üstünde unvanıyla). Puan: tutulan dakika.
 Profilde: unvan_avi {donem, puan (dk), unvanlar {id: {sahip: 'npc'|'oyuncu'|'rakip', harita, ad, bas}}, rakipler {ad: puan},
 odul_alindi}.
+Çok oyunculu sunucuda her oyuncunun unvanları kendisinin; ortak haritanın uzaylısındaki unvan oyuncunun adıyla (unvanlar {ad: kimlik}):
+iki oyuncu aynı Underling'i kendi unvanının taşıyıcısı sanmasın (önce n.unvan ortaktı). Sıralamada sunucunun öteki oyuncuları da.
 """
 import json, os, random, time
 
@@ -115,8 +117,14 @@ class UnvanAvi:
                                                titleKey=TITLE_KEY, rankRewards=SR.ranges(RANK_TYPE), npcIds=D.get('npc_kimlikleri', [299])))
 
     def ranking(self):
-        """Oyuncu ve sanal rakipler, puana göre."""
+        """Oyuncu, sunucunun öteki oyuncuları ve sanal rakipler, puana göre."""
+        import topluluk as TP
         rows = [(self.p.d['pilot'].get('userName', ''), self.st['puan'] + self.held_minutes(), True)]
+        for k in TP.hepsi().values():
+            if k.profil is not self.p and (k.profil.d.get('unvan_avi') or {}).get('donem') == self.st.get('donem'):
+                o = UnvanAvi.__new__(UnvanAvi)
+                o.p = k.profil
+                rows.append((k.ad, (k.profil.d['unvan_avi'].get('puan') or 0.0) + o.held_minutes(), False))
         rows += [(n, s, False) for n, s in self.st['rakipler'].items()]
         rows.sort(key=lambda r: -r[1])
         return rows
@@ -202,6 +210,14 @@ class UnvanAvi:
         self.attached = time.time()
         return []
 
+    def mark(self, n):
+        """Uzaylının taşıdığı bu oyuncunun unvanı ya da None."""
+        return (getattr(n, 'unvanlar', None) or {}).get(self.key)
+
+    @property
+    def key(self):
+        return str(self.p.d['pilot'].get('userName', '')).strip().lower()
+
     def carriers(self, now):
         """Bu haritadaki, taşıyıcısı olmayan unvanlar bir Underling'e (gemi üstünde unvanıyla) -> mesajlar."""
         w = self.world
@@ -216,16 +232,16 @@ class UnvanAvi:
             if self.shown != self.attached:         # haritaya yeniden girildi: geri gelen taşıyıcıların unvanı istemcide yok
                 self.shown = self.attached
                 msgs += [legacy('0|n|t|%d|%d|%s' % (n.id, TITLE_ID_BASE, TITLE_KEY))
-                         for n in w.npcs.values() if n.alive and getattr(n, 'unvan', None) in mine]
-            have = {getattr(n, 'unvan', None) for n in w.npcs.values() if n.alive}
-            free = [n for n in w.npcs.values() if n.alive and n.tip.startswith(CARRIER) and not getattr(n, 'unvan', None)]
+                         for n in w.npcs.values() if n.alive and self.mark(n) in mine]
+            have = {self.mark(n) for n in w.npcs.values() if n.alive}
+            free = [n for n in w.npcs.values() if n.alive and n.tip.startswith(CARRIER) and not getattr(n, 'unvanlar', None)]
             for tid, n in zip([tid for tid in mine if tid not in have], free):
-                n.unvan = tid
+                n.unvanlar = dict(getattr(n, 'unvanlar', None) or {}, **{self.key: tid})
                 msgs.append(legacy('0|n|t|%d|%d|%s' % (n.id, TITLE_ID_BASE, TITLE_KEY)))
         return msgs
 
     def on_kill(self, w, npc, x, y):
-        tid = getattr(npc, 'unvan', None)
+        tid = self.mark(npc)
         if not tid or not self.enabled():
             return []
         t = self.st['unvanlar'].get(tid)

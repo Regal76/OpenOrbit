@@ -76,11 +76,16 @@ def sahte_kimlik(ad):
 # ------------------------------------------------------------ liste
 def satirlar(p, kisiler):
     """Rehberin satırları: kimlik -> (ad, ContactListEntryModule)."""
+    import klan as KL
     r = kayit(p)
     adlar = {}
     for liste, tur in LISTELER:
         for ad in r[liste]:
             adlar.setdefault(ad.lower(), [ad, []])[1].append(tur)
+    c = KL.klani(p)                                    # klan üyeleri (istemcinin "Clan members" süzgeci)
+    for low, u in (c or {}).get('uyeler', {}).items():
+        if low != KL.ad(p):
+            adlar.setdefault(low, [u.get('ad', low), []])[1].append(KLAN)
     by_ad = {k.ad.lower(): k for k in kisiler.values()}
     out = {}
     for low, (ad, turler) in adlar.items():
@@ -94,7 +99,7 @@ def satirlar(p, kisiler):
                       mod('ContactListEntryAttributeLevelModule', level=int(pl.get('level', 1))),
                       mod('ContactListEntryAttributeClanTagModule', clanTag=str(pl.get('clanTag', ''))),
                       mod('ContactListEntryAttributeClanModule', clanId=int(pl.get('clanId', 0) or 0)),
-                      mod('ContactListEntryAttributeClanRelationModule', clanRelation=mod('ClanRelationModule', type=0))]
+                      mod('ContactListEntryAttributeClanRelationModule', clanRelation=mod('ClanRelationModule', type=KL.iliski(p, k.profil)))]
         out[uid] = (ad, mod('ContactListEntryModule',
                             typeCommand=mod('ContactListEntryTypeCommand', userId=uid,
                                             contactEntryTypes=[mod('ContactListEntryTypeModule', entryType=t) for t in sorted(turler)]),

@@ -438,7 +438,11 @@ class Profil:
 
     # ---------------------------------------------------------------- oyun içi değişiklikler (dünya simülasyonu)
     def gain(self, ep=0, onur=0, kredi=0, uridyum=0, neden=None, detay='', adet=0):
-        """Ödülleri ekler -> yeni toplamlar ve seviye (EP tablosu: data/seviyeler.json)."""
+        """Ödülleri ekler -> yeni toplamlar ve seviye (EP tablosu: data/seviyeler.json). Uzaylı ödülünün kredisinden klanın vergisi
+        kasaya (klan.vergi; kilitten önce: klan kaydının kilidi)."""
+        if kredi > 0 and neden == 'bonus_abschussAlien' and self.d['pilot'].get('clanId'):
+            import klan as KL
+            kredi -= KL.vergi(self, kredi)
         with self.lock:
             p = self.d['pilot']
             p['ep'] = p.get('ep', 0) + ep
