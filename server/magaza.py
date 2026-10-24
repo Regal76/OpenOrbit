@@ -83,6 +83,7 @@ LEVELS = ESYA['dron_seviyeleri']
 DRONE_ITEMS = ('equipment_weapon_laser_', 'equipment_generator_shield_')     # dronlara yalnız lazer ve kalkan jeneratörü (wiki)
 LAB = ESYA['laboratuvar']
 DESIGNS = ESYA['dron_tasarimlari']
+DESIGN_SLOTS = {'tasarim': 'design', 'gorunum': 'visual'}     # drone record key -> design slot (drone item's "yuva")
 DESIGN_TYPES = {'design': 'net.bigpoint.darkorbit.asset.drone.design.DroneDesignType',
                 'visual': 'net.bigpoint.darkorbit.asset.drone.design.DroneCustomizationType'}
 PET_LOOT = ESYA['pet']['loot']
@@ -1637,17 +1638,18 @@ class Magaza:
         return [('HangarShipFavouriteCommand', {'resultId': 1, 'errorMessage': None}), self.ships_cmd()]
 
     def clear_config(self, f):
-        """HangarShipClearConfigRequest {wipe, configId, shipId}: config'teki bütün eşyalar envantere (gemi yuvaları; wipe ise dronlar
-        ve P.E.T. de). İstemci başarıda (resultId 1) donanımı yeniden ister (HangarShipClearConfigCommandHandler)."""
+        """HangarShipClearConfigRequest {wipe, configId, shipId}: config'teki bütün eşyalar envantere (gemi yuvaları, dronlar
+        ve P.E.T.). İstemci başarıda (resultId 1) donanımı yeniden ister (HangarShipClearConfigCommandHandler)."""
+        # The client's clear button always sends wipe=0 (gs.log), so drones and P.E.T. are cleared regardless of that flag.
+        # Only this config is touched: the other config keeps its ship, drone and P.E.T. items.
         sid = self.ship_sid(f.get('shipId'))
         ship = self.p.ship(sid)
         cid = str(f.get('configId')) if str(f.get('configId')) in ship['konfigler'] else str(ship['aktif_konfig'])
         ids = [i for lst in self.p.config(cid, sid).values() for i in lst]
-        if f.get('wipe'):
-            ids += [i for lst in self.p.drone_config(cid, sid).values() for i in lst]
-            ids += [i for x in self.p.d['dronlar'] for s in ('design', 'visual') for i in [self.p.drone_design_id(x, s, cid)] if i]
-            if self.pet.owned:
-                ids += [i for lst in self.pet.config(cid).values() for i in lst]
+        ids += [i for lst in self.p.drone_config(cid, sid).values() for i in lst]
+        ids += [i for x in self.p.d['dronlar'] for s in ('design', 'visual') for i in [self.p.drone_design_id(x, s, cid)] if i]
+        if self.pet.owned:
+            ids += [i for lst in self.pet.config(cid).values() for i in lst]
         msgs = self.move({'items': ids, 'source': 'ship', 'destination': 'inventory', 'hangarId': ship['hangarId'],
                           'configId': int(cid)}) if ids else []
         self.log('   hangar: %s config %s temizlendi (%d eşya)' % (ship['lootId'], cid, len(ids)))
@@ -1661,6 +1663,12 @@ class Magaza:
         with self.p.lock:
             ship = self.p.d['gemiler'][sid]
             ship['kayitli_konfig'] = {c: {s: list(v) for s, v in cfg.items()} for c, cfg in ship['konfigler'].items()}
+            # Drones and P.E.T. are part of the saved setup too (before, only the ship slots were saved).
+            ship['kayitli_dron_konfig'] = {c: {d: list(v) for d, v in cfg.items()} for c, cfg in ship.get('dron_konfig', {}).items()}
+            ship['kayitli_dron_tasarim'] = {str(x['kimlik']): {k: dict(x.get(k) or {}) for k in DESIGN_SLOTS}
+                                            for x in self.p.d['dronlar']}
+            pet = self.p.d.get('pet')
+            ship['kayitli_pet_konfig'] = {c: {s: list(v) for s, v in cfg.items()} for c, cfg in pet['konfig'].items()} if pet else {}
             self.p.dirty = True
         self.log('   hangar: %s config kaydedildi' % self.p.ship(sid)['lootId'])
         return [('HangarShipSaveConfigCommand', {'title': stack_msg('popup_save_success_title'),
@@ -1675,6 +1683,11 @@ class Magaza:
         if not saved:
             return [('HangarShipLoadConfigCommand', {'title': stack_msg('eqt_error_generic'), 'description': stack_msg('empty'),
                                                      'resultId': 0})]
+        # Drone items, drone designs and P.E.T. items. Saves made before they were stored have no such key: those parts stay as is.
+        s_drones = ship.get('kayitli_dron_konfig')
+        s_designs = ship.get('kayitli_dron_tasarim')
+        s_pet = ship.get('kayitli_pet_konfig') if self.pet.owned else None
+        es, hid = self.p.d['esyalar'], ship['hangarId']
         missing = 0
         touched = [i for cfg in ship['konfigler'].values() for ids in cfg.values() for i in ids]
         touched += [i for cfg in saved.values() for ids in cfg.values() for i in ids]
@@ -1682,14 +1695,68 @@ class Magaza:
             for c, cfg in ship['konfigler'].items():
                 for s in cfg:
                     cfg[s] = []
+            if s_drones is not None:
+                for c, cfg in list(ship.get('dron_konfig', {}).items()) + list(s_drones.items()):
+                    touched += [i for ids in cfg.values() for i in ids]
+                for cfg in ship.get('dron_konfig', {}).values():
+                    for d in cfg:
+                        cfg[d] = []
+            if s_designs is not None:
+                touched += [i for per in s_designs.values() for k in DESIGN_SLOTS for i in (per.get(k) or {}).values() if i]
+                for x in self.p.d['dronlar']:
+                    for k in DESIGN_SLOTS:
+                        touched += [i for i in (x.get(k) or {}).values() if i]
+                        x[k] = {}
+            if s_pet is not None:
+                for cfg in list(self.pet.d['konfig'].values()) + list(s_pet.values()):
+                    touched += [i for ids in cfg.values() for i in ids]
+                for cfg in self.pet.d['konfig'].values():
+                    for s in cfg:
+                        cfg[s] = []
             busy = self.p.hangar_map()
+            used = {}                                   # config -> items already put back (an item is used once per config)
+
+            def free(i, c):
+                """The saved item still exists, is not on another ship and is not already used in this config."""
+                ok = str(i) in es and busy.get(i, hid) == hid and i not in used.setdefault(str(c), set())
+                if ok:
+                    used[str(c)].add(i)
+                return ok
+
             for c, slots in saved.items():
                 cfg = ship['konfigler'].setdefault(c, {})
                 extras = [self.p.d['esyalar'].get(str(i), '') for i in slots.get('extra', [])]     # kayıttaki Slot CPU'suyla
                 for s, ids in slots.items():
                     for i in ids:
-                        if str(i) in self.p.d['esyalar'] and busy.get(i, ship['hangarId']) == ship['hangarId']                                 and len(cfg.get(s, [])) < self.capacity(s, sid, extras=extras):
+                        if len(cfg.get(s, [])) < self.capacity(s, sid, extras=extras) and free(i, c):
                             cfg.setdefault(s, []).append(i)
+                        else:
+                            missing += 1
+            for c, per in (s_drones or {}).items():
+                dcfg = self.p.drone_config(c, sid)
+                for d, ids in per.items():
+                    x = self.p.drone(d)                 # the drone may have been sold since
+                    lst = dcfg.setdefault(str(d), [])
+                    for i in ids:
+                        if x and es.get(str(i), '').startswith(DRONE_ITEMS) and len(lst) < DRONES[x['lootId']]['yuva'] and free(i, c):
+                            lst.append(i)
+                        else:
+                            missing += 1
+            for d, per in (s_designs or {}).items():
+                x = self.p.drone(d)
+                for k in DESIGN_SLOTS:
+                    for c, i in (per.get(k) or {}).items():
+                        d_row = DESIGNS.get(es.get(str(i), ''))
+                        if x and d_row and DESIGN_SLOTS[k] == d_row['yuva'] and free(i, c):
+                            x.setdefault(k, {})[str(c)] = i
+                        else:
+                            missing += 1
+            for c, slots in (s_pet or {}).items():
+                pcfg = self.pet.config(c)
+                for s, ids in slots.items():
+                    for i in ids:
+                        if s in pcfg and len(pcfg[s]) < self.pet.open_slots(s) and free(i, c):
+                            pcfg[s].append(i)
                         else:
                             missing += 1
             self.p.dirty = True
@@ -1698,7 +1765,9 @@ class Magaza:
         desc = self.neden('eksik_yukleme') if missing             else stack_msg('popup_load_success_description')
         msgs = [('HangarShipLoadConfigCommand', {'title': stack_msg('popup_load_success_title'), 'description': desc, 'resultId': 1}),
                 self.equipment_cmd(sid)] + self.item_updates(touched)
-        return msgs + (self.apply_stats() if sid == self.p.d['aktif_gemi'] else [])
+        if sid == self.p.d['aktif_gemi']:
+            msgs += self.apply_stats() + (self.drone_msgs() if s_designs is not None else [])
+        return msgs + (self.pet.refresh() if s_pet is not None else [])
 
     def import_config(self, f):
         """Transfer System: kaynak geminin iki config'indeki eşyalar hedef gemiye taşınır (hedefin eşyaları envantere). Hedefin her
