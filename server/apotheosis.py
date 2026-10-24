@@ -49,7 +49,8 @@ def _register():
     for rows in D.get('toplama', {}).values():
         for tip, _, _ in rows:
             if tip in T:
-                T['apo_' + tip] = {k: v for k, v in T[tip].items() if k not in ('haritalar', 'etkinlik')}
+                # model: tür anahtarı modelin kendisi olan türlerde (79, 35) kopyanın adı ("apo_79") istemcide çizilmiyordu
+                T['apo_' + tip] = dict({k: v for k, v in T[tip].items() if k not in ('haritalar', 'etkinlik')}, model=T[tip].get('model', tip))
     if D.get('patron'):
         T[BOSS] = dict(D['patron'])
 
