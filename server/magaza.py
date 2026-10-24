@@ -197,6 +197,13 @@ PAY_CURRENCY = {'currency_uridium': ('uridium', 'URI'), 'currency_credits': ('cr
                 'currency_honour': ('honourPoints', 'HON')}
 PRIZE_CURRENCY = {'currency_uridium': 'uridyum', 'currency_credits': 'kredi', 'currency_experience': 'ep', 'currency_honour': 'onur'}
 SHOP_MAX = 255                     # ShopItemListCommand.itemList'in sayacı bir bayt (protocol.LIST_MAX)
+# bedava ürün (panelin mağaza fiyatı 0, "Yaratıcı"): adet seçicili üründe istemci Buy'u alınabilecek adet >= 1 iken açıyor ve adedi
+# bakiye / price[0] ile buluyor; fiyat 0 ise adet 0 (UIShopSystem.CalculateAffordableAmount, SetRightNumberLevel), Buy kapanıyordu
+# (kullanıcı 2026-10-25). Listede price[0] bu kadar (Decimal'e 1E-09 çevrilir: bakiye / fiyat taşmaz; tutar 2 haneye yuvarlanıp 0
+# görünür), metni (cost) 0; alımın fiyatı buy_price'tan (0). Cephanede adet sınırı BEDAVA_ADET (fiyat x adet hep 0,00 kalır).
+# Tıklamada toplam kutusu fiyatı yuvarlamadan yazıyor ("0.000000001 U."): panelin istemci yaması yuvarlar (istemci_yama.magaza_tutari).
+BEDAVA_FIYAT = 1e-9
+BEDAVA_ADET = 1000000
 
 
 def design_base(loot):
@@ -679,8 +686,8 @@ class Magaza:
                 # seviye düğmesinin fiyatı ve metni (ClickToggle: LevelDataList[seviye]) alınanla aynı: kayıttakiler kaldı, G-HR1'de
                 # 15.000 / 32.000 görünüp 32.000 / 55.000 alınıyordu; panelin çarpanı da burada
                 rows = it['LevelDataList'] = [dict(r) for r in it['LevelDataList']]
-                for r, u in zip(rows, it['price']):
-                    if u:                                  # 0: mağazada satılmaz (kayıttaki satır kalır)
+                for r, u0, u in zip(rows, prices, it['price']):
+                    if u0:                                 # 0: mağazada satılmaz (kayıttaki satır kalır); u çarpanla 0 olabilir (bedava)
                         r.update(price=int(u), cost='{:,} U.'.format(int(u)))
             if it['lootId'] == PETM.HULL and it.get('LevelDataList'):
                 # G-HP1 G-REP1'in kopyası (ek_magaza sablon): detay paneli ve onay penceresi LevelDataList'ten okuyor, kopyada G-REP1'in
@@ -692,6 +699,11 @@ class Magaza:
                 if pr and pr[1] > 0:
                     n = int(self.p.d['pilot'].get(pr[0], 0) // pr[1])
                     it['maxAmount'] = min(n, 2 ** 31 - 1) if n >= 1 else -1
+                elif pr:
+                    it['maxAmount'] = BEDAVA_ADET              # bedava: kayıttaki adet (kaydedilen hesabın parasının yettiği) değil
+        for it in t['itemList']:
+            if it.get('amountsSelectable') and it.get('price') and it['price'][0] == 0:
+                it['price'] = [BEDAVA_FIYAT] + it['price'][1:]
         if self.featured and self.featured[0] == category and time.time() < self.featured[2]:
             # ödeme düğmesinden açılan mağaza (odeme.py): istemci mağazayı 'extras,resource_key_access-dse' ile açıp o ürünü, listede
             # yoksa ilk ürünü seçiyor (ExpeditionBuyTicketCommandHandler, CreateItem): bilet bu listede yok (canlı tur 2)

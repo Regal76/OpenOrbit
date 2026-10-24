@@ -16,6 +16,12 @@ Rütbe penceresi (Hall of Fame "Your Rank"; kullanıcı bildirimi 2026-10-24: Se
   UIHallOfFameSystem.UpdateDailyRankForServer alt satırı yourRanking'e göre kurar ("hof_your_rank_below" rütbe 2-20, "hof_rank_lowest"
   1, "hof_rank_highest" 21) ama sonucu atıp metin dizisine hep GetTextById("hof_rank_lowest") koyar.
   R1 kurulan satır yığına itilir (çöp toplayıcı yığını tarar: dize yaşar), R2 dizideki GetTextById onu döndürür, R3 yığın geri alınır.
+
+Mağaza tutarı (kullanıcı bildirimi 2026-10-25, CANLI_TEST H233): bedava üründe sunucu price[0]'ı 1e-9 gönderir (magaza.BEDAVA_FIYAT;
+  0 olsa istemci adet seçicili üründe Buy'u kapatıyor). Ürüne tıklanınca toplam kutusu UIShopSystem.ReturnPriceName'den gelir ve fiyatı
+  yuvarlamadan biçimler ("0.000000001 U."); adet değişince istemci tutarı 2 haneye yuvarlıyor (CalculatePurchaseCost: Decimal.Round(x,
+  2, AwayFromZero)). M1: ReturnPriceName'in ReturnCostStr çağrısı aynı yuvarlamadan geçer ("0 U."). Mağazanın öteki fiyatlarında 2
+  haneden fazla ondalık yok: değişmez.
 """
 import ctypes, os, struct, threading, time
 from ctypes import wintypes as wt
@@ -25,6 +31,7 @@ SET_INFO, ON_TAB, START, REFRESH = 0x104330e0, 0x1042fe60, 0x10434a10, 0x10431db
 GUN, HAFTA = 0x133d0c58, 0x133ca8bc  # 'day', 'week' dize sabitlerinin yuvaları (OnChickBTN TabType'a bunları yazar)
 GET_VIEW, GET_TEXT = 0x11015400, 0x11075660     # UIHallOfFame.get_View, LocalizationManager.GetTextById
 EN_ALT = 0x133d77b0                  # 'hof_rank_lowest' dize sabitinin yuvası
+COST_STR, ROUND = 0x1061cd80, 0x1227a280        # UIShopSystem.ReturnCostStr, Decimal.Round(d, decimals, mode)
 
 
 class Mem:
@@ -177,7 +184,26 @@ def rutbe_penceresi(m, base):
     m.write(r3, bytes.fromhex('83c418'))           # R3: add esp,18h (itilen satır da)
 
 
-YAMALAR = (('müzayede sayacı', muzayede), ('rütbe penceresi', rutbe_penceresi))
+def magaza_tutari(m, base):
+    """Mağazanın toplam kutusu yaması (M1) -> None; baytlar tutmazsa ValueError (hiçbir şey yazılmadan)."""
+    va = lambda x: base + (x - TABAN)
+    m1 = va(0x1061ea4b)
+    beklenen = {va(0x1061ea45): bytes.fromhex('ff75080f1100'),                        # push [ebp+8] (self) / movups [eax],xmm0 (tutar)
+                m1: b'\xe8' + struct.pack('<i', COST_STR - 0x1061ea50) + b'\x83\xc4\x18'}  # call ReturnCostStr / add esp,18h
+    for a, b in beklenen.items():
+        if m.read(a, len(b)) != b:
+            raise ValueError('bilinmeyen istemci baytları (%#x)' % (a - base + TABAN))
+    k = Kod(m.alloc(0x1000))
+    c1 = k.pc                                      # M1: [ebp+0Ch] tutar (16 bayt) <- Decimal.Round(tutar, 2, AwayFromZero); ReturnCostStr'a atla
+    k(0x55, 0x8B, 0xEC, 0x83, 0xEC, 0x10, 0x6A, 0x00, 0x6A, 0x01, 0x6A, 0x02)
+    k(0xFF, 0x75, 0x18, 0xFF, 0x75, 0x14, 0xFF, 0x75, 0x10, 0xFF, 0x75, 0x0C, 0x8D, 0x45, 0xF0, 0x50).rel(0xE8, va(ROUND))
+    k(0x83, 0xC4, 0x20, 0x8B, 0x08, 0x89, 0x4D, 0x0C, 0x8B, 0x48, 0x04, 0x89, 0x4D, 0x10)
+    k(0x8B, 0x48, 0x08, 0x89, 0x4D, 0x14, 0x8B, 0x48, 0x0C, 0x89, 0x4D, 0x18, 0x8B, 0xE5, 0x5D).rel(0xE9, va(COST_STR))
+    m.write(k.at, bytes(k.b), code=False)
+    m.write(m1, bytes(Kod(m1).rel(0xE8, c1).b))
+
+
+YAMALAR = (('müzayede sayacı', muzayede), ('rütbe penceresi', rutbe_penceresi), ('mağaza tutarı', magaza_tutari))
 
 
 def uygula(pid, log=print, sure=90):
