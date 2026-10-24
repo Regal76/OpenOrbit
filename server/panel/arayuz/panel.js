@@ -1611,7 +1611,7 @@ async function renderPanel() {
       h('div', { class: 'card' }, h('h2', null, icon('star'), T('Masaüstü kısayolu')),
         h('p', { class: 'desc' }, T('Masaüstüne OpenOrbit kısayolu koyar (DarkOrbit simgeli); çift tıklayınca bu panel açılır (konsol penceresi olmadan).')),
         r.eski_kisayol ? h('div', { class: 'alert bilgi', style: { marginBottom: '12px' } }, icon('info'),
-          h('div', null, T('Masaüstündeki kısayol eski adla (DarkOrbit). Kısayol oluştur yenisini koyar, eskisini kaldırır.'))) : null,
+          h('div', null, T('Masaüstündeki eski kısayol (DarkOrbit) kaldırılan başlatıcıyı açıyor. Kısayol oluştur yenisini koyar, eskisini kaldırır.'))) : null,
         btn(T('Kısayol oluştur'), async () => {
           if (await act(() => api('/api/kisayol', {}), x => T('Kısayol oluşturuldu: {0}', x.yol))) renderPanel();
         }, 'primary', 'plus')),

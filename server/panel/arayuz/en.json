@@ -419,7 +419,7 @@
 "Masaüstü kısayolu": "Desktop shortcut",
 "Masaüstüne OpenOrbit kısayolu koy": "Put an OpenOrbit shortcut on the desktop",
 "Masaüstüne OpenOrbit kısayolu koyar (DarkOrbit simgeli); çift tıklayınca bu panel açılır (konsol penceresi olmadan).": "Puts an OpenOrbit shortcut (with the DarkOrbit icon) on the desktop; double-click it to open this panel (without a console window).",
-"Masaüstündeki kısayol eski adla (DarkOrbit). Kısayol oluştur yenisini koyar, eskisini kaldırır.": "The desktop shortcut still has the old name (DarkOrbit). Create shortcut puts the new one there and removes the old one.",
+"Masaüstündeki eski kısayol (DarkOrbit) kaldırılan başlatıcıyı açıyor. Kısayol oluştur yenisini koyar, eskisini kaldırır.": "The old desktop shortcut (DarkOrbit) points to the removed launcher. Create shortcut puts the new one there and removes the old one.",
 "Mağaza fiyatları": "Shop prices",
 "Mağazada kredi ve uridyumla satılan her şeyin fiyatı.": "Price of everything sold in the shop for credits and uridium.",
 "Menü çubuklarının ve pencerelerin yerini varsayılana döndür": "Reset menu bars and window positions",

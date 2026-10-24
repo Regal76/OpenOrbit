@@ -109,8 +109,10 @@ On the **Panel** page you can choose *Only notify* or turn it off, and check by 
 - **Cloned with Git:** the panel fast-forwards with `git`. If you changed tracked files or have commits of your own, it
   changes nothing and only tells you.
 - Your saves, settings, logs, personal login templates, downloaded game images and the game client are never changed.
-- **Coming from the old name (DarkOrbit Server Emulator):** `DarkOrbit Panel.pyw` and your old desktop shortcut still open
-  the panel. The **Panel** page offers to replace the shortcut with an OpenOrbit one (only when you press the button).
+- **Coming from the old name (DarkOrbit Server Emulator):** versions from before 24 October 2026 can't update themselves
+  any more (the panel says *The archive is not this project.*). Download the ZIP once more and copy its contents over your
+  folder; your saves, settings and the game stay. Then open the panel with `OpenOrbit Panel.pyw`; the **Panel** page
+  replaces the old desktop shortcut when you press *Create shortcut*.
 
 ### In-game tips
 
@@ -252,8 +254,10 @@ sayfasından *Yalnız haber ver*'i seçebilir, kapatabilir ve elle denetleyebili
 - **Git ile klonladıysan:** panel `git` ile ileri sarar. İzlenen dosyaları değiştirdiysen ya da kendi commit'lerin varsa hiçbir
   şeye dokunmaz, yalnız haber verir.
 - Kayıtların, ayarların, günlüklerin, kişisel giriş şablonların, inen oyun görselleri ve oyun istemcisi hiç değişmez.
-- **Eski addan (DarkOrbit Server Emulator) geliyorsan:** `DarkOrbit Panel.pyw` ve eski masaüstü kısayolun paneli açmaya
-  devam eder. **Panel** sayfası kısayolu OpenOrbit kısayoluyla değiştirmeyi önerir (yalnız düğmeye basınca).
+- **Eski addan (DarkOrbit Server Emulator) geliyorsan:** 24 Ekim 2026'dan önceki sürümler artık kendiliğinden
+  güncellenemez (panel *Arşiv bu projenin değil.* der). ZIP'i bir kez daha indirip içindekileri klasörünün üstüne kopyala;
+  kayıtların, ayarların ve oyun yerinde kalır. Sonra paneli `OpenOrbit Panel.pyw` ile aç; **Panel** sayfasında
+  *Kısayol oluştur*'a basınca eski masaüstü kısayolu yenisiyle değişir.
 
 ### Oyun içi ipuçları
 

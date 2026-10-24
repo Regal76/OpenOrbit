@@ -27,8 +27,8 @@ YEDEK_SAYISI = 2
 ZAMAN_ASIMI = 30
 EN_BUYUK = 500 << 20                                        # arşiv sınırı (bayt)
 GEREKLI = ('OpenOrbit Panel.pyw', 'server/panel/panel.py', 'server/game.py')   # arşiv bu projenin mi
-# Önceki sürümlerin GEREKLI'si 'DarkOrbit Panel.pyw' istiyor: o dosya (yeni adı açar) depoda kalmalı, yoksa eski kurulumlar
-# güncelleme alamaz (test_guncelleme.py denetler).
+# 2026-10-24'ten önceki sürümler 'DarkOrbit Panel.pyw' arıyordu (dosya kaldırıldı): o kurulumlar "Arşiv bu projenin değil"
+# der, ZIP elle yeniden indirilir (README).
 NO_WINDOW = 0x08000000
 
 

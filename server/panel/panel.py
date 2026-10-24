@@ -699,7 +699,7 @@ def watch_window(proc):
     STATE['pencere_kapandi'] = True
 
 
-KISAYOL, ESKI_KISAYOL = 'OpenOrbit.lnk', 'DarkOrbit.lnk'   # eski: 2026-10-24'ten önce konan ("DarkOrbit Panel.pyw"yi açar)
+KISAYOL, ESKI_KISAYOL = 'OpenOrbit.lnk', 'DarkOrbit.lnk'   # eski: 2026-10-24'ten önce konan (kaldırılan "DarkOrbit Panel.pyw"yi açar)
 
 
 def desktop_dir():
@@ -711,8 +711,8 @@ def desktop_dir():
 
 
 def old_shortcut():
-    """Masaüstündeki eski adlı kısayolun yolu ya da None: yalnız hedefi bu panelin "DarkOrbit Panel.pyw"si olan (oyunun kendi
-    DarkOrbit kısayolu değil). Kısayol kendiliğinden değiştirilmez; kullanıcı "Kısayol oluştur"a basınca yenisi konur."""
+    """Masaüstündeki eski adlı kısayolun yolu ya da None: yalnız hedefi bu panelin eski başlatıcısı "DarkOrbit Panel.pyw" olan
+    (oyunun kendi DarkOrbit kısayolu değil). Kısayol kendiliğinden değiştirilmez; kullanıcı "Kısayol oluştur"a basınca yenisi konur."""
     p = os.path.join(desktop_dir(), ESKI_KISAYOL)
     try:
         with open(p, 'rb') as fh:
