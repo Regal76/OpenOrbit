@@ -307,7 +307,7 @@ def settings_summary(values):
             text = ('%d %s' % (v, _(s['birim']) if s.get('birim') else '')).strip()
         else:
             text = _(s['secenekler'][v])
-        out.append({'ad': _(s['ad']), 'deger': text})
+        out.append({'ad': AY.tam_ad(s, _), 'deger': text})
     return out
 
 

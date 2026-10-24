@@ -158,7 +158,7 @@ class Teknoloji:
             w.log('   teknoloji şimdi işe yaramaz: %s' % item)
             return False
         add(p, item, -1)
-        sec, cd = c.get('sure_sn', 0), c.get('bekleme_sn', 0) * AY.carpan('yetenek_bekleme')      # panel
+        sec, cd = c.get('sure_sn', 0), c.get('bekleme_sn', 0) * AY.carpan('yetenek_bekleme', 'teknoloji')      # panel
         with p.lock:
             state(p)[item] = dict(bitis=now + sec, hazir=now + sec + cd, sure_ms=int(sec * 1000), bekleme_ms=int(cd * 1000))
             p.dirty = True

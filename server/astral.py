@@ -191,9 +191,9 @@ class Astral:
         row = next((x for x in D['odul'] if x['en_az'] <= reached <= x['en_cok']), D['odul'][0])
         msgs, got = [], []
         give = [('resource_collectable_astralite', row['astralite'])]
-        if random.random() < AY.chance('dusme', SALVAGE_CHANCE):     # panel: düşme şansı
+        if random.random() < AY.chance('dusme', SALVAGE_CHANCE, 'mod'):     # panel: düşme şansı
             give.append(('resource_collectable_salvage-core', row['kurtarma']))
-        keys = sum(1 for _ in range(row['anahtar']) if random.random() < AY.chance('dusme', KEY_CHANCE))
+        keys = sum(1 for _ in range(row['anahtar']) if random.random() < AY.chance('dusme', KEY_CHANCE, 'mod'))
         if keys:
             give.append(('resource_booty-key-astral', keys))
         if r['atlas']:

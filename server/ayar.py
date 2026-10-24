@@ -12,6 +12,11 @@ Dosya değişince (panelden kaydedilince) en geç YENILE_SN içinde yeniden okun
   harita    harita yeniden kurulunca (harita değişimi, ölüm sonrası doğma): NPC ve kutu sayısı
   giriş     oyuna yeniden girince (etkinlikler istemciye girişte bildirilir; açılır pencereler)
   başlatma  sunucu yeniden başlayınca
+Alt ayarlar (2026-10-24, kullanıcı isteği: uridyumu kutulardan, uzaylılardan, kapılardan ayrı ayrı ayarlamak): ALTLAR'daki
+çarpanların kaynaklara göre alt çarpanları var (anahtar <üst>_<kaynak>: uridyum_npc, magaza_fiyat_kredi …; şemada 'ust' ve 'kaynak'
+alanlarıyla üstünün hemen ardında). Etkin çarpan üst x alt: carpan('uridyum', 'npc'); kaynağın alt ayarı yoksa yalnız üst. Aralık,
+sınır ve uygulama üstünden, varsayılan x1; hazır ayarlar yalnız üstleri değiştirir. Panel alt ayarları üstünün altında açılan
+"Kaynağa göre" bölümünde gösterir.
 Oyun sunucusu configure() ile dosyayı bağlar (game.main, --ayarlar=<yol> seçeneği ya da save/ayarlar.json). Bağlanmamışken
 (testler, araçlar) bütün ayarlar varsayılandır: kullanıcının ayarları testleri etkilemez.
 """
@@ -229,6 +234,53 @@ SCHEMA = [
     _b('kontrol', 'Canlı test kontrol kanalı', 'gelistirici', 'Geliştirici aracı (kontrol.py, 127.0.0.1:8099): mesaj izi ve '
        'istek enjeksiyonu.', uygulama='başlatma'),
 ]
+
+# alt ayarlar: üst çarpan -> kaynakları [(kaynak, ad, açıklama)]; oyundaki karşılığı carpan(üst, kaynak) çağıran yerler
+_NPC = ('npc', 'Uzaylılar', 'Uzaylı (NPC) öldürünce.')
+_KUTU = ('kutu', 'Kutular ve sandıklar', 'Bonus kutuları, etkinlik kutuları ve ganimet sandıkları.')
+_GOREV = ('gorev', 'Görevler', 'Görev penceresinin görevleri ve Acil Görevler.')
+_KAPI = ('kapi', 'Kapılar', "Galaksi Kapıları (Dispatch'in kapı gönderimi dahil) ve etkinlik kapıları (Plutus, Quarantine …) "
+         'tamamlanınca.')
+_MOD = ('mod', 'Modlar ve etkinlikler', 'Astral, EBL, Galaxy Trek, Mimesis, Apotheosis, Voyagers, Trinity, Deep Space Echoes, '
+        'Labirent, dünya patronları, Battle Station, Dispatch ve etkinliklerin ödülleri.')
+_EK = ('ek', 'Uzaylıların ek ödülleri', 'Uzaylı öldürünce gelen Palladium, etkinlik paraları ve kaynaklar.')
+_YER = (('harita', 'Haritalarda', 'Haritalarda dolaşan uzaylılar ve patronlar.'),
+        ('dalga', 'Kapı ve mod dalgalarında', 'Galaksi Kapılarının, etkinlik kapılarının ve modların (Astral, EBL, Voyagers, '
+         'Trinity, Mimesis …) dalgalarındaki uzaylılar.'))
+_PARA = (_NPC, _KUTU, _GOREV, _KAPI, _MOD)
+ALTLAR = {
+    'kredi': _PARA, 'uridyum': _PARA, 'ep': _PARA, 'onur': _PARA,
+    'toplama': (_KUTU, ('kargo', 'Uzaylıların kargo kutuları', 'Uzaylının bıraktığı kargo kutusundaki cevher.'),
+                ('maden', 'Cevher toplama', 'Haritadaki cevherlerden toplanan miktar.'), _EK),
+    'mod_odul': (_GOREV, _KAPI, _MOD),
+    'dusme': (('booster', 'Booster', 'Patron ve Uber uzaylılardan booster düşmesi.'), _EK,
+              ('etkinlik', 'Etkinlik düşmeleri', 'Etkinlik ve etkinlik kapısı uzaylılarının kutuları, Chromin kutuları, Hitac '
+               'piyangosunun harfleri.'),
+              ('kapi', 'Kapılar', 'Galaksi Kapılarının ve etkinlik kapılarının şanslı ödülleri (tasarımlar, LF-4 …).'),
+              ('mod', 'Modlar', "Astral'ın kurtarma çekirdeği ve anahtarları, EBL'nin ek ödülü.")),
+    'npc_hasar': _YER, 'npc_can': _YER,
+    'kutu_bolluk': (('bonus', 'Bonus kutuları', 'Haritalara dağılan bonus kutuları.'),
+                    ('ganimet', 'Ganimet sandıkları', 'Anahtarla açılan ganimet sandıkları.'),
+                    ('etkinlik', 'Etkinlik kutuları', 'Etkinliklerin haritalara getirdiği kutular.')),
+    'npc_sayi': (('harita', 'Haritaların uzaylıları', 'Haritanın kendi uzaylıları ve patronları.'),
+                 ('etkinlik', 'Etkinlik uzaylıları', 'Etkinliklerin haritalara getirdiği uzaylılar.')),
+    'magaza_fiyat': (('kredi', 'Kredi ile satılanlar', 'Mağazada kredi fiyatlı her şey.'),
+                     ('uridyum', 'Uridyum ile satılanlar', 'Mağazada uridyum fiyatlı her şey.')),
+    'hizmet_fiyat': (('pet', 'P.E.T.', "P.E.T.'in yuvaları, tamiri ve yakıtı."),
+                     ('skylab', 'Skylab', 'Yükseltmeler, anında bitirme, hızlı taşıma ve robotlar.'),
+                     ('isinlama', 'Gemi ışınlama', 'Başka bir gemini hangara gitmeden bulunduğun yere getirme.')),
+    'bekleme': (('assembly', 'Assembly üretimi', "Assembly'de eşya üretimi."),
+                ('skylab', 'Skylab', 'Modül yükseltmeleri ve taşıma.'),
+                ('dispatch', 'Dispatch', 'Gönderimler ve kapı gönderimleri.'),
+                ('yukseltme', 'Eşya yükseltmeleri', 'Lazerlerin, jeneratörlerin, dronların ve modüllerin seviye yükseltmeleri.')),
+    'yetenek_bekleme': (('yetenek', 'Gemi yetenekleri', 'Geminin kendi yetenekleri.'),
+                        ('esya', "Savaş eşyaları ve CPU'lar", "Mayınlar, Smart Bomb, Insta-Shield, EMP, özel roketler ve CPU'lar."),
+                        ('teknoloji', 'Teknoloji eşyaları', 'Energy Leech, Chain Impulse, Battle Repair Bot, Speed Burst …'),
+                        ('parcacik', 'Parçacık topları ve sürücü', 'Parçacık silahları ve Singularity Drive.')),
+}
+SCHEMA = [x for s in SCHEMA for x in [s] + [dict(s, anahtar='%s_%s' % (s['anahtar'], k), ad=ad, aciklama=aciklama, varsayilan=1.0,
+                                                 ust=s['anahtar'], kaynak=k) for k, ad, aciklama in ALTLAR.get(s['anahtar'], ())]]
+ALT = {(s['ust'], s['kaynak']): s['anahtar'] for s in SCHEMA if s.get('ust')}
 BY_KEY = {s['anahtar']: s for s in SCHEMA}
 DEFAULTS = {s['anahtar']: s['varsayilan'] for s in SCHEMA}
 ETKINLIK_DURUMLARI = ('acik', 'kapali')         # yoksa takvime göre
@@ -343,8 +395,11 @@ def get(key):
     return _current().get(key, DEFAULTS[key])
 
 
-def carpan(key):
-    return float(get(key))
+def carpan(key, kaynak=None):
+    """Çarpan; kaynak verilirse alt ayarıyla çarpılır (carpan('uridyum', 'npc') = uridyum x uridyum_npc). Kaynağın alt ayarı
+    yoksa yalnız üst."""
+    alt = ALT.get((key, kaynak))
+    return float(get(key)) * (float(get(alt)) if alt else 1.0)
 
 
 def surum():
@@ -354,24 +409,24 @@ def surum():
         return _state['mtime']
 
 
-def fiyat(key, n):
+def fiyat(key, n, kaynak=None):
     """Fiyatı çarpanla ölçekle (hizmet ücretleri …): tam sayı, en az 0, 32 bitlik alana sığar."""
-    m = carpan(key)
+    m = carpan(key, kaynak)
     return n if m == 1.0 or not n else min(I32, max(0, int(round(n * m))))
 
 
-def adet(key, n):
+def adet(key, n, kaynak=None):
     """Sayıyı (uzaylı, kutu adedi) çarpanla ölçekle: yuvarlanır, pozitif sayı en az 1 kalır (patron kaybolmaz); çarpan 0 ise 0."""
-    m = carpan(key)
+    m = carpan(key, kaynak)
     if m == 1.0 or not n or n < 0:
         return n
     return 0 if m <= 0 else max(1, int(round(n * m)))
 
 
-def miktar(key, n):
+def miktar(key, n, kaynak=None):
     """Miktarı (ödül, toplanan eşya) çarpanla ölçekle: kesir olasılıkla yuvarlanır (x1,5 ile 1 -> yarı yarıya 1 ya da 2),
     beklenen değer tam çarpan kadar."""
-    m = carpan(key)
+    m = carpan(key, kaynak)
     if m == 1.0 or not n or n < 0:
         return n
     v = n * m
@@ -379,21 +434,26 @@ def miktar(key, n):
     return whole + (1 if random.random() < v - whole else 0)
 
 
-def sure(sec):
-    """Üretim ve bekleme süresi (panelin 'bekleme' çarpanı): Assembly, Skylab, Dispatch, eşya yükseltme -> saniye (en az 1)."""
-    m = carpan('bekleme')
+def sure(sec, kaynak=None):
+    """Üretim ve bekleme süresi (panelin 'bekleme' çarpanı; kaynak: assembly, skylab, dispatch, yukseltme) -> saniye (en az 1)."""
+    m = carpan('bekleme', kaynak)
     return sec if m == 1.0 else max(1, int(round(sec * m)))
 
 
-def chance(key, p):
+def chance(key, p, kaynak=None):
     """Olasılığı çarpanla ölçekle (0..1)."""
-    m = carpan(key)
+    m = carpan(key, kaynak)
     return p if m == 1.0 else min(1.0, max(0.0, p * m))
 
 
 def event_state(key):
     """Oyuncunun etkinlik seçimi: 'acik', 'kapali' ya da None (takvime göre)."""
     return (_current().get('etkinlikler') or {}).get(key)
+
+
+def tam_ad(s, ad=lambda x: x):
+    """Ayarın özetlerdeki adı: alt ayar üstüyle birlikte ('Uridyum kazancı › Uzaylılar'); ad: çeviri (panel)."""
+    return ad(BY_KEY[s['ust']]['ad']) + ' › ' + ad(s['ad']) if s.get('ust') else ad(s['ad'])
 
 
 def summary(values=None):
@@ -405,7 +465,7 @@ def summary(values=None):
         if v == s['varsayilan']:
             continue
         if s['tur'] == 'carpan':
-            out.append((s['ad'], 'x%g' % v))
+            out.append((tam_ad(s), 'x%g' % v))
         elif s['tur'] == 'bool':
             out.append((s['ad'], 'açık' if v else 'kapalı'))
         elif s['tur'] == 'sayi':

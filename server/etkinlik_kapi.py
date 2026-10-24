@@ -234,20 +234,20 @@ class EtkinlikKapilari:
         g, G, now = GATES[key], self.gate(key), time.time()
         o = g.get('odul', {})
         msgs = []
-        para = {k: AY.miktar(k, o[k]) for k in ('ep', 'onur', 'kredi', 'uridyum') if o.get(k)}      # panelin çarpanları
+        para = {k: AY.miktar(k, o[k], 'kapi') for k in ('ep', 'onur', 'kredi', 'uridyum') if o.get(k)}      # panelin çarpanları
         if para:
             tot = self.p.gain(neden='galaxy_gate_done', **para)
             msgs += reward_msgs(tot, **para) if reward_msgs else []
         for loot, n in o.get('esyalar', []):
             n = random.randint(*n) if isinstance(n, list) else n          # aralık (Indoctrine Oil 0-20)
             if n > 0 and self.m:
-                msgs += self.m.prize(loot, n)                # panel: kapı/mod ödülü çarpanı
+                msgs += self.m.prize(loot, n, 'kapi')        # panel: kapı/mod ödülü çarpanı
         if o.get('biri') and self.m:                       # olasılık ağırlıklı biri (Quarantine Box'ın mühimmat paketi)
             loot, n, _ = random.choices(o['biri'], weights=[w for _, _, w in o['biri']])[0]
-            msgs += self.m.prize(loot, random.randint(*n) if isinstance(n, list) else n)
+            msgs += self.m.prize(loot, random.randint(*n) if isinstance(n, list) else n, 'kapi')
         for loot, n, chance in o.get('sans', []):          # şanslı ödül (Quarantine Box'ın LF-4'ü)
-            if random.random() < AY.chance('dusme', chance) and self.m:
-                msgs += self.m.prize(loot, n)
+            if random.random() < AY.chance('dusme', chance, 'kapi') and self.m:
+                msgs += self.m.prize(loot, n, 'kapi')
         secs = int(now - G.get('bas', now))
         best = G.get('en_iyi_sn')
         with self.p.lock:
@@ -390,7 +390,7 @@ class Kosu(KAPI.Kosu):
             if not a.get('kalici'):
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı
             for x, y in KAPI.spread(cx, cy, count, w.map_w, w.map_h):
-                n = w.spawn_npc_at(npc_type(self.key, idx, i), x, y)
+                n = w.spawn_npc_at(npc_type(self.key, idx, i), x, y, dalga=True)
                 n.gate, n.engaged, n.hunt = True, True, True
                 n.next_think = time.time()
                 self.npcs.add(n.id)

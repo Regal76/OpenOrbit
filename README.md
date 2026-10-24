@@ -51,7 +51,8 @@ images). A management panel starts the game and handles your saves, game setting
 - **Saves:** several save slots; create, rename, copy, export and import (.zip), edit (credits, uridium, give items,
   repair the ship …), and automatic or manual backups that you can restore.
 - **Game Settings:** multipliers and rules (damage, rewards, drop chances, alien and box counts, prices, cooldowns …),
-  presets such as Relaxed, Fast progress and Hard, and your own templates. Most settings apply while you play.
+  presets such as Relaxed, Fast progress and Hard, and your own templates. Most settings apply while you play. Many of them
+  can be fine-tuned per source, e.g. uridium from aliens, boxes, quests, gates and modes, or shop prices in credits and uridium.
 - **Events:** each event by calendar, or on / off by hand.
 - **Client:** game folder, game download, version check, window mode, resolution and display.
 - **Server:** processes, ports, behavior and live logs.
@@ -224,7 +225,9 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 - **Kayıtlar:** birden çok kayıt yuvası; oluştur, yeniden adlandır, kopyala, dışa ve içe aktar (.zip), düzenle (kredi,
   uridyum, eşya ver, gemiyi onar …), otomatik ya da elle yedekler ve geri yükleme.
 - **Oyun Ayarları:** çarpanlar ve kurallar (hasar, ödüller, düşme şansı, uzaylı ve kutu sayısı, fiyatlar, beklemeler …),
-  Rahat, Hızlı ilerleme, Zorlu gibi hazır ayarlar ve kendi şablonların. Çoğu ayar oynarken uygulanır.
+  Rahat, Hızlı ilerleme, Zorlu gibi hazır ayarlar ve kendi şablonların. Çoğu ayar oynarken uygulanır. Birçoğu kaynağa göre
+  ayrıntılı ayarlanır: ör. uzaylılardan, kutulardan, görevlerden, kapılardan ve modlardan gelen uridyum, kredi ve uridyumla
+  satılanların mağaza fiyatı.
 - **Etkinlikler:** her etkinlik takvime göre ya da elle açık / kapalı.
 - **İstemci:** oyun klasörü, oyunu indirme, sürüm denetimi, pencere kipi, çözünürlük ve ekran.
 - **Sunucu:** süreçler, portlar, davranış ve canlı günlükler.

@@ -167,7 +167,7 @@ class Labirent:
             self.log('   labirent: +%d anahtar (%d)' % (a[1], keys(self.p)))
         for loot, amount, chance in n.d.get('dusme', []):
             if random.random() < chance:
-                msgs += w.grant_loot(loot, random.randint(*amount) if isinstance(amount, list) else amount)
+                msgs += w.grant_loot(loot, random.randint(*amount) if isinstance(amount, list) else amount, 'mod')
         if n.tip == SYNK:
             msgs += self.synk_killed(time.time())
         elif n.tip != SKOLL:

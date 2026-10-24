@@ -318,7 +318,7 @@ class Pet:
         n = self.open_slots(slot)
         prices = PET['yuva_fiyatlari'].get(slot, [])
         # panel: hizmet ücretleri (en az 1: 0 "en çok yuva" demek)
-        return max(1, AY.fiyat('hizmet_fiyat', prices[n])) if n < min(PET['azami_yuva'].get(slot, 0), len(prices)) else 0
+        return max(1, AY.fiyat('hizmet_fiyat', prices[n], 'pet')) if n < min(PET['azami_yuva'].get(slot, 0), len(prices)) else 0
 
     def gear_list(self):
         """Pencerenin dişli listesi: (tür, seviye, kullanılabilir). Pasif ve koruma her zaman; diğerleri takılıysa."""
@@ -508,7 +508,7 @@ class Pet:
     def repair_cost(self):
         if not self.owned or self.p.premium:                       # Premium: "Free P.E.T. repairs" (istemcinin haberi)
             return 0
-        return AY.fiyat('hizmet_fiyat', self.row()['tamir_uridyum'])                           # panel: hizmet ücretleri
+        return AY.fiyat('hizmet_fiyat', self.row()['tamir_uridyum'], 'pet')                           # panel: hizmet ücretleri
 
     def login_msgs(self):
         """Harita yüklendikten sonra: yok edilmişse tamir düğmesi; harita değiştiyse etkin P.E.T. yeniden çıkar."""
@@ -874,7 +874,7 @@ class Pet:
         f = dict(PET['yakit_satin'])
         if amount:
             f.update(kredi=f['kredi'] * amount // f['adet'], adet=amount)
-        f['kredi'] = AY.fiyat('hizmet_fiyat', f['kredi'])     # panel: hizmet ücretleri
+        f['kredi'] = AY.fiyat('hizmet_fiyat', f['kredi'], 'pet')     # panel: hizmet ücretleri
         pl = self.p.d['pilot']
         if not self.active:
             self.send([legacy('0|A|STM|log_msg_bought_fuel_hotkey_inactive')])
@@ -1209,7 +1209,7 @@ class Pet:
                                                      skillColorId=0)))
             w.send(msgs)
             return True
-        dmg = int(n.d['hasar'] * random.uniform(0.8, 1.0) * AY.carpan('npc_hasar'))      # panelin hasar çarpanı
+        dmg = int(n.d['hasar'] * random.uniform(0.8, 1.0) * AY.carpan('npc_hasar', 'dalga' if n.hunt else 'harita'))      # panel
         g = self.d.get('disli')
         if g in (COMBO_GUARD, COMBO_REPAIR) and random.random() < self.gear(g).get('sapma', 0):
             w.send(msgs)

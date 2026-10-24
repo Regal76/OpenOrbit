@@ -799,10 +799,10 @@ class Session:
     def quest_reward(self, loot, n):
         cur = {'currency_credits': 'kredi', 'currency_uridium': 'uridyum', 'currency_experience': 'ep', 'currency_honour': 'onur'}
         if loot in cur:
-            n = AY.miktar(cur[loot], n)                    # panelin ödül çarpanları
+            n = AY.miktar(cur[loot], n, 'gorev')           # panelin ödül çarpanları
             tot = self.profil.gain(neden='quest_won', **{cur[loot]: n})
             return self.world.reward_msgs(tot, **{cur[loot]: n}) if self.world else []
-        return self.magaza.prize(loot, n)                  # eşya ödülü: panelin mod/görev ödülü çarpanı
+        return self.magaza.prize(loot, n, 'gorev')         # eşya ödülü: panelin mod/görev ödülü çarpanı
 
     def respawn_home(self):
         """İstasyonsuz haritada istasyonda tamir: firmanın ana haritasında (X-1) istasyonda doğ (gerçek oyundaki gibi)."""

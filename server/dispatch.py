@@ -79,7 +79,7 @@ class Dispatch:
     def retriever_list(self, status, now=None):
         now = now or time.time()
         if status == AVAILABLE:
-            lst = [mod('DispatchModule', duration=AY.sure(r['sure_sn']), id=int(i), slotId=0) for i, r in sorted(R.items(), key=lambda x: int(x[0]))]
+            lst = [mod('DispatchModule', duration=AY.sure(r['sure_sn'], 'dispatch'), id=int(i), slotId=0) for i, r in sorted(R.items(), key=lambda x: int(x[0]))]
         else:
             lst = [mod('DispatchModule', duration=max(0, int(g['bitis'] - now)), id=g['id'], slotId=int(s))
                    for s, g in sorted(self.st['gonderilen'].items())]
@@ -99,7 +99,7 @@ class Dispatch:
             return [('DispatchLootMessageCommand', dict(messageType=NO_RESOURCE, loots=[loot(l, n) for l, n in miss.items()]))]
         removed = INV.spend(self.p, r['ucret'], reason='buy_SPECIAL', detail=r['kod'])
         with self.p.lock:
-            self.st['gonderilen'][str(slot)] = dict(id=int(rid), bitis=time.time() + AY.sure(r['sure_sn']))
+            self.st['gonderilen'][str(slot)] = dict(id=int(rid), bitis=time.time() + AY.sure(r['sure_sn'], 'dispatch'))
             self.p.dirty = True
         self.p.ach('dispatch_send', kod=r['kod'])
         self.log('   Dispatch: %s gönderildi (yuva %d, %d sn)' % (r['kod'], slot, r['sure_sn']))
@@ -206,7 +206,7 @@ class Dispatch:
                 out.append(mod('DispatchGateModule', gateId=g['kimlik'], status=IN_PROGRESS if left > 0 else READY, timeLeft=max(0, int(left))))
             elif self.k.built(key) and G['dalga'] == 0:
                 out.append(mod('DispatchGateModule', gateId=g['kimlik'], status=AVAILABLE,
-                               timeLeft=AY.sure(D['kapi']['sure_sn'])))      # gönderilebilirken "Time required" sütunu (canlı test H35)
+                               timeLeft=AY.sure(D['kapi']['sure_sn'], 'dispatch')))      # gönderilebilirken "Time required" sütunu (canlı test H35)
         return [('DispatchGetGateListCommand', {'gateList': out})]
 
     def send_gate(self, f):
@@ -221,7 +221,7 @@ class Dispatch:
             return [('DispatchLootMessageCommand', dict(messageType=NO_RESOURCE, loots=[loot(l, n) for l, n in miss.items()]))]
         INV.spend(self.p, cost)
         with self.p.lock:
-            self.st['kapilar'][key] = time.time() + AY.sure(D['kapi']['sure_sn'])
+            self.st['kapilar'][key] = time.time() + AY.sure(D['kapi']['sure_sn'], 'dispatch')
             self.k.gate(key)['hazir'] = False
             self.p.dirty = True
         self.log('   Dispatch: %s kapısı gönderildi' % KAPI.KAPI[key]['ad'])

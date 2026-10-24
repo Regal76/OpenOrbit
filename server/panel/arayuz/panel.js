@@ -63,6 +63,7 @@ const IC = {
   wand: '<path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/>',
   arrowL: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
   arrowR: '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+  chevR: '<polyline points="9 18 15 12 9 6"/>',
   agenda: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="7" y1="14" x2="13" y2="14"/><line x1="10" y1="18" x2="17" y2="18"/>',
 };
 const SVGNS = 'http://www.w3.org/2000/svg';
@@ -914,6 +915,11 @@ function markChanged() {
     const n = card.querySelectorAll('.set-row.changed').length;
     card.querySelector('.grp-count').textContent = n ? ' · ' + T('{0} değişiklik', n) : '';
   });
+  document.querySelectorAll('.set-sub').forEach(sub => {            // "Ayrıntılı ayarla" düğmesinde değişen alt ayar sayısı
+    const n = sub.querySelectorAll('.set-row.changed').length;
+    document.querySelector(`.set-row[data-key="${sub.dataset.ust}"] .set-toggle .n`).textContent = n ? T('{0} özel', n) : '';
+    paintEff(sub.dataset.ust);
+  });
   if (S.ayarFiltre && document.querySelector('.set-tools')) S.ayarFiltre(true);
 }
 
@@ -942,27 +948,40 @@ async function renderAyarlar() {
     h('span', { id: 'saved-note' }, T('Değişiklikler kendiliğinden kaydedilir.')), ' ' + T('Etiketler ne zaman geçerli olduğunu gösterir:') + ' ',
     ...Object.values(UYGULAMA).map(([c, t]) => [h('span', { class: 'tag ' + c }, T(t)), ' ']),
     r.sunucu_acik ? h('div', { style: { marginTop: '4px' } }, T('Sunucu açık: "Anında" ayarlar oyunda hemen değişir.')) : null));
+  S.ayarAcik = S.ayarAcik || {};
   const groups = r.gruplar.map(g => {
-    const items = r.sema.filter(s => s.grup === g.anahtar);
+    const items = r.sema.filter(s => s.grup === g.anahtar && !s.ust);
     if (!items.length) return null;
     return h('div', { class: 'card set-group', 'data-grup': g.anahtar }, h('h2', null, g.ad, h('span', { class: 'muted small grp-count' })),
-      items.map(s => settingRow(s, val(s.anahtar), r.varsayilan[s.anahtar])));
+      items.map(s => {
+        const row = settingRow(s, val(s.anahtar), r.varsayilan[s.anahtar]), kids = r.sema.filter(c => c.ust === s.anahtar);
+        return kids.length ? [row, subPanel(row, kids, val, r.varsayilan)] : row;
+      }));
   }).filter(Boolean);
   // arama, yalnız değişenler, grup kısayolları (seçimler sayfa yenilenince de kalır)
   const q = h('input', { class: 'input', type: 'search', placeholder: T('Ayar ara (ad ya da açıklama)…'), value: S.ayarAra || '' });
   const only = h('input', { type: 'checkbox', checked: !!S.ayarDegisen });
   const none = h('div', { class: 'card muted', hidden: true }, T('Aramaya uyan ayar yok.'));
-  // keep: kayıttan sonra (markChanged) yalnız gösterir, görünen satırı gizlemez (varsayılana dönen satır düzenlerken kaybolmasın)
+  // keep: kayıttan sonra (markChanged) yalnız gösterir, görünen satırı gizlemez (varsayılana dönen satır düzenlerken kaybolmasın).
+  // Alt ayar üstünün adıyla da aranır; uyan alt ayarın üstü görünür ve bölümü açılır.
   const apply = (keep = false) => {
     S.ayarAra = q.value; S.ayarDegisen = only.checked;
-    const words = q.value.toLocaleLowerCase(LOC()).split(/\s+/).filter(Boolean);
+    const words = q.value.toLocaleLowerCase(LOC()).split(/\s+/).filter(Boolean), filt = words.length > 0 || only.checked;
+    const hit = (row, extra = '') => { const text = (extra + ' ' + row.textContent).toLocaleLowerCase(LOC());
+      return words.every(w => text.includes(w)) && (!only.checked || row.classList.contains('changed')); };
     let shown = 0;
     groups.forEach(card => {
       let n = 0;
-      card.querySelectorAll('.set-row[data-key]').forEach(row => {
-        const text = row.textContent.toLocaleLowerCase(LOC());
-        const ok = (keep && !row.hidden) || (words.every(w => text.includes(w)) && (!only.checked || row.classList.contains('changed')));
+      card.querySelectorAll('.set-row[data-key]:not(.sub)').forEach(row => {
+        const sub = card.querySelector(`.set-sub[data-ust="${row.dataset.key}"]`);
+        let kid = false;
+        if (sub) sub.querySelectorAll('.set-row').forEach(c => {
+          const ok = !filt || (keep && !c.hidden) || hit(c, row.querySelector('.name').textContent);
+          c.hidden = !ok; kid = kid || (filt && ok);
+        });
+        const ok = (keep && !row.hidden) || hit(row) || kid;
         row.hidden = !ok; n += ok;
+        if (sub) setOpen(row, sub, ok && (!!S.ayarAcik[row.dataset.key] || kid));
       });
       card.hidden = !n; shown += n;
     });
@@ -984,7 +1003,10 @@ async function renderAyarlar() {
 
 function settingRow(s, v, def) {
   const [tc, tt] = UYGULAMA[s.uygulama] || ['', s.uygulama];
-  const head = h('div', null, h('div', { class: 'name' }, s.ad, h('span', { class: 'tag ' + tc }, T(tt))), h('div', { class: 'help' }, s.aciklama));
+  // alt ayar (s.ust): uygulama etiketi üstünde; yerine etkin çarpan (paintEff). data-v: gösterilen değer (sürgü bırakılmadan da)
+  const row = h('div', { class: 'set-row' + (s.ust ? ' sub' : ''), 'data-key': s.anahtar, 'data-v': v });
+  const head = h('div', null, h('div', { class: 'name' }, s.ad, s.ust ? h('span', { class: 'eff' }) : h('span', { class: 'tag ' + tc }, T(tt))),
+    h('div', { class: 'help' }, s.aciklama));
   let ctl;
   // sürgü önerilen aralıkta (min..max); sayı kutusuna elle sinir'e dek her değer yazılır (ayar.py), aralığın dışı "elle" işaretli
   const top = s.sinir ?? s.max;
@@ -998,7 +1020,7 @@ function settingRow(s, v, def) {
     const range = h('input', { type: 'range', min: 0, max: vals.length - 1, step: 1, value: near(v) });
     const num = h('input', { class: 'input num', type: 'number', min: s.min, max: top, step: 'any', value: v, title: T('En çok {0}', fmtMult(top)) });
     const paint = () => range.style.setProperty('--p', (range.value / (vals.length - 1) * 100) + '%');
-    const show = x => { num.value = x; lab.textContent = '×' + fmtMult(x); markOver(x); };
+    const show = x => { num.value = x; lab.textContent = '×' + fmtMult(x); markOver(x); row.dataset.v = x; paintEff(s.ust || s.anahtar); };
     range.addEventListener('input', () => { show(vals[+range.value]); paint(); });
     range.addEventListener('change', () => queueSave(s.anahtar, vals[+range.value]));
     num.addEventListener('change', () => {
@@ -1028,7 +1050,28 @@ function settingRow(s, v, def) {
     ctl = h('div', { class: 'ctl', style: { flexDirection: 'column', alignItems: 'flex-end' } }, seg);
     head.append(desc);
   }
-  return h('div', { class: 'set-row', 'data-key': s.anahtar }, head, ctl);
+  row.append(head, ctl);
+  return row;
+}
+// alt ayarlar (ayar.py ALTLAR): üstün satırında "Ayrıntılı ayarla" düğmesi, altında açılan bölüm (açıklığı S.ayarAcik'te kalır)
+function subPanel(row, kids, val, defs) {
+  const key = row.dataset.key;
+  const sub = h('div', { class: 'set-sub', 'data-ust': key },
+    h('p', { class: 'sub-note' }, T('Her satırın çarpanı yukarıdaki genel çarpanla çarpılır: genel ×2 ve satır ×3 ise ×6.')),
+    kids.map(c => settingRow(c, val(c.anahtar), defs[c.anahtar])));
+  row.firstChild.append(h('button', { class: 'set-toggle', type: 'button', onclick: () => { S.ayarAcik[key] = sub.hidden; setOpen(row, sub, sub.hidden); } },
+    icon('chevR'), T('Ayrıntılı ayarla'), h('span', { class: 'cnt' }, kids.length), h('span', { class: 'n' })));
+  setOpen(row, sub, !!S.ayarAcik[key]);
+  return sub;
+}
+function setOpen(row, sub, open) {
+  sub.hidden = !open;
+  const b = row.querySelector('.set-toggle'); b.classList.toggle('open', open); b.setAttribute('aria-expanded', String(open));
+}
+function paintEff(ust) {          // alt ayarların etkin çarpanı (genel x alt): genel x1 değilse "toplam ×6"
+  const p = document.querySelector(`.set-row[data-key="${ust}"]`), sub = document.querySelector(`.set-sub[data-ust="${ust}"]`);
+  if (!p || !sub) return;
+  sub.querySelectorAll('.set-row').forEach(c => { c.querySelector('.eff').textContent = +p.dataset.v === 1 ? '' : T('toplam ×{0}', fmtMult(p.dataset.v * c.dataset.v)); });
 }
 const fmtMult = x => (Math.round(x * 100) / 100).toLocaleString(LOC());
 

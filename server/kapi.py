@@ -652,10 +652,10 @@ class Kapilar:
         with self.p.lock:
             self.p.d['gemi']['galaxyGatesDone'] = self.p.d['gemi'].get('galaxyGatesDone', 0) + 1    # ShipInitializationCommand
         ep = int(R['ep'] * x2 * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0))))    # N.O.V.A. Field Intelligence (nova.py)
-        ep, onur, uri = AY.miktar('ep', ep), AY.miktar('onur', R['onur'] * x2), AY.miktar('uridyum', R['uridyum'])    # panelin çarpanları
+        ep, onur, uri = AY.miktar('ep', ep, 'kapi'), AY.miktar('onur', R['onur'] * x2, 'kapi'), AY.miktar('uridyum', R['uridyum'], 'kapi')   # panel
         tot = self.p.gain(ep=ep, onur=onur, uridyum=uri, neden='galaxy_gate_done')
         msgs = rm(tot, ep=ep, onur=onur, uridyum=uri)
-        q = lambda v: AY.miktar('mod_odul', v)              # panel: kapı/mod ödülü çarpanı
+        q = lambda v: AY.miktar('mod_odul', v, 'kapi')      # panel: kapı/mod ödülü çarpanı
         grants = {k: q(v) for k, v in R['cephane'].items()}
         grants.update(xenomit=q(R['xenomit'] * x2), kupon=q(R['kupon'] * x2), log_disk=q(R['log_disk'] * x2), enerji=q(R['enerji']),
                       ganimet={k: q(v * x2) for k, v in (R['ganimet'] or {}).items()})
@@ -664,24 +664,24 @@ class Kapilar:
         msgs += self.give(grants)
         got = []
         owned = {x['lootId'] for x in self.p.d['gemiler'].values()}
-        for s in [s for s in R['sans'] if random.random() < AY.chance('dusme', s['olasilik'] * x2)]:
+        for s in [s for s in R['sans'] if random.random() < AY.chance('dusme', s['olasilik'] * x2, 'kapi')]:
             loot = random.choice(s['secenekler']) if s['esya'] == 'tasarim_secimi' else s['esya']
             got.append(loot)
             if loot in owned and s.get('yoksa_uridyum'):                # Kuiper: tasarım zaten varsa 10.000 uridyum (wiki)
-                u = AY.miktar('uridyum', s['yoksa_uridyum'])
+                u = AY.miktar('uridyum', s['yoksa_uridyum'], 'kapi')
                 tot = self.p.gain(uridyum=u, neden='galaxy_gate_done')
                 msgs += rm(tot, uridyum=u)
             elif self.m:
-                msgs += self.m.prize(loot, s['adet'])
+                msgs += self.m.prize(loot, s['adet'], 'kapi')
         for loot, n, chance in TK.gate_rewards(key):          # etkinliğin kapı ödülü (Empyrian / Prosperous Fragment, Lucent Key)
-            if random.random() < AY.chance('dusme', chance) and self.m:
-                msgs += self.m.prize(loot, n)
+            if random.random() < AY.chance('dusme', chance, 'kapi') and self.m:
+                msgs += self.m.prize(loot, n, 'kapi')
                 got.append(loot)
         for s in [] if dispatch else TK.gate_choices(key):    # GG Special Rewards Weekend, LF-4 günü: olasılıkla paketten biri
             rows = [r for r in s['secim'] if not (s.get('yinelenmez') and GN.owned(self.p, r[0]))]   # gemi ya da tasarım
-            if rows and random.random() < AY.chance('dusme', s['olasilik']) and self.m:
+            if rows and random.random() < AY.chance('dusme', s['olasilik'], 'kapi') and self.m:
                 loot, n = random.choice(rows)
-                msgs += self.m.prize(loot, n)
+                msgs += self.m.prize(loot, n, 'kapi')
                 got.append(loot)
         for pk in TK.gate_packages(key):                      # ödülün paket adı (Prosperous'un 88.888 kredisi): başarım
             self.p.ach('package', paket=pk)
@@ -863,7 +863,7 @@ class Kosu:
             if not a.get('kalici'):
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyan patron bir tane)
             for x, y in spread(cx, cy, count, w.map_w, w.map_h):
-                n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, model=model)
+                n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, model=model, dalga=True)
                 n.gate, n.engaged, n.hunt = True, True, True
                 n.next_think = time.time()
                 self.npcs.add(n.id)

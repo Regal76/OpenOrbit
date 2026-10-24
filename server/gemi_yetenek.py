@@ -76,7 +76,7 @@ def cooldown(p, item):
     """Bekleme: geminin kendi değeri ya da tasarım çarpanı, CD boosterı (ABILITY_COOLDOWN_TIME, booster.py 'bekleme')."""
     o = ozel(p, item)
     base = o['bekleme_sn'] if 'bekleme_sn' in o else ABILITIES[item]['bekleme_sn'] * factor(p, item, 'bekleme')
-    return base * max(0.0, 1 - p.mods().get('bekleme', 0)) * AY.carpan('yetenek_bekleme')       # panel: yetenek beklemesi
+    return base * max(0.0, 1 - p.mods().get('bekleme', 0)) * AY.carpan('yetenek_bekleme', 'yetenek')       # panel: yetenek beklemesi
 
 
 def is_active(p, item, now=None):

@@ -48,7 +48,7 @@ class Isinlama:
             return [legacy('0|A|STM|msg_swnoactiveships'), ('ShipWarpNotAllowedCommand', {})]
         home = self.p.d['konum'].get('mapId', 1)
         near = bool(w and w.in_station())
-        pay = 0 if near else AY.fiyat('hizmet_fiyat', URIDYUM)          # panel: hizmet ücretleri
+        pay = 0 if near else AY.fiyat('hizmet_fiyat', URIDYUM, 'isinlama')          # panel: hizmet ücretleri
         ships = []
         for sid in sids:
             s = self.p.ship(sid)
@@ -78,7 +78,7 @@ class Isinlama:
         elif self.p.resource(KUPON):
             pay = {KUPON: 1}
         else:
-            pay = {'currency_uridium': AY.fiyat('hizmet_fiyat', URIDYUM)}
+            pay = {'currency_uridium': AY.fiyat('hizmet_fiyat', URIDYUM, 'isinlama')}
         import envanter as INV
         if INV.missing(self.p, pay):
             return [stm('ttip_currency_missing', '%CURRENCY%', 'Uridium'), ('ShipWarpNotAllowedCommand', {})]

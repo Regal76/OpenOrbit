@@ -153,7 +153,7 @@ class Arena:
     def grant(self, loot, n):
         if loot.startswith('currency_') and self.world:
             kw = {'currency_uridium': 'uridyum', 'currency_credits': 'kredi', 'currency_experience': 'ep', 'currency_honour': 'onur'}
-            return self.world.grant_loot(loot, n)
+            return self.world.grant_loot(loot, n, 'mod')
         return self.m.reward(loot, n) if self.m else []
 
     def grant_rows(self, rows):

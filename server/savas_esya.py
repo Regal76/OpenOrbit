@@ -410,7 +410,7 @@ class Esyalar:
         group, sec = item_cooldown(loot)
         if mine_based(loot):
             sec *= EK.mine_factor(self.p) * max(0.0, 1 + self.p.mods().get('mayin_bekleme', 0))
-        sec *= AY.carpan('yetenek_bekleme')                            # panel: yetenek ve eşya beklemeleri
+        sec *= AY.carpan('yetenek_bekleme', 'esya')                    # panel: yetenek ve eşya beklemeleri
         ms = int(sec * 1000)
         with self.p.lock:
             self.p.d.setdefault(TIMERS, {})[str(group)] = [now + sec, ms]
@@ -642,7 +642,8 @@ class Esyalar:
         g = p.d['gemi']
         if w.hero_dead:
             return
-        k = AY.carpan('npc_hasar') if owner != w.hid else 1.0       # panelin hasar çarpanı: uzaylının mayını
+        yer = 'dalga' if getattr(w.npcs.get(owner), 'hunt', False) else 'harita'
+        k = AY.carpan('npc_hasar', yer) if owner != w.hid else 1.0       # panelin hasar çarpanı: uzaylının mayını
         sh = min(g.get('shield', 0), g.get('shieldMax', 0) * cfg.get('kalkan', 0) * f * k)
         hp = g.get('hitMax', 0) * cfg.get('can', 0) * f * k
         if w.hero_etki.invulnerable(now) or w.invulnerable:

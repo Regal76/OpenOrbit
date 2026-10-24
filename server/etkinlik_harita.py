@@ -140,14 +140,14 @@ class HaritaEtkinlik:
         for k, s in self.here():
             for b in s.get('kutular', []):
                 have = sum(1 for x in w.boxes.values() if x['tip'] == b['tur'] and x.get('etk'))
-                for _ in range(max(0, AY.adet('kutu_bolluk', b.get('adet', 1)) - have)):
+                for _ in range(max(0, AY.adet('kutu_bolluk', b.get('adet', 1), 'etkinlik') - have)):
                     self.spawn_box(b['tur'])
             for u in s.get('uzaylilar', []):
                 tip = fmt(u['tur'], self.mc)
                 if tip not in w.CFG_TYPES:
                     continue
                 have = sum(1 for n in w.npcs.values() if n.alive and n.tip == tip)
-                for _ in range(max(0, AY.adet('npc_sayi', u['adet']) - have)):
+                for _ in range(max(0, AY.adet('npc_sayi', u['adet'], 'etkinlik') - have)):
                     w.spawn_npc(tip, announce=True)
 
     def info_msgs(self, now=None):
@@ -190,7 +190,7 @@ class HaritaEtkinlik:
         sahip = lambda v: v.hid if len(pay) > 1 else None
         kt = n.d.get('kutu')                   # türün kutusu (etkinlik kapıları: dalga kutusu, Plutus'un paketi, Synk'in kutusu)
         for v in pay:
-            if kt and random.random() < AY.chance('dusme', kt.get('olasilik', 1.0)):
+            if kt and random.random() < AY.chance('dusme', kt.get('olasilik', 1.0), 'etkinlik'):
                 h = v.drop_box(kt['tur'], x, y, None, kt.get('omur_sn', 300), sahip(v))
                 v.boxes[h]['etk'] = kt
         now = time.time() if now is None else now
@@ -202,7 +202,7 @@ class HaritaEtkinlik:
         for k, s in self.here(now):
             kd = s.get('kutu_dusme', {}).get(b)
             for v in pay if kd and not trick else ():
-                if random.random() < AY.chance('dusme', kd.get('olasilik', 1.0)):    # uzaylının kutusu (Treat …)
+                if random.random() < AY.chance('dusme', kd.get('olasilik', 1.0), 'etkinlik'):    # uzaylının kutusu (Treat …)
                     h = v.drop_box(kd['tur'], x, y, None, kd.get('omur_sn', 300), sahip(v))
                     v.boxes[h]['etk'] = kd
         for rk, g in [r for k in sorted(TK.active(now)) for r in rovers(k)]:

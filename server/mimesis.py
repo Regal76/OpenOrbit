@@ -380,7 +380,7 @@ class MmKosu:
         if math.hypot(ax - nx, ay - ny) > w.npc_range(n) + 200:
             return False
         n.next_shot = now + n.d.get('atis_aralik_sn', dunya.SAVAS['npc_saldiri_aralik_sn'])
-        dmg = int(n.d['hasar'] * random.uniform(0.8, 1.0) * AY.carpan('npc_hasar'))
+        dmg = int(n.d['hasar'] * random.uniform(0.8, 1.0) * AY.carpan('npc_hasar', 'dalga' if n.hunt else 'harita'))
         a.hp = max(0, a.hp - dmg)
         w.send([('AttackLaserRunCommand', dict(attackerId=n.id, targetId=a.id, laserColor=0, isDiminishedBySkillShield=False,
                                                skilledLaser=False, visualType=0)),
@@ -404,7 +404,7 @@ class MmKosu:
                 a, r = random.uniform(0, 2 * math.pi), random.uniform(900, 1600)
                 x = min(max(int(cx + math.cos(a) * r), 500), w.map_w - 500)
                 y = min(max(int(cy + math.sin(a) * r), 500), w.map_h - 500)
-                n = w.spawn_npc_at(tip, x, y, prep=lambda n: PO.scale_npc(n, hp=self.hp_f, dmg=self.dmg_f))
+                n = w.spawn_npc_at(tip, x, y, prep=lambda n: PO.scale_npc(n, hp=self.hp_f, dmg=self.dmg_f), dalga=True)
                 n.gate, n.engaged, n.hunt = True, True, True
                 n.next_think = 0
                 self.wave.add(n.id)

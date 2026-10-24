@@ -124,6 +124,6 @@ def drop_for(npc_name):
     """Boss/Uber uzaylıdan booster düşer mi (wiki: "Boss/Uber-Alien (1-10h)"; olasılık uyarlama). -> (lootId, saat) ya da None."""
     d = B['dusme']
     kind = 'boss' if npc_name.startswith('..::{') else 'uber' if npc_name.startswith('( Uber') else None
-    if not kind or random.random() >= AY.chance('dusme', d['olasilik'][kind]):
+    if not kind or random.random() >= AY.chance('dusme', d['olasilik'][kind], 'booster'):
         return None
     return random.choice(d['turler']), random.randint(*d['saat'])

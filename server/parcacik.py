@@ -379,7 +379,7 @@ class Atis:
 
     def cool(self, group, sec, now):
         import savas_esya as SE
-        sec *= AY.carpan('yetenek_bekleme')                 # panel: yetenek ve eşya beklemeleri (top ve sürücü de)
+        sec *= AY.carpan('yetenek_bekleme', 'parcacik')     # panel: yetenek ve eşya beklemeleri (top ve sürücü de)
         with self.p.lock:
             self.p.d.setdefault(SE.TIMERS, {})[str(group)] = [now + sec, int(sec * 1000)]
             self.p.dirty = True

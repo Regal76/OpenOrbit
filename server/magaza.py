@@ -564,7 +564,8 @@ class Magaza:
         """Satın alma fiyatı: price() x panelin mağaza fiyatı çarpanı (satış ve geri dönüşüm değerleri price()'tan, çarpansız); uridyumla
         alımlarda Shop Discount."""
         pr = self.price(loot, level)
-        k = AY.carpan('magaza_fiyat') * (1 - self.discount() if pr and pr[0] == 'uridium' else 1)
+        uri = bool(pr) and pr[0] == 'uridium'
+        k = AY.carpan('magaza_fiyat', 'uridyum' if uri else 'kredi') * (1 - self.discount() if uri else 1)
         return pr if not pr or k == 1.0 else (pr[0], pr[1] * k)
 
     def discount(self):
@@ -615,11 +616,11 @@ class Magaza:
             prices = PETM.level_prices(it['lootId'])
             if prices:                    # seviye seçicisi: seviye başına fiyat
                 it.update(price=[float(u) for u in prices])
-        k, disc = AY.carpan('magaza_fiyat'), self.discount()
-        if k != 1.0 or disc:              # panelin mağaza fiyatı çarpanı ve Shop Discount (uridyum): istemcinin gösterdiği fiyat ve metin
+        kc, ku, disc = AY.carpan('magaza_fiyat', 'kredi'), AY.carpan('magaza_fiyat', 'uridyum'), self.discount()
+        if kc != 1.0 or ku != 1.0 or disc:              # panelin mağaza fiyatı çarpanı ve Shop Discount (uridyum): istemcinin gösterdiği fiyat ve metin
             for it in t['itemList']:      # (istemci UserInventoryModule.activePremiumDiscount'u fiyata uygulamıyor, canlı tur 2)
                 if it.get('price') and it['price'][0] > 0 and it.get('cost') != 'Payment':
-                    ki = k * (1 - disc) if it.get('currency') == 'real' else k
+                    ki = ku * (1 - disc) if it.get('currency') == 'real' else kc
                     it['price'] = [float(math.ceil(u * ki - 1e-9)) for u in it['price']]
                     it['cost'] = '{:,} {}'.format(int(it['price'][0]), 'U.' if it.get('currency') == 'real' else 'C.')
         for it in t['itemList']:
@@ -930,15 +931,16 @@ class Magaza:
         return [('PetPurchasedCommand', {}), self.pet.init_msg(), self.p.generate('@arayuz'),    # çubukta P.E.T. simgesi
                 legacy('0|LM|ST|LOT|%s|1' % PET_LOOT)]
 
-    def prize(self, loot, n):
+    def prize(self, loot, n, kaynak='mod'):
         """Görev, kapı, mod, etkinlik ve Dispatch ödülü: reward()'ın panelli yolu. Kredi, uridyum, EP ve onur kendi çarpanlarıyla;
         yığılan eşyalar (cephane, kaynak, anahtar, teknoloji eşyası) 'mod_odul' çarpanıyla; tek eşyalar (gemi, lazer, tasarım,
-        booster, P.E.T., bilet) aynen. Mağaza, paket, takas ve GM yolları reward()'ı kullanır (ölçeklenmez)."""
+        booster, P.E.T., bilet) aynen. kaynak: panelin alt ayarı (gorev, kapi, mod). Mağaza, paket, takas ve GM yolları reward()'ı
+        kullanır (ölçeklenmez)."""
         key = PRIZE_CURRENCY.get(loot)
         if key:
-            n = AY.miktar(key, n)
+            n = AY.miktar(key, n, kaynak)
         elif loot.startswith(('ammunition_', 'resource_', 'tech_')) and loot not in PASS_ITEMS:
-            n = AY.miktar('mod_odul', n)
+            n = AY.miktar('mod_odul', n, kaynak)
         return self.reward(loot, n) if n > 0 else []
 
     def reward(self, loot, n):

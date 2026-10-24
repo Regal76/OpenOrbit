@@ -160,7 +160,7 @@ class Yukseltme:
         off = bonus_hour(now)
         if off and need.get('currency_uridium'):
             need['currency_uridium'] = int(math.ceil(need['currency_uridium'] * (1 - off)))
-        return need, AY.sure(sum(r['sure_sn'] for r in rows))            # panel: bekleme
+        return need, AY.sure(sum(r['sure_sn'] for r in rows), 'yukseltme')            # panel: bekleme
 
     def build(self, f, now=None):
         now = now or time.time()
@@ -243,7 +243,7 @@ class Yukseltme:
         başına 1 uridyum alınıyordu, pencere ise Isochronate gösteriyordu (canlı test H58)."""
         now = time.time() if now is None else now
         rows = UP[key]['seviyeler'][b['seviye'] - b['adet']:b['seviye']]
-        total = AY.sure(sum(r['sure_sn'] for r in rows)) or 1
+        total = AY.sure(sum(r['sure_sn'] for r in rows), 'yukseltme') or 1
         frac = min(1.0, max(0.0, (b['bitis'] - now) / total))
         need = {}
         for r in rows:

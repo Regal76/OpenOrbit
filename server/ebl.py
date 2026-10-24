@@ -187,7 +187,7 @@ class Ebl:
         msgs = []
         if tier and done:
             msgs += self.m.prize(D['parca'], tier['parca'])
-            if tier['iac'] and random.random() < AY.chance('dusme', D['iac'][2]):
+            if tier['iac'] and random.random() < AY.chance('dusme', D['iac'][2], 'mod'):
                 msgs += self.m.prize(D['iac'][0], D['iac'][1])
         with self.p.lock:
             self.st['kosu'] = None

@@ -213,7 +213,7 @@ class Assembly:
         removed = INV.spend(self.p, need, reason='buy_SPECIAL', detail=key)
         now = time.time()
         with self.p.lock:
-            self.st['uretim'][key] = dict(adet=amount, bitis=now + AY.sure(r['sure_sn'] * amount), onceki=self.st['sayac'].get(key, 0))
+            self.st['uretim'][key] = dict(adet=amount, bitis=now + AY.sure(r['sure_sn'] * amount, 'assembly'), onceki=self.st['sayac'].get(key, 0))
             if key not in self.st['gorulen']:
                 self.st['gorulen'].append(key)
             if r['kullanim'] != NO_LIMIT or r['olcek'] != 1:

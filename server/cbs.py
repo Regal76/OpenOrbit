@@ -768,7 +768,7 @@ class Cbs:
         if rival:                                       # oyuncu rakibin modülünü yıktı: uridyum
             kind = MODS[m['loot']].get('silah') or 'diger'
             u = D['yikma_odulu']['taban'].get(kind, D['yikma_odulu']['taban']['diger']) + D['yikma_odulu']['seviye_basina'] * m['seviye']
-            u = AY.miktar('uridyum', u)                     # panelin uridyum çarpanı
+            u = AY.miktar('uridyum', u, 'mod')              # panelin uridyum çarpanı
             self.p.gain(uridyum=u, neden='battlestation_destroy_modul')
             msgs += [stm('msg_station_satellite_destruction_reward', AMOUNT=u, MODULE=MODS[m['loot']]['kod'], LEVEL=m['seviye'] + 1,
                          STATION=AST[aid]['ad'])] + self.m.money_msgs()
@@ -788,7 +788,7 @@ class Cbs:
         msgs = []
         if rival:
             r = D['yikma_odulu']['merkez']
-            r = dict(r, uridyum=AY.miktar('uridyum', r['uridyum']), kredi=AY.miktar('kredi', r['kredi']))     # panelin çarpanları
+            r = dict(r, uridyum=AY.miktar('uridyum', r['uridyum'], 'mod'), kredi=AY.miktar('kredi', r['kredi'], 'mod'))     # panelin çarpanları
             self.p.gain(uridyum=r['uridyum'], kredi=r['kredi'], neden='battlestation_destroy_station')
             msgs += [stm('msg_station_hub_destruction_reward', AMOUNT=r['uridyum'], STATION=AST[aid]['ad']),
                      stm('msg_station_destroyed_by_clan', DESTROYER=self.clan_name(), LOSER=a.get('rakip', ''), STATION=AST[aid]['ad'],

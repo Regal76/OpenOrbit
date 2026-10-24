@@ -96,7 +96,7 @@ class Chromin:
         if not active() or int(w.map_id) not in KAPI.BY_MAP or npc.d.get('sayilmaz'):
             return []
         b = box_for(npc, KAPI.BY_MAP[int(w.map_id)])
-        if not b or random.random() >= AY.chance('dusme', D.get('olasilik', 1.0)):
+        if not b or random.random() >= AY.chance('dusme', D.get('olasilik', 1.0), 'etkinlik'):
             return []
         kind, n = b
         h = w.drop_box(kind, x, y, None, D.get('omur_sn', 300))

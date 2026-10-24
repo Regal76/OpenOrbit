@@ -149,9 +149,9 @@ class Mover:
 
 
 class NPC:
-    def __init__(self, uid, tip, x, y):
+    def __init__(self, uid, tip, x, y, dalga=False):
         self.id, self.tip, self.d = uid, tip, CFG['tipler'][tip]
-        k = AY.carpan('npc_can')
+        k = AY.carpan('npc_can', 'dalga' if dalga else 'harita')     # dalga: kapı ve mod dalgasının uzaylısı
         if k != 1.0 and not self.d.get('dost'):        # panelin can çarpanı: türün paylaşılan sözlüğü değil, kopyası (n.d azami değer)
             self.d = dict(self.d, hp=max(1, int(self.d['hp'] * k)), kalkan=min(AY.I32, int(self.d['kalkan'] * k)))
         self.model = self.d.get('model', tip)      # istemcinin gemi modeli (aynı modeli paylaşan türlerde tür anahtarından farklı)
@@ -766,11 +766,12 @@ class World:
             self.send(self.show(n, now))
         return n
 
-    def spawn_npc_at(self, tip, x, y, model=None, prep=None):
+    def spawn_npc_at(self, tip, x, y, model=None, prep=None, dalga=False):
         """Belirli noktada NPC (kapı dalgaları). model: türünkinden farklı görünüm (Kronos Evil You: oyuncunun gemisi); prep:
-        bildirilmeden önce örneğe uygulanan (modlarda güçlendirme, pve_ortak.scale_npc)."""
+        bildirilmeden önce örneğe uygulanan (modlarda güçlendirme, pve_ortak.scale_npc); dalga: kapı ve mod dalgası (panelin can alt
+        ayarı)."""
         self.next_uid += 1
-        n = NPC(self.next_uid, tip, int(x), int(y))
+        n = NPC(self.next_uid, tip, int(x), int(y), dalga)
         if model:
             n.model = model
         if prep:
@@ -866,7 +867,7 @@ class World:
             joined = bool(self.ortak and self.ortak.uyeler)      # ortak haritada başka oyuncu var: uzaylılar, kutular, cevherler onun
             restored = joined or self.restore_state()
             for g in ([] if restored else m['npc']):
-                for _ in range(AY.adet('npc_sayi', g['adet'])):
+                for _ in range(AY.adet('npc_sayi', g['adet'], 'harita')):
                     self.spawn_npc(g['tip'], announce=False)
             if self.test_near and not joined:
                 hx, hy = self.hero_pos()
@@ -881,10 +882,10 @@ class World:
                     self.log('   test NPC %d %s konum=(%d,%d), oyuncu=(%d,%d)' % (n.id, n.d['ad'], n.mover.x1, n.mover.y1, hx, hy))
             self.send(self.visible_msgs(time.time()) + self.map_effect_msgs())
             if not restored:
-                for _ in range(AY.adet('kutu_bolluk', m.get('bonus_kutu', 0))):
+                for _ in range(AY.adet('kutu_bolluk', m.get('bonus_kutu', 0), 'bonus')):
                     self.spawn_bonus_box()
                 for kind, n in ([] if self.kapi else GN.spawns(H.name(self.map_id))):
-                    for _ in range(AY.adet('kutu_bolluk', n)):
+                    for _ in range(AY.adet('kutu_bolluk', n, 'ganimet')):
                         self.spawn_booty(kind)
                 self.spawn_ores()
             self.send([self.ore_msg(h) for h in self.ores])
@@ -1114,7 +1115,7 @@ class World:
                                                          hash=h)), legacy('0|A|STM|loadfull')] + self.p.hint(IP.FULL_CARGO))
             return
         del self.ores[h]
-        got = max(1, min(AY.miktar('toplama', 1), self.p.cargo_free()))      # panelin toplama çarpanı
+        got = max(1, min(AY.miktar('toplama', 1, 'maden'), self.p.cargo_free()))      # panelin toplama çarpanı
         totals = self.p.add_ores({o['tip']: got})
         msgs = pre + ([self.ore_pack([o['tip']])] if self.ore_pack else [])
         msgs += [('MapEventOreCommand', dict(eventType=ORE_EVENT_FINISHED, oreType=mod('OreTypeModule', typeValue=o['tip']), hash='')),
@@ -1631,7 +1632,7 @@ class World:
                     what, amount = seq[min(self.boxes_taken, len(seq) - 1)]
                     self.boxes_taken += 1
                 amount = int(amount * boost * (1 + m.get('bonus_kutusu', 0)) * (1 + (m.get('bonus_uridyum', 0) if what == 'uridyum' else 0)))
-                amount = AY.miktar({'kredi': 'kredi', 'uridyum': 'uridyum', 'enerji': 'kapi_enerji'}.get(what, 'toplama'), amount)  # panel
+                amount = AY.miktar({'kredi': 'kredi', 'uridyum': 'uridyum', 'enerji': 'kapi_enerji'}.get(what, 'toplama'), amount, 'kutu')  # panel
                 if what == 'kredi':
                     msgs += self.reward_msgs(self.p.gain(kredi=amount, neden='collect_bonusbox'), kredi=amount)
                 elif what == 'uridyum':
@@ -1799,10 +1800,11 @@ class World:
         """NPC'nin ateş menzili: türün kendi değeri; hareketsizler oyuncunun menzilinden uzun (yoksa karşılık veremez)."""
         return n.d.get('menzil') or (SAVAS['npc_menzil_sabit'] if n.d['hiz'] <= 0 else SAVAS['npc_menzil'])
 
-    def grant_loot(self, loot, n):
-        """Kutudan ödül: para EP/onur/kredi/uridyum hesaba (Uridium Bank'a sayılır), gerisi mağazanın ödül işleviyle."""
+    def grant_loot(self, loot, n, kaynak='kutu'):
+        """Kutudan ödül: para EP/onur/kredi/uridyum hesaba (Uridium Bank'a sayılır), gerisi mağazanın ödül işleviyle. kaynak:
+        panelin alt ayarı (modların parası 'mod')."""
         cur = {'currency_credits': 'kredi', 'currency_uridium': 'uridyum', 'currency_experience': 'ep', 'currency_honour': 'onur'}
-        n = AY.miktar(cur.get(loot, 'toplama'), n)                         # panelin çarpanları
+        n = AY.miktar(cur.get(loot, 'toplama'), n, kaynak)                 # panelin çarpanları
         if loot in cur:
             kw = {cur[loot]: n}
             return self.reward_msgs(self.p.gain(neden='collect_bonusbox', **kw), **kw)
@@ -1821,7 +1823,7 @@ class World:
         boost = 1 + bm.get('ozel_sans', 0)                              # PRC-B00/B01: Hybrid Alloy ve Indoctrine Oil olasılığı
         for loot, spec in (n.d.get('ek_odul', {}) if specs is None else specs).items():
             special = loot in BOOSTER.B.get('ozel_sans_kaynaklar', ())
-            cnt = extra_count(spec, (boost if special else 1.0) * AY.carpan('dusme'))
+            cnt = extra_count(spec, (boost if special else 1.0) * AY.carpan('dusme', 'ek'))
             if special and cnt > 0:
                 cnt = int(cnt * (1 + bm.get('ozel_miktar', 0)))          # PRM-B01 (PCOMB-B01): miktar x2 (Ö6)
             if loot == 'resource_collectable_agate-splinter' and cnt > 0:
@@ -1831,7 +1833,7 @@ class World:
             if loot.startswith('equipment_'):
                 msgs += self.grant(loot, cnt) if self.grant else []      # The Stinger'ın Caucasus lazeri (%0,5)
                 continue
-            cnt = AY.miktar('toplama', cnt)                              # panelin toplama çarpanı
+            cnt = AY.miktar('toplama', cnt, 'ek')                        # panelin toplama çarpanı
             if loot == 'resource_ore_palladium':
                 cnt = min(cnt, self.p.cargo_free())
                 if cnt > 0:
@@ -1848,7 +1850,7 @@ class World:
     def cargo_of(self, n):
         """NPC'nin kargo kutusu; X-1 haritalarında yüksek seviyede azalır (npc.json x1_kargo: L7 %50 … L10+ yok)."""
         boost = 1 + self.p.mods().get('kargo', 0)                       # RES-B01 (booster): uzaylı kaynakları
-        cargo = {t: AY.miktar('toplama', int(v * boost)) for t, v in n.d['kargo'].items()}      # panelin toplama çarpanı
+        cargo = {t: AY.miktar('toplama', int(v * boost), 'kargo') for t, v in n.d['kargo'].items()}      # panelin toplama çarpanı
         cargo = {t: v for t, v in cargo.items() if v > 0}
         if H.map_class(self.map_id) == 'X-1' and AY.get('x1_kargo'):          # panel: kapatılabilir
             lv = self.p.d['pilot'].get('level', 1)
@@ -1948,7 +1950,7 @@ class World:
         if f != 1:
             o = {a: int(v * f) for a, v in o.items()}
         for k in ('ep', 'onur', 'kredi', 'uridyum'):
-            o[k] = AY.miktar(k, o.get(k, 0))                       # panelin ödül çarpanları
+            o[k] = AY.miktar(k, o.get(k, 0), 'npc')                # panelin ödül çarpanları
         return o
 
     def npc_reward(self, n, x, y, share=1, own=True):
@@ -2630,7 +2632,8 @@ class World:
         now = now or time.time()
         msgs = [] if msgs is None else msgs
         g, m = self.p.d['gemi'], self.p.mods()
-        dmg = int(dmg * max(0.0, 1 + m.get('alinan_hasar', 0)) * AY.carpan('npc_hasar'))      # Fortify; panelin hasar çarpanı
+        yer = 'dalga' if getattr(killer, 'hunt', False) else 'harita'      # panelin hasar alt ayarı: kapı ve mod dalgası mı
+        dmg = int(dmg * max(0.0, 1 + m.get('alinan_hasar', 0)) * AY.carpan('npc_hasar', yer))      # Fortify; panelin hasar çarpanı
         if self.hero_etki.invulnerable(now):
             dmg = 0                                 # Insta-Shield (savas_esya.py)
         if dmg and killer is not None and getattr(killer, 'alive', False):

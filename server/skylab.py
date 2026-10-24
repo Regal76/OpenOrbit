@@ -274,7 +274,7 @@ class Skylab:
         if not g or lv >= MODULES[key]['azami']:
             return None
         c = COSTS[g][lv]
-        f = lambda n: AY.fiyat('hizmet_fiyat', n)          # panel: hizmet ücretleri (kredi ve uridyum; kaynaklar aynı)
+        f = lambda n: AY.fiyat('hizmet_fiyat', n, 'skylab')  # panel: hizmet ücretleri (kredi ve uridyum; kaynaklar aynı)
         return dict(c, kredi=f(c['kredi']), uridyum=f(c['uridyum']))
 
     def ore_info(self, ore, n, cap=None):
@@ -289,7 +289,7 @@ class Skylab:
         left = max(0, int(m['yukseltme'] - now)) if m.get('yukseltme') else 0
         upgrade = mod('SkylabModuleUpgradeCommand', timeLeft=left, credits=c['kredi'] if c else 0, terbium=c['kaynak'] if c else 0,
                       uridiumInstant=self.finish_price(key, now) if left else (c['uridyum'] if c else 0),
-                      endurium=c['kaynak'] if c else 0, prometium=c['kaynak'] if c else 0, timeNormal=AY.sure(c['sure_sn']) // 60 if c else 0)
+                      endurium=c['kaynak'] if c else 0, prometium=c['kaynak'] if c else 0, timeNormal=AY.sure(c['sure_sn'], 'skylab') // 60 if c else 0)
         info = mod('SkylabCollectorInfoCommand', production=self.production(key), maxTime=0, leftTime=0)
         prod, xeno, ores = None, mod('SkylabXenoInfoCommand', activeEfficiency=0, activeConsumption=0, inactiveConsumption=0,
                                      activeEnergy=0), []
@@ -333,8 +333,8 @@ class Skylab:
         if not m.get('yukseltme'):
             return 0
         c = COSTS[MODULES[key]['grup']][m['seviye']]
-        u = AY.fiyat('hizmet_fiyat', c['uridyum'])
-        return max(1 if u else 0, int(math.ceil(u * (m['yukseltme'] - now) / max(1, AY.sure(c['sure_sn'])))))
+        u = AY.fiyat('hizmet_fiyat', c['uridyum'], 'skylab')
+        return max(1 if u else 0, int(math.ceil(u * (m['yukseltme'] - now) / max(1, AY.sure(c['sure_sn'], 'skylab')))))
 
     def busy(self):
         return next((k for k, m in self.st['moduller'].items() if m.get('yukseltme')), None)
@@ -367,7 +367,7 @@ class Skylab:
             for ore, _ in UPGRADE_RES:
                 self.st['depo'][ore] -= c['kaynak']
             m = self.module(key)
-            m['yukseltme'] = now + AY.sure(c['sure_sn'])       # panel: bekleme
+            m['yukseltme'] = now + AY.sure(c['sure_sn'], 'skylab')       # panel: bekleme
             if m['seviye'] == 0:
                 m['etkin'] = True                          # yeni kurulan modül bitince çalışır (enerji yetiyorsa)
             self.p.dirty = True
@@ -435,11 +435,11 @@ class Skylab:
     def transport_time(self, load):
         """Normal taşımanın süresi: cevher başına birim_sn (Premium premium_birim_sn)."""
         per = TRANSPORT['premium_birim_sn' if self.p.premium else 'birim_sn']
-        return AY.sure(int(math.ceil(sum(load.values()) * per)))
+        return AY.sure(int(math.ceil(sum(load.values()) * per)), 'skylab')
 
     def transport(self, f, now):
         mode, st = f.get('transportMode') or '', self.st
-        price = AY.fiyat('hizmet_fiyat', TRANSPORT['hizli_uridyum'])      # panel
+        price = AY.fiyat('hizmet_fiyat', TRANSPORT['hizli_uridyum'], 'skylab')      # panel
         if mode == 'instantFinish':
             if not st.get('tasima'):
                 return [22], [], []
@@ -488,7 +488,7 @@ class Skylab:
         if key not in COLLECTORS or kind not in ('1', '2'):
             return []
         cur, price = ROBOTS[kind]['fiyat']
-        price = AY.fiyat('hizmet_fiyat', price)                         # panel
+        price = AY.fiyat('hizmet_fiyat', price, 'skylab')                         # panel
         loot = 'currency_' + cur
         if INV.missing(self.p, {loot: price}):
             self.log('   Skylab: robot için %s yetmiyor' % cur)
