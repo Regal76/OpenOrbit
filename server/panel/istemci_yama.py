@@ -11,6 +11,11 @@ Müzayede sayacı (CANLI_TEST H175; istemcinin kendi hatası, sunucu her listede
   P2 StartCountdown: son kurulan sayaç kaydedilir
   P3, P4 sayacın yazıcısı ve bitişi: son sayaç değilse hiçbir şey yapmaz (eski sayaçlar yazmaz, bitince liste istemez)
   P5 OnChickBTN: sekme tıklamasında bayat süreyle kurmak yerine liste ister (RefreshUI); yanıtı P1 kurar
+
+Rütbe penceresi (Hall of Fame "Your Rank"; kullanıcı bildirimi 2026-10-24: Sergeant olunca da "You currently have the lowest rank."):
+  UIHallOfFameSystem.UpdateDailyRankForServer alt satırı yourRanking'e göre kurar ("hof_your_rank_below" rütbe 2-20, "hof_rank_lowest"
+  1, "hof_rank_highest" 21) ama sonucu atıp metin dizisine hep GetTextById("hof_rank_lowest") koyar.
+  R1 kurulan satır yığına itilir (çöp toplayıcı yığını tarar: dize yaşar), R2 dizideki GetTextById onu döndürür, R3 yığın geri alınır.
 """
 import ctypes, os, struct, threading, time
 from ctypes import wintypes as wt
@@ -18,6 +23,8 @@ from ctypes import wintypes as wt
 TABAN = 0x10000000                   # GameAssembly.dll'in tercih ettiği yükleme adresi (adresler buna göre)
 SET_INFO, ON_TAB, START, REFRESH = 0x104330e0, 0x1042fe60, 0x10434a10, 0x10431db0
 GUN, HAFTA = 0x133d0c58, 0x133ca8bc  # 'day', 'week' dize sabitlerinin yuvaları (OnChickBTN TabType'a bunları yazar)
+GET_VIEW, GET_TEXT = 0x11015400, 0x11075660     # UIHallOfFame.get_View, LocalizationManager.GetTextById
+EN_ALT = 0x133d77b0                  # 'hof_rank_lowest' dize sabitinin yuvası
 
 
 class Mem:
@@ -148,6 +155,31 @@ def muzayede(m, base):
         m.write(at, bytes(jmp(at, to, n, op)))
 
 
+def rutbe_penceresi(m, base):
+    """Rütbe penceresinin alt satırı yamaları (R1-R3) -> None; baytlar tutmazsa ValueError (hiçbir şey yazılmadan)."""
+    va = lambda x: base + (x - TABAN)
+    r1, r2, r3 = va(0x10509e44), va(0x10509fc3), va(0x10509fc8)
+    beklenen = {r1: b'\x6a\x00\x57\xe8' + struct.pack('<i', GET_VIEW - 0x10509e4c),     # push 0 / push edi / call get_View
+                va(0x10509fbd): b'\xff\x35' + struct.pack('<I', va(EN_ALT)),            # push 'hof_rank_lowest'
+                r2: b'\xe8' + struct.pack('<i', GET_TEXT - 0x10509fc8),                # call GetTextById
+                r3: bytes.fromhex('83c414')}                                            # add esp,14h
+    for a, b in beklenen.items():
+        if m.read(a, len(b)) != b:
+            raise ValueError('bilinmeyen istemci baytları (%#x)' % (a - base + TABAN))
+    k = Kod(m.alloc(0x1000))
+    c1 = k.pc                                      # R1: push eax (kurulan satır) / push 0 / push edi / call get_View
+    k(0x50, 0x6A, 0x00, 0x57).rel(0xE8, va(GET_VIEW)).rel(0xE9, va(0x10509e4c))
+    c2 = k.pc                                      # R2: itilen satır [esp+18h] (dönüş, GetTextById'nin 3, dizi yazıcısının 2 argümanı)
+    k(0x8B, 0x44, 0x24, 0x18, 0xC3)
+    m.write(k.at, bytes(k.b), code=False)
+    m.write(r1, bytes(Kod(r1).rel(0xE9, c1)(0x90, 0x90, 0x90).b))
+    m.write(r2, bytes(Kod(r2).rel(0xE8, c2).b))
+    m.write(r3, bytes.fromhex('83c418'))           # R3: add esp,18h (itilen satır da)
+
+
+YAMALAR = (('müzayede sayacı', muzayede), ('rütbe penceresi', rutbe_penceresi))
+
+
 def uygula(pid, log=print, sure=90):
     """İstemci sürecine yamaları uygular (GameAssembly.dll yüklenip yerleşene dek bekler) -> True / False."""
     if os.name != 'nt':
@@ -158,18 +190,24 @@ def uygula(pid, log=print, sure=90):
         log('istemci yaması: %s' % e)
         return False
     try:
-        end, son_hata = time.time() + sure, None
+        end, son_hata, yapilan = time.time() + sure, None, set()
         while time.time() < end:
             base = m.module('GameAssembly.dll')
             if base:
-                try:
-                    muzayede(m, base)
-                    log('istemci yaması: müzayede sayacı (süreç %d)' % pid)
+                for ad, yama in YAMALAR:
+                    if ad in yapilan:
+                        continue
+                    try:
+                        yama(m, base)
+                        yapilan.add(ad)
+                        log('istemci yaması: %s (süreç %d)' % (ad, pid))
+                    except ValueError as e:        # yükleyici adresleri henüz yerleştirmemiş olabilir: biraz daha bekle
+                        son_hata = e
+                if len(yapilan) == len(YAMALAR):
                     return True
-                except ValueError as e:            # yükleyici adresleri henüz yerleştirmemiş olabilir: biraz daha bekle
-                    son_hata = e
             time.sleep(0.25)
-        log('istemci yaması uygulanmadı (süreç %d): %s' % (pid, son_hata or 'GameAssembly.dll yüklenmedi'))
+        eksik = ', '.join(ad for ad, yama in YAMALAR if ad not in yapilan)
+        log('istemci yaması uygulanmadı (süreç %d, %s): %s' % (pid, eksik, son_hata or 'GameAssembly.dll yüklenmedi'))
         return False
     except OSError as e:
         log('istemci yaması uygulanmadı (süreç %d): %s' % (pid, e))

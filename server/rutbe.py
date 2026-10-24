@@ -196,14 +196,18 @@ def _zero_points():
 
 
 def ranking_points(p, now=None):
-    """Rütben sayfası: formülün parçaları, rütbe (yourRanking: rang_N) ve bir üst rütbe için gereken puan (abovePoints)."""
+    """Rütben sayfası: formülün parçaları, rütbe (yourRanking: rang_N), bir üst rütbe için gereken puan (abovePoints) ve bir alt
+    rütbenin puanı (belowPoints: eşiği). İstemci (UIHallOfFameSystem.UpdateDailyRankForServer) "hof_your_rank_below" metnini
+    ("The rank directly below yours is that of rang_<yourRanking-1>. Space pilots with this rank have approx. belowPoints rank
+    points.") yourRanking 2-20 iken, 1'de "hof_rank_lowest", 21'de "hof_rank_highest" kurar; aboveRanking/belowRanking'i okumaz. Kurduğu
+    satırı pencereye koymayıp hep "hof_rank_lowest" yazıyor: istemcinin bellek yaması (panel/istemci_yama.py rutbe_penceresi)."""
     b = breakdown(p, now)
     rank = rank_for(b['rankPoints'])
     nxt = R['esikler'][rank] if rank < len(R['esikler']) else b['rankPoints']
     loot = p.ship()['lootId']
     out = _zero_points()
     out.update(b, yourRanking=rank, aboveRanking=min(rank + 1, 21), abovePoints=max(0, nxt - b['rankPoints']),
-               belowRanking=max(rank - 1, 1), belowPoints=max(0, b['rankPoints'] - R['esikler'][rank - 1]),
+               belowRanking=max(rank - 1, 1), belowPoints=R['esikler'][rank - 2] if rank > 1 else 0,
                shipsCategoryName=R['gemi_puan'].get(loot, {}).get('ad', loot.replace('ship_', '').title()))
     return out
 

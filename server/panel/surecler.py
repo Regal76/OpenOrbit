@@ -490,7 +490,7 @@ class Yonetici:
             if self.client_alive():
                 raise RuntimeError(_('İstemci zaten açık.'))
             self.istemci = istemci_ac(folder, cmd, env, self.logs)
-            YAMA.arka_planda(self.istemci.pid, self.log)      # bellekte (müzayede sayacı; yalnız Windows)
+            YAMA.arka_planda(self.istemci.pid, self.log)      # bellekte (müzayede sayacı, rütbe penceresi; yalnız Windows)
             self.istemci_basla = time.time()
             self.istemci_son = None
             self.log('istemci başlatıldı: %s' % ' '.join(cmd))

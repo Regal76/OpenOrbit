@@ -130,8 +130,14 @@ def loc(key, **wild):
                                          replacementType=mod('ReplacementTypeModule', typeValue=0)) for k, v in wild.items()])
 
 
+CLIENT_TWEEN = 1.05      # istemci her hareketi gönderilen sürenin 1,05 katında oynatır (Mover)
+
+
 class Mover:
-    """Doğrusal hareket: başlangıç-bitiş ve süreden anlık konum."""
+    """Doğrusal hareket: başlangıç-bitiş ve süreden anlık konum. İstemci MoveCommand'ı da kendi gemisinin gidişini de sürenin 1,05
+    katında oynatır (MoveComponentSystem.MoveToAsync → doğrusal DOMove(süre * 1,05)); sunucudaki hareket de o kadar sürer, istemciye
+    giden timeToTarget hızdan çıkan süredir (go, ms_left). Önceden sunucunun gemisi ve uzaylıları çizilenden %5 önde gidiyordu (canlı
+    ölçüm 2026-10-24: 562 hızlı gemi 535 birim/sn; P.E.T. uzun yolda gemiyi geçiyordu, H216)."""
 
     def __init__(self, x, y):
         self.x0 = self.x1 = x
@@ -148,8 +154,12 @@ class Mover:
         sx, sy = start if start else self.pos(now)
         d = math.hypot(x - sx, y - sy)
         dur = d / max(speed, 1)
-        self.x0, self.y0, self.x1, self.y1, self.t0, self.t1 = sx, sy, x, y, now, now + dur
+        self.x0, self.y0, self.x1, self.y1, self.t0, self.t1 = sx, sy, x, y, now, now + dur * CLIENT_TWEEN
         return int(dur * 1000)
+
+    def ms_left(self, now):
+        """Süren hareketin istemciye gidecek kalan süresi (timeToTarget, ms)."""
+        return int((self.t1 - now) / CLIENT_TWEEN * 1000)
 
 
 class NPC:
@@ -475,7 +485,7 @@ class World:
         msgs = list(self.gorunum(int(x), int(y))) if self.gorunum else []
         m = self.hero
         if m.t1 > now:
-            msgs.append(('MoveCommand', dict(userId=self.hid, x=int(m.x1), y=int(m.y1), timeToTarget=int((m.t1 - now) * 1000))))
+            msgs.append(('MoveCommand', dict(userId=self.hid, x=int(m.x1), y=int(m.y1), timeToTarget=m.ms_left(now))))
         return msgs
 
     def defer(self, msgs):
@@ -659,7 +669,7 @@ class World:
         msgs += list((getattr(n, 'gorseller', None) or {}).values())     # kalıcı görseller (Ö4: tahliye bölgesi, Guardian alanı)
         m = n.mover
         if m.t1 > now:
-            msgs.append(('MoveCommand', dict(userId=n.id, x=int(m.x1), y=int(m.y1), timeToTarget=int((m.t1 - now) * 1000))))
+            msgs.append(('MoveCommand', dict(userId=n.id, x=int(m.x1), y=int(m.y1), timeToTarget=m.ms_left(now))))
         return msgs
 
     def info_request(self, uid):
@@ -1439,6 +1449,9 @@ class World:
             if n and n.alive:
                 self.target = n.id
                 self.send([self.selection(n)] + ([] if n.d.get('dost') else self.p.hint(IP.ATTACK)))
+            elif self.own_pet(f.get('targetId')):           # kendi P.E.T.'i: vurulabilir (Kamikaze'nin can eşiği için; pet_laser)
+                self.target = self.pet.pid
+                self.send([self.pet.selection_msg()])
             elif self.asset_at(f.get('targetId')):          # istemci varlığı ShipSelectionCommand + AssetInfoCommand ile seçer
                 self.target = f.get('targetId')
                 self.send(self.asset_targets.asset_select(self.target))
@@ -1450,12 +1463,13 @@ class World:
     def laser_start(self, f):
         with self.lock:
             n = self.npcs.get(f.get('targetId'))
-            asset = None if n else self.asset_at(f.get('targetId'))
-            if not n and not asset and self.oyuncu(f.get('targetId')):    # oyuncuya saldırı yok (arkadaş sunucusunda PvP yok)
+            pet = self.own_pet(f.get('targetId'))          # kendi P.E.T.'i (pet_laser)
+            asset = None if n or pet else self.asset_at(f.get('targetId'))
+            if not n and not asset and not pet and self.oyuncu(f.get('targetId')):    # oyuncuya saldırı yok (arkadaş sunucusunda PvP yok)
                 self.send([legacy('0|A|STM|%s' % ('msg_grp_attack_impossible' if self.grup_uyesi(f.get('targetId'))
                                                   else 'friendlyfire_disabled'))])
                 return
-            if (not asset and (not n or not n.alive)) or self.hero_dead:
+            if (not asset and not pet and (not n or not n.alive)) or self.hero_dead:
                 return
             if asset:                                       # varlık (çift tık: AttackLaserRequest) - deflector açıkken vurulamaz
                 err = self.asset_targets.asset_attackable(f.get('targetId'))
@@ -2216,6 +2230,25 @@ class World:
         if not pos or self.asset_targets.asset_attackable(uid):
             self.laser_stop()
             return
+        self.side_laser(now, uid, pos, lambda dmg: self.send(self.asset_targets.asset_hit(uid, dmg)))
+        if not self.asset_at(uid):
+            self.laser_stop()
+
+    def own_pet(self, uid):
+        """Kimlik oyuncunun uzaydaki kendi P.E.T.'i mi?"""
+        return self.pet is not None and self.pet.active and uid == self.pet.pid
+
+    def pet_laser(self, now):
+        """Lazer kendi P.E.T.'ine (seçilip vurulabilir; Kamikaze'nin can eşiği için, kullanıcı bildirimi 2026-10-24): hasarı P.E.T. alır
+        (pet.owner_hit), ödül yok. P.E.T. durunca ya da yok olunca lazer durur."""
+        pet = self.pet
+        if pet.active:
+            self.side_laser(now, pet.pid, pet.pos(now), pet.owner_hit)
+        if not pet.active:
+            self.laser_stop()
+
+    def side_laser(self, now, uid, pos, hit):
+        """Uzaylı olmayan hedefe lazer (asset_laser, pet_laser): menzil, cephane, isabet; isabet ederse hit(hasar)."""
         hx, hy = self.hero_pos(now)
         rng = self.laser_range()
         if math.hypot(pos[0] - hx, pos[1] - hy) > rng:
@@ -2253,13 +2286,13 @@ class World:
         m_ = self.p.mods()
         if random.random() < self.items.aim(AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + m_.get('isabet', 0) + m_.get('lazer_isabet', 0)))):
             dmg, _ = self.laser_damage(ammo)
-            self.send(self.asset_targets.asset_hit(uid, dmg))
+            hit(dmg)
         else:
             self.send([('AttackMissedCommand', dict(attackType=attack_type(1), targetUserId=uid, skillColorId=0))])
-        if not self.asset_at(uid):
-            self.laser_stop()
 
     def hero_laser(self, now):
+        if self.pet is not None and self.pet.owned and self.target == self.pet.pid:
+            return self.pet_laser(now)
         if self.target not in self.npcs and self.asset_at(self.target):
             return self.asset_laser(now)
         n = self.npcs.get(self.target)
@@ -2654,16 +2687,10 @@ class World:
             self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': mx})])
 
     def npc_shoot(self, n, now):
-        if self.pet:
-            self.pet.shot_by.discard(n.id)      # yeni salvo öncekinin yerine geçer; P.E.T.'e giderse take_shot yeniden ekler
+        """Uzaylının atışı: dost gemiye (echoes.py) ya da gemiye. P.E.T.'e ateş etmez, Mindfire Behemoth'un kritik candaki ek hedefi
+        (uzayli.extra_target) de yok: gerçek oyunda P.E.T.'e yalnız düşman oyuncular saldırır (kullanıcı bildirimi 2026-10-24)."""
         if self.ally and self.ally.take_shot(n, now):
             return                              # atış dost gemiye gitti (echoes.py)
-        if self.alien.extra_target(n, now):
-            if self.pet:
-                self.pet.take_shot(n, now, force=True)     # birden çok hedef (Mindfire Behemoth): P.E.T.'e de
-                self.pet.shot_by.discard(n.id)             # ardından gemiye: son salvo gemide
-        elif self.pet and self.pet.take_shot(n, now):
-            return                              # atış P.E.T.'e gitti
         ddol = n.etki.get('atis_bozuk', now)          # Disruptor DDoL: lazer beklemesi 3-5 sn
         n.next_shot = now + (random.uniform(*ddol[0]['aralik']) if ddol else n.d.get('atis_aralik_sn', SAVAS['npc_saldiri_aralik_sn']))
         m = self.p.mods()

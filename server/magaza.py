@@ -82,6 +82,7 @@ DRONES = ESYA['dronlar']
 FORMS = ESYA['formasyonlar']
 LEVELS = ESYA['dron_seviyeleri']
 DRONE_ITEMS = ('equipment_weapon_laser_', 'equipment_generator_shield_')     # dronlara yalnız lazer ve kalkan jeneratörü (wiki)
+REPBOT = 'equipment_extra_repbot_'                                           # onarım robotları: config başına bir tane
 LAB = ESYA['laboratuvar']
 DESIGNS = ESYA['dron_tasarimlari']
 DESIGN_SLOTS = {'tasarim': 'design', 'gorunum': 'visual'}     # drone record key -> design slot (drone item's "yuva")
@@ -1371,12 +1372,17 @@ class Magaza:
             shd = DESIGNS.get(self.p.drone_design(x, 'design', cid) or '', {}).get('dron_kalkan', 0)     # Hercules: o dronun kalkanına
             look, design = self.p.drone_design_id(x, 'visual', cid), self.p.drone_design_id(x, 'design', cid)
             # istemci (UINewHangarSystem.CreateItemInfo): "Effect: weaponEffect%/shieldEffect%"; ...Bouns > 0 olan değer mavi.
-            # Seviye ve tasarım etkisi savaştakiyle aynı (dunya: dron lazeri, magaza: dron kalkanı); 0/0 gidiyordu (canlı tur 2)
+            # Seviye, tasarım ve Assembly yükseltmesinin etkisi savaştakiyle aynı (dunya: dron lazeri, magaza: dron kalkanı); 0/0
+            # gidiyordu (canlı tur 2), yükseltme sayılmıyordu (kullanıcı bildirimi 2026-10-24: "yükseltilen dron bonus vermiyor").
+            # "Upgrade lvl. Damage/Shield" istemcide olduğu gibi yazılıyor: Assembly'deki gibi seviye + 1
+            up = YK.drone_level(x)
+            weapon = ((1 + lv['lazer'] + team) * YK.factor(x['lootId'], up, YK.DRONE_DAMAGE) - 1) * 100
+            shield = ((1 + lv['kalkan'] + shd) * YK.factor(x['lootId'], up, YK.DRONE_SHIELD) - 1) * 100
             drones.append(mod('SingleDroneEquipmentMsg', level=x['seviye'], visual=[look] if look else [],
-                              shieldBouns=round(shd * 100, 2), repairValue='', defaults=list(dc.get(str(x['kimlik']), [])),
-                              weaponBouns=round(team * 100, 2), damageUpgradeLevel=YK.drone_level(x), shieldUpgradeLevel=YK.drone_level(x),
-                              design=[design] if design else [], shieldEffect=round((lv['kalkan'] + shd) * 100, 2),
-                              position=i, droneId=x['kimlik'], damage=0.0, repairType='', weaponEffect=round((lv['lazer'] + team) * 100, 2)))
+                              shieldBouns=round(shield - lv['kalkan'] * 100, 2), repairValue='', defaults=list(dc.get(str(x['kimlik']), [])),
+                              weaponBouns=round(weapon - lv['lazer'] * 100, 2), damageUpgradeLevel=up + 1, shieldUpgradeLevel=up + 1,
+                              design=[design] if design else [], shieldEffect=round(shield, 2),
+                              position=i, droneId=x['kimlik'], damage=0.0, repairType='', weaponEffect=round(weapon, 2)))
         return mod('HangarDroneEquipmentMsg', setId=int(cid), active=active, position=0, setDroneEquipment=drones)
 
     def drone_views(self):
@@ -1928,6 +1934,11 @@ class Magaza:
                         fail('%s: %s' % (loot, PC.equip_allowed(self.p, iid, slot, lst)), 'ayni_top')   # her türden bir top
                     elif slot == 'extra' and EK.slot_bonus_of([loot]) and EK.slot_bonus_of(loots(lst)):
                         fail('%s: config\'te yuva CPU\'su var' % loot, 'tek_yuva_cpu')       # config başına bir yuva CPU'su (wiki)
+                    elif slot == 'extra' and loot.startswith(REPBOT) and any(l.startswith(REPBOT) for l in loots(lst)):
+                        # config başına bir onarım robotu (kullanıcı bildirimi 2026-10-24: iki tane takılabiliyordu); istemcinin metni
+                        # "Only one of these items is allowed per configuration."
+                        fail('%s: config\'te onarım robotu var' % loot)
+                        err = 'special_generic_hint'
                     elif len(lst) >= self.capacity(slot, sid, extras=loots(cfg.get('extra', []))):
                         fail('%s yuvaları dolu' % slot)
                     else:

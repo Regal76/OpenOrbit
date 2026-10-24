@@ -11,8 +11,9 @@ yuva adları, game.xml P.E.T. gemi türleri):
   dişli     PetGearActivationRequest {gearTypeToActivate, optParam} -> PetGearSelectCommand
   hareket   MoveCommand (P.E.T. kimliğiyle): gemiyi izler; toplayıcı dişlilerle kutuya/cevhere gider
   savaş     koruma modunda gemi hedefine (ya da gemiye saldıran NPC'ye) seçili cephaneyle ateş eder
-  hasar     NPC atışları bazen P.E.T.'e gider; ölünce ShipDestroyedCommand + PetIsDestroyedCommand + tamir düğmesi
-            (PetUIRepairButtonCommand); PetRequest REPAIR_DESTROYED_PET -> PetRepairCompleteCommand
+  hasar     uzaylılar P.E.T.'e ateş etmez (gerçek oyunda yalnız düşman oyuncular); oyuncu kendi P.E.T.'ini seçip vurabilir (Kamikaze'nin
+            can eşiği için; ödül yok). Ölünce ShipDestroyedCommand + PetIsDestroyedCommand + tamir düğmesi (PetUIRepairButtonCommand);
+            PetRequest REPAIR_DESTROYED_PET -> PetRepairCompleteCommand, P.E.T. azami canın tamir_can kadarıyla döner
   yakıt     etkinken dakika başına harcar (PetFuelUpdateCommand); biterse PetOutOfFuelCommand; HOTKEY_BUY_FUEL 1.000 birim
   seviye    oyuncunun kazandığı EP'nin %5'i: PetExperiencePointsUpdateCommand, PetLevelUpdateCommand
   HEAT      etkinken ısınır (PetHeatUpdateCommand {heatState 0 ısınıyor/1 sabit/2 soğuyor, heatLevel, petHeatAmount(Max)}; istemci:
@@ -62,7 +63,7 @@ BEACONS = (COMBAT_BEACON, HP_BEACON)
 READY_NAMES = {**TIMED, KAMIKAZE: 'kamikaze'}     # bekleme bitince msg_pet_<ad>-gear_cooldown_ready
 START_MAPS = ('1-1', '2-1', '3-1')       # G-KK1 seçilmez (istemci msg_pet_kamikaze-gear_not_on_start_maps)
 FUEL_WARN = 0.1                          # yakıt azaminin %10'una inince msg_pet_running_out_of_fuel (oran uyarlama)
-ATTACK_WARN_SN = 30                      # msg_pet_under_attack en çok bu kadar saniyede bir (uyarlama)
+FOLLOW_AHEAD = 1.0                       # izlerken geminin kaç sn sonraki yerinin gerisine gidilir (follow)
 # istemcinin PetRequest.PetRequestType enum'u
 LAUNCH, DEACTIVATE, TOGGLE, HOTKEY_GUARD, REPAIR_DESTROYED, HOTKEY_REPAIR_SHIP, HOTKEY_BUY_FUEL = range(7)
 DESTROYED_NONE, DESTROYED_KAMIKAZE = 0, 1
@@ -164,7 +165,6 @@ class Pet:
         self.mover = None
         self.task = None             # ('box' | 'ore', hash): toplayıcı dişlinin hedefi
         self.shooting = None         # ateş edilen NPC
-        self.shot_by = set()         # son lazer salvosu P.E.T.'e giden NPC'ler (P.E.T. kalkınca salvoları durdurulur)
         self.next_shot = self.next_follow = self.next_second = self.next_locate = 0.0
         self.fuel_clock = 0.0        # harcanmamış yakıt (birim)
         self.tick_t = time.time()
@@ -182,7 +182,6 @@ class Pet:
         self.look = None             # istemcinin bildiği görünüm (gemi türü): yalnız değişince PetLevelUpdateCommand
         self.release_wait = False    # bekleme bitince "hazır" iletisi gidecek
         self.heat_sent, self.next_heat_msg = None, 0.0
-        self.next_attack_warn = 0.0
         self.on_stats = None         # gemi değerleri yeniden (magaza.apply_stats): HEAT bonusu değişince
         profil.pet_mods = self.heat_mods
 
@@ -637,7 +636,7 @@ class Pet:
             clanRelationship=mod('ClanRelationModule', type=0), x=int(x), y=int(y), petSpeed=self.speed(), isInIdleMode=False,
             isVisible=True, minimapStrategyModule=mod('MinimapStrategyModule', minimapStrategy=0)))]
         if m.t1 > now:
-            msgs.append(('MoveCommand', dict(userId=self.pid, x=int(m.x1), y=int(m.y1), timeToTarget=int((m.t1 - now) * 1000))))
+            msgs.append(('MoveCommand', dict(userId=self.pid, x=int(m.x1), y=int(m.y1), timeToTarget=m.ms_left(now))))
         return msgs
 
     def launch(self):
@@ -685,7 +684,7 @@ class Pet:
         self.beacon, self.in_beacon = None, False
         self.active, self.task, self.trading = False, None, False
         self.stop_heat(now)                      # soğuma gecikmesi başlar
-        msgs = (self.abort_msgs() if self.shooting else []) + self.attackers_abort()
+        msgs = self.abort_msgs() if self.shooting else []
         self.shooting = None
         if notify:
             # istemci: PetDeactivationCommand birimi yalnız gizler; pencere P.E.T. birimi varken "etkin" görünür (UIPetSystem.RefPet).
@@ -865,7 +864,8 @@ class Pet:
         return self.stats_msgs()
 
     def repair(self):
-        """Yok edilmiş P.E.T.'i tamir: seviyeye göre uridyum (wiki: seviye 0-2 ücretsiz)."""
+        """Yok edilmiş P.E.T.'i tamir: seviyeye göre uridyum (wiki: seviye 0-2 ücretsiz). Azami canın tamir_can kadarıyla döner: tam
+        canla dönünce Kamikaze (can eşiğin altındayken patlar) her tamirden sonra kullanılamıyordu (kullanıcı bildirimi 2026-10-24)."""
         if not self.d['yikik']:
             return
         cost = self.repair_cost()
@@ -875,7 +875,7 @@ class Pet:
             return
         with self.p.lock:
             pl['uridium'] = pl.get('uridium', 0) - cost
-            self.d.update(yikik=False, can=self.hp_max(), kalkan=self.shield_max())
+            self.d.update(yikik=False, can=max(1, int(self.hp_max() * PET['tamir_can'])), kalkan=self.shield_max())
             self.p.dirty = True
         RT.money(self.p, 'uridyum', -cost, 'repair_pet')
         msgs = [('PetRepairCompleteCommand', {}), self.init_msg(), self.repair_button()]
@@ -917,7 +917,7 @@ class Pet:
         if was:
             self.stop_heat(time.time())          # geçişte soğumaz (gecikme yeniden çıkışa kadar sürer)
             self.release_end = 0.0
-        self.w, self.active, self.task, self.shooting, self.shot_by = world, False, None, None, set()
+        self.w, self.active, self.task, self.shooting = world, False, None, None
         self.relaunch = self.relaunch or was
 
     def on_ready(self):
@@ -932,7 +932,7 @@ class Pet:
         if self.active:
             self.stop_heat(time.time())
             self.release_end = 0.0
-            self.active, self.task, self.shooting, self.shot_by = False, None, None, set()     # istemci haritayı temizler
+            self.active, self.task, self.shooting = False, None, None     # istemci haritayı temizler
             self.relaunch = True
 
     def pos(self, now):
@@ -1038,14 +1038,28 @@ class Pet:
             self.next_locate = now + 5
             msgs += self.locator_msgs(changed=True)
         self.send(msgs)
+        if self.kamikaze_due(now):
+            self.kamikaze(now)
 
     def follow(self, now):
-        """Gemiyi izle: geminin gittiği yerin takip_mesafe kadar gerisine (geride kaldıysa daha hızlı)."""
+        """Gemiyi izle. Gemi giderken arkasından: FOLLOW_AHEAD sn sonraki yerinin takip_mesafe kadar gerisine, o sürede varacak hızla
+        (en çok gemi hızının 1,5 katı). Önce geminin varacağı yere gidiyordu: aynı hızda, yolu kısa olduğundan gemiden önde uçuyordu
+        (kullanıcı bildirimi 2026-10-24). Gemi dururken varacağı yerin takip_mesafe uzağına (geride kaldıysa daha hızlı). Geminin yeri
+        istemcinin çizdiği (dunya.Mover): sunucunun gemisi %5 önde gittiğinde uzun yolda P.E.T. yine önde görünüyordu (canlı test H216)."""
         w = self.w
         if now < self.next_follow:
             return
-        hx, hy = w.hero.x1, w.hero.y1
+        h = w.hero
         px, py = self.pos(now)
+        if h.t1 > now:
+            hx, hy = h.pos(now + FOLLOW_AHEAD)
+            dx, dy = h.x1 - h.x0, h.y1 - h.y0
+            n = math.hypot(dx, dy) or 1
+            tx, ty = hx - dx / n * PET['takip_mesafe'], hy - dy / n * PET['takip_mesafe']
+            self.move(tx, ty, min(math.hypot(tx - px, ty - py) / FOLLOW_AHEAD, self.speed() * 1.5), now)
+            self.next_follow = now + 0.5
+            return
+        hx, hy = h.x1, h.y1
         a = math.atan2(py - hy, px - hx)
         tx, ty = hx + math.cos(a) * PET['takip_mesafe'], hy + math.sin(a) * PET['takip_mesafe']
         if math.hypot(tx - self.mover.x1, ty - self.mover.y1) < 80 and math.hypot(tx - px, ty - py) < 400:
@@ -1160,14 +1174,8 @@ class Pet:
         yeniden kullanılan) birime, harita dışına ateş ediyordu (kullanıcı 2026-10-19)."""
         return [('PetLaserAttackStopCommand', {'petId': self.pid}), ('AttackAbortLaserCommand', {'uid': self.pid})]
 
-    def attackers_abort(self):
-        """P.E.T. haritadan kalkıyor: ona ateş eden NPC'lerin salvoları durur (yoksa olmayan birime ateş sürerdi)."""
-        w, ids, self.shot_by = self.w, self.shot_by, set()
-        return [('AttackAbortLaserCommand', {'uid': i}) for i in sorted(ids) if w and i in w.npcs]
-
     def npc_gone(self, nid):
         """Uzaylı öldü ya da çekildi (dünya, kilit altında) -> mesajlar: P.E.T. ona ateş ediyorsa lazeri durur."""
-        self.shot_by.discard(nid)
         if self.shooting == nid:
             self.shooting = None
             return self.abort_msgs()
@@ -1204,53 +1212,40 @@ class Pet:
         spots = [s for s in spots if math.hypot(s[0] - hx, s[1] - hy) <= rng]
         return min(spots, key=lambda s: math.hypot(s[0] - hx, s[1] - hy)) if spots else None
 
-    def take_shot(self, n, now, force=False):
-        """NPC'nin atışı P.E.T.'e mi (yakınsa hedef_alinma olasılığıyla; force: birden çok hedefe ateş eden uzaylı, Mindfire
-        Behemoth)? Öyleyse vuruşu uygular, True döner. Toplayıcı dişli seçiliyken uzaylılar ateş edemez (istemci "Aliens cannot
-        attack it.")."""
-        if not self.active or not self.w or self.d.get('disli') in (AUTO_LOOT, AUTO_RESOURCE):
-            return False
-        w = self.w
-        px, py = self.pos(now)
-        nx, ny = n.mover.pos(now)
-        if math.hypot(px - nx, py - ny) > w.npc_range(n) or (not force and random.random() >= PET['hedef_alinma']):
-            return False
-        n.next_shot = now + SAVAS['npc_saldiri_aralik_sn']
-        w.last_combat = now
-        self.shot_by.add(n.id)
-        msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.pid, laserColor=0, isDiminishedBySkillShield=False,
-                                               skilledLaser=False, visualType=0))]
-        if random.random() >= AY.chance('npc_isabet', SAVAS['npc_isabet']) * (1 - self.proto('kacinma')):        # panel
-            msgs.append(('AttackMissedCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=1), targetUserId=self.pid,
-                                                     skillColorId=0)))
-            w.send(msgs)
-            return True
-        dmg = int(n.d['hasar'] * random.uniform(0.8, 1.0) * AY.carpan('npc_hasar', 'dalga' if n.hunt else 'harita'))      # panel
-        g = self.d.get('disli')
-        if g in (COMBO_GUARD, COMBO_REPAIR) and random.random() < self.gear(g).get('sapma', 0):
-            w.send(msgs)
-            w.hit_npc(n.id, dmg, 1, attacker=self.pid)          # saptırma: hasar saldırana döner
-            return True
+    def selection_msg(self):
+        """Oyuncu kendi P.E.T.'ini seçti (dunya.select): hedef çubuğunda can ve kalkan."""
+        return ('ShipSelectionCommand', dict(userId=self.pid, shipType=self.look or self.ship_type(), shield=int(self.d['kalkan']),
+                                             shieldMax=self.shield_max(), hitpoints=int(self.d['can']), hitpointsMax=self.hp_max(),
+                                             nanoHull=0, maxNanoHull=0, shieldSkill=False))
+
+    def owner_hit(self, dmg):
+        """Oyuncunun kendi P.E.T.'ine lazeri (dunya.pet_laser): kalkan emer, kalanı candan; can biterse yok olur, ödül yok. Uzaylılar
+        P.E.T.'e ateş etmez (gerçek oyunda yalnız düşman oyuncular; sunucu PvE): Kamikaze'nin can eşiği için oyuncu onu kendisi
+        vurabilir (kullanıcı bildirimi 2026-10-24). Kamikaze eşiğin altında patlamaz, düşman yaklaşınca patlar (each_second)."""
+        if not self.active or not self.w:
+            return
         d = self.d
         with self.p.lock:
             to_shield = min(d['kalkan'], int(dmg * self.absorb()))
             d['kalkan'] -= to_shield
             d['can'] = max(0, d['can'] - (dmg - to_shield))
             self.p.dirty = True
-        msgs += [('AttackHitCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=1), attackerId=n.id, victimId=self.pid,
-                                           victimHitpoints=int(d['can']), victimShield=int(d['kalkan']), victimNanoHull=0, damage=dmg,
-                                           skilled=False, strike=False, cannonType=0)),
-                 self.hp_msg(), self.shield_msg()]
-        if now >= self.next_attack_warn:                 # "Warning! Your P.E.T. is under attack!"
-            self.next_attack_warn = now + ATTACK_WARN_SN
-            msgs.append(legacy('0|A|STM|msg_pet_under_attack'))
-        w.send(msgs)
+        self.w.send([('AttackHitCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=1), attackerId=self.w.hid,
+                                               victimId=self.pid, victimHitpoints=int(d['can']), victimShield=int(d['kalkan']),
+                                               victimNanoHull=0, damage=dmg, skilled=False, strike=False, cannonType=0)),
+                     self.hp_msg(), self.shield_msg()])
+        if d['can'] <= 0:
+            self.destroyed(DESTROYED_NONE)
+
+    def kamikaze_due(self, now):
+        """G-KK1 hazır, can eşiğin altında ve menzilinde düşman (gemiye saldıran ya da geminin hedefi) var: patlar."""
         kk = self.gear(KAMIKAZE)
-        if self.kamikaze_armed(now) and d['can'] <= self.hp_max() * kk.get('esik', 0):
-            self.kamikaze(now)
-        elif d['can'] <= 0:
-            self.destroyed(DESTROYED_NONE, n)
-        return True
+        if not self.kamikaze_armed(now) or self.d['can'] > self.hp_max() * kk.get('esik', 0):
+            return False
+        w = self.w
+        px, py = self.pos(now)
+        return any(n.alive and not n.d.get('dost') and (n.engaged or n.id == w.target)
+                   and math.hypot(n.mover.pos(now)[0] - px, n.mover.pos(now)[1] - py) <= kk['menzil'] for n in list(w.npcs.values()))
 
     def start_map(self):
         return bool(self.w) and H.name(self.w.map_id) in START_MAPS
