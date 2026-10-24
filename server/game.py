@@ -958,9 +958,13 @@ class Session:
             self.send([('StayinAlive', {})], quiet=True)
         elif name == 'MoveRequest':
             log('<- MoveRequest konum=(%d,%d) hedef=(%d,%d)' % (f['positionX'], f['positionY'], f['targetX'], f['targetY']))
-            self.profil.apply(name, f)
+            # Moves sent on the old map during a jump countdown or a map change must not overwrite the arrival position
+            # (change_map sets it under state_lock, then builds ShipInitializationCommand from it).
+            with self.state_lock:
+                if w is not None and self.world is w and not w.jumping:
+                    self.profil.apply(name, f)
             if w:
-                w.on_move(f)
+                w.on_move(f)     # outside state_lock: the world thread takes world.lock, then state_lock (change_map)
             # yanıt yok: gerçek sunucu oyuncunun kendi hareketine MoveCommand göndermiyor (kayıt: 876 isteğe 0). Gönderilen
             # MoveCommand istemcinin "hedefe varınca" işini (cevhere varınca HarvestRequest) kesiyordu.
         elif name == 'AttackAbortLaserRequest' and w:
