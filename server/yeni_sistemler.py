@@ -38,7 +38,8 @@ class YeniSistemler:
     def attach(self, world):
         self.world = world
         self.nova.at_station = world.in_station
-        self.otopilot.laser_range = world.laser_range
+        # bot range: a share of the real laser range (menzil_orani), so it does not fight at the very edge
+        self.otopilot.laser_range = lambda: world.laser_range() * OP.D['menzil_orani']
         self.otopilot.maps = world.omega_maps                   # seçim listeleri: harita -> orada çıkan uzaylılar
 
     def handle(self, name, f):
