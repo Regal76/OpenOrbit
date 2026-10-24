@@ -141,7 +141,11 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -204,7 +208,11 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -265,9 +273,13 @@
     ]
    },
    "oduller": [
-    [
+     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -330,7 +342,11 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -393,7 +409,11 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -454,9 +474,13 @@
     ]
    },
    "oduller": [
-    [
+     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -519,7 +543,11 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -582,7 +610,11 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -643,9 +675,13 @@
     ]
    },
    "oduller": [
-    [
+     [
      "resource_collectable_tetrathrin",
-     2
+     8
+    ],
+    [
+     "resource_collectable_armory-token",
+     10
     ]
    ]
   },
@@ -708,7 +744,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -771,7 +807,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -834,7 +870,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -897,7 +933,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -960,7 +996,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -1023,7 +1059,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -1086,7 +1122,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -1149,7 +1185,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -1212,7 +1248,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     4
+     16
     ]
    ]
   },
@@ -1275,7 +1311,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1338,7 +1374,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1401,7 +1437,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1464,7 +1500,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1527,7 +1563,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1590,7 +1626,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1653,7 +1689,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1716,7 +1752,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1779,7 +1815,7 @@
    "oduller": [
     [
      "resource_collectable_tetrathrin",
-     10
+     40
     ]
    ]
   },
@@ -1844,7 +1880,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     10
+     40
     ]
    ]
   },
@@ -1909,7 +1945,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     10
+     40
     ]
    ]
   },
@@ -1974,7 +2010,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     10
+     40
     ]
    ]
   },
@@ -2039,7 +2075,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     10
+     80
     ]
    ]
   },
@@ -2104,7 +2140,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     20
+     80
     ]
    ]
   },
@@ -2169,7 +2205,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     20
+     80
     ]
    ]
   },
@@ -2234,7 +2270,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     20
+     80 
     ]
    ]
   },
@@ -2299,7 +2335,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     40
+     160
     ]
    ]
   },
@@ -2364,7 +2400,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     40
+     160
     ]
    ]
   },
@@ -2429,7 +2465,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     40
+     160
     ]
    ]
   },
@@ -2494,7 +2530,7 @@
    "oduller": [
     [
      "resource_collectable_kyhalon",
-     40
+     160
     ]
    ]
   },
@@ -2558,17 +2594,21 @@
    },
    "oduller": [
     [
-     "currency_experience",
-     50000
+     "ammunition_laser_spacecup_group-c",
+     8000
     ],
     [
      "currency_credits",
-     100000
+     500000
     ],
     [
-     "currency_uridium",
-     500
-    ]
+     "currency_honour",
+     2000
+    ],
+    [
+     "currency_experience",
+     50000
+    ]    
    ]
   },
   "501022": {
@@ -17164,7 +17204,28 @@
      }
     ]
    },
-   "oduller": []
+   "oduller": [
+    [
+     "currency_uridium",
+     30000
+    ],
+    [
+     "currency_credits",
+     100000
+    ],
+    [
+     "ammunition_laser_mcb-50",
+     80000
+    ],
+    [
+     "ammunition_laser_mcb-25",
+     100000
+    ],
+    [
+     "ammunition_laser_ucb-100",
+     50000
+    ]
+   ]
   },
   "502002": {
    "ad": "Level 5",
@@ -17216,7 +17277,40 @@
      }
     ]
    },
-   "oduller": []
+   "oduller": [
+    [
+     "ship_diminisher",
+     1
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     3
+    ],
+    [
+     "equipment_shipupgrade_dmg-xa01",
+     1
+    ],
+    [
+     "equipment_shipupgrade_hp-xa01",
+     1
+    ],
+    [
+     "equipment_shipupgrade_shd-xa01",
+     1
+    ],
+    [
+     "equipment_shipupgrade_spc-xa01",
+     1
+    ],
+    [
+     "resource_premium-days-1",
+     14
+    ],
+    [
+     "ship_diminisher_design_diminisher-carbonite",
+     1
+    ]
+   ]
   },
   "502003": {
    "ad": "Level 10",
@@ -17268,7 +17362,44 @@
      }
     ]
    },
-   "oduller": []
+   "oduller": [
+    [
+     "ship_sentinel",
+     1
+    ],
+    [
+     "equipment_weapon_laser_pr-l",
+     1
+    ],
+    [
+     "equipment_weapon_laser_am-l",
+     1
+    ],
+    [
+     "equipment_shipupgrade_dmg-xh01",
+     1
+    ],
+    [
+     "equipment_shipupgrade_hp-xh01",
+     1
+    ],
+    [
+     "equipment_shipupgrade_shd-xh01",
+     1
+    ],
+    [
+     "equipment_shipupgrade_spc-xh01",
+     1
+    ],
+    [
+     "ammunition_laser_ucb-100",
+     80000
+    ],
+    [
+     "ship_sentinel_design_sentinel-carbonite",
+     1
+    ]
+   ]
   },
   "502004": {
    "ad": "Level 15",
@@ -17320,7 +17451,44 @@
      }
     ]
    },
-   "oduller": []
+   "oduller": [
+    [
+     "ship_solace",
+     1
+    ],
+    [
+     "equipment_weapon_laser_am-l",
+     1
+    ],
+    [
+     "equipment_weapon_laser_pr-l",
+     1
+    ],
+    [
+     "resource_extra-energy",
+     3000
+    ],
+    [
+     "ammunition_laser_a-bl",
+     15000
+    ],
+    [
+     "ammunition_rocket_plt-2021",
+     10000
+    ],
+    [
+     "resource_premium-days-30",
+     1
+    ],
+    [
+     "pet_designs_pet-cyborg-frost",
+     1
+    ],
+    [
+     "ship_solace_design_solace-carbonite",
+     1
+    ]
+   ]
   },
   "502005": {
    "ad": "Level 20",
@@ -17372,7 +17540,52 @@
      }
     ]
    },
-   "oduller": []
+   "oduller": [
+    [
+     "ship_pusat",
+     1
+    ],
+    [
+     "equipment_weapon_laser_os-l",
+     1
+    ],
+    [
+     "equipment_weapon_laser_am-l",
+     1
+    ],
+    [
+     "equipment_weapon_laser_pr-l",
+     1
+    ],
+    [
+     "equipment_generator_shield_sg3n-b03",
+     3
+    ],
+    [
+     "equipment_shipupgrade_dmg-xu02",
+     1
+    ],
+    [
+     "equipment_shipupgrade_hp-xu02",
+     1
+    ],
+    [
+     "equipment_shipupgrade_shd-xu02",
+     1
+    ],
+    [
+     "equipment_shipupgrade_spc-xu02",
+     1
+    ],
+    [
+     "drone_designs_cerberus",
+     3
+    ],
+    [
+     "ship_diminisher_design_diminisher-empyrian",
+     1
+    ]
+   ]
   },
   "502006": {
    "ad": "Level 25",
@@ -17424,7 +17637,44 @@
      }
     ]
    },
-   "oduller": []
+   "oduller": [
+    [
+     "currency_uridium",
+     200000
+    ],
+    [
+     "equipment_generator_shield_fs-04",
+     3
+    ],
+    [
+     "resource_extra-energy",
+     8000
+    ],
+    [
+     "ammunition_laser_spacecup_group-c",
+     35000
+    ],
+    [
+     "drone_designs_artemis",
+     3
+    ],
+    [
+     "ship_mimesis_design_mimesis-prometheus",
+     1
+    ],
+    [
+     "ship_diminisher_design_diminisher-seraph",
+     1
+    ],
+    [
+     "ship_orcus_design_orcus-harbinger",
+     1
+    ],
+    [
+     "equipment_shipupgrade_dmg-xt10",
+     5
+    ]
+   ]
   }
  }
 }
