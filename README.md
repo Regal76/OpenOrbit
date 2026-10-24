@@ -1,4 +1,4 @@
-# DarkOrbit Server Emulator
+<h1 align="center"><img src="docs/img/logo.png" alt="OpenOrbit" width="560"></h1>
 
 **[English](#english)** · **[Türkçe](#türkçe)** · **[Discord](https://discord.gg/BUb9rNTKNt)**
 
@@ -21,7 +21,7 @@ Orijinal DarkOrbit Unity istemcisi için tek oyunculu, çevrimdışı sunucu ve 
 
 ### What it is
 
-DarkOrbit Server Emulator runs a local server on your computer and starts the **original DarkOrbit client** against it.
+OpenOrbit runs a local server on your computer and starts the **original DarkOrbit client** against it.
 You play alone and offline: the client never connects to the official servers and its files are never changed. Internet
 is needed only to download the game (once, if the panel does it for you), to check for updates and to fetch the game's
 images from the official CDN the first time they are shown (without internet the game still runs, without those
@@ -165,7 +165,7 @@ sounds, texts or game data.
 
 ### Nedir
 
-DarkOrbit Server Emulator bilgisayarında yerel bir sunucu çalıştırır ve **orijinal DarkOrbit istemcisini** ona bağlar.
+OpenOrbit bilgisayarında yerel bir sunucu çalıştırır ve **orijinal DarkOrbit istemcisini** ona bağlar.
 Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, dosyaları değiştirilmez. İnternet yalnız oyunu
 indirmek (panel senin için indirirse, bir kez), güncellemeleri denetlemek ve oyunun görsellerini ilk gösterildiklerinde
 resmî CDN'den almak için gerekir (internet yoksa oyun yine çalışır, o görseller olmadan). Bir yönetim paneli oyunu başlatır;

@@ -1,4 +1,4 @@
-/* DarkOrbit yerel sunucu paneli — arayüz (panel.py'nin /api/... uçları). Dış kitaplık yok.
+/* OpenOrbit yerel sunucu paneli — arayüz (panel.py'nin /api/... uçları). Dış kitaplık yok.
    Dil: metinler Türkçe yazılır, T() seçili dildeki hâlini verir (İngilizcesi en.json; Python tarafıyla ortak, dil.py).
    İlk açılışta kurulum sihirbazı: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun
    bilgisayarda bulunamazsa oyun klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). Panel GitHub'daki yeni
@@ -1623,7 +1623,7 @@ async function renderPanel() {
     h('div', { class: 'card' }, h('h2', null, icon('info'), T('Hakkında')),
       h('div', { class: 'kv', style: { maxWidth: '520px' } }, h('div', null, T('Panel sürümü'), h('b', null, r.surum)), h('div', null, 'Python', h('b', null, r.python)),
         h('div', null, T('Panel adresi'), h('b', null, '127.0.0.1:' + r.port)), h('div', null, T('İnternet'), h('b', null, T('güncelleme, oyunu indirme ve oyun görselleri için')))),
-      h('p', { class: 'desc', style: { marginTop: '14px' } }, T("DarkOrbit Server Emulator: tek oyunculu, çevrimdışı yerel sunucu. İstemci, grafikler ve metinler Bigpoint GmbH'ye aittir; yalnız kişisel kullanım içindir.")))));
+      h('p', { class: 'desc', style: { marginTop: '14px' } }, T("OpenOrbit: tek oyunculu, çevrimdışı yerel sunucu. İstemci, grafikler ve metinler Bigpoint GmbH'ye aittir; yalnız kişisel kullanım içindir.")))));
 }
 
 // ================================================================== KURULUM SİHİRBAZI
@@ -1671,7 +1671,7 @@ async function drawWizard() {
     p.extra || null, nextBtn);
   root.replaceChildren(h('div', { class: 'wz-box' },
     h('div', { class: 'wz-head' }, h('img', { src: 'simge.svg', alt: '' }),
-      h('div', null, h('div', { class: 'wz-brand' }, 'DARKORBIT SERVER EMULATOR'), h('div', { class: 'wz-kicker' }, WZ.step === 0 ? 'Kurulum · Setup' : T('Kurulum'))), steps),
+      h('div', null, h('div', { class: 'wz-brand' }, 'OPENORBIT'), h('div', { class: 'wz-kicker' }, WZ.step === 0 ? 'Kurulum · Setup' : T('Kurulum'))), steps),
     h('div', { class: 'wz-body' }, h('h2', null, p.title), p.sub ? h('div', { class: 'wz-sub' }, p.sub) : null, p.content),
     foot));
   if (p.after) p.after();
@@ -1716,7 +1716,7 @@ const WZ_PAGES = {
   },
   // ---- 2. hoş geldin
   hosgeldin: async () => ({
-    title: T("DarkOrbit Server Emulator'a hoş geldin"),
+    title: T("OpenOrbit'e hoş geldin"),
     sub: T('Tek oyunculu, çevrimdışı DarkOrbit: orijinal oyun istemcisi bilgisayarındaki yerel sunucuya bağlanır.'),
     content: h('div', { class: 'stack' },
       h('div', { class: 'wz-list' }, [['folder', T('Oyun klasörünü seç'), T('Orijinal DarkOrbit istemcisinin kurulu olduğu klasör; bilgisayarında yoksa panel indirir.')],

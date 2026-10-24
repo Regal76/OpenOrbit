@@ -14,8 +14,8 @@ PANEL = os.path.join(HERE, 'server', 'panel', 'panel.py')
 if sys.version_info < (3, 10):
     import ctypes
     v = sys.version.split()[0]
-    ctypes.windll.user32.MessageBoxW(0, 'DarkOrbit Panel için Python 3.10 ya da daha yenisi gerekir.\nBu Python: %s\n\n'
-                                        'DarkOrbit Panel needs Python 3.10 or newer.\nThis Python: %s' % (v, v), 'DarkOrbit Panel', 0x10)
+    ctypes.windll.user32.MessageBoxW(0, 'OpenOrbit Panel için Python 3.10 ya da daha yenisi gerekir.\nBu Python: %s\n\n'
+                                        'OpenOrbit Panel needs Python 3.10 or newer.\nThis Python: %s' % (v, v), 'OpenOrbit Panel', 0x10)
     sys.exit(1)
 sys.argv = [PANEL] + sys.argv[1:]
 runpy.run_path(PANEL, run_name='__main__')

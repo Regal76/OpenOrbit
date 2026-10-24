@@ -53,7 +53,7 @@ class HttpFile:
             raise IndirmeHatasi(_('İndirme sunucusu kaldığı yerden sürdürmeyi desteklemiyor.'))
 
     def _request(self, start, end=None):
-        h = {'Range': 'bytes=%d-%s' % (start, '' if end is None else end), 'User-Agent': 'DarkOrbit-Server-Emulator'}
+        h = {'Range': 'bytes=%d-%s' % (start, '' if end is None else end), 'User-Agent': 'OpenOrbit'}
         if self.etag:
             h['If-Range'] = self.etag
         r = self.opener(Request(self.url, headers=h), timeout=ZAMAN_ASIMI)

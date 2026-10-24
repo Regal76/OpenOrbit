@@ -1244,7 +1244,7 @@ if __name__ == '__main__':
         try:
             import ctypes
             ctypes.windll.user32.MessageBoxW(0, _('Panel başlatılamadı. Ayrıntı: server\\logs\\panel.log\n\n%s',
-                                                  traceback.format_exc()[-900:]), 'DarkOrbit Panel', 0x10)
+                                                  traceback.format_exc()[-900:]), 'OpenOrbit Panel', 0x10)
         except Exception:
             pass
         raise
