@@ -1922,12 +1922,19 @@ class Magaza:
             self.log('   config geçişi bekliyor')
             return [legacy('0|A|STM|config_change_failed_time')]
         self.last_config = now
+        g = self.p.d['gemi']
         with self.p.lock:
+            # each config keeps its own shield: save the current one before leaving it
+            shields = ship.setdefault('kalkanlar', {})
+            shields[str(ship['aktif_konfig'])] = int(g.get('shield', 0))
             ship['aktif_konfig'] = n
             self.p.sync_ekipman()
             self.p.dirty = True
         self.apply_stats()
-        g, uid = self.p.d['gemi'], self.p.user_id
+        with self.p.lock:
+            # restore the new config's own shield (never used yet: starts empty), capped by its shieldMax
+            g['shield'] = max(0, min(int(shields.get(str(n), 0)), g.get('shieldMax', 0)))
+        uid = self.p.user_id
         stage = ('ShipExtensionsCommand', {'userId': uid, 'extensionStage': self.p.d.get('uzanti_asamasi', 1)})
         s = self.stats()
         msgs = [('RefreshSelectedUICategoryCommand', {}), stage,
