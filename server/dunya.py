@@ -307,6 +307,7 @@ class World:
         self.next_laser = 0.0
         self.ammo_ready = {}           # kendi beklemesi olan cephane (RSB-75, RCB-140: 3 sn) -> yeniden atabileceği an
         self.ammo_timer_end = {}       # cooldown group -> end of the countdown shown on the shortcut bar (ammo_timer)
+        self.ammo_back = None          # laser ammo selected before RSB-75 / RCB-140: reselected after their shot (ammo_return)
         self.rocket_ready = 0.0
         self.running = False
         self.hero_dead = False
@@ -2303,6 +2304,25 @@ class World:
         self.later(sec, reset)
         return [SE.timer_msg(group, ms)]
 
+    @staticmethod
+    def slow_ammo(ammo):
+        """Laser ammo with its own cooldown (RSB-75, RCB-140)."""
+        return bool(ammo and ESYA['lazer_cephane'].get(ammo, {}).get('aralik_sn'))
+
+    def ammo_return(self, ammo):
+        """After an RSB-75 / RCB-140 shot, select again the laser ammo used before it (ammo_back) -> status messages.
+        Nothing happens if that ammo is gone: the slow ammo stays selected and fires again after its cooldown."""
+        back = self.ammo_back
+        if not back or not self.slow_ammo(ammo) or self.p.d['secili'].get('lazer') != ammo:
+            return []
+        if self.p.ammo(back) <= 0:
+            self.ammo_back = None
+            return []
+        self.p.d['secili']['lazer'] = back
+        self.p.dirty = True
+        self.log('   back to %s after %s' % (back, ammo))
+        return [('MenuItemStatusCommand', st) for st in (self.p.menu_status(ammo), self.p.menu_status(back)) if st]
+
     def side_laser(self, now, uid, pos, hit):
         """Uzaylı olmayan hedefe lazer (asset_laser, pet_laser): menzil, cephane, isabet; isabet ederse hit(hasar)."""
         hx, hy = self.hero_pos(now)
@@ -2335,7 +2355,7 @@ class World:
         self.next_laser = now + SAVAS['lazer_aralik_sn']
         if cooldown:
             self.ammo_ready[ammo] = now + cooldown
-        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid,laserColor=self.laser_color(ammo),
+        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + self.ammo_return(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid,laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
         self.p.ach('shot', silah='LASER')
@@ -2387,7 +2407,7 @@ class World:
         self.next_laser = now + SAVAS['lazer_aralik_sn']
         if cooldown:
             self.ammo_ready[ammo] = now + cooldown
-        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=n.id,
+        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + self.ammo_return(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=n.id,
                                                                          laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
@@ -2440,6 +2460,11 @@ class World:
                     return
                 self.p.d['secili'][kind] = item
                 self.p.dirty = True
+                if kind == 'lazer':                     # RSB-75 / RCB-140: remember the ammo to go back to after the shot
+                    if not self.slow_ammo(item):
+                        self.ammo_back = None
+                    elif not self.slow_ammo(old):
+                        self.ammo_back = old
                 self.send([('MenuItemStatusCommand', st) for st in (self.p.menu_status(old), self.p.menu_status(item)) if st])
                 self.log('   %s cephanesi: %s' % (kind, item))
                 if kind == 'lazer' and self.quickslot_on() and not self.attacking:
