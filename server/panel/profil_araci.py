@@ -121,7 +121,7 @@ def ver(path, items):
         raise ValueError('Bilinmeyen eşya: %s', ', '.join(bad))
     notes = []
     pr = Profil(_load('giris.json').get('tohum'), path)
-    m = Magaza(pr, {}, notes.append)
+    m = Magaza(pr, _load('yanitlar.json'), notes.append)      # oyundaki şablonlar: takılan ekipmanın HangarShipEquipmentCommand'ı
     m.kapilar = KAPI.Kapilar(pr, notes.append)
     m.yeni = YS.YeniSistemler(pr, m, notes.append)
     before = (len(pr.d.get('esyalar', {})), len(pr.d.get('gemiler', {})), len(pr.d.get('dronlar', [])))

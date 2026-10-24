@@ -485,18 +485,22 @@ class Kayitlar:
             resets = [r for r in (values.get('sifirla') or []) if r]
             if not changed and not values.get('ana_us') and not give and not resets:
                 return []
-            self.backup(slot, 'once', _('Düzenlemeden önce'))
-            if changed:
-                _write_json(p, d)
-            if values.get('ana_us'):
-                self.run_tool('ana_us', p)
-                changed.append(_('ana üsse taşındı'))
-            if give:
-                r = self.run_tool('ver', p, json.dumps(give))
-                changed.append(_('verildi: %s', ', '.join('%s x%d' % (l, n) for l, n in r['verilen'])))
-            if resets:
-                r = self.run_tool('sifirla', p, ','.join(resets))
-                changed.append(_('sıfırlandı: %s', ', '.join(r['sifirlanan'])))
+            safety = self.backup(slot, 'once', _('Düzenlemeden önce'))
+            try:
+                if changed:
+                    _write_json(p, d)
+                if values.get('ana_us'):
+                    self.run_tool('ana_us', p)
+                    changed.append(_('ana üsse taşındı'))
+                if give:
+                    r = self.run_tool('ver', p, json.dumps(give))
+                    changed.append(_('verildi: %s', ', '.join('%s x%d' % (l, n) for l, n in r['verilen'])))
+                if resets:
+                    r = self.run_tool('sifirla', p, ','.join(resets))
+                    changed.append(_('sıfırlandı: %s', ', '.join(r['sifirlanan'])))
+            except Exception as e:                        # yarım düzenleme kalmasın: kayıt düzenlemeden önceki hâline döner
+                _copy_atomic(os.path.join(self.backup_dir(slot), safety), p)
+                raise KayitHatasi(_('Düzenleme uygulanamadı, kayıt değişmedi: %s', e))
             return changed
 
     def loot_list(self):

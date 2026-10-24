@@ -111,6 +111,7 @@ class Coklu:
             exe = os.path.join(folder, IST.EXE)
             args = IST.args(self.cfg, gunluk, oturum=out['oturum'], pencere=True)
             proc = subprocess.Popen([exe] + args, cwd=folder)
+            SR.YAMA.arka_planda(proc.pid, self.log)
         except Exception:
             with self.lock:
                 self.acik.pop(slot, None)

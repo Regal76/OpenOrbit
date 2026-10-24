@@ -13,6 +13,7 @@ projenin web.py / game.py süreçlerini kapatabilir.
 import json, os, socket, subprocess, sys, threading, time
 
 from dil import t as _
+import istemci_yama as YAMA
 
 PANEL_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVER = os.path.dirname(PANEL_DIR)
@@ -377,6 +378,7 @@ class Yonetici:
                 raise RuntimeError(_('İstemci zaten açık.'))
             exe = os.path.join(folder, 'DarkOrbit.exe')
             self.istemci = subprocess.Popen([exe] + args, cwd=folder)
+            YAMA.arka_planda(self.istemci.pid, self.log)      # bellekte (müzayede sayacı)
             self.istemci_basla = time.time()
             self.istemci_son = None
             self.log('istemci başlatıldı: %s %s' % (exe, ' '.join(args)))

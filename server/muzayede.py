@@ -176,8 +176,12 @@ class Muzayede:
 
     # -------------------------------------------------------- istekler
     def handle(self, name, f, now=None):
+        """İstek -> yanıtlar. Dönem sonu bu istekle yakalanırsa (istemcinin sayacı bitince liste ister; oturumun tick'i 5 sn'de bir)
+        kazanılan eşyanın, paranın ve postanın mesajları yanıttan önce gider (H176: atılıyordu, eşya ancak yeniden girişte görünüyordu)."""
         now = now or time.time()
-        self.settle(now)
+        return self.settle(now) + self.answer(name, f, now)
+
+    def answer(self, name, f, now):
         if name == 'AuctionListRequest':
             return [self.list_cmd(now), self.flag_cmd()]
         if name == 'GetNamFIagRequest':
