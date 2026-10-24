@@ -422,19 +422,25 @@ class Magaza:
         return msgs + (self.quest('loot', loot=ORES.get(t), amount=n) if self.quest else [])
 
     def upgrade(self, f):
-        """LabUpdateItemRequest {itemToUpdate, updateWith {oreType, count}}: cevher parçaya yüklenir. Aynı cevher eklenir, başka cevher
-        öncekini siler (istemci: lab_alert). Hız ve kalkan hemen değişir."""
+        """LabUpdateItemRequest {itemToUpdate, updateWith {oreType, count}}: cevher parçaya yüklenir, her cevher LAB['birim'] tur/adet/
+        dakika (en çok LAB['azami']; artan cevher kargoda kalır). Aynı cevher eklenir, başka cevher öncekini siler (istemci: lab_alert).
+        Hız ve kalkan hemen değişir."""
         item = (f.get('itemToUpdate') or {}).get('itemValue')
         m = f.get('updateWith') or {}
         t, n = (m.get('oreType') or {}).get('typeValue'), int(m.get('count') or 0)
         if str(item) not in LAB['bonuslar'] or str(t) not in LAB['bonuslar'][str(item)] or n <= 0 or self.p.ore_count(t) < n:
             self.log('   yükseltme olmadı: parça %s, cevher %s x%d (elde %d)' % (item, t, n, self.p.ore_count(t) if t is not None else 0))
             return [self.lab_cmd()]
+        old = self.p.d.get('yukseltmeler', {}).get(str(item))
+        have = old[1] if old and old[0] == t else 0
+        n = min(n, max(0, LAB['azami'] - have) // LAB['birim'])
+        if n <= 0:
+            self.log('   yükseltme olmadı: parça %s dolu (%d)' % (item, have))
+            return [self.lab_cmd()]
         totals = self.p.remove_ores({t: n})
         with self.p.lock:
             ups = self.p.d.setdefault('yukseltmeler', {})
-            old = ups.get(str(item))
-            ups[str(item)] = [t, (old[1] if old and old[0] == t else 0) + n]
+            ups[str(item)] = [t, have + n * LAB['birim']]
             self.p.dirty = True
         key = ('lab_upgrade_laser', 'lab_upgrade_rocket', 'lab_upgrade_speed', 'lab_upgrade_shield')[item]
         self.log('   yükseltme: parça %d <- %s x%d (toplam %d)' % (item, ORES.get(t), n, ups[str(item)][1]))
@@ -492,8 +498,10 @@ class Magaza:
         if EK.attached(self.p, loot):
             it['attachedAmmo'] = EK.attached(self.p, loot)      # otomatik alım CPU'sunun seçili cephanesi
         if PETM.has_levels(loot):
-            # P.E.T. dişlisi/protokolü: istemci 1. seviyeyi "Level: 0" gösterir (canlı test)
-            it['level'] = (level if level is not None else self.p.item_level(iid)) - 1
+            # P.E.T. dişlisi/protokolü: istemci level'ı olduğu gibi "Level: %level%" gösterir (TooltipPreparerFactory.ReturnItemLevel),
+            # açıklamayı level - 1'den arar (ReturnItemTips.ReturnItemTip). Önceden level - 1 gidiyordu: 1. seviye "Level 0", 4. seviye
+            # 3. seviyenin açıklamasıyla (kullanıcı bildirimi 2026-10-24)
+            it['level'] = level if level is not None else self.p.item_level(iid)
         elif YK.max_level(loot) and str(iid) in self.p.d['esyalar']:
             it['level'] = YK.item_level(self.p, iid)               # yükseltme seviyesi (0 = istemcide 1)
             it['UpgradeLevel'] = YK.badge(loot, it['level'])       # envanter ve yuvalardaki seviye rozeti
@@ -968,18 +976,18 @@ class Magaza:
             n = AY.miktar('mod_odul', n, kaynak)
         return self.reward(loot, n) if n > 0 else []
 
-    def reward(self, loot, n):
-        msgs = self._reward(loot, n)
+    def reward(self, loot, n, level=1):
+        msgs = self._reward(loot, n, level)
         if loot in (GM.SHARD, GM.CHIP) or PC.restabilizable(loot):
             # Restabilize sekmesi bedel sayaçlarını ve listeyi bu komuttan alıyor (kayıtta envanter değişince yeniden geliyor);
             # OptiGrad Chip / Unstable Shard gelince sekme 0 gösterip düğmeyi kapalı tutuyordu (canlı test H70)
             msgs = list(msgs or []) + [GM.list_cmd(self.p)]
         return msgs
 
-    def _reward(self, loot, n):
+    def _reward(self, loot, n, level=1):
         """Görev ödülü (kredi/uridyum/EP/onur dışındakiler): cephane, ekipman (boş yuva varsa etkin gemiye takılır; kayıttaki
         gibi), gemi, gemi tasarımı, cevher, booster, kapı enerjisi, log diski. Sunucuda karşılığı olmayan ödül (Assembly kaynağı, kupon …)
-        profilde saklanır (diger_esyalar)."""
+        profilde saklanır (diger_esyalar). level: seviyeli P.E.T. dişlisi/protokolünün seviyesi (Assembly tarifleri)."""
         msgs = []
         RT.note(self.p, 'received_item', loot, n)                              # seyir defteri
         if loot == PET_LOOT:                       # ödül yolundan P.E.T. depoya düşüp kayboluyordu (canlı test H43)
@@ -1058,14 +1066,15 @@ class Magaza:
         elif design_base(loot) and self.grant_design(loot):
             msgs += [('ShipDesignAddedCommand', {'lootId': loot}), legacy('0|LM|ST|LOT|%s|1' % loot)]
         elif loot in ORES.values():
+            # ödül cevheri kargo dolu da olsa hepsi gelir, kargo azamiyi aşar (resmî Skylab SSS: "transferred to your ship regardless",
+            # "temporarily greater cargo capacity"; 10.000 Seprom ödülü 9.000'lik kargoda). Yer açılana dek cevher/kutu toplanmaz.
+            # Boş yer kadar veriliyordu: Assembly'nin 5.000 Seprom'u dolu kargoda kayboluyordu (kullanıcı bildirimi 2026-10-24)
             t = next(k for k, v in ORES.items() if v == loot)
-            if t <= 8:                      # kargoya giren cevherler: boş yer kadar (kapı ödülündeki Xenomit gibi)
-                n = min(n, self.p.cargo_free())
             if n > 0:
                 msgs += [('AttributeOreCountUpdateCommand', {'oreCountList': self.p.add_ores({t: n})}), self.ore_pack([t])]
         elif loose_item(loot):     # dron / P.E.T. tasarımı, P.E.T. dişlisi ve protokolü (kapı, kutu, Assembly, Pass): envantere, hangarda takılır
             for _ in range(n):
-                iid = self.p.new_item(loot)
+                iid = self.p.new_item(loot, level if PETM.level_prices(loot) else 1)
                 msgs += [self.inv_item(iid, loot, 1), self.pack([self.hangar_item(iid, loot, 1)])]
             msgs.append(legacy('0|LM|ST|LOT|%s|%d' % (loot, n)))
         elif BOOSTER.is_booster(loot):   # ödül boosterı: adet saat, süresi oyundayken işler (günlük giriş, görev)
@@ -1731,7 +1740,7 @@ class Magaza:
         active = sid == self.p.d['aktif_gemi'] and str(cid) == str(ship['aktif_konfig'])
         to_inv = dst in INVENTORY
         drone = self.p.drone(f.get('droneId') or 0) if dst == 'drone' else None
-        moved, err, sebep = [], None, None
+        moved, err, sebep, err_args = [], None, None, {}
         with self.p.lock:
             cfg = self.p.config(cid, sid)
             dcfg = self.p.drone_config(cid, sid)
@@ -1811,6 +1820,8 @@ class Magaza:
                         fail('%s seviye %d: P.E.T. seviyesi %d gerekir' % (loot, self.p.item_level(iid),
                                                                            PETM.level_need(self.p.item_level(iid))))
                         err = 'pet_gear_requirement'
+                        # istemcinin metni "Required: P.E.T. Level %level%" (canlı test: yer tutucu boş kalıyordu)
+                        err_args = {'_level_': PETM.level_need(self.p.item_level(iid))}
                     else:
                         detach(iid)
                         lst.append(iid)
@@ -1860,7 +1871,7 @@ class Magaza:
         self.log('   hangar %s config %s: %s %s -> %s%s%s' % (ship['lootId'], cid, ', '.join(l.rsplit('_', 1)[-1] for i, l in moved) or '-',
                                                             src, dst, where, ' (hata: %s)' % err if err else ''))
         ok = bool(moved) or not err
-        msg = self.neden(sebep) if sebep and err == 'error_can_not_equip_to_slot' else stack_msg(err) if err else None
+        msg = self.neden(sebep) if sebep and err == 'error_can_not_equip_to_slot' else stack_msg(err, **err_args) if err else None
         msgs = [('HangarShipMoveItemsCommand', {'result': 1 if ok else 0, 'errorMessage': None if ok else msg})]
         if moved:
             hm = self.p.hangar_map()

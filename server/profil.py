@@ -163,6 +163,9 @@ class Profil:
     # tek oyunculu kural: herkes Premium (kayıttaki hesap değildi; H72). Avantajları istemcinin metinlerinden: roket beklemesi yarı ve
     # onarım robotu x2 (dunya), P.E.T. tamiri ücretsiz (pet), çıkış 5 sn (game.LOGOUT_SN). Gemi tamiri panelin tamir ücretiyle.
     premium = True
+    # kargoya sayılan cevherler: istemcinin toplamı (UnitAttributeOreCountUpdate.UpdateHeroCargo: Prometium … Palladium ve Osmium).
+    # Xenomit (3) kargoda durur, yer kaplamaz (kullanıcı bildirimi 2026-10-24: 1.500 Xenomit kargoyu dolduruyordu)
+    CARGO_ORES = frozenset((0, 1, 2, 4, 5, 6, 7, 8, 28))
 
     def __init__(self, tohum=None, path=None, d=None):
         """d: dosyadan değil bu sözlükten (arkadaş sunucusunda misafirin gönderdiği kayıt; cok_oyunculu.MisafirProfil)."""
@@ -494,8 +497,8 @@ class Profil:
         return next((m['count'] for m in self.d['madenler'] if m['oreType']['typeValue'] == int(t)), 0)
 
     def cargo_used(self):
-        """Kargodaki cevherler (her biri 1 birim; kayıt: 73 cevherle boş alan 400 -> 327). Etkinlik malzemeleri sayılmaz."""
-        return sum(m['count'] for m in self.d['madenler'] if m['oreType']['typeValue'] <= 8)
+        """Kargodaki cevherler (her biri 1 birim; kayıt: 73 cevherle boş alan 400 -> 327). Xenomit ve etkinlik malzemeleri sayılmaz."""
+        return sum(m['count'] for m in self.d['madenler'] if m['oreType']['typeValue'] in self.CARGO_ORES)
 
     def cargo_free(self):
         return max(0, self.d['gemi'].get('cargoSpaceMax', 0) - self.cargo_used())
@@ -581,7 +584,7 @@ class Profil:
             return iid
 
     def item_level(self, iid):
-        """Eşyanın seviyesi (P.E.T. dişlisi/protokolü 1-3; diğerleri 1)."""
+        """Eşyanın seviyesi (P.E.T. dişlisi/protokolü 1-4; diğerleri 1)."""
         return self.d.get('esya_seviye', {}).get(str(iid), 1)
 
     def ship(self, sid=None):

@@ -9,7 +9,8 @@ Profilde:
 
 İstemci (1.1.114, araştırma: istemcinin kodu):
   - rütbe 1-21 (rang_N, gemi etiketinde rankN simgesi), 6000 yönetici, 5000 simgesi. Oyun sırasında güncelleyen mesaj yok:
-    ShipInitializationCommand.dailyRank ile (giriş, harita değişimi). Gerçek oyunda günde bir hesaplanır.
+    ShipInitializationCommand.dailyRank ile (giriş, harita değişimi; oyun sırasında dunya.badge_refresh). Gerçek oyunda günde bir
+    hesaplanır; burada eşik geçilince hemen (live_rank).
   - Hall of Fame: HallOfFameTopRequest {type: TopReqType} -> HallOfFameTopDataListCommand. 17 "Rütben" sayfası (myRankingPoints:
     formülün parçaları; pages npcPointsDetails / playerPointsDetails: points x value), 18/19 ana sayfa (en iyi pilotlar/klanlar),
     4-7 EP, 8-11 onur, 0-3 ve 16 kullanıcı (rütbe puanı), 12-15 klan; HallOfFamePagesRequest {type 1-3, page} -> HallOfFamePages;
@@ -126,7 +127,7 @@ def daily_rank(p, now=None, force=False):
         return None
     b = breakdown(p, now)
     rank = rank_for(b['rankPoints'])
-    icon = R['kanun_disi']['simge'] if p.d['pilot'].get('honourPoints', 0) <= R['kanun_disi']['onur'] else rank
+    icon = rank_icon(p, rank)
     prev, prev_rank = st.get('ay'), st.get('rutbe') or 1
     monthly = bool(prev and prev != day[:7] and active_month(st.get('gecmis', {}), prev))
     with p.lock:
@@ -141,6 +142,27 @@ def daily_rank(p, now=None, force=False):
         p.ach('monthly_rank')                       # başarım: aylık sıralama (basarim.SERVER_SIDE)
         p.add_resource(CHAMPION, max(1, round(CHAMPION_MAX * prev_rank / len(R['esikler']))))
     return icon
+
+
+def rank_icon(p, rank):
+    """Gemideki rütbe simgesi: rütbe, onur -500 ve altındaysa kanun dışı simgesi."""
+    return R['kanun_disi']['simge'] if p.d['pilot'].get('honourPoints', 0) <= R['kanun_disi']['onur'] else rank
+
+
+def live_rank(p, now=None):
+    """Rütbe puanı değişince (uzaylı, EP, onur, görev) rütbe hemen: eşiği geçen oyuncu o anda yükselir (kullanıcı bildirimi
+    2026-10-24: puan yetse de rütbe ertesi güne dek değişmiyordu; gerçek oyunda rütbe günde bir, şirketteki sıraya göre verilir,
+    tek oyunculuda sıra yok). Günlük kayıt (geçmiş, aylık ödül) daily_rank'te kalır. -> (eski, yeni) ya da None."""
+    pl = p.d['pilot']
+    rank = rank_for(breakdown(p, now)['rankPoints'])
+    icon, old = rank_icon(p, rank), pl.get('dailyRank', 1)
+    if icon == old:
+        return None
+    with p.lock:
+        pl['dailyRank'] = icon
+        p.d.setdefault('rutbe', {})['rutbe'] = rank
+        p.dirty = True
+    return old, icon
 
 
 def active_month(hist, month):

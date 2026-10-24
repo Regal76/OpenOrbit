@@ -359,6 +359,7 @@ class World:
         self.death_time = 0.0          # ölüm anı (Hades'te kapıda yeniden doğma süresi)
         self.invuln_until = 0.0        # yerinde tamirden sonra saldırı koruması (oyuncu saldırınca kalkar)
         self.drone_msgs = None         # dronlar değişince (seviye atlama) uzaydaki dron dizilimi (magaza.py)
+        self.unit_msgs = None          # gemiye bağlı görünüm (unvan, dronlar, modüller): gemi yerinde yeniden kurulunca (badge_refresh)
         self.stats_msgs = None         # dron seviyesi değişince kalkan vb. yeniden hesap (magaza.apply_stats)
         self.ayar_surum, self.next_ayar = None, 0.0     # panelin ayar dosyası değişince geminin değerleri yeniden (settings_tick)
         self.ore_pack = None           # cevher sayıları değişince hangar envanteri (magaza.py)
@@ -1595,7 +1596,7 @@ class World:
             cargo_box = b['tip'] in CARGO_BOXES
             if cargo_box:                                       # önce otomatik arıtma (ayar açıksa): yer açılır
                 pre = self.auto_refine()
-            if cargo_box and self.p.cargo_free() < 1:
+            if cargo_box and self.p.cargo_free() < 1 and any(int(k) in self.p.CARGO_ORES for k in b['icerik']):
                 self.send(pre + [legacy('0|A|STM|loadfull')] + self.p.hint(IP.FULL_CARGO))     # kargo dolu: kutu yerinde kalır
                 return False
             if b['tip'] in GN.BOXES and not b.get('etk'):
@@ -1605,10 +1606,12 @@ class World:
             if cargo_box:
                 ores, free = {}, self.p.cargo_free()
                 for k, v in sorted(b['icerik'].items()):
-                    take = min(int(v * boost * (1 + m.get('kargo_kutusu', 0))), free)
+                    take = int(v * boost * (1 + m.get('kargo_kutusu', 0)))
+                    if int(k) in self.p.CARGO_ORES:            # Xenomit yer kaplamaz: hepsi alınır
+                        take = min(take, free)
+                        free -= take
                     if take > 0:
                         ores[int(k)] = take
-                        free -= take
                 totals = self.p.add_ores(ores)
                 content = [mod('OreCountModule', oreType=mod('OreTypeModule', typeValue=t), count=c) for t, c in sorted(ores.items())]
                 msgs += [('LMCollectResourcesCommand', dict(priorityMode=mod('LogMessengerPriorityModule', priorityModeValue=0),
@@ -1707,7 +1710,30 @@ class World:
             msgs += [legacy('0|LM|ST|URI|%d|%d' % (uridyum, tot['uridyum'])), self.currency_item('currency_uridium', URIDIUM_ITEM, tot['uridyum'])]
         if (kredi or uridyum) and self.quick_buy:
             msgs += self.quick_buy()
+        rank = RT.live_rank(self.p) if ep or onur else None          # rütbe puanı değişti: eşik geçildiyse rütbe hemen
+        if rank:
+            msgs += self.rank_msgs(*rank)
         return msgs
+
+    def rank_msgs(self, old, new):
+        """Rütbe değişti: istemcinin metni ("Congratulations, you've reached a new rank. This rank is:" / rank_down ve rütbenin adı,
+        rang_N) ve gemideki simge (badge_refresh)."""
+        self.log('   rütbe %s -> %s' % (old, new))
+        msgs = []
+        if 1 <= new <= len(RT.R['esikler']):
+            msgs += [legacy('0|A|STM|%s' % ('rank_up' if new > old else 'rank_down')), legacy('0|A|STM|rang_%d' % new)]
+        return msgs + self.badge_refresh()
+
+    def badge_refresh(self):
+        """Gemideki rütbe simgesi hemen: istemci dailyRank'i yalnız ShipInitializationCommand'dan okur. refreshMap=False iken gemi
+        türü (typeId) değişmişse gemiyi yerinde yeniden kurar (ShipInitializationCommandHandler: ReleaseShip, Remove, InitMyUnit;
+        harita yeniden yüklenmez), aynıysa bir şey yapmaz: önce başka bir türle, ardından gerçek gemiyle."""
+        name, f = self.p.generate('@gemi')
+        x, y = self.hero_pos()
+        f.update(refreshMap=False, x=int(x), y=int(y))
+        other = 'ship_yamato' if f['typeId'] == 'ship_phoenix' else 'ship_phoenix'
+        # yeni gemi nesnesinde unvan, dronlar ve modüller yok (canlı test: dronlar kayboldu): giriş demetindekiler yeniden
+        return [(name, dict(f, typeId=other)), (name, f)] + (self.unit_msgs() if self.unit_msgs else [])
 
     @staticmethod
     def currency_item(loot, item_id, amount):

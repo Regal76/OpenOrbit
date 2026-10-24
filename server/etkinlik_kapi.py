@@ -381,26 +381,22 @@ class Kosu(KAPI.Kosu):
         w, G = self.w, self.k.gate(self.key)
         wave = self.wave()
         idx = self.k.order(self.key)[G['dalga']]
-        hx, hy = w.hero_pos()
-        for i, count in wave['gruplar'][self.sub]:
+        counts = [(i, count if wave['uzaylilar'][i].get('kalici') else AY.adet('dalga_npc', count))   # panel: dalgalardaki uzaylı sayısı
+                  for i, count in wave['gruplar'][self.sub]]
+        hold = time.time() + KAPI.pace('halka_bekleme_sn')
+        for i, x, y in KAPI.ring(*w.hero_pos(), counts, w.map_w, w.map_h):
             a = wave['uzaylilar'][i]
-            ang, dist = random.uniform(0, 2 * math.pi), random.uniform(*KAPI.K['dogma_uzaklik'])
-            cx = min(max(hx + math.cos(ang) * dist, 500), w.map_w - 500)
-            cy = min(max(hy + math.sin(ang) * dist, 500), w.map_h - 500)
-            if not a.get('kalici'):
-                count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı
-            for x, y in KAPI.spread(cx, cy, count, w.map_w, w.map_h):
-                n = w.spawn_npc_at(npc_type(self.key, idx, i), x, y, dalga=True)
-                n.gate, n.engaged, n.hunt = True, True, True
-                n.next_think = time.time()
-                self.npcs.add(n.id)
-                if a.get('kalici'):
-                    self.keep.add(n.id)
-                    n.invulnerable = lambda: any(j in self.w.npcs for j in self.guards)
-                    self.boss = a['gorunen_ad']
-                    w.send(self.say('koruma', ad=a['gorunen_ad']))
-                else:
-                    self.guards.add(n.id)
+            n = w.spawn_npc_at(npc_type(self.key, idx, i), x, y, dalga=True)
+            n.gate, n.hunt = True, True
+            n.next_think = hold
+            self.npcs.add(n.id)
+            if a.get('kalici'):
+                self.keep.add(n.id)
+                n.invulnerable = lambda: any(j in self.w.npcs for j in self.guards)
+                self.boss = a['gorunen_ad']
+                w.send(self.say('koruma', ad=a['gorunen_ad']))
+            else:
+                self.guards.add(n.id)
 
     def wave_done(self, now):
         G = self.k.gate(self.key)

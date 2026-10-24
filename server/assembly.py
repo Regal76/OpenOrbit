@@ -49,6 +49,9 @@ CHAMPION = 'resource_collectable_champion-token'                  # aylık ödü
 TEST = 'recipe_recipe-test'
 BOT = {'recipe_blueprint-ss-cpu'}                                 # Saturn Transmitter: Satürn uzaylıları oyuncu sayılır (bot oyuncular)
 LIST_CHECK_SN = 60                                                # etkinlik başlayınca / bitince tarif listesi
+# seviyeli P.E.T. dişlisi/protokolü veren tarifler 4. seviyeyi verir (istemcinin metni: "Obtain Targeting Protocol X Level 4 for your
+# P.E.T."); takmak P.E.T. seviyesine bağlı (pet.level_need). Seviye 1 veriliyordu: hangarda "Level 0", her P.E.T. takabiliyordu
+PET_LEVEL = 4
 
 
 def event_recipes(p, now=None):
@@ -250,7 +253,7 @@ class Assembly:
             TK.add(self.p, loot, n)
             return INV.update_msgs(self.m, self.p, [loot])
         if self.m:
-            return self.m.reward(loot, n)
+            return self.m.reward(loot, n, level=PET_LEVEL)
         self.p.add_resource(loot, n)
         return []
 

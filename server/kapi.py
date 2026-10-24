@@ -21,12 +21,15 @@ kurulu kapıya çekiliş de kabul edilir: her parça kopyadır (çarpan), öteki
 Prepare jump'ı açar ve istemci onu aldığı her bilgide "Kapı ALPHA inşaatı bitti" bildirimini açar (UIGalaxyGatesSystem.RefProgress);
 bildirim bir kez çıksın diye istemcide aynı bilgi varken pencerenin isteği yanıtsız kalır (info_request). Kapı hazırlanınca
 (PREPARE JUMP, portalı X-1'de) durum IN_PROGRESS gönderilir.
-Kapı haritası: ana dalgalar, her biri alt dalgalar ("gruplar"; alt dalga temizlenince sonraki). Ana dalgadan sonra ortada eve
-dönüş portalı açılır; mola bitince sonraki dalga başlar. Eve dönülürse ilerleme saklanır. Vurulunca üste tamir olunur, can 1
-azalır; can kalmazsa kapı (parçalarıyla) kaybolur. Değerler data/kapilar.json (tools/kapilar.py).
+Kapı haritası: ana dalgalar, her biri alt dalgalar ("gruplar"; alt dalga temizlenince sonraki). Alt dalganın uzaylıları
+oyuncunun çevresinde bir halkada doğar, bir an durup her biri kendi yönünden gelir. Ana dalgadan sonra ortada iki portal açılır
+(resmî kapı rehberi): solundaki sonraki dalgaya (aynı haritaya; girince geri sayımla başlar), sağındaki eve. Eve dönülürse
+ilerleme saklanır. Vurulunca üste tamir olunur, can 1 azalır; can kalmazsa kapı (parçalarıyla) kaybolur. Değerler
+data/kapilar.json (tools/kapilar.py).
 Kapıya özgü kurallar:
-  Zeta (3 harita) ve Kuiper (5 harita): haritanın son dalgasından sonra ortada sonraki haritanın portalı (yanında eve dönüş)
-  açılır; X-1'deki kapı portalı kaldığın dalganın haritasına götürür.
+  Alpha, Beta, Gamma (ABG): üreticide ortak çekiliş; parça seçilen kapıdan bağımsız üçünden birine düşer (öteki ödüller olağan).
+  Zeta (3 harita) ve Kuiper (5 harita): haritanın son dalgasından sonra soldaki portal sonraki haritaya götürür; X-1'deki kapı
+  portalı kaldığın dalganın haritasına götürür.
   Zeta Devourer ("kalici"): dalganın başında gelir, diğer uzaylılar yaşadıkça hasar almaz (wiki), dalga o ölünce biter.
   Kronos: üreticide çekiliş yok; parçaları diğer kapıları tamamlayınca gelir (her tamamlamada 1, cumartesi 2; kapı başına en çok
   wiki'deki sayı: Alpha 4, Beta 3, Gamma 1, Delta 1, Epsilon 4, Zeta 1, Kappa 2, Lambda 5 = 21). Üretici penceresinde kapı başına
@@ -53,6 +56,7 @@ XENOMIT, XENOMIT_ITEM = 3, 4              # sunucunun cevher türü; istemcinin 
 PORTAL_BASE = 150900000                   # kapı portallarının kimliği: + kapı kimliği (X-1), + 50 + kimlik (kapıdan çıkış),
 NEXT_PORTAL = 100                         # + 100 + kimlik (çok haritalı kapıda sonraki harita)
 HOME_MAP = {1: 1, 2: 5, 3: 9}
+ABG = ('alpha', 'beta', 'gamma')        # üreticide ortak çekiliş: parça üçünden birine düşer (Kapilar.draw)
 MAP_W, MAP_H = 21000, 13100
 
 
@@ -112,6 +116,30 @@ def spread(cx, cy, count, map_w, map_h):
                 break
         spots.append((x, y))
     return spots
+
+
+def ring(hx, hy, groups, map_w, map_h):
+    """Kapı dalgasının doğma halkası: oyuncunun çevresinde eşit aralıklı, her türün uzaylıları halka boyunca dağılmış (kullanıcı
+    bildirimi 2026-10-24: alt dalga tek noktada üst üste doğuyordu). Halkaya sığmayanlar (aralık en az grup_aralik) dışta ikinci
+    halkada; halkanın merkezi haritaya sığacak biçimde oyuncuya en yakın nokta. groups: [(anahtar, adet)] -> [(anahtar, x, y)]."""
+    order = [key for _, key in sorted(((j + 0.5) / n, key) for key, n in groups for j in range(n))]
+    rings, r, left = [], random.uniform(*K['dogma_uzaklik']), len(order)
+    while left > 0:
+        n = min(left, max(1, int(2 * math.pi * r / K['grup_aralik'])))
+        rings.append((r, n))
+        left -= n
+        r += 2 * K['grup_aralik']
+    edge = 300 + rings[-1][0] if rings else 0
+    cx = min(max(hx, edge), map_w - edge) if map_w > 2 * edge else map_w / 2
+    cy = min(max(hy, edge), map_h - edge) if map_h > 2 * edge else map_h / 2
+    out, base = [], random.uniform(0, 2 * math.pi)
+    for r, n in rings:
+        for j in range(n):
+            a = base + 2 * math.pi * (j + random.uniform(-0.2, 0.2)) / n
+            x = min(max(cx + math.cos(a) * r, 300), map_w - 300)
+            y = min(max(cy + math.sin(a) * r, 300), map_h - 300)
+            out.append((order[len(out)], x, y))
+    return out
 
 
 def center(map_id):
@@ -381,7 +409,8 @@ class Kapilar:
         if not key or n <= 0 or KAPI[key].get('uretilmez'):
             self.log('   kapı üreticisi: çekiliş yok (kapı %s, %d)' % (gid, n))     # Kronos: parçaları diğer kapılardan
             return reply(ERR_OTHER)
-        was_built = self.built(key)              # kurulu kapıda da çekiliş: parçalar kopya (çarpan), öteki ödüller olağan
+        group = ABG if key in ABG else (key,)    # Alpha/Beta/Gamma: parça üçünden birine (draw)
+        was_built = {k: self.built(k) for k in group}   # kurulu kapıda da çekiliş: parçalar kopya (çarpan), öteki ödüller olağan
         price, sale = self.energy_price()
         free = min(n, self.d['enerji'])
         cost = (n - free) * price
@@ -391,7 +420,7 @@ class Kapilar:
         results, grants = [], {}
         used = 0
         for _ in range(n):
-            if not was_built and self.built(key):
+            if any(not was_built[k] and self.built(k) for k in group):
                 break                          # kapı bu çekilişlerde kuruldu: kalan enerji harcanmaz
             used += 1
             results += self.draw(key, f.get('useMultiplier'), grants)
@@ -406,11 +435,12 @@ class Kapilar:
         if self.m:
             msgs = self.m.money_msgs() + msgs
         items = self.merge(results)
-        self.log('   kapı üreticisi %s: %d çekiliş (%d ücretsiz, %d U), parça %d/%d, çarpan %d: %s' % (
-            key, used, free, cost, len(self.gate(key)['parcalar']), KAPI[key]['parca'], self.d['carpan'],
+        self.log('   kapı üreticisi %s: %d çekiliş (%d ücretsiz, %d U), parça %s, çarpan %d: %s' % (
+            key, used, free, cost, ', '.join('%s %d/%d' % (k, len(self.gate(k)['parcalar']), KAPI[k]['parca']) for k in group), self.d['carpan'],
             ', '.join('%s %s' % (k, v) for k, v in sorted(grants.items()))))
-        if not was_built and self.built(key):
-            self.log('   %s kapısı kuruldu' % KAPI[key]['ad'])
+        for k in group:
+            if not was_built[k] and self.built(k):
+                self.log('   %s kapısı kuruldu' % KAPI[k]['ad'])
         self.sent = self.seen(self.info_cmd()[1])      # yanıt parçaları, enerjiyi ve kurulmayı (bildirimiyle) istemciye taşıyor
         return reply(ERR_NONE, items, msgs)
 
@@ -426,6 +456,11 @@ class Kapilar:
             if r < 0:
                 cat = c
                 break
+        if cat == CAT_PART and key in ABG:
+            # Alpha, Beta ve Gamma üreticide ortak: parça seçilen kapıdan bağımsız üçünden birine, o kapının ilerlemesine (resmî ABG
+            # üreticisi; kullanıcı bildirimi 2026-10-24: her kapı kendi çekilişinden parça alıyordu). Kurulu kapıya düşen parça kopya (çarpan)
+            key = random.choice(ABG)
+            G, g = self.gate(key), KAPI[key]
         if cat == CAT_PART and d['carpan'] and (use_mult or d['carpan'] >= K['azami_carpan']):
             mult = d['carpan'] + 1
             missing = [i for i in range(1, g['parca'] + 1) if i not in G['parcalar']]
@@ -519,16 +554,15 @@ class Kapilar:
                                                                               self.m.pack([self.m.hangar_item(iid, loot, total)])]
                 if note:
                     msgs.append(legacy('0|LM|ST|%s|%s|%d' % (loot_kind(loot), loot, n)))
-        if grants.get('xenomit'):
-            n = min(grants['xenomit'], p.cargo_free())
-            if n > 0:
-                totals = p.add_ores({XENOMIT: n})
-                msgs.append(('AttributeOreCountUpdateCommand', {'oreCountList': totals}))
-                if self.m:
-                    msgs.append(self.m.ore_pack([XENOMIT]))
-                w = self.world()
-                if w:
-                    msgs += w.quest('loot', loot='resource_ore_xenomit', amount=n)      # toplama görevleri (Alien Ore)
+        n = grants.get('xenomit', 0)                                  # Xenomit kargoda yer kaplamaz (profil.CARGO_ORES)
+        if n > 0:
+            totals = p.add_ores({XENOMIT: n})
+            msgs.append(('AttributeOreCountUpdateCommand', {'oreCountList': totals}))
+            if self.m:
+                msgs.append(self.m.ore_pack([XENOMIT]))
+            w = self.world()
+            if w:
+                msgs += w.quest('loot', loot='resource_ore_xenomit', amount=n)      # toplama görevleri (Alien Ore)
         with p.lock:
             self.d['kupon'] += grants.get('kupon', 0)
             self.d['log_disk'] += grants.get('log_disk', 0)
@@ -605,16 +639,17 @@ class Kapilar:
         return [self.home_portal(k, station) for k in KAPI if self.gate(k)['hazir']]
 
     def exit_portal(self, key, map_id, side=False):
-        """Kapıdan eve dönüş: haritanın ortasında (sonraki haritanın portalı açıkken onun yanında)."""
+        """Kapıdan eve dönüş: haritanın ortasında (sonraki dalganın portalı açıkken onun sağında)."""
         x, y = center(map_id)
-        return dict(gateId=PORTAL_BASE + 50 + KAPI[key]['kimlik'], x=x - 1500 if side else x, y=y, hedef=self.home(), designId=1,
+        return dict(gateId=PORTAL_BASE + 50 + KAPI[key]['kimlik'], x=x + 700 if side else x, y=y, hedef=self.home(), designId=1,
                     kapi=key, cikis=True)
 
     def next_portal(self, key, map_id, dest):
-        """Çok haritalı kapıda (Zeta, Kuiper) sonraki haritaya: haritanın ortasında, kapının portal tasarımıyla."""
+        """Sonraki dalgaya (aynı haritaya; Zeta ve Kuiper'de haritanın son dalgasından sonra sonraki haritaya): ortanın solunda,
+        kapının portal tasarımıyla."""
         g = KAPI[key]
         x, y = center(map_id)
-        return dict(gateId=PORTAL_BASE + NEXT_PORTAL + g['kimlik'], x=x, y=y, hedef=dest, designId=g['portal'], kapi=key,
+        return dict(gateId=PORTAL_BASE + NEXT_PORTAL + g['kimlik'], x=x - 700, y=y, hedef=dest, designId=g['portal'], kapi=key,
                     varis=center(dest))
 
     def kronos_part(self, key):
@@ -716,7 +751,7 @@ class Kapilar:
 
 class Kosu:
     """Kapı haritasında dalgalar (dünya döngüsünden, kilit altında). phase: intro/break (geri sayım), next (alt dalgalar arası),
-    fight, move (çok haritalı kapıda sonraki haritanın portalı açık), done, void (kapı yok ya da başka haritada), dead."""
+    fight, move (dalga bitti: sonraki dalganın ve evin portalı açık), done, void (kapı yok ya da başka haritada), dead."""
     cleared = 0                      # bu ana dalgada temizlenen alt dalgalar (istemcinin sayacı alt dalga sayar)
 
     def __init__(self, kapilar, world, key):
@@ -845,33 +880,34 @@ class Kosu:
         self.phase = 'fight'
 
     def spawn(self):
-        """Alt dalga: "gruplar"daki [uzaylı, adet] kümeleri oyuncunun çevresinde (hepsi saldırgan). Kalıcı uzaylı (Zeta Devourer)
-        diğerleri yaşadıkça hasar almaz; "oyuncu" görünümlü uzaylı (Kronos Evil You) oyuncunun gemisiyle gelir."""
+        """Alt dalga: "gruplar"daki [uzaylı, adet] kümeleri oyuncunun çevresinde bir halkada (ring); halka_bekleme_sn durur, sonra
+        her biri kendi yönünden oyuncunun peşine düşer (hepsi saldırgan). Kalıcı uzaylı (Zeta Devourer) diğerleri yaşadıkça hasar
+        almaz; "oyuncu" görünümlü uzaylı (Kronos Evil You) oyuncunun gemisiyle gelir."""
         w, G = self.w, self.k.gate(self.key)
         wave = self.wave()
-        hx, hy = w.hero_pos()
+        counts = []
         for i, count in wave['gruplar'][self.sub]:
             a = wave['uzaylilar'][i]
-            ang, dist = random.uniform(0, 2 * math.pi), random.uniform(*K['dogma_uzaklik'])
-            cx = min(max(hx + math.cos(ang) * dist, 500), w.map_w - 500)
-            cy = min(max(hy + math.sin(ang) * dist, 500), w.map_h - 500)
-            model = self.k.p.ship_look() if a['tur'] == 'oyuncu' else None
             if a['ad'] == 'Evil Iris':
                 # Kronos: oyuncunun Iris dronu kadar Evil Iris (wikiwiki.jp Kronos Gate; dronu yoksa wiki'nin 8'i)
                 iris = sum(1 for d in self.k.p.d.get('dronlar', []) if d.get('lootId') == 'drone_iris')
                 count = min(iris, count) if iris else count
             if not a.get('kalici'):
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyan patron bir tane)
-            for x, y in spread(cx, cy, count, w.map_w, w.map_h):
-                n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, model=model, dalga=True)
-                n.gate, n.engaged, n.hunt = True, True, True
-                n.next_think = time.time()
-                self.npcs.add(n.id)
-                if a.get('kalici'):
-                    self.keep.add(n.id)
-                    n.invulnerable = lambda: any(j in self.w.npcs for j in self.npcs - self.keep)
-                    self.boss = a['ad']
-                    w.send(self.say('koruma', ad=a['ad']))
+            counts.append((i, count))
+        hold = time.time() + pace('halka_bekleme_sn')
+        for i, x, y in ring(*w.hero_pos(), counts, w.map_w, w.map_h):
+            a = wave['uzaylilar'][i]
+            model = self.k.p.ship_look() if a['tur'] == 'oyuncu' else None
+            n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, model=model, dalga=True)
+            n.gate, n.hunt = True, True
+            n.next_think = hold                  # halkada bekler; sonra peşine düşer (dunya.think: hunt)
+            self.npcs.add(n.id)
+            if a.get('kalici'):
+                self.keep.add(n.id)
+                n.invulnerable = lambda: any(j in self.w.npcs for j in self.npcs - self.keep)
+                self.boss = a['ad']
+                w.send(self.say('koruma', ad=a['ad']))
 
     def wave_done(self, now):
         G = self.k.gate(self.key)
@@ -885,20 +921,15 @@ class Kosu:
         if G['dalga'] >= len(self.g['dalgalar']):
             self.complete()
             return
+        # ortada iki portal: solundaki sonraki dalgaya (çok haritalı kapıda sonraki haritaya), sağındaki eve; sonraki dalga oyuncu
+        # portala girince başlar (resmî kapı rehberi; kullanıcı bildirimi 2026-10-24: yalnız eve dönüş portalı açılıyor, dalga mola
+        # bitince kendiliğinden başlıyordu)
         nxt = wave_map(self.g, G['dalga'])
-        if nxt != self.map:
-            # çok haritalı kapı: bu haritanın dalgaları bitti, ortada sonraki haritanın portalı (yanında eve dönüş)
-            self.w.add_gate(self.k.next_portal(self.key, self.map, nxt))
-            self.w.add_gate(self.k.exit_portal(self.key, self.map, side=True))
-            self.w.send([self.wave_msg()] + self.say('sonraki_harita', dalga=G['dalga']))
-            self.phase = 'move'                 # mesajlardan sonra (aşamayı bekleyen mesajları da görsün)
-            self.w.log('   %s kapısı: dalga %s bitti; sonraki harita %s' % (self.g['ad'], label, nxt))
-            return
-        self.counted = None
-        self.w.add_gate(self.k.exit_portal(self.key, self.map))
-        self.w.send([self.wave_msg()] + self.say('dalga_bitti', dalga=G['dalga'], sn=pace('dalga_molasi_sn')))
-        self.phase, self.t = 'break', now + pace('dalga_molasi_sn')
-        self.w.log('   %s kapısı: dalga %s bitti; %d sn mola, çıkış portalı açık' % (self.g['ad'], label, pace('dalga_molasi_sn')))
+        self.w.add_gate(self.k.next_portal(self.key, self.map, nxt))
+        self.w.add_gate(self.k.exit_portal(self.key, self.map, side=True))
+        self.w.send([self.wave_msg()] + self.say('sonraki_harita' if nxt != self.map else 'sonraki_dalga', dalga=G['dalga']))
+        self.phase = 'move'                 # mesajlardan sonra (aşamayı bekleyen mesajları da görsün)
+        self.w.log('   %s kapısı: dalga %s bitti; portallar açık (sonraki %s)' % (self.g['ad'], label, nxt))
 
     def complete(self):
         """Son dalga: ödüller (Kapilar.finish), çıkış portalı, ekran mesajları."""

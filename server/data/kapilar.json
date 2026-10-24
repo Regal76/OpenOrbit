@@ -10264,6 +10264,7 @@
  "dalga_molasi_sn": 30,
  "alt_dalga_bekleme_sn": 3,
  "giris_bekleme_sn": 6,
+ "halka_bekleme_sn": 3,
  "dogma_uzaklik": [
   1100,
   1500
@@ -10358,7 +10359,11 @@
   },
   "sonraki_harita": {
    "buyuk": "Attack wave {dalga} survived!",
-   "kisa": "The way deeper into the gate is open: take the portal in the center of the map. The portal next to it leads home; your progress is kept."
+   "kisa": "The way deeper into the gate is open: the left portal in the center of the map leads to the next map, the right one leads home. Your progress is kept."
+  },
+  "sonraki_dalga": {
+   "buyuk": "Attack wave {dalga} survived!",
+   "kisa": "Two portals are open in the center of the map: the left one starts the next wave, the right one leads home. Your progress is kept."
   },
   "koruma": {
    "kisa": "{ad} cannot be damaged while other aliens are alive. Destroy them first!"

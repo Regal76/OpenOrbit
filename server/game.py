@@ -637,6 +637,8 @@ class Session:
         self.world.auto_lab = self.magaza.auto_lab                  # otomatik laboratuvar CPU'ları
         self.world.money_msgs = self.magaza.money_msgs
         self.world.drone_msgs = self.magaza.drone_msgs
+        self.world.unit_msgs = lambda: (self.basarim.title_msgs() + self.magaza.drone_msgs()
+                                        + [self.magaza.module_update(), self.profil.generate('@formasyon')])
         self.world.quest_event = self.quest_event
         self.world.lab_msgs = lambda: [self.magaza.lab_cmd()]
         self.world.quest_list = self.gorev.list_cmd
