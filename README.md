@@ -89,7 +89,7 @@ images). A management panel starts the game and handles your saves, game setting
 ### Quick start
 
 1. Download this repository (Code > Download ZIP) and extract it, or clone it.
-2. Double-click **`DarkOrbit Panel.pyw`**. The panel opens in its own window; no console window appears.
+2. Double-click **`OpenOrbit Panel.pyw`**. The panel opens in its own window; no console window appears.
 3. Follow the setup wizard: choose a language, pick the DarkOrbit game folder (it is found automatically in the usual
    places; if the game isn't on your computer, the wizard downloads it), create your first pilot and choose a preset.
 4. Press **PLAY**. The servers start and the game opens. On the client's login screen press START.
@@ -109,6 +109,8 @@ On the **Panel** page you can choose *Only notify* or turn it off, and check by 
 - **Cloned with Git:** the panel fast-forwards with `git`. If you changed tracked files or have commits of your own, it
   changes nothing and only tells you.
 - Your saves, settings, logs, personal login templates, downloaded game images and the game client are never changed.
+- **Coming from the old name (DarkOrbit Server Emulator):** `DarkOrbit Panel.pyw` and your old desktop shortcut still open
+  the panel. The **Panel** page offers to replace the shortcut with an OpenOrbit one (only when you press the button).
 
 ### In-game tips
 
@@ -231,7 +233,7 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 ### Hızlı başlangıç
 
 1. Bu depoyu indir (Code > Download ZIP) ve aç ya da klonla.
-2. **`DarkOrbit Panel.pyw`** dosyasına çift tıkla. Panel kendi penceresinde açılır; konsol penceresi çıkmaz.
+2. **`OpenOrbit Panel.pyw`** dosyasına çift tıkla. Panel kendi penceresinde açılır; konsol penceresi çıkmaz.
 3. Kurulum sihirbazını izle: dili seç, DarkOrbit oyun klasörünü seç (bilinen yerlerde kendiliğinden bulunur; oyun
    bilgisayarında yoksa sihirbaz indirir), ilk pilotunu oluştur ve bir hazır ayar seç.
 4. **OYNA**'ya bas. Sunucular başlar, oyun açılır. İstemcinin giriş ekranında START'a bas.
@@ -250,6 +252,8 @@ sayfasından *Yalnız haber ver*'i seçebilir, kapatabilir ve elle denetleyebili
 - **Git ile klonladıysan:** panel `git` ile ileri sarar. İzlenen dosyaları değiştirdiysen ya da kendi commit'lerin varsa hiçbir
   şeye dokunmaz, yalnız haber verir.
 - Kayıtların, ayarların, günlüklerin, kişisel giriş şablonların, inen oyun görselleri ve oyun istemcisi hiç değişmez.
+- **Eski addan (DarkOrbit Server Emulator) geliyorsan:** `DarkOrbit Panel.pyw` ve eski masaüstü kısayolun paneli açmaya
+  devam eder. **Panel** sayfası kısayolu OpenOrbit kısayoluyla değiştirmeyi önerir (yalnız düğmeye basınca).
 
 ### Oyun içi ipuçları
 

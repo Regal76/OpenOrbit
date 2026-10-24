@@ -1,4 +1,4 @@
-"""Komut satırı başlatıcısı (geliştirici yedeği; oyun normalde yönetim panelinden açılır: "DarkOrbit Panel.pyw", server/panel/):
+"""Komut satırı başlatıcısı (geliştirici yedeği; oyun normalde yönetim panelinden açılır: "OpenOrbit Panel.pyw", server/panel/):
 profil yedeği, günlük döndürme, web ve oyun sunucuları, orijinal istemci.
 
 - Profil: panelin etkin kayıt yuvası (yollar.py; save/kayitlar/<yuva>/profil.json), yoksa eski save/profil.json. İki sunucuya da

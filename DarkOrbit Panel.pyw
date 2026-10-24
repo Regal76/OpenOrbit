@@ -1,21 +1,8 @@
-"""DarkOrbit yerel sunucu paneli: çift tıkla (konsol penceresi açılmaz). Oyun, ayarlar ve kayıtlar buradan yönetilir.
-DarkOrbit local server panel: double-click to start (no console window). The game, settings and saves are managed here.
-
-Panel yerel bir pencerede açılır; ilk açılışta kurulum sihirbazı (dil, oyun klasörü, ilk pilot, oyun ayarları). OYNA'ya basınca
-sunucular başlar ve oyun açılır. Ayrıntı: README.md, server/panel/panel.py.
+"""Eski ad: panel artık "OpenOrbit Panel.pyw" (bu dosya onu açar). Eski masaüstü kısayolları ve 2026-10-24'ten önce kurulan
+panellerin güncelleyicisi (indirdiği arşivde bu dosyayı arar) için duruyor; silinirse o kurulumlar güncelleme alamaz.
+Old name: the panel is now "OpenOrbit Panel.pyw" (this file opens it); kept for old shortcuts and older panels' updaters.
 """
 import os
 import runpy
-import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-PANEL = os.path.join(HERE, 'server', 'panel', 'panel.py')
-
-if sys.version_info < (3, 10):
-    import ctypes
-    v = sys.version.split()[0]
-    ctypes.windll.user32.MessageBoxW(0, 'OpenOrbit Panel için Python 3.10 ya da daha yenisi gerekir.\nBu Python: %s\n\n'
-                                        'OpenOrbit Panel needs Python 3.10 or newer.\nThis Python: %s' % (v, v), 'OpenOrbit Panel', 0x10)
-    sys.exit(1)
-sys.argv = [PANEL] + sys.argv[1:]
-runpy.run_path(PANEL, run_name='__main__')
+runpy.run_path(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'OpenOrbit Panel.pyw'), run_name='__main__')

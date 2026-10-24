@@ -1609,8 +1609,12 @@ async function renderPanel() {
     updCard(),
     h('div', { class: 'grid g2' },
       h('div', { class: 'card' }, h('h2', null, icon('star'), T('Masaüstü kısayolu')),
-        h('p', { class: 'desc' }, T('Masaüstüne DarkOrbit simgeli bir kısayol koyar; çift tıklayınca bu panel açılır (konsol penceresi olmadan).')),
-        btn(T('Kısayol oluştur'), () => act(() => api('/api/kisayol', {}), x => T('Kısayol oluşturuldu: {0}', x.yol)), 'primary', 'plus')),
+        h('p', { class: 'desc' }, T('Masaüstüne OpenOrbit kısayolu koyar (DarkOrbit simgeli); çift tıklayınca bu panel açılır (konsol penceresi olmadan).')),
+        r.eski_kisayol ? h('div', { class: 'alert bilgi', style: { marginBottom: '12px' } }, icon('info'),
+          h('div', null, T('Masaüstündeki kısayol eski adla (DarkOrbit). Kısayol oluştur yenisini koyar, eskisini kaldırır.'))) : null,
+        btn(T('Kısayol oluştur'), async () => {
+          if (await act(() => api('/api/kisayol', {}), x => T('Kısayol oluşturuldu: {0}', x.yol))) renderPanel();
+        }, 'primary', 'plus')),
       h('div', { class: 'card' }, h('h2', null, icon('power'), T('Paneli kapat')),
         h('p', { class: 'desc' }, T('Panel ve panelin açtığı sunucular kapanır. Oyun açıksa önce oyunu kapat.')),
         btn(T('Paneli kapat'), async () => {
@@ -1839,7 +1843,7 @@ const WZ_PAGES = {
       title: canPlay ? T('Her şey hazır') : T('Neredeyse hazır'),
       sub: canPlay ? T("OYNA'ya basınca sunucular başlar ve oyun açılır.") : dlRun ? T('Oyun inince Oyna sayfasından başlatabilirsin.') : T('Eksik adımları sonra panelden tamamlayabilirsin.'),
       content: [h('div', { class: 'wz-summary' }, rows.map(([ok, t, v]) => h('div', { class: ok ? 'ok' : 'wr' }, icon(ok ? 'check' : 'alert'), h('span', null, t), h('b', { title: v }, v)))),
-        h('label', { class: 'row small' }, h('span', { class: 'switch' }, sc, h('span')), T('Masaüstüne DarkOrbit kısayolu koy'))],
+        h('label', { class: 'row small' }, h('span', { class: 'switch' }, sc, h('span')), T('Masaüstüne OpenOrbit kısayolu koy'))],
       extra: canPlay ? btn(T('Yalnız bitir'), () => finishWizard(false), '') : null,
       next: { label: canPlay ? T('Bitir ve oyna') : T('Bitir'), icon: canPlay ? 'play' : 'check', fn: () => finishWizard(canPlay) },
     };

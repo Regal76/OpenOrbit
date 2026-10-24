@@ -1,6 +1,6 @@
 """DarkOrbit yerel sunucu yönetim paneli: oyunu başlatır, ayarları, kayıtları ve sunucuları yönetir.
 
-Başlatma: ana dizindeki "DarkOrbit Panel.pyw" (çift tıkla; konsolsuz) ya da python server/panel/panel.py.
+Başlatma: ana dizindeki "OpenOrbit Panel.pyw" (çift tıkla; konsolsuz) ya da python server/panel/panel.py.
 Panel 127.0.0.1:8077'de yerel bir web arayüzü açar ve onu Edge'in (yoksa Chrome'un) uygulama penceresinde gösterir (adres çubuğu
 yok, internet gerekmez). Pencere kapanınca: oyun sürüyorsa istemci kapanana dek bekler (ayar), sonra panelin açtığı sunucuları
 kapatıp çıkar. Panel zaten açıksa ikinci başlatma yalnız pencereyi yeniden açar.
@@ -699,22 +699,51 @@ def watch_window(proc):
     STATE['pencere_kapandi'] = True
 
 
+KISAYOL, ESKI_KISAYOL = 'OpenOrbit.lnk', 'DarkOrbit.lnk'   # eski: 2026-10-24'ten önce konan ("DarkOrbit Panel.pyw"yi açar)
+
+
+def desktop_dir():
+    """Masaüstü klasörü (OneDrive'a taşınmışsa da)."""
+    import ctypes
+    buf = ctypes.create_unicode_buffer(260)
+    ctypes.windll.shell32.SHGetFolderPathW(None, 0x10, None, 0, buf)      # CSIDL_DESKTOPDIRECTORY
+    return buf.value or os.path.join(os.path.expanduser('~'), 'Desktop')
+
+
+def old_shortcut():
+    """Masaüstündeki eski adlı kısayolun yolu ya da None: yalnız hedefi bu panelin "DarkOrbit Panel.pyw"si olan (oyunun kendi
+    DarkOrbit kısayolu değil). Kısayol kendiliğinden değiştirilmez; kullanıcı "Kısayol oluştur"a basınca yenisi konur."""
+    p = os.path.join(desktop_dir(), ESKI_KISAYOL)
+    try:
+        with open(p, 'rb') as fh:
+            return p if 'DarkOrbit Panel.pyw'.encode('utf-16-le') in fh.read() else None
+    except OSError:
+        return None
+
+
 def create_shortcut():
+    """Masaüstüne OpenOrbit kısayolu; eski adlı kısayol (old_shortcut) varsa kaldırılır -> yeni kısayolun yolu."""
     target = os.path.join(os.path.dirname(sys.executable), 'pythonw.exe')
     if not os.path.isfile(target):
         target = sys.executable
-    script = os.path.join(ROOT, 'DarkOrbit Panel.pyw')
+    script = os.path.join(ROOT, 'OpenOrbit Panel.pyw')
     folder = client_folder()
     icon = os.path.join(folder, 'DarkOrbit.exe') if folder and os.path.isfile(os.path.join(folder, 'DarkOrbit.exe')) else target
-    ps = ("$d=[Environment]::GetFolderPath('Desktop'); $s=(New-Object -ComObject WScript.Shell).CreateShortcut((Join-Path $d "
-          "'DarkOrbit.lnk')); $s.TargetPath=$env:DO_HEDEF; $s.Arguments=('\"'+$env:DO_BETIK+'\"'); $s.WorkingDirectory=$env:DO_KOK; "
-          "$s.IconLocation=($env:DO_SIMGE+',0'); $s.Description=$env:DO_ACIKLAMA; $s.Save(); Join-Path $d 'DarkOrbit.lnk'")
-    env = dict(os.environ, DO_HEDEF=target, DO_BETIK=script, DO_KOK=ROOT, DO_SIMGE=icon, DO_ACIKLAMA=_('DarkOrbit yerel sunucu paneli'))
+    lnk = os.path.join(desktop_dir(), KISAYOL)
+    ps = ("$s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:DO_KISAYOL); $s.TargetPath=$env:DO_HEDEF; "
+          "$s.Arguments=('\"'+$env:DO_BETIK+'\"'); $s.WorkingDirectory=$env:DO_KOK; $s.IconLocation=($env:DO_SIMGE+',0'); "
+          "$s.Description=$env:DO_ACIKLAMA; $s.Save()")
+    env = dict(os.environ, DO_KISAYOL=lnk, DO_HEDEF=target, DO_BETIK=script, DO_KOK=ROOT, DO_SIMGE=icon,
+               DO_ACIKLAMA=_('OpenOrbit yerel sunucu paneli'))
     r = subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', ps], capture_output=True, text=True, env=env,
                        timeout=30, creationflags=SR.NO_WINDOW, encoding='utf8', errors='replace')
-    if r.returncode:
+    if r.returncode or not os.path.isfile(lnk):
         raise Hata(_('Kısayol oluşturulamadı: %s', r.stderr.strip()[-300:]))
-    return r.stdout.strip().splitlines()[-1]
+    old = old_shortcut()
+    if old:
+        os.remove(old)
+        log('eski kısayol kaldırıldı: %s' % old)
+    return lnk
 
 
 # ------------------------------------------------------------------ API
@@ -836,7 +865,8 @@ def h_get(path, q):
                 'istemci_surumu': IST.check(client_folder()).get('surum') or IST.supported()}
     if path == '/api/hakkinda':
         return {'surum': SURUM, 'python': sys.version.split()[0], 'kok': ROOT, 'sunucu': SERVER, 'kayitlar': YOL.KAYITLAR,
-                'gunlukler': YOL.LOGS, 'ayarlar': YOL.AYARLAR, 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current(), 'discord': DISCORD}
+                'gunlukler': YOL.LOGS, 'ayarlar': YOL.AYARLAR, 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current(), 'discord': DISCORD,
+                'eski_kisayol': bool(old_shortcut())}
     raise Hata(_('Bilinmeyen istek: %s', path))
 
 
