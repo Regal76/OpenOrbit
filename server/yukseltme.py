@@ -32,6 +32,13 @@ DIS_OF = {loot: k for k, c in DIS.items() for loot in c['esyalar']}
 HOUR = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))['yukseltme_saati']
 LASER, SHIELD, ROCKET = 'LASER_DAMAGE_UPGRADE', 'GENERATOR_SHIELD_UPGRADE', 'ROCKETLAUNCHER_DAMAGE_UPGRADE'
 DRONE_DAMAGE, DRONE_SHIELD = 'DRONE_DAMAGE_UPGRADE', 'DRONE_SHIELD_UPGRADE'
+# hangar eşyasının seviye rozeti (HangarShipEquipmentInventoryItem.UpgradeLevel, "anahtar,gösterilen seviye"): istemci
+# (UINewHangarSystem.SetTypeIdentification) rozeti listede satır varken açar, yazıyı TooltipPreparerFactory.ReturnItemLevelNum'dan
+# alır (bu sıradaki anahtarlardan değeri 1'den büyük ilki); ipucunda "Damage level" / "Shield level". Liste boşken level alanı
+# rozeti açmıyor: yükseltilmiş eşyalar seviyesiz görünüyordu
+BADGE = {LASER: 'damageUpgradeLevel', ROCKET: 'damageUpgradeLevel', SHIELD: 'shieldUpgradeLevel',
+         'CANNON_DAMAGE_UPGRADE': 'cannonDamageUpgradeLevel', 'CANNON_DEF_UPGRADE': 'cannonDefUpgradeLevel',
+         'DRIVE_DAMAGE_UPGRADE': 'driveDamageUpgradeLevel', 'DRIVE_DEF_UPGRADE': 'driveDefUpgradeLevel'}
 
 
 def mod(name, **f):
@@ -46,6 +53,11 @@ def max_level(loot):
 
 def item_level(p, iid):
     return int(p.d.get('yukseltme_seviye', {}).get(str(iid), 0))
+
+
+def badge(loot, level):
+    """Hangar rozetinin satırları: yükseltilmişse eşyanın her bonus türü için "anahtar,seviye + 1" (istemcide 1. seviye rozetsiz)."""
+    return ['%s,%d' % (BADGE[u['tur']], level + 1) for u in ITEMS.get(loot, {}).get('yukseltme', []) if u['tur'] in BADGE] if level else []
 
 
 def spent(p, iid):

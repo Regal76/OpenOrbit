@@ -12,7 +12,9 @@ Kayıttaki akışlar ve istemcinin mesajları:
   görev yenileme     SeasonPassRefreshRequest {questId, costType}: günlük ya da haftalık görevin yerine havuzdan başkası
 Görev durumu (istemcinin MissionStatusType'ı): 0 sürüyor, 1 Gold sürüyor, 2 Gold Pass gerekir, 3 bitti, 4 Gold bitti, 5 Gold Pass
 gerekir ama bitti (puanı Gold Pass alınınca gelir).
-Tek oyunculu uyarlamalar: ödül sırası ve görevler kayıttaki sezonun (her sezon aynı).
+Tek oyunculu uyarlamalar: ödül sırası ve görevler kayıttaki sezonun (her sezon aynı); yalnız sezon tasarımları (dron ve P.E.T.;
+2024-2025 sezonlarında Gold sırasının sonunda gemi tasarımı) sezonun sırasından: 2023-05 Mobius … 2026-08 Cerevisia (kayıttaki),
+sonra baştan (etkinlik_gorunumleri.season_track; geçmiş sezonların tasarımları başka yoldan alınamıyordu).
 Sezonlar gerçek oyunun ayları: şubat, mayıs, ağustos, kasım başı (season_id "2026-08").
 Sezon bitince alınmamış ödüller verilir (istemcinin metni: "Any unclaimed rewards from the previous season has been booked to you");
 N.O.V.A. kaptanları bekler: sezon sonu penceresi SeasonPassRewardUnclaimedInfoCommand {captainPending, captainOwned, captainLimit,
@@ -26,6 +28,7 @@ Profilde: sezon {donem, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, d
 import datetime, json, os, random, threading, time
 
 import ayar as AY
+import etkinlik_gorunumleri as EG
 import gorev_takip as GT
 import nova as NV
 from eski_protokol import legacy
@@ -162,6 +165,10 @@ class Sezon:
     def st(self):
         return self.p.d.setdefault('sezon', {})
 
+    def track(self, key):
+        """Sezonun ödül sırası: kayıttakinin sezon tasarımları sezonun sırasındakilerle (etkinlik_gorunumleri.season_track)."""
+        return EG.season_track(key, S['odul'][key], self.st.get('donem') or season_id())
+
     def ensure(self, now=None):
         """Sezon, gün ve hafta değiştiyse yenile -> bildirilecek mesajlar."""
         now = time.time() if now is None else now
@@ -228,7 +235,7 @@ class Sezon:
         rows = {}
         for key, gold, ext in TRACKS:
             rows[key] = [mod('SeasonPassRewardModule', amount=n, goldPass=gold, claimed=lv in al[key], level=lv, extGoldPass=ext, lootId=l)
-                         for lv, l, n in S['odul'][key]]
+                         for lv, l, n in self.track(key)]
         return ('SeasonPassRewardInfoCommand', dict(goldPassRewardItems=rows['gold'], freeRewardItems=rows['ucretsiz'],
                                                     extGoldPassRewardItems=rows['ext']))
 
@@ -381,7 +388,7 @@ class Sezon:
             return None
         if key == 'gold' and not st.get('gold') or key == 'ext' and not st.get('ext'):
             return None
-        return next(((l, n) for rlv, l, n in S['odul'][key] if rlv == lv), None)
+        return next(((l, n) for rlv, l, n in self.track(key) if rlv == lv), None)
 
     def give(self, key, lv):
         got = self.claimable(key, lv)
@@ -420,7 +427,7 @@ class Sezon:
             msgs += self.m.reward(*row) if self.m else []
             n += 1
         for key, gold, ext in TRACKS:
-            for lv, l, a in S['odul'][key]:
+            for lv, l, a in self.track(key):
                 got = self.claimable(key, lv)
                 if got and self.roster_full(*got):
                     full = True
@@ -483,7 +490,7 @@ class Sezon:
         """Sezon bitti: ulaşılan seviyelerin alınmamış ödülleri verilir; N.O.V.A.'lar bekler -> (mesajlar, bekleyenler)."""
         msgs, n, wait = [], 0, []
         for key, gold, ext in TRACKS:
-            for lv, l, a in S['odul'][key]:
+            for lv, l, a in self.track(key):
                 got = self.claimable(key, lv)
                 if got and got[0].startswith('captain_'):
                     wait.append(list(got))

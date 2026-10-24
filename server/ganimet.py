@@ -13,9 +13,13 @@ haftada bir cuma (wiki).
 """
 import json, os, random, re, time
 
+import etkinlik_gorunumleri as EG
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 K = json.load(open(os.path.join(HERE, 'data', 'kutular.json'), encoding='utf8'))
 BOXES = K['kutular']
+for _k, _b in BOXES.items():                 # etkinlik görünümleri: kutunun tasarımları (etkinlik_gorunumleri.box_rows)
+    _b['odul'] += EG.box_rows(_k)
 MAPS = {k: re.compile(v) for k, v in K['haritalar'].items()}
 GREEN_KEY = 'resource_booty-key'
 BL_CACHE = 'UNSTABLE_BLACKLIGHT_CACHE'
@@ -51,16 +55,16 @@ def respawn_delay(kind):
 
 
 def owned(p, loot):
-    """Tekil ödüle sahip mi: gemi, gemi tasarımı (gemide ya da depoda), P.E.T. tasarımı ve dronlar (depoda)."""
+    """Tekil ödüle sahip mi: gemi, gemi tasarımı (gemide ya da depoda), dronlar, dron ve P.E.T. tasarımları (envanterde ya da depoda)."""
     if '_design_' in loot:
         if any(loot in s.get('tasarimlar', []) for s in p.d['gemiler'].values()):
             return True
         return p.resource(loot) > 0
     if loot.startswith('ship_'):
         return any(s['lootId'] == loot for s in p.d['gemiler'].values())
-    if loot.startswith('drone_'):
-        return any(d.get('lootId') == loot for d in p.d.get('dronlar', [])) or p.resource(loot) > 0
-    return p.resource(loot) > 0
+    if loot.startswith('drone_') and any(d.get('lootId') == loot for d in p.d.get('dronlar', [])):
+        return True
+    return p.resource(loot) > 0 or loot in p.d.get('esyalar', {}).values()     # dron ve P.E.T. tasarımları envanterde
 
 
 def unique(loot):

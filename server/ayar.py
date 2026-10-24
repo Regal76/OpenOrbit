@@ -166,6 +166,11 @@ SCHEMA = [
     # ---------------------------------------------------------------- ekonomi
     _c('magaza_fiyat', 'Mağaza fiyatları', 'ekonomi', 'Mağazada kredi ve uridyumla satılan her şeyin fiyatı.', lo=0.0,
        hi=5.0, sinir=1000.0),
+    _b('etkinlik_gorunumleri_magazada', 'Etkinlik görünümleri mağazada', 'ekonomi', "Etkinliklerin gemi, dron ve P.E.T. "
+       "tasarımları (Galactic Strife'ın Arios ve Neikos'u, Trial of Terrors'un Dusklight'ı, geçmiş sezonların tasarımları …) mağazada "
+       'satılır. Kapatılırsa mağazada görünmez ve satılmazlar, yalnız kendi etkinliklerinde kazanılırlar: Battle Pass anahtar '
+       'değişimi, etkinlik ve ganimet kutuları, GG hafta sonu kapıları, Season Pass. Mağazanın kendi tasarımları hep satılır.',
+       varsayilan=True),
     _c('hizmet_fiyat', 'Hizmet ücretleri', 'ekonomi', "P.E.T. yuvaları, tamiri ve yakıtı; Skylab yükseltmeleri, anında bitirme, "
        'hızlı taşıma ve robotlar; gemi ışınlama. 0: bedava.', hi=5.0, sinir=1000.0),
     _c('tamir_ucreti', 'Ölüm sonrası tamir ücreti', 'ekonomi', 'Portalda ve bulunduğun yerde tamirin uridyum bedeli.',

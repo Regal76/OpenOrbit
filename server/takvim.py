@@ -24,10 +24,12 @@ bağımsız açar (haftalıkları da); --etkinlik hepsi bütün yıllık etkinli
 import datetime, json, os, sys, time
 
 import ayar as AY
+import etkinlik_gorunumleri as EG
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = json.load(open(os.path.join(HERE, 'data', 'etkinlikler.json'), encoding='utf8'))
 EVENTS = D['etkinlikler']
+EG.apply(EVENTS)                        # etkinlik görünümleri: GG hafta sonu kapılarının ve harita kutularının tasarımları
 ALWAYS = D['surekli']['turler']
 FORCED, MODE = set(), 'takvim'          # takvim | hepsi | yok (yıllıklar için)
 # hafta döngüleri ('hafta_dongu') bu pazartesiden sayılır; ISO hafta paritesi 53 haftalık yılda (2026) üç haftalık ara bırakıyordu

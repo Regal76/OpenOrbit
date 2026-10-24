@@ -1049,13 +1049,13 @@ async function renderEtkinlikler(list) {
   const yearly = r.filter(e => e.tur === 'yillik'), weekly = r.filter(e => e.tur === 'haftalik');
   $('#content').replaceChildren(h('div', { class: 'stack' },
     h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Haritadaki etkinlik uzaylıları, kutular ve indirimler oyun açıkken de değişir; istemcideki etkinlik simgeleri ve pencereleri oyuna yeniden girince güncellenir (harita değiştirmek ya da çıkıp girmek yeter).')),
-      btn(T('Takvimde gör'), () => go('takvim'), 'sm', 'agenda')),
+      btn(T('Takvimde gör'), () => go('takvim'), 'sm', 'agenda'), btn(T('Tüm etkinlikleri kapat'), () => bulk('kapali'), 'sm', 'power')),
     h('div', { class: 'card' }, h('div', { class: 'row between wrap' }, h('h2', null, icon('calendar'), T('Yıllık etkinlikler')),
       h('div', { class: 'row wrap' }, btn(T('Hepsi takvime göre'), () => bulk('takvim', 'yillik'), 'sm'), btn(T('Hepsini aç'), () => bulk('acik', 'yillik'), 'sm'), btn(T('Hepsini kapat'), () => bulk('kapali', 'yillik'), 'sm'))),
       h('p', { class: 'desc' }, T('Gerçek tarihe göre açılırlar; istediğin etkinliği istediğin zaman açabilir ya da kapatabilirsin. Birden çok etkinlik aynı anda açık olabilir.')),
       yearly.map(row)),
     h('div', { class: 'card' }, h('div', { class: 'row between wrap' }, h('h2', null, icon('clock'), T('Haftalık etkinlikler')),
-      h('div', { class: 'row wrap' }, btn(T('Hepsi takvime göre'), () => bulk('takvim', 'haftalik'), 'sm'), btn(T('Hepsini aç'), () => bulk('acik', 'haftalik'), 'sm'))),
+      h('div', { class: 'row wrap' }, btn(T('Hepsi takvime göre'), () => bulk('takvim', 'haftalik'), 'sm'), btn(T('Hepsini aç'), () => bulk('acik', 'haftalik'), 'sm'), btn(T('Hepsini kapat'), () => bulk('kapali', 'haftalik'), 'sm'))),
       h('p', { class: 'desc' }, T('Haftanın belli gün ve saatlerinde (yerel saat) açılırlar. "Açık" seçilirse her zaman geçerli olur.')),
       weekly.map(row))));
 }

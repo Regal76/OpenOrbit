@@ -50,6 +50,7 @@ import qfc as QF
 import parcacik as PC
 import rezonator as RZ
 import ayar as AY
+import etkinlik_gorunumleri as EG
 import ipucu as IP
 import sezon as SZ
 
@@ -480,6 +481,7 @@ class Magaza:
             it['level'] = (level if level is not None else self.p.item_level(iid)) - 1
         elif YK.max_level(loot) and str(iid) in self.p.d['esyalar']:
             it['level'] = YK.item_level(self.p, iid)               # yükseltme seviyesi (0 = istemcide 1)
+            it['UpgradeLevel'] = YK.badge(loot, it['level'])       # envanter ve yuvalardaki seviye rozeti
         return it
 
     def pack(self, items):
@@ -570,6 +572,8 @@ class Magaza:
         return ESYA['magaza_indirimi']['oran'] if self.p.d.get('magaza_indirimi', 0) > time.time() else 0.0
 
     def gate_ok(self, loot):
+        if not EG.in_shop(loot):          # panelin ayarı kapalıyken etkinlik görünümleri yalnız etkinliklerinden
+            return False
         return self.shop_gate(self.extra_entry.get(loot), loot) if self.shop_gate else True
 
     def shop_list(self, category):

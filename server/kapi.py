@@ -644,6 +644,7 @@ class Kapilar:
         don't count"; başarım sayılır). Pazar GG Double Rewards (takvim.py gg_cift_odul; Dispatch'te değil): EP, onur, Xenomit, log
         diski, kupon, Assembly kaynakları ve şanslı ödüllerin olasılığı iki kat -> (mesajlar, {yeni, kronos, sans})."""
         import takvim as TK
+        import ganimet as GN
         g, R = KAPI[key], KAPI[key]['odul']
         x2 = 1 if dispatch or not TK.is_active('gg_cift_odul') else 2
         rm = reward_msgs or (lambda tot, **kw: self.m.money_msgs() if self.m else [])
@@ -677,7 +678,7 @@ class Kapilar:
                 msgs += self.m.prize(loot, n)
                 got.append(loot)
         for s in [] if dispatch else TK.gate_choices(key):    # GG Special Rewards Weekend, LF-4 günü: olasılıkla paketten biri
-            rows = [r for r in s['secim'] if not (s.get('yinelenmez') and r[0] in owned)]
+            rows = [r for r in s['secim'] if not (s.get('yinelenmez') and GN.owned(self.p, r[0]))]   # gemi ya da tasarım
             if rows and random.random() < AY.chance('dusme', s['olasilik']) and self.m:
                 loot, n = random.choice(rows)
                 msgs += self.m.prize(loot, n)

@@ -54,12 +54,11 @@ class Posta:
             d = self.p.d.setdefault('posta', {})
             for k, v in (('sira', 1), ('gelen', []), ('giden', []), ('notlar', []), ('kara_liste', [])):
                 d.setdefault(k, v)
+            # eski kayıtlardaki Türkçe "Yerel sunucu" karşılaması (yabancı oyuncular ne olduğunu soruyordu) silinir
+            d['gelen'] = [r for r in d['gelen'] if not (r.get('gonderen') == 'DarkOrbit' and r.get('konu') == 'Yerel sunucu')]
         if not self.d.get('karsilama'):
             self.d['karsilama'] = True
             self.add(INFO, 'messaging_systemMessage_1_subject', 'messaging_systemMessage_1_body')
-            self.add(USER, 'Yerel sunucu', 'Bu sunucu tek oyunculu ve yereldir: sohbet, posta, klan ve müzayede bu bilgisayarda '
-                     'çalışır. Müzayededeki rakip teklifler sanaldır; oyuncu botları geldiğinde (yol haritası Aşama 11) onlar da '
-                     'teklif verir, mesaj yazar.', sender='DarkOrbit')
 
     @property
     def d(self):

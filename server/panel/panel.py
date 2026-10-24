@@ -68,6 +68,7 @@ ETKINLIK_ACIKLAMA = {
     'thanksgiving': "Ice Meteoroid'ler.",
     'plutus': 'Gauntlet of Plutus kapısı (Easy X-1, Normal X-8; günde bir).',
     'labirent': "Frozen Labyrinth: X-1'den 16 haritalık labirent, Labyrinth Key'ler ve Synk.",
+    'galactic_strife': 'Battle Pass (görevler uzaylılarla) ve anahtar değişiminde Arios ve Neikos tasarımları.',
     'dogum_gunu': 'Birthday Gate (X-1).',
     'empyrian': 'Empyrian kutuları; anahtarlar Galaksi Kapısı ödülünden.',
     'prosperous': 'Prosperous kutuları; anahtarlar Galaksi Kapısı ödülünden.',
@@ -77,9 +78,12 @@ ETKINLIK_ACIKLAMA = {
                     'olasılığı iki kat (Dispatch hariç).',
     'lf4_gunu': 'Delta, Epsilon, Lambda ve Kuiper kapılarından LF-4 ya da 10.000 UCB-100 şansı.',
     'lf4_gelismis': "Delta'dan LF-4-HP, Kappa'dan LF-4-PD, Zeta'dan LF-4-MD şansı.",
-    'gg_hafta_sonu_1': 'Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı.',
-    'gg_hafta_sonu_3': 'Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı.',
-    'gg_hafta_sonu_4': 'Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı.',
+    'gg_hafta_sonu_1': ('Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı; Zeta ve Kappa '
+                        "kapılarından etkinlik tasarımı şansı."),
+    'gg_hafta_sonu_3': ('Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı; Zeta ve Kappa '
+                        "kapılarından etkinlik tasarımı şansı."),
+    'gg_hafta_sonu_4': ('Delta, Epsilon, Kuiper ve Lambda kapılarından tasarım ve lazer paketi şansı; Zeta ve Kappa '
+                        "kapılarından etkinlik tasarımı şansı."),
     'nova_hafta_sonu': 'Delta, Epsilon, Lambda ve Kuiper kapıları N.E.U. verir.',
     'obsidian_booty': "Haritalarda Obsidian Booty Box'lar çıkar.",
     'rb_booty': "Haritalarda kırmızı ve mavi Booty Box'lar çıkar.",

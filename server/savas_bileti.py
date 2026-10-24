@@ -1,7 +1,7 @@
 """Battle Pass ve anahtar değişimi (yol haritası Aşama 7, E8; veri data/biletler.json "savas_bileti" <- tools/biletler.py): etkinlik
 başına pass ('passler': Halloween kayıttan ve CDN'deki pass_halloween2026.xml'den, Immortal Union resmî pass_valentine2026.xml'den,
-Hitac, Protegit, Mimesis, GoP, Treacherous Domain ve Frozen Labyrinth yazılan pass_offline_*.xml'lerle); anahtar değişimi hepsinde
-kayıttaki Halloween listesi.
+Hitac, Protegit, Mimesis, GoP, Treacherous Domain, Frozen Labyrinth ve Galactic Strife yazılan pass_offline_*.xml'lerle); anahtar
+değişimi hepsinde kayıttaki Halloween listesi, önünde etkinliğin tasarımları (etkinlik_gorunumleri.py: etkinlik görünümlerinin yolu).
 
 Mesajlar (istemcinin kodu ve kayıt):
   giriş       BattlePassInfoCommand {filename, statusCommand BattlePassUpdateStatusCommand {questsToCollectReward [görev],
@@ -19,6 +19,7 @@ Profilde: savas_bileti {donem, satin, deger, tamam, toplanacak, toplandi, degisi
 import json, os, time
 
 import envanter as INV
+import etkinlik_gorunumleri as EG
 import gorev_takip as GT
 import takvim as TK
 
@@ -27,6 +28,7 @@ B = json.load(open(os.path.join(HERE, 'data', 'biletler.json'), encoding='utf8')
 PASSES = {k: dict(p, gorevler={int(q): d for q, d in p['gorevler'].items()}, oduller={int(q): r for q, r in p['oduller'].items()})
           for k, p in B['passler'].items()}
 EXCHANGE = {r['exchangeReward']: r for r in B['anahtar_degisimi']}
+EVENT_EXCHANGE = {k: {r['exchangeReward']: r for r in EG.exchange_rows(k)} for k in PASSES}      # etkinlik -> tasarım satırları
 KEY, PASS_ITEM = 'resource_battle-pass-key', 'resource_battle-pass'
 RUNNING, DONE = 2, 3
 
@@ -94,8 +96,12 @@ class SavasBileti:
                     questDefinition=GT.with_state(d, st['deger'].get(str(q), {}), q in st['tamam'])) for q, d in bp['gorevler'].items()]
         return ('BattlePassInfoCommand', dict(filename=bp['dosya'], statusCommand=self.status_cmd(), battlePassQuestModuleList=rows))
 
+    def exchanges(self):
+        """Dönemin anahtar değişimi (ensure'dan sonra): etkinliğin tasarımları, ardından kayıttaki liste."""
+        return dict(EVENT_EXCHANGE.get(self.st['donem'].rsplit('-', 1)[0], {}), **EXCHANGE)
+
     def exchange_cmd(self):
-        rows = [dict(r, claimCount=self.st.get('degisim', {}).get(k, 0)) for k, r in EXCHANGE.items()]
+        rows = [dict(r, claimCount=self.st.get('degisim', {}).get(k, 0)) for k, r in self.exchanges().items()]
         return ('BattlePassKeyExchangeInfoCommand', dict(rewardList=rows, numOfKeys=self.p.resource(KEY), exchangeType=0))
 
     def key_update(self, reward='', count=0):
@@ -187,9 +193,9 @@ class SavasBileti:
 
     def exchange(self, f):
         name = f.get('exchangeReward') or ''
-        r = EXCHANGE.get(name)
         st = self.st
-        if not r or not self.ensure():
+        r = self.exchanges().get(name) if self.ensure() else None
+        if not r:
             return []
         count = st['degisim'].get(name, 0)
         if count >= r['limit'] or INV.spend(self.p, {KEY: r['cost']}, reason='buy_SPECIAL', detail='battle_pass_' + name) is None:

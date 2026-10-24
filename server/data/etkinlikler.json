@@ -5317,6 +5317,10 @@
     [
      "2025-06-25",
      "2025-07-27"
+    ],
+    [
+     "06-25",
+     "07-27"
     ]
    ],
    "turler": [],
@@ -5460,7 +5464,7 @@
      "_kaynak": "gerçek oyunda Gift Box ve Green Booty Box'tan; burada istemcinin FOOTBALL_BOX'ı (uyarlama)"
     }
    ],
-   "_kaynak": "duyuru 129282, 129809 (2026'da yok): Champion dron tasarımları; takımın turnuvadaki ilerlemesine bağlı NPC hasar bonusu yok",
+   "_kaynak": "duyuru 129282, 129809 (2026'da yok): Champion dron tasarımları; takımın turnuvadaki ilerlemesine bağlı NPC hasar bonusu yok. Her yıl 25 Haziran - 27 Temmuz uyarlama: futbol kutusunda SpaceCup'ın tasarımları da (etkinlik_gorunumleri)",
    "_takvim": "board-en.darkorbit.com duyuruları 2023-2026 (belgeler/arastirma/tarama_2026-10-22/web_takvim.md)",
    "haber": [
     "goalrush_{Y}"
@@ -5492,6 +5496,67 @@
    ],
    "haber_ek": [],
    "haber_varsayilan": "kristallonapotheosis2026"
+  },
+  "galactic_strife": {
+   "ad": "Galactic Strife",
+   "donemler": [
+    [
+     "2023-04-13",
+     "2023-04-26"
+    ],
+    [
+     "2023-09-14",
+     "2023-09-28"
+    ],
+    [
+     "2023-11-16",
+     "2023-11-30"
+    ],
+    [
+     "2024-04-10",
+     "2024-04-24"
+    ],
+    [
+     "2024-09-11",
+     "2024-09-25"
+    ],
+    [
+     "2024-11-13",
+     "2024-11-27"
+    ],
+    [
+     "2025-04-02",
+     "2025-04-16"
+    ],
+    [
+     "2025-09-17",
+     "2025-10-01"
+    ],
+    [
+     "2026-04-15",
+     "2026-04-29"
+    ],
+    [
+     "2026-09-16",
+     "2026-09-30"
+    ]
+   ],
+   "turler": [
+    "BattlePass",
+    "BattlePassKeyExchange"
+   ],
+   "_kaynak": "duyurular (web_takvim.md, 176 anahtar): gerçek oyunda 4-1..4-4'te PvP (itibar sıralamaları, Fever, Flux ve Mire Crate); tek oyunculuda Battle Pass (görevler PvE, uyarlama), Battle Pass Box ve anahtar değişimi (Arios ve Neikos tasarımları, etkinlik_gorunumleri)",
+   "_takvim": "board-en.darkorbit.com duyuruları 2023-2026 (belgeler/arastirma/tarama_2026-10-22/web_takvim.md)",
+   "haber": [
+    "galacticStrife"
+   ],
+   "haberler": [
+    "galacticStrife"
+   ],
+   "haber_ek": [
+    "battlePass"
+   ],
+   "haber_varsayilan": "galacticStrife"
   }
  },
  "_kutu_avlari": "harita_ek kutuları, kapi_odulu, gezgin ve yeni etkinlikler tools/etkinlik_kutulari.py ile (Aşama 7b).",
