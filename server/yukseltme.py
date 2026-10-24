@@ -222,7 +222,7 @@ class Yukseltme:
             return []
         self.p.sync_ekipman()
         if kind == 'dron':
-            return [self.m.equipment_cmd()] + self.m.apply_stats()
+            return [self.m.drone_item(ref), self.m.equipment_cmd()] + self.m.apply_stats()     # Assembly'deki seviyesi de
         hm = self.p.hangar_map()
         msgs = [self.m.inv_item(ref, loot, 1, hm.get(ref, 0)), self.m.pack([self.m.hangar_item(ref, loot, 1, hm.get(ref, 0))])]
         import parcacik as PC

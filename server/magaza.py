@@ -31,7 +31,8 @@ Dronlar (kayıttaki hesapta dron yoktu; biçimler istemcinin kodundan):
     takılı eşyalar SingleDroneEquipmentMsg.defaults). Dronlara yalnız lazer ve kalkan jeneratörü takılır (Flax 1, Iris 2 yuva);
     istemci hedef/kaynak "drone" + droneId gönderir (yuva kümesi "default"; istemci: UINewHangarSystem.ReturnDroneId).
 Dron tasarımları (mağaza "customization"; Havoc ve Hercules esyalar.json ek_magaza): dron başına bir "design" (bonuslu,
-  istemcide DroneDesignType) ve bir "visual" (görünüm, DroneCustomizationType) yuvası; tüm config'lerde aynı. Uzayda dron
+  istemcide DroneDesignType) ve bir "visual" (görünüm, DroneCustomizationType) yuvası; config başına (P.E.T. gibi config
+  numarasına bağlı, gemiye değil; dron kaydında tasarim/gorunum {config: eşya kimliği}). Uzayda dron
   dizgisinin tasarım/görünüm alanları istemcinin game.xml tasarım kimlikleri (esyalar.json dron_tasarimlari).
 P.E.T. (pet.py): mağazada pet_pet10 (bir tane), dişliler (petgear) ve protokoller (protocol) envantere girer; hangarda
   P.E.T. yuvaları (lasers, generators, gears, protocols) config başına; yuva açma ve ad değiştirme pet.py'de.
@@ -165,6 +166,7 @@ NEDENLER = {
     'ayni_top': ('Your ship already has a cannon of this type.', 'Gemide bu türden bir top zaten takılı.'),
     'qfc_gemi': ('This Quantum Fluid Core is bound to another ship.', 'Bu Quantum Fluid Core başka bir gemiye bağlı.'),
     'ayni_qfc': ('Your ship already has a Quantum Fluid Core of this type.', 'Gemide bu türden bir Quantum Fluid Core zaten takılı.'),
+    'tek_yuva_cpu': ('Only one Slot CPU is allowed per configuration.', "Bir config'e yalnız bir Slot CPU takılabilir."),
     'takili_satis': ('Equipped items cannot be sold. Unequip it first (check both configurations).',
                      "Takılı eşya satılamaz; önce çıkar (iki config'e de bak)."),
     'eksik_yukleme': ('Some equipment were not available to be loaded into the saved configuration.',
@@ -176,6 +178,7 @@ NEDENLER = {
 # kaynağını yüklüyor ama paketteki dosya "resource_item_old" (LocalizationManager): o dosyadaki anahtarlar (drone_have_max)
 # hiç bulunmuyor, hata penceresi boş açılıyordu (canlı test 2026-10-18). clan_errmsg_desc_to_long hiçbir kaynakta yok.
 RES_YERINE = {'drone_have_max': ('items_drone_have_max', {}),
+              'drone_slotCPUinUse': ('drone_slotCPUinUse', {}),        # resource_system_inc'te; BaseKey'lerde yok
               'special_generic_hint': ('items_special_generic_hint', {}),
               'clan_errmsg_desc_to_long': ('clan_errmsg_to_long', {'_NAME_': res('label_description')})}
 
@@ -441,7 +444,10 @@ class Magaza:
     def item_id(self, loot):
         return self.p.d['esya_kimlik'].get(loot) or self.tpl_ids.get(loot) or self.p.item_id(loot)
 
-    def capacity(self, slot, sid=None):
+    def capacity(self, slot, sid=None, cid=None, extras=None):
+        """Geminin bir yuva türündeki yuva sayısı. Ekstra yuvası config'e göre: o config'teki (cid; yoksa etkin) ya da verilen
+        ekstralardaki (extras: lootId listesi) yuva CPU'suyla (SL-01..04). Önce hep etkin config'in CPU'su sayılıyordu: öteki
+        config'e takılan Slot CPU yuva açmıyordu (kullanıcı bildirimi 2026-10-24)."""
         if slot == 'upgrades':                                       # gemi modülü yuvası: istemcinin gemi verisi (gemi_modul.py)
             return GM.slots(self.p.ship(sid)['lootId'])
         if slot == 'QuantumFluidCore':                               # QFC yuvası: istemcinin gemi verisi (qfc.py)
@@ -449,16 +455,25 @@ class Magaza:
         if slot in PC.SLOTS:                                         # top, kırıcı, sürücü, mercek: istemcinin gemi verisi
             return PC.slots(self.p.ship(sid)['lootId'], slot)
         ship = self.p.ship_row(sid)                                  # giyilen tasarımın yuvalarıyla (Tyrannos 15 lazer …)
-        bonus = EK.slot_bonus(self.p, sid) if slot == 'extra' else 0      # yuva CPU'su (SL-01..04): config'te en büyüğü
+        bonus = 0
+        if slot == 'extra':
+            bonus = EK.slot_bonus_of(extras) if extras is not None else EK.slot_bonus(self.p, sid, cid)
         if slot == 'extra' and self.equip_tpl and 'extra' not in ship:
             return self.equip_tpl.get('extrasSlotsSize1', DEFAULT_SLOTS['extra']) + bonus
         return ship.get(slot, DEFAULT_SLOTS[slot]) + bonus
 
-    def inv_item(self, iid, loot, amount, hangar=0):
+    def inv_item(self, iid, loot, amount, hangar=0, level=None):
         lv = YK.item_level(self.p, iid) if str(iid) in self.p.d['esyalar'] else 0     # yükseltme seviyesi (yukseltme.py)
+        lv = lv if level is None else level
         return ('InventoryItemUpdatedCommand', {'item': mod('InventoryItemModule', upgradeLevel=lv, lootId=loot, amount=amount, itemId=iid,
                                                             star=(PC.state(self.p, iid) or {}).get('yildiz', 0), isNew=False,
                                                             hangarId=hangar, extAttributes=[], inventoryItemAttributes=[])})
+
+    def drone_item(self, x):
+        """Dron, istemcinin envanterinde eşya olarak (kimliği dronun kimliği, seviyesi yükseltme seviyesi): Assembly'nin Upgrade
+        sekmesi yükseltilecekleri yalnız envanterdeki eşyalardan seçiyor; dronlar hiç gönderilmediği için Iris, Apis, Zeus (ve Flax)
+        listede yoktu (kullanıcı bildirimi 2026-10-24). Build isteğinin targetItemId'si dronun kimliği (yukseltme.target)."""
+        return self.inv_item(x['kimlik'], x['lootId'], 1, self.hangar_id, level=YK.drone_level(x))
 
     def hangar_item(self, iid, loot, count, hangar=0, level=None):
         it = copy(self.item_tpl) if self.item_tpl else mod(
@@ -486,6 +501,15 @@ class Magaza:
 
     def pack(self, items):
         return ('InventoryItemPack', {'items': items})
+
+    def item_updates(self, ids):
+        """Takılı olduğu hangar değişen eşyalar: istemcinin envanteri ve hangar ızgarası (move'daki gibi). Config yükleme ve
+        aktarımda gitmiyordu: yüklenen lazerler hem yuvada hem envanterde, boşa çıkanlar envanterde görünmüyordu (canlı 2026-10-24)."""
+        es, hm = self.p.d['esyalar'], self.p.hangar_map()
+        ids = sorted(i for i in set(ids) if str(i) in es)
+        items = [self.hangar_item(i, es[str(i)], 1, hm.get(i, 0)) for i in ids]
+        return [self.inv_item(i, es[str(i)], 1, hm.get(i, 0)) for i in ids] + \
+            [self.pack(items[k:k + PACK_MAX]) for k in range(0, len(items), PACK_MAX)]
 
     def ore_pack(self, types):
         """Cevher sayısı değişince hangar envanterindeki cevher eşyaları (kayıt: toplamada InventoryItemPack, itemCount yeni sayı)."""
@@ -850,6 +874,7 @@ class Magaza:
             elif g in DRONES:                              # paketteki dronlar (Stellar: 8 Iris) hepsi, yer kadar (package_fit)
                 for _ in range(n):
                     did = self.p.add_drone(g)
+                    msgs.append(self.drone_item(self.p.drone(did)))      # Assembly'de yükseltilebilir
                 msgs += [legacy('0|LM|ST|LOT|%s|%d' % (g, n))] + self.drone_msgs()
                 self.p.ach('formation', dron=len(self.p.d['dronlar']))
                 self.log('   yeni dron: %s x%d (kimlik %d, toplam %d)' % (g, n, did, len(self.p.d['dronlar'])))
@@ -1052,7 +1077,7 @@ class Magaza:
             for _ in range(n):
                 if not self.drone_room(loot):
                     break
-                self.p.add_drone(loot)
+                msgs.append(self.drone_item(self.p.drone(self.p.add_drone(loot))))     # Assembly'de yükseltilebilir
             msgs += [legacy('0|LM|ST|LOT|%s|%d' % (loot, n))] + self.drone_msgs()
         elif loot in FORMS:
             if loot not in self.p.d['formasyonlar']:
@@ -1232,7 +1257,8 @@ class Magaza:
             self.p.dirty = True
         RT.money(self.p, cur, amount, 'sell_drone', x['lootId'], 1)
         self.log('   dron satıldı: %s (kimlik %d) = %d %s' % (x['lootId'], x['kimlik'], amount, cur))
-        return (self.money_msgs() + [('HangarShipSellDroneCommand', dict(resultId=1, errorMessage=None, drones=self.drone_views()))]
+        return (self.money_msgs() + [('InventoryItemRemovedCommand', {'itemId': x['kimlik']}),          # Assembly listesinden
+                                     ('HangarShipSellDroneCommand', dict(resultId=1, errorMessage=None, drones=self.drone_views()))]
                 + self.drone_msgs() + [self.equipment_cmd()] + self.apply_stats())
 
     @staticmethod
@@ -1316,29 +1342,29 @@ class Magaza:
             for slot in EQUIP_SLOTS:
                 c[slot] = list(pc.get(slot, []))
             c['active'] = c['setId'] == cur
-        extra = self.capacity('extra', sid)
         # lootId görünümle (tasarım ekli): istemci yuva düzenini gemi listesindeki adla tutup bununla arıyor (ships_cmd)
         t.update(currentConfigId=cur, lootId=self.p.ship_look(sid), hangarId=ship['hangarId'], shipId=int(sid or self.p.d['aktif_gemi']),
-                 extrasSlotsSize1=extra, extrasSlotsSize2=extra,
+                 extrasSlotsSize1=self.capacity('extra', sid, 1), extrasSlotsSize2=self.capacity('extra', sid, 2),
                  droneConfigs=[self.drone_config_msg(c['setId'], c['setId'] == cur, sid) for c in t['shipConfigs']],
                  petConfigs=self.pet.config_msgs(cur))
         return ('HangarShipEquipmentCommand', t)
 
     def drone_config_msg(self, cid, active, sid=None):
         """Bir config'te dronlar ve takılı eşyaları (HangarDroneEquipmentMsg; eşya kimlikleri SingleDroneEquipmentMsg.defaults,
-        tasarım ve görünüm design/visual; tasarımlar dronun kendisinde, her config'te aynı)."""
+        tasarım ve görünüm design/visual; tasarımlar config başına, dronun kaydında)."""
         dc = self.p.drone_config(cid, sid)
         drones = []
-        team = self.p.design_mods().get('dron_lazer', 0)          # Havoc, Cerberus: bütün dronlar o tasarımdayken dron lazerine
+        team = self.p.design_mods(cid).get('dron_lazer', 0)       # Havoc, Cerberus: bütün dronlar o tasarımdayken dron lazerine
         for i, x in enumerate(self.p.d['dronlar']):
             lv = LEVELS[x['seviye'] - 1]
-            shd = DESIGNS.get(self.p.drone_design(x, 'design') or '', {}).get('dron_kalkan', 0)     # Hercules: o dronun kalkanına
+            shd = DESIGNS.get(self.p.drone_design(x, 'design', cid) or '', {}).get('dron_kalkan', 0)     # Hercules: o dronun kalkanına
+            look, design = self.p.drone_design_id(x, 'visual', cid), self.p.drone_design_id(x, 'design', cid)
             # istemci (UINewHangarSystem.CreateItemInfo): "Effect: weaponEffect%/shieldEffect%"; ...Bouns > 0 olan değer mavi.
             # Seviye ve tasarım etkisi savaştakiyle aynı (dunya: dron lazeri, magaza: dron kalkanı); 0/0 gidiyordu (canlı tur 2)
-            drones.append(mod('SingleDroneEquipmentMsg', level=x['seviye'], visual=[x['gorunum']] if x.get('gorunum') else [],
+            drones.append(mod('SingleDroneEquipmentMsg', level=x['seviye'], visual=[look] if look else [],
                               shieldBouns=round(shd * 100, 2), repairValue='', defaults=list(dc.get(str(x['kimlik']), [])),
                               weaponBouns=round(team * 100, 2), damageUpgradeLevel=YK.drone_level(x), shieldUpgradeLevel=YK.drone_level(x),
-                              design=[x['tasarim']] if x.get('tasarim') else [], shieldEffect=round((lv['kalkan'] + shd) * 100, 2),
+                              design=[design] if design else [], shieldEffect=round((lv['kalkan'] + shd) * 100, 2),
                               position=i, droneId=x['kimlik'], damage=0.0, repairType='', weaponEffect=round((lv['lazer'] + team) * 100, 2)))
         return mod('HangarDroneEquipmentMsg', setId=int(cid), active=active, position=0, setDroneEquipment=drones)
 
@@ -1423,9 +1449,10 @@ class Magaza:
         shields = [(kj[g]['kalkan'] * YK.factor(g, glv[i] if i < len(glv) else 0, YK.SHIELD), kj[g]['emme'])
                    for i, g in enumerate(gens) if g in kj]
         ship_gens = len(shields)
+        cid = self.p.ship(sid)['aktif_konfig']
         for (x, loots), (dloot, dup, ilv) in zip(self.p.drone_loadout(sid), self.p.drone_levels(sid)):
             # dron seviyesi ve dronun tasarımı (Hercules: o dronun kalkan jeneratörlerine +%15); dronun ve jeneratörün yükseltmesi
-            bonus = 1 + LEVELS[x['seviye'] - 1]['kalkan'] + DESIGNS.get(self.p.drone_design(x, 'design') or '', {}).get('dron_kalkan', 0)
+            bonus = 1 + LEVELS[x['seviye'] - 1]['kalkan'] + DESIGNS.get(self.p.drone_design(x, 'design', cid) or '', {}).get('dron_kalkan', 0)
             bonus *= YK.factor(dloot, dup, YK.DRONE_SHIELD)
             shields += [(kj[g]['kalkan'] * bonus * YK.factor(g, ilv[j] if j < len(ilv) else 0, YK.SHIELD), kj[g]['emme'])
                         for j, g in enumerate(loots) if g in kj]
@@ -1555,7 +1582,7 @@ class Magaza:
         for iid, loot in sorted(self.p.d['esyalar'].items(), key=lambda kv: int(kv[0])):
             if loot.startswith(('equipment_', 'drone_designs_', 'pet_designs_')):
                 out.append(self.inv_item(int(iid), loot, 1, hm.get(int(iid), 0)))
-        return out
+        return out + [self.drone_item(x) for x in self.p.d['dronlar']]
 
     def ship_count_msgs(self, loots):
         """Gemi kazanılınca/harcanınca Assembly sayacı (yalnız tariflerde taban gemi olanlar; envanter.client_count)."""
@@ -1609,6 +1636,7 @@ class Magaza:
         ids = [i for lst in self.p.config(cid, sid).values() for i in lst]
         if f.get('wipe'):
             ids += [i for lst in self.p.drone_config(cid, sid).values() for i in lst]
+            ids += [i for x in self.p.d['dronlar'] for s in ('design', 'visual') for i in [self.p.drone_design_id(x, s, cid)] if i]
             if self.pet.owned:
                 ids += [i for lst in self.pet.config(cid).values() for i in lst]
         msgs = self.move({'items': ids, 'source': 'ship', 'destination': 'inventory', 'hangarId': ship['hangarId'],
@@ -1639,6 +1667,8 @@ class Magaza:
             return [('HangarShipLoadConfigCommand', {'title': stack_msg('eqt_error_generic'), 'description': stack_msg('empty'),
                                                      'resultId': 0})]
         missing = 0
+        touched = [i for cfg in ship['konfigler'].values() for ids in cfg.values() for i in ids]
+        touched += [i for cfg in saved.values() for ids in cfg.values() for i in ids]
         with self.p.lock:
             for c, cfg in ship['konfigler'].items():
                 for s in cfg:
@@ -1646,9 +1676,10 @@ class Magaza:
             busy = self.p.hangar_map()
             for c, slots in saved.items():
                 cfg = ship['konfigler'].setdefault(c, {})
+                extras = [self.p.d['esyalar'].get(str(i), '') for i in slots.get('extra', [])]     # kayıttaki Slot CPU'suyla
                 for s, ids in slots.items():
                     for i in ids:
-                        if str(i) in self.p.d['esyalar'] and busy.get(i, ship['hangarId']) == ship['hangarId']                                 and len(cfg.get(s, [])) < self.capacity(s, sid):
+                        if str(i) in self.p.d['esyalar'] and busy.get(i, ship['hangarId']) == ship['hangarId']                                 and len(cfg.get(s, [])) < self.capacity(s, sid, extras=extras):
                             cfg.setdefault(s, []).append(i)
                         else:
                             missing += 1
@@ -1657,7 +1688,7 @@ class Magaza:
         self.log('   hangar: %s config yüklendi (%d eşya bulunamadı)' % (ship['lootId'], missing))
         desc = self.neden('eksik_yukleme') if missing             else stack_msg('popup_load_success_description')
         msgs = [('HangarShipLoadConfigCommand', {'title': stack_msg('popup_load_success_title'), 'description': desc, 'resultId': 1}),
-                self.equipment_cmd(sid)]
+                self.equipment_cmd(sid)] + self.item_updates(touched)
         return msgs + (self.apply_stats() if sid == self.p.d['aktif_gemi'] else [])
 
     def import_config(self, f):
@@ -1670,10 +1701,12 @@ class Magaza:
             return fail()
         a, b = self.p.ship(src), self.p.ship(dst)
         for c, cfg in a['konfigler'].items():
+            extras = [self.p.d['esyalar'].get(str(i), '') for i in cfg.get('extra', [])]       # Slot CPU'su da taşınır
             for s, ids in cfg.items():
-                if len(ids) > self.capacity(s, dst):
-                    self.log('   hangar: aktarım yok: %s %s yuvası %d > %d' % (b['lootId'], s, len(ids), self.capacity(s, dst)))
+                if len(ids) > self.capacity(s, dst, extras=extras):
+                    self.log('   hangar: aktarım yok: %s %s yuvası %d > %d' % (b['lootId'], s, len(ids), self.capacity(s, dst, extras=extras)))
                     return fail()
+        touched = [i for s in (a, b) for cfg in s['konfigler'].values() for ids in cfg.values() for i in ids]
         with self.p.lock:
             for c, cfg in a['konfigler'].items():
                 b['konfigler'][c] = {s: list(ids) for s, ids in cfg.items()}
@@ -1683,6 +1716,7 @@ class Magaza:
             self.p.sync_ekipman()
         self.log('   hangar: config %s -> %s aktarıldı' % (a['lootId'], b['lootId']))
         msgs = [('HangarShipImportConfigCommand', {'shipId': int(dst), 'errorMessage': None, 'resultId': 1}), self.equipment_cmd(dst)]
+        msgs += self.item_updates(touched)                 # aktarılanlar hedef gemide, hedefin eskileri envanterde
         return msgs + (self.apply_stats() if self.p.d['aktif_gemi'] in (src, dst) else [])
 
     def move(self, f):
@@ -1704,6 +1738,7 @@ class Magaza:
             pcfg = self.pet.config(cid) if self.pet.owned else {}
             pet_before = {k: list(v) for k, v in pcfg.items()}
             busy = self.p.hangar_map()
+            loots = lambda lst: [self.p.d['esyalar'].get(str(i), '') for i in lst]
 
             def detach(iid):
                 """Eşyayı bu config'te bulunduğu yerden (gemi yuvası, dron, P.E.T.) ya da dronun tasarım yuvasından çıkarır."""
@@ -1713,8 +1748,8 @@ class Magaza:
                         return True
                 for x in self.p.d['dronlar']:
                     for k in ('tasarim', 'gorunum'):
-                        if x.get(k) == iid:
-                            x[k] = None
+                        if (x.get(k) or {}).get(str(cid)) == iid:
+                            del x[k][str(cid)]
                             return True
                 return False
 
@@ -1730,7 +1765,12 @@ class Magaza:
                 if not loot:
                     fail('bilinmeyen eşya %s' % iid)
                 elif to_inv:
-                    if detach(iid):
+                    rest = [i for i in cfg.get('extra', []) if i not in ids]      # aynı istekle çıkarılanlar sayılmaz (clear_config)
+                    if iid in cfg.get('extra', []) and len(rest) > self.capacity('extra', sid, extras=loots(rest)):
+                        # açtığı yuvalar doluyken yuva CPU'su çıkmaz (istemcinin metni: "Error: Slot CPU is currently in use.")
+                        fail('%s çıkmaz: ekstra yuvaları dolu' % loot)
+                        err = 'drone_slotCPUinUse'
+                    elif detach(iid):
                         moved.append((iid, loot))
                 elif pet_only(loot) and dst != 'pet':
                     fail('%s yalnız P.E.T.\'e takılır' % loot)
@@ -1740,11 +1780,11 @@ class Magaza:
                         fail('%s yalnız drona takılır (%r)' % (loot, dst))
                         continue
                     key = 'tasarim' if DESIGNS[loot]['yuva'] == 'design' else 'gorunum'
-                    old = drone.get(key)
+                    old = (drone.get(key) or {}).get(str(cid))
                     if old == iid:
                         continue
                     detach(iid)
-                    drone[key] = iid
+                    drone.setdefault(key, {})[str(cid)] = iid           # yalnız bu config'te (öteki config'in tasarımı aynı kalır)
                     moved.append((iid, loot))
                     if old:
                         moved.append((old, self.p.d['esyalar'].get(str(old), '')))
@@ -1802,7 +1842,9 @@ class Magaza:
                              'qfc_gemi' if (QF.state(self.p, iid) or {}).get('gemi') != ship['lootId'] else 'ayni_qfc')
                     elif slot in PC.SLOTS and PC.equip_allowed(self.p, iid, slot, lst):
                         fail('%s: %s' % (loot, PC.equip_allowed(self.p, iid, slot, lst)), 'ayni_top')   # her türden bir top
-                    elif len(lst) >= self.capacity(slot, sid):
+                    elif slot == 'extra' and EK.slot_bonus_of([loot]) and EK.slot_bonus_of(loots(lst)):
+                        fail('%s: config\'te yuva CPU\'su var' % loot, 'tek_yuva_cpu')       # config başına bir yuva CPU'su (wiki)
+                    elif len(lst) >= self.capacity(slot, sid, extras=loots(cfg.get('extra', []))):
                         fail('%s yuvaları dolu' % slot)
                     else:
                         detach(iid)                                       # dronda ya da P.E.T.'te takılıysa oradan alınır
@@ -1828,7 +1870,7 @@ class Magaza:
             slots = {slot_of(l) for i, l in moved}
             group = [i for c in ship['konfigler'].values() for s in slots for i in c.get(s, [])]
             group += [i for c in ship.get('dron_konfig', {}).values() for ids_ in c.values() for i in ids_]
-            group += [x[k] for x in self.p.d['dronlar'] for k in ('tasarim', 'gorunum') if x.get(k)]
+            group += [i for x in self.p.d['dronlar'] for k in ('tasarim', 'gorunum') for i in (x.get(k) or {}).values() if i]
             if self.pet.owned:
                 group += [i for c in self.pet.d['konfig'].values() for ids_ in c.values() for i in ids_]
             items = list(dict.fromkeys([i for i, l in moved] + group))
@@ -1930,7 +1972,10 @@ class Magaza:
             ship['aktif_konfig'] = n
             self.p.sync_ekipman()
             self.p.dirty = True
-        self.apply_stats()
+        # can, kalkan, hız ve görünüm aşağıda kayıttaki sırayla; ötekiler (config'in CPU'ları ve fırlatıcısı kısayol çubuğunda, modül
+        # simgeleri, kargo) atılıyordu: çubuk eski config'in CPU'larını gösteriyordu
+        later = [m for m in self.apply_stats() if m[0] not in ('AttributeShipSpeedUpdateCommand', 'HitpointInfoCommand',
+                                                                 'AttributeShieldUpdateCommand', 'ShipExtensionsCommand')]
         with self.p.lock:
             # restore the new config's own shield (never used yet: starts empty), capped by its shieldMax
             g['shield'] = max(0, min(int(shields.get(str(n), 0)), g.get('shieldMax', 0)))
@@ -1947,4 +1992,5 @@ class Magaza:
         if s['speed'] is not None:
             msgs.append(('AttributeShipSpeedUpdateCommand', {'newSpeed': s['speed'], 'displaySpeed': s['display']}))
         self.log('   config %d: %s' % (n, ', '.join('%s %d' % (k, len(v)) for k, v in self.p.d['ekipman'].items() if v)))
-        return msgs
+        # + dronların bu config'teki tasarımları (uzaydaki görünüm) ve P.E.T.'in bu config'teki donanımı (uzaydaysa)
+        return msgs + later + self.drone_msgs() + self.pet.refresh()

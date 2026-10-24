@@ -106,6 +106,7 @@ LAYOUT_COUNT = 6                    # WindowConstants.LayoutsMap (Horizontal/Ver
 QUICK_BUY_TIP = {'_': 'MessageKeyListWildcardModule', 'wildCardReplacements': [], 'baseKey': 'ttip_quick_buy_itembar',
                  'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 5}, 'textStyle': 0}
 EQUIP_MENUS = ('equipment_extra_', 'ability_', 'equipment_weapon_rocketlauncher_', 'ammunition_rocketlauncher_', 'ammunition_mine_smb-01')
+DESIGN_KEYS = {'design': 'tasarim', 'visual': 'gorunum'}     # dronun tasarım yuvaları -> dron kaydındaki {config: eşya kimliği}
 
 _LEVELS = None
 _ESYA = None
@@ -268,6 +269,15 @@ class Profil:
             if 'dron_konfig' not in s:
                 s['dron_konfig'] = {c: {} for c in s['konfigler']}     # config -> dron kimliği -> takılı eşya kimlikleri
                 self.dirty = True
+        kosu = ((self.d.get('pve') or {}).get('astral') or {}).get('kosu') or {}
+        for x in self.d['dronlar'] + (kosu.get('yedek') or {}).get('dronlar', []):     # Astral koşusunda saklanan dronlar da
+            for k in DESIGN_KEYS.values():
+                if not isinstance(x.get(k), dict):
+                    # dron tasarımı config başına {config: eşya kimliği}; önceden dronun kendisindeydi, iki config'te aynı
+                    # (kullanıcı bildirimi 2026-10-24: config 1'e takılan Havoc'lar config 2'de de görünüyordu)
+                    v = x.get(k)
+                    x[k] = {'1': v, '2': v} if v else {}
+                    self.dirty = True
         osmium = self.d.get('diger_esyalar', {}).pop('resource_ore_osmium', 0)
         if osmium:                           # Osmium (OreType 28) cevher sayılmıyordu, depoya düşmüştü (2026-10-22 taraması, E2)
             self.add_ores({28: osmium})
@@ -618,12 +628,12 @@ class Profil:
 
     def hangar_map(self):
         """itemId -> takılı olduğu geminin hangarId'si (envanterde hangarId dolu görünür; takılı değilse 0). Dronlara takılılar dahil.
-        Dron tasarımları ve P.E.T. donanımı gemiye bağlı değil: etkin geminin hangarId'si."""
+        Dron tasarımları ve P.E.T. donanımı gemiye bağlı değil (config numarasına bağlı): etkin geminin hangarId'si."""
         out = {i: s['hangarId'] for s in self.d['gemiler'].values() for c in s['konfigler'].values() for ids in c.values() for i in ids}
         out.update({i: s['hangarId'] for s in self.d['gemiler'].values() for c in s.get('dron_konfig', {}).values()
                     for ids in c.values() for i in ids})
         here = self.ship()['hangarId']
-        out.update({x[k]: here for x in self.d.get('dronlar', []) for k in ('tasarim', 'gorunum') if x.get(k)})
+        out.update({i: here for x in self.d.get('dronlar', []) for k in DESIGN_KEYS.values() for i in (x.get(k) or {}).values() if i})
         pet = self.d.get('pet')
         if pet:
             out.update({i: here for c in pet['konfig'].values() for ids in c.values() for i in ids})
@@ -673,17 +683,21 @@ class Profil:
         """Seçili formasyonun bonusları (lazer, roket, kalkan, can, hiz, emme, kacinma, roket_bekleme, ep, onur)."""
         return _formations().get(formation_loot(self.d.get('formasyon', 0)), {})
 
-    def drone_design(self, x, slot):
-        """Dronun tasarımı ('design', bonuslu) ya da görünümü ('visual') -> lootId."""
-        iid = x.get('tasarim' if slot == 'design' else 'gorunum')
+    def drone_design_id(self, x, slot, cid=None):
+        """Dronun bir config'teki (varsayılan: etkin) tasarımı ('design', bonuslu) ya da görünümü ('visual') -> eşya kimliği."""
+        return (x.get(DESIGN_KEYS[slot]) or {}).get(str(cid or self.aktif_konfig))
+
+    def drone_design(self, x, slot, cid=None):
+        """drone_design_id'nin lootId'si."""
+        iid = self.drone_design_id(x, slot, cid)
         return self.d['esyalar'].get(str(iid)) if iid else None
 
-    def design_mods(self):
-        """Dron tasarımlarının bonusları: dron başına olanlar toplanır; sahip olunan bütün dronlar aynı tasarımı taşıyorsa takım
-        bonusu da (istemci metinleri: Havoc +%10 dron lazeri (dron_lazer), Hercules +%20 can …; Havoc: "If all of the drones are
-        equipped")."""
+    def design_mods(self, cid=None):
+        """Bir config'in (varsayılan: etkin) dron tasarımlarının bonusları: dron başına olanlar toplanır; sahip olunan bütün dronlar
+        aynı tasarımı taşıyorsa takım bonusu da (istemci metinleri: Havoc +%10 dron lazeri (dron_lazer), Hercules +%20 can …;
+        Havoc: "If all of the drones are equipped")."""
         designs = esya()['dron_tasarimlari']
-        looks = [self.drone_design(x, 'design') for x in self.d.get('dronlar', [])]
+        looks = [self.drone_design(x, 'design', cid) for x in self.d.get('dronlar', [])]
         out = {}
         for l in looks:
             for k, v in designs.get(l or '', {}).get('dron_basina', {}).items():

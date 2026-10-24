@@ -1,7 +1,7 @@
 """Ekstralar ve CPU'lar (veri esyalar.json "ekstralar" ← belgeler/wiki/extras_cpu_tech.md; yalnız etkin config'te takılı olanlar etkili).
 
 Pasif etkiler (bu modül sorgular, ilgili modüller uygular):
-  ek_yuva          ekstra yuvası (SL-01..04 +2/+4/+6/+10; config başına bir yuva CPU'su sayılır: en büyüğü)   magaza.capacity
+  ek_yuva          ekstra yuvası (SL-01..04 +2/+4/+6/+10; config başına bir yuva CPU'su, o config'in yuvası)    magaza.capacity
   kargo_carpan     kargo alanı çarpanı (G3X-CRGO-X)                                                          magaza.apply_stats
   roket_bekleme    roket beklemesi çarpanı (R0K-T01 0,5)                                                     dunya.rocket
   mayin_bekleme    mayın ve mayından yapılan eşyaların beklemesi (MIN-T01 -%25, MIN-T02 -%50)                dunya (mayınlar)
@@ -39,8 +39,14 @@ def has(p, key, sid=None):
     return bool(props(p, key, sid))
 
 
-def slot_bonus(p, sid=None):
-    return max((v for l, v in props(p, 'ek_yuva', sid)), default=0)
+def slot_bonus(p, sid=None, cid=None):
+    """Yuva CPU'sunun ekstra yuvası: geminin bir config'inde (varsayılan: etkin gemi, etkin config) takılı olanın."""
+    return slot_bonus_of(equipped(p, sid) if cid is None else p.loadout(sid, cid).get('extra', []))
+
+
+def slot_bonus_of(loots):
+    """Ekstraların arasındaki yuva CPU'sunun (SL-01..04) bonusu (config başına bir tane takılır)."""
+    return max((X[l]['ek_yuva'] for l in loots if 'ek_yuva' in X.get(l, {})), default=0)
 
 
 def cargo_factor(p):

@@ -71,7 +71,7 @@ SLOTS = {'lasers': 'equipment_weapon_laser_', 'generators': 'equipment_generator
          'protocols': 'equipment_aiprotocol_', 'visual': 'pet_designs_'}
 ALL_SLOTS = tuple(SLOTS) + ('heat',)     # heat: lazer ya da kalkan jeneratörü (taşıma isteğinin slotSet'i "heat")
 NOVA_KEYS = {'can': 'pet_can', 'menzil': 'pet_menzil', 'isi': 'pet_isi', 'yakit': 'pet_yakit'}     # N.O.V.A. yetenekleri (nova.py)
-UNIQUE = ('gears', 'protocols')          # aynı dişli/protokol iki kez takılmaz
+UNIQUE = ('gears',)                      # aynı dişli iki kez takılmaz; protokoller birden çok kez (3 Radar Protocol; kullanıcı 2026-10-24)
 
 
 def mod(name, **f):
