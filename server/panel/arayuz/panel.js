@@ -351,7 +351,7 @@ function renderOynaBody() {
   const last = d.surecler.istemci.son;
   const early = last && last.erken && !running ? h('div', { class: 'alert uyari' }, icon('alert'),
     h('div', null, T('İstemci açıldıktan {0} sn sonra kapandı ({1}). Sunucular açık bırakıldı. İstemci günlüğüne bakın.', last.sure_sn, last.zaman)),
-    btn(T('Günlük'), () => { go('sunucu'); setTimeout(() => showLog('client.log'), 100); }, 'sm')) : null;
+    btn(T('Günlük'), () => { go('sunucu'); setTimeout(() => showLog(d.panel.platform === 'win32' ? 'client.log' : 'wine.log'), 100); }, 'sm')) : null;
 
   // ---- uyarılar
   const warns = d.uyarilar.map(u => h('div', { class: 'alert ' + (u.tur === 'hata' ? 'hata' : 'uyari') }, icon('alert'), h('div', null, u.metin),
@@ -593,8 +593,11 @@ function hostView(v) {
         h('tr', null, h('td', null, h('b', null, a)), h('td', { class: 'mono' }, b), h('td', null, c))))),
     h('p', { class: 'desc', style: { marginTop: '10px' } }, T('UDP portu gerekmez. Web girişi (80, 8090) yalnız bu bilgisayarda kalır; onları açma.')),
     h('div', { class: 'stack', style: { gap: '8px', marginTop: '6px' } },
-      h('div', { class: 'note' }, h('b', null, '1. '), T('Windows Güvenlik Duvarı: sunucu ilk açıldığında Python için çıkan pencerede erişime izin ver (Özel ağlar). Pencere çıkmadıysa yönetici olarak açılmış bir komut isteminde:'),
-        h('div', { class: 'cmd', style: { marginTop: '6px' } }, `netsh advfirewall firewall add rule name="DarkOrbit" dir=in action=allow protocol=TCP localport=${hs.oyun_portu},${hs.sohbet_portu}`)),
+      S.durum?.panel?.platform && S.durum.panel.platform !== 'win32'
+        ? h('div', { class: 'note' }, h('b', null, '1. '), T("Güvenlik duvarı: macOS sorarsa Python'a gelen bağlantı izni ver. Linux'ta güvenlik duvarı (ör. ufw) açıksa:"),
+          h('div', { class: 'cmd', style: { marginTop: '6px' } }, `sudo ufw allow ${hs.oyun_portu},${hs.sohbet_portu}/tcp`))
+        : h('div', { class: 'note' }, h('b', null, '1. '), T('Windows Güvenlik Duvarı: sunucu ilk açıldığında Python için çıkan pencerede erişime izin ver (Özel ağlar). Pencere çıkmadıysa yönetici olarak açılmış bir komut isteminde:'),
+          h('div', { class: 'cmd', style: { marginTop: '6px' } }, `netsh advfirewall firewall add rule name="DarkOrbit" dir=in action=allow protocol=TCP localport=${hs.oyun_portu},${hs.sohbet_portu}`)),
       h('div', { class: 'note' }, h('b', null, '2. '), T('Aynı ev ağında başka bir şey gerekmez.')),
       h('div', { class: 'note' }, h('b', null, '3. '), T('İnternet üzerinden: modeminin arayüzünde TCP {0} ve {1} portlarını bu bilgisayarın ev ağı adresine yönlendir (port yönlendirme / Sanal sunucu / NAT).', hs.oyun_portu, hs.sohbet_portu)),
       h('div', { class: 'note' }, h('b', null, '4. '), T('İnternet sağlayıcın CGNAT kullanıyorsa (modemdeki WAN adresi genel IP\'nden farklıysa) yönlendirme işe yaramaz: Radmin VPN, ZeroTier ya da Tailscale gibi bir sanal ağ kurun ve o ağdaki adresi verin.'))));
@@ -1322,6 +1325,33 @@ function dlWatch(wrap, st, onDone, opts) {
   return id;
 }
 
+// ---- Linux ve macOS: istemciyi açan Wine ya da Proton (calistirici.py; /api/istemci 'calistirici', Windows'ta null)
+function runnerCard(c, cfg, saveCfg) {
+  const kinds = [['otomatik', T('Otomatik')], ['wine', 'Wine'], ['proton', 'Proton'], ['ozel', T('Özel komut')]]
+    .filter(([k]) => k !== 'proton' || c.platform !== 'darwin');
+  const seg = h('div', { class: 'seg' }, kinds.map(([k, t]) =>
+    h('button', { class: cfg.calistirici === k ? 'on info' : '', onclick: () => saveCfg({ calistirici: k, calistirici_yolu: '' }) }, t)));
+  const used = c.tur === 'proton' ? `${c.ad}${c.umu ? ' (umu-run)' : ''}` : c.tur === 'ozel' ? c.yol : c.ad;
+  const pathIn = h('input', { class: 'input mono', value: cfg.calistirici_yolu, placeholder: cfg.calistirici === 'ozel' ? T('ör. umu-run') : T('Boş: kendiliğinden bulunur'),
+    onchange: e => saveCfg({ calistirici_yolu: e.target.value.trim() }) });
+  const prefixIn = h('input', { class: 'input mono', value: cfg.wine_onek, placeholder: c.varsayilan_onek[c.tur] || T('Boş: Wine\'ın öntanımlısı'),
+    onchange: e => saveCfg({ wine_onek: e.target.value.trim() }) });
+  const found = [...c.protonlar.map(p => ['proton', p.yol, p.ad]), ...c.wineler.map(w => ['wine', w, 'Wine'])];
+  return h('div', { class: 'card' }, h('h2', null, icon('zap'), 'Wine / Proton'),
+    h('p', { class: 'desc' }, T("Oyun bir Windows programı; Linux ve macOS'ta Wine ya da Proton ile açılır. Otomatik: Linux'ta Steam'in Proton'u (umu-run kuruluysa onunla), yoksa Wine; macOS'ta Wine. İstemci kendi öneğinde çalışır; önek ilk açılışta kurulur (yarım dakika kadar sürebilir).")),
+    c.hata ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, c.hata))
+      : h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Kullanılan: {0}', used))),
+    h('div', { class: 'stack', style: { gap: '14px', marginTop: '12px' } },
+      field(T('Çalıştırıcı'), seg),
+      field(cfg.calistirici === 'ozel' ? T('Komut (istemcinin önüne eklenir)') : T('Yol (wine programı ya da Proton klasörü)'), pathIn),
+      field(T('Önek klasörü (WINEPREFIX)'), prefixIn)),
+    found.length ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('Bulunanlar')),
+      h('div', { class: 'stack', style: { gap: '8px', marginTop: '8px' } }, found.map(([k, yol, ad]) => h('div', { class: 'row' },
+        badge(ad, 'info'), h('span', { class: 'mono', style: { flex: 1, minWidth: 0, wordBreak: 'break-all' } }, yol),
+        c.tur === k && c.yol === yol ? badge(T('kullanılıyor'), 'ok') : btn(T('Kullan'), () => saveCfg({ calistirici: k, calistirici_yolu: yol }), 'sm'))))] : null,
+    h('div', { class: 'small muted', style: { marginTop: '12px' } }, T('Oyun açılmazsa Sunucu sayfasındaki wine.log günlüğüne bakın.')));
+}
+
 async function renderIstemci(data) {
   const r = data || await act(() => api('/api/istemci')); if (!r || S.page !== 'istemci') return;
   const c = r.kontrol, cfg = r.ayarlar;
@@ -1378,7 +1408,8 @@ async function renderIstemci(data) {
       h('div', { class: 'help' }, T('Her istemci yaklaşık 600 MB bellek ve bir miktar ekran kartı kullanır.'))),
       h('div', { class: 'ctl' }, h('select', { class: 'input', style: { width: '90px' }, onchange: e => saveCfg({ coklu_en_cok: +e.target.value }) },
         [1, 2, 3, 4, 5, 6, 7, 8].map(n => h('option', { value: n, selected: cfg.coklu_en_cok === n }, String(n)))))));
-  $('#content').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'grid g2' }, folderCard, dispCard), multiCfg, warn));
+  $('#content').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'grid g2' }, folderCard, dispCard),
+    r.calistirici ? runnerCard(r.calistirici, cfg, saveCfg) : null, multiCfg, warn));
   S.sig = S.sig || {}; S.proto = null; S.protoClient = c;
   if (dlWrap) S.timers.push(dlWatch(dlWrap, r.indirme, () => { toast(T('Oyun indirildi ve kuruldu.'), 'ok'); renderIstemci(); }, { haveClient: c.gecerli }));
   protoTick(true);

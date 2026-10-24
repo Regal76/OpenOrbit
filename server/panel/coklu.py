@@ -8,7 +8,7 @@ pencere kipinde açılır, pencere başlığı pilotun adı; günlükleri logs/c
 ve sınırın üstü reddedilir; ek istemci açıkken sunucuyu yeniden başlatan işler panelde engellenir (panel.py).
 Plan ve önceden düşünülen sorunlar: belgeler/COKLU_ISTEMCI.md.
 """
-import json, os, subprocess, threading, time
+import json, os, threading, time
 from urllib.error import HTTPError, URLError
 from urllib.request import ProxyHandler, Request, build_opener
 
@@ -108,9 +108,8 @@ class Coklu:
             gunluk = os.path.join(self.logs, 'client_%s.log' % slot)
             import baslat
             baslat.rotate_logs(self.logs, names=(os.path.basename(gunluk),))
-            exe = os.path.join(folder, IST.EXE)
-            args = IST.args(self.cfg, gunluk, oturum=out['oturum'], pencere=True)
-            proc = subprocess.Popen([exe] + args, cwd=folder)
+            cmd, env = IST.komut(self.cfg, folder, gunluk, oturum=out['oturum'], pencere=True)
+            proc = SR.istemci_ac(folder, cmd, env, self.logs)
             SR.YAMA.arka_planda(proc.pid, self.log)
         except Exception:
             with self.lock:
@@ -158,7 +157,7 @@ class Coklu:
             raise CokluHatasi(_('Bu kayıtla açık bir ek istemci yok.'))
         if e['proc'].poll() is None:
             e['kapatildi'] = True
-            e['proc'].terminate()
+            SR.istemci_kapat(e['proc'])
 
     def hepsini_kapat(self, bekle=0.0):
         """Bütün ek istemcileri kapat; bekle: kapanışları (sunucuya son kayıt) en çok bu kadar beklenir."""
@@ -166,7 +165,7 @@ class Coklu:
             acik = [e for e in self.acik.values() if e['proc'] is not None and e['proc'].poll() is None]
         for e in acik:
             e['kapatildi'] = True
-            e['proc'].terminate()
+            SR.istemci_kapat(e['proc'])
         end = time.time() + bekle
         while self.canli() and time.time() < end:
             time.sleep(0.1)

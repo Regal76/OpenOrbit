@@ -15,8 +15,11 @@ oturumlu açılır); ek istemci açıkken sunucuyu yeniden başlatan işler redd
 Güncelleme (guncelleme.py): açılıştan biraz sonra ve GUNCELLEME_SN'de bir GitHub'daki son sürüm denetlenir; panel ayarı 'guncelleme'
 otomatikse ve oyun, sunucular, indirme ya da başka bir iş sürmüyorsa kurulur, ardından panel yeniden başlar (yeni süreç aynı portu
 alır, açık pencere sayfayı yeniler).
+Linux ve macOS: istemci Wine ya da Proton ile açılır (calistirici.py, İstemci sayfasının Wine / Proton kartı); pencere Chrome, Edge,
+Chromium ya da Brave'de; dosya pencereleri Linux'ta tkinter (yoksa zenity), macOS'ta AppleScript (Tk orada yalnız ana iş parçacığında
+çalışır); kısayol Linux'ta .desktop, macOS'ta .command.
 """
-import datetime, json, os, re, secrets, shutil, subprocess, sys, threading, time, traceback
+import datetime, json, os, re, secrets, shlex, shutil, subprocess, sys, threading, time, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 from urllib.request import Request, urlopen
@@ -31,6 +34,7 @@ import ayar as AY             # noqa: E402
 import dil as D               # noqa: E402
 from dil import t as _        # noqa: E402
 import istemci as IST         # noqa: E402
+import calistirici as CAL     # noqa: E402
 import surecler as SR         # noqa: E402
 from kayitlar import Kayitlar, KayitHatasi, FIRMALAR  # noqa: E402
 from yapilandirma import PanelConfig  # noqa: E402
@@ -47,7 +51,8 @@ PORT = 8077
 ARAYUZ = os.path.join(PANEL_DIR, 'arayuz')
 SABLONLAR = os.path.join(YOL.SAVE, 'ayar_sablonlari.json')
 TARAYICI_PROFILI = os.path.join(os.environ.get('LOCALAPPDATA') or YOL.SAVE, 'DarkOrbitPanel', 'tarayici')
-GUNLUKLER = ('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log', 'panel.log', 'errors.log', 'unknown.log')
+GUNLUKLER = ('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log', 'panel.log', 'errors.log', 'unknown.log') + (
+    () if os.name == 'nt' else ('wine.log',))      # Linux ve macOS: Wine'ın / Proton'un çıktısı (surecler.istemci_ac)
 EK_GUNLUK = re.compile(r'client_[a-z0-9_]{1,40}\.log')          # çoklu istemcinin ek istemcilerinin günlükleri (coklu.py)
 NABIZ_SN = 180                      # tarayıcı penceresi izlenemiyorsa: bu kadar istek gelmezse pencere kapandı sayılır
 DEVIR_SN = 10                       # tarayıcı süreci bundan önce çıkarsa pencereyi açık bir sürece devretmiştir (watch_window)
@@ -171,10 +176,29 @@ _dialog_lock = threading.Lock()
 
 
 def dialog(kind, **kw):
-    """Yerel dosya/klasör penceresi (tkinter; panelin önünde açılır) -> seçilen yol ya da ''."""
+    """Yerel dosya/klasör penceresi (tkinter; panelin önünde açılır) -> seçilen yol ya da ''. macOS'ta AppleScript, Linux'ta tkinter
+    yoksa zenity."""
     with _dialog_lock:
-        import tkinter as tk
-        from tkinter import filedialog
+        if sys.platform == 'darwin':
+            q = lambda s: '"%s"' % str(s).replace('\\', '\\\\').replace('"', '\\"')
+            ask = '%s with prompt %s' % ({'klasor': 'choose folder', 'ac': 'choose file', 'kaydet': 'choose file name'}[kind],
+                                         q(kw.get('title', '')))
+            if kind == 'kaydet' and kw.get('initialfile'):
+                ask += ' default name ' + q(kw['initialfile'])
+            if kw.get('initialdir') and os.path.isdir(kw['initialdir']):
+                ask += ' default location POSIX file ' + q(kw['initialdir'])
+            return subprocess.run(['osascript', '-e', 'POSIX path of (%s)' % ask], capture_output=True, text=True).stdout.strip()
+        try:
+            import tkinter as tk
+            from tkinter import filedialog
+        except ImportError:
+            if os.name == 'nt' or not shutil.which('zenity'):
+                raise Hata(_('Dosya penceresi için tkinter gerekir (Debian/Ubuntu: sudo apt install python3-tk).'))
+            a = ['zenity', '--file-selection', '--title=%s' % kw.get('title', '')]
+            a += {'klasor': ['--directory'], 'ac': [], 'kaydet': ['--save']}[kind]
+            if kw.get('initialfile') or kw.get('initialdir'):
+                a.append('--filename=%s' % os.path.join(kw.get('initialdir') or '', kw.get('initialfile') or ''))
+            return subprocess.run(a, capture_output=True, text=True).stdout.strip()
         root = tk.Tk()
         root.withdraw()
         root.attributes('-topmost', True)
@@ -188,7 +212,10 @@ def dialog(kind, **kw):
 def open_folder(path):
     if not os.path.exists(path):
         raise Hata(_('Klasör yok: %s', path))
-    os.startfile(path)
+    if os.name == 'nt':
+        os.startfile(path)
+    else:
+        subprocess.Popen(['open' if sys.platform == 'darwin' else 'xdg-open', path])
 
 
 # ------------------------------------------------------------------ etkinlikler
@@ -347,6 +374,12 @@ def warnings():
                                               ' '.join(c['sorunlar'])), 'sayfa': 'istemci'})
     elif not c['uyumlu']:
         out.append({'tur': 'uyari', 'metin': c['sorunlar'][-1], 'sayfa': 'istemci'})
+    hata = CAL.bul(CFG)['hata']                                      # Linux ve macOS: Wine ya da Proton
+    if hata:
+        out.append({'tur': 'hata', 'metin': hata, 'sayfa': 'istemci'})
+    hata = SR.port_80_sorunu()
+    if hata:
+        out.append({'tur': 'hata', 'metin': hata, 'sayfa': 'sunucu'})
     missing = [n for n in YOL.SABLONLAR if not YOL.sablon(n)]       # kendi kaydın ya da paylaşılabilir kopya (data/varsayilan)
     if missing:
         out.append({'tur': 'uyari', 'metin': _('Giriş şablonları eksik (%s): oyun en küçük girişle açılır, bazı pencereler ve mağaza '
@@ -392,7 +425,7 @@ def status():
             'uyarilar': warnings(), 'oyna': STATE['oyna'], 'istemci_klasoru': client_folder(),
             'arkadas': {'host': YON.running() and YON.arkadas, 'misafir': ARK.m['durum'], 'adres': ARK.m['adres']},
             'coklu': coklu_durumu(slots),
-            'panel': {'surum': SURUM, 'pencere_kapandi': STATE['pencere_kapandi'], 'dil': CFG.get('dil'),
+            'panel': {'surum': SURUM, 'pencere_kapandi': STATE['pencere_kapandi'], 'dil': CFG.get('dil'), 'platform': sys.platform,
                       'kurulum_tamam': CFG.get('kurulum_tamam'), 'guncellendi': STATE['guncellendi'],
                       'acik_sn': int(time.time() - STATE['acilis'])}}
 
@@ -497,9 +530,10 @@ def launch(sadece_sunucu=False, arkadas=False):
                 raise Hata(_('İstemci klasörü geçersiz: %s', ' '.join(c['sorunlar'])))
             if YON.client_alive():
                 raise Hata(_('Oyun zaten açık.'))
-            others = [p for p in IST.running_clients() if p not in COK.pids()]     # panelin ek istemcileri sayılmaz
+            others = IST.running_clients(COK.pids())                     # panelin ek istemcileri sayılmaz
             if others:
                 raise Hata(_('Başka bir DarkOrbit istemcisi açık (süreç %s). Önce onu kapatın.', ', '.join(map(str, others))))
+            cmd, env = IST.komut(CFG, folder, os.path.join(YOL.LOGS, 'client.log'))     # Wine / Proton yoksa sunucular açılmadan hata
         prof = KAY.profile(slot)
         same = YON.running() and YON.slot == slot
         arkadas = arkadas or (YON.running() and YON.arkadas)    # açık arkadaş sunucusu Oyna ile kapanmaz (misafirler düşmesin)
@@ -521,7 +555,7 @@ def launch(sadece_sunucu=False, arkadas=False):
         YON.start_servers(prof, YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot, arkadas=ark_env, coklu=coklu)
         if not sadece_sunucu:
             _step(_('Oyun açılıyor'))
-            YON.start_client(folder, IST.args(CFG, os.path.join(YOL.LOGS, 'client.log')))
+            YON.start_client(folder, cmd, env)
             if YON.coklu or YON.arkadas:              # birden çok istemci olabilir: pencereler pilotun adıyla ayırt edilsin
                 SR.pencere_basligi(YON.istemci.pid, 'DarkOrbit — %s' % KAY.summary(slot).get('pilot', slot))
             m = KAY.meta(slot)
@@ -564,9 +598,10 @@ def join_friend(b):
         raise Hata(_('Oyun zaten açık.'))
     if YON.running():
         raise Hata(_('Önce kendi sunucunu durdur (Oyna > Sunucuyu durdur).'))
+    cmd, env = IST.komut(CFG, folder, os.path.join(YOL.LOGS, 'client.log'))
 
     def open_client():
-        YON.start_client(folder, IST.args(CFG, os.path.join(YOL.LOGS, 'client.log')))
+        YON.start_client(folder, cmd, env)
         m = KAY.meta(slot)
         KAY.set_meta(slot, son_oynama=time.strftime('%Y-%m-%d %H:%M:%S'), oynama_sayisi=int(m.get('oynama_sayisi') or 0) + 1)
     return ARK.katil(str(b.get('adres') or ''), str(b.get('sifre') or ''), slot, c['surum'] or IST.supported(), open_client)
@@ -616,7 +651,10 @@ def restart():
     args = [sys.executable, os.path.join(PANEL_DIR, 'panel.py'), '--pencere-yok', '--guncellendi', '--port=%d' % PORT]
     log('panel güncellendi: yeniden başlatılıyor')
     try:
-        subprocess.Popen(args, cwd=ROOT, close_fds=True, creationflags=0x00000008 | 0x00000200)   # DETACHED, yeni süreç grubu
+        if os.name == 'nt':
+            subprocess.Popen(args, cwd=ROOT, close_fds=True, creationflags=0x00000008 | 0x00000200)   # DETACHED, yeni süreç grubu
+        else:
+            subprocess.Popen(args, cwd=ROOT, close_fds=True, start_new_session=True)
         if STATE['srv']:
             STATE['srv'].server_close()
     finally:
@@ -661,13 +699,20 @@ def shutdown():
 
 # ------------------------------------------------------------------ pencere
 def browser():
-    cands = []
-    for env in ('PROGRAMFILES(X86)', 'PROGRAMFILES', 'LOCALAPPDATA'):
-        base = os.environ.get(env)
-        if base:
-            cands += [os.path.join(base, 'Microsoft', 'Edge', 'Application', 'msedge.exe'),
-                      os.path.join(base, 'Google', 'Chrome', 'Application', 'chrome.exe')]
-    return next((c for c in cands if os.path.isfile(c)), None)
+    """Uygulama penceresini (--app) açabilen tarayıcı: Edge ya da Chrome (Linux ve macOS'ta Chromium ve Brave de) ya da None."""
+    if sys.platform == 'darwin':
+        cands = ['/Applications/%s.app/Contents/MacOS/%s' % (a, a) for a in ('Microsoft Edge', 'Google Chrome', 'Chromium', 'Brave Browser')]
+    elif os.name != 'nt':
+        cands = [shutil.which(n) for n in ('microsoft-edge', 'microsoft-edge-stable', 'google-chrome', 'google-chrome-stable',
+                                           'chromium', 'chromium-browser', 'brave-browser')]
+    else:
+        cands = []
+        for env in ('PROGRAMFILES(X86)', 'PROGRAMFILES', 'LOCALAPPDATA'):
+            base = os.environ.get(env)
+            if base:
+                cands += [os.path.join(base, 'Microsoft', 'Edge', 'Application', 'msedge.exe'),
+                          os.path.join(base, 'Google', 'Chrome', 'Application', 'chrome.exe')]
+    return next((c for c in cands if c and os.path.isfile(c)), None)
 
 
 def open_window(url):
@@ -707,7 +752,13 @@ KISAYOL, ESKI_KISAYOL = 'OpenOrbit.lnk', 'DarkOrbit.lnk'   # eski: 2026-10-24'te
 
 
 def desktop_dir():
-    """Masaüstü klasörü (OneDrive'a taşınmışsa da)."""
+    """Masaüstü klasörü (OneDrive'a taşınmışsa da; Linux'ta xdg-user-dir'in söylediği)."""
+    if os.name != 'nt':
+        try:
+            d = subprocess.run(['xdg-user-dir', 'DESKTOP'], capture_output=True, text=True, timeout=5).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            d = ''
+        return d if os.path.isdir(d) else os.path.join(os.path.expanduser('~'), 'Desktop')
     import ctypes
     buf = ctypes.create_unicode_buffer(260)
     ctypes.windll.shell32.SHGetFolderPathW(None, 0x10, None, 0, buf)      # CSIDL_DESKTOPDIRECTORY
@@ -725,8 +776,36 @@ def old_shortcut():
         return None
 
 
+def unix_shortcut():
+    """Linux: masaüstüne ve uygulama menüsüne openorbit.desktop; macOS: masaüstüne OpenOrbit.command (Terminal'de açılıp paneli arka
+    planda başlatır) -> masaüstündekinin yolu."""
+    script = os.path.join(ROOT, 'OpenOrbit Panel.pyw')
+    os.makedirs(desktop_dir(), exist_ok=True)
+    if sys.platform == 'darwin':
+        p = os.path.join(desktop_dir(), 'OpenOrbit.command')
+        with open(p, 'w', encoding='utf8', newline='\n') as fh:
+            fh.write('#!/bin/sh\ncd %s && nohup %s %s >/dev/null 2>&1 &\n' % (shlex.quote(ROOT), shlex.quote(sys.executable),
+                                                                             shlex.quote(script)))
+        os.chmod(p, 0o755)
+        return p
+    text = ('[Desktop Entry]\nType=Application\nName=OpenOrbit\nComment=%s\nExec="%s" "%s"\nPath=%s\nIcon=%s\nTerminal=false\n'
+            'Categories=Game;\n' % (_('OpenOrbit yerel sunucu paneli'), sys.executable, script, ROOT, os.path.join(ARAYUZ, 'simge.svg')))
+    menu = os.path.join(os.path.expanduser('~'), '.local', 'share', 'applications')
+    os.makedirs(menu, exist_ok=True)
+    for d in (menu, desktop_dir()):
+        p = os.path.join(d, 'openorbit.desktop')
+        with open(p, 'w', encoding='utf8', newline='\n') as fh:
+            fh.write(text)
+        os.chmod(p, 0o755)
+    if shutil.which('gio'):                           # GNOME masaüstündeki kısayolu "güvenilir" saymadan açmıyor
+        subprocess.run(['gio', 'set', p, 'metadata::trusted', 'true'], capture_output=True, timeout=10)
+    return p
+
+
 def create_shortcut():
     """Masaüstüne OpenOrbit kısayolu; eski adlı kısayol (old_shortcut) varsa kaldırılır -> yeni kısayolun yolu."""
+    if os.name != 'nt':
+        return unix_shortcut()
     target = os.path.join(os.path.dirname(sys.executable), 'pythonw.exe')
     if not os.path.isfile(target):
         target = sys.executable
@@ -779,12 +858,22 @@ def api_settings():
             'sunucu_acik': YON.running()}
 
 
+def launch_command():
+    """İstemci sayfasında gösterilen başlatma komutu (Linux ve macOS'ta Wine ya da Proton'la; bulunamadıysa yalnız istemcininki)."""
+    if os.name == 'nt':
+        return ['DarkOrbit.exe'] + IST.args(CFG, 'logs\\client.log')
+    try:
+        return IST.komut(CFG, client_folder() or ROOT, os.path.join(YOL.LOGS, 'client.log'))[0]
+    except RuntimeError:
+        return [IST.EXE] + IST.args(CFG, 'logs/client.log')
+
+
 def api_client():
     sel = CFG.get('istemci_klasoru')
     used = client_folder()
     return {'secili': sel, 'kullanilan': used, 'kontrol': IST.check(used), 'adaylar': IST.candidates(),
             'cozunurlukler': IST.COZUNURLUKLER, 'ekran': screen_size(), 'ayarlar': CFG.all(),
-            'komut': ['DarkOrbit.exe'] + IST.args(CFG, 'logs\\client.log'), 'desteklenen': IST.supported(),
+            'komut': launch_command(), 'calistirici': CAL.ozet(CFG), 'desteklenen': IST.supported(),
             'protokol': UYAR.state(), 'indirme': DL.state()}
 
 
@@ -1132,7 +1221,8 @@ def h_post(path, b):
             raise Hata(_('Bilinmeyen klasör.'))
         return {}
     if path == '/api/discord':                      # davet varsayılan tarayıcıda (panel penceresinin profili Discord'a girişli değil)
-        os.startfile(DISCORD)
+        import webbrowser
+        webbrowser.open(DISCORD)
         return {}
     if path == '/api/kisayol':
         return {'yol': create_shortcut()}

@@ -9,15 +9,19 @@ Sunucular konsolsuz (CREATE_NO_WINDOW) çalışır; çıktıları logs/<ad>_kons
 ile durdurulur: dosya belirince profili kaydedip çıkar (zorla kapatmada son kaydedilmemiş saniyeler gitmesin); yanıt vermezse
 sonlandırılır. Portu başka süreç tutuyorsa (önceki oturumdan kalan sunucu, başka program) kim olduğu bulunur; panel yalnız bu
 projenin web.py / game.py süreçlerini kapatabilir.
+Linux ve macOS: port tablosu /proc/net/tcp ya da lsof, süreç bilgisi ps; istemci Wine ya da Proton ile kendi süreç grubunda
+(istemci_ac, calistirici.py). Linux 1024'ten küçük portları yalnız root'a açar: istemci web API'sini 80'den bekliyor (istemcinin
+config.txt'si, değiştirilmez), port_80_sorunu kullanıcıya bir kerelik izin komutunu söyler.
 """
-import json, os, socket, subprocess, sys, threading, time
+import json, os, signal, socket, subprocess, sys, threading, time
 
 from dil import t as _
 import istemci_yama as YAMA
 
 PANEL_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVER = os.path.dirname(PANEL_DIR)
-NO_WINDOW = 0x08000000
+NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
+PORT_80_KOMUTU = 'echo net.ipv4.ip_unprivileged_port_start=80 | sudo tee /etc/sysctl.d/90-openorbit.conf && sudo sysctl --system'
 PORTS = {'web': (8090, 80), 'oyun': (8081, 7771)}
 PORT_ADLARI = {8090: 'Web girişi', 80: 'Web API', 8081: 'Oyun', 7771: 'Sohbet', 8099: 'Kontrol kanalı'}
 SCRIPTS = {'web': 'web.py', 'oyun': 'game.py'}
@@ -33,10 +37,13 @@ def python_exe():
 
 
 def listeners():
-    """Dinleyen IPv4 TCP soketleri {port: pid} (Windows TCP tablosu: GetExtendedTcpTable). Porta bağlanılmaz: bağlanmak oyun
-    sunucusunda sahte bir oturum açıp günlüğe 'connect/disconnect' yazdırıyordu. Windows dışında None."""
+    """Dinleyen TCP soketleri {port: pid} (Windows TCP tablosu: GetExtendedTcpTable; Linux /proc/net/tcp; macOS lsof). Porta
+    bağlanılmaz: bağlanmak oyun sunucusunda sahte bir oturum açıp günlüğe 'connect/disconnect' yazdırıyordu. Okunamazsa None; pid
+    bilinmiyorsa 0 (Linux'ta başka kullanıcının süreci)."""
+    if sys.platform.startswith('linux'):
+        return _linux_listeners()
     if os.name != 'nt':
-        return None
+        return _lsof_listeners()
     import ctypes
     from ctypes import wintypes
     size = wintypes.DWORD(0)
@@ -56,6 +63,66 @@ def listeners():
         r = rows[i]
         out.setdefault(socket.ntohs(r[2] & 0xFFFF), r[5])
     return out
+
+
+def _linux_listeners():
+    """Linux: dinleyen soketler (durum 0A) /proc/net/tcp ve tcp6'dan; pid soketin inode'u /proc/<pid>/fd'de aranarak."""
+    inodes = {}
+    for f in ('/proc/net/tcp', '/proc/net/tcp6'):
+        try:
+            with open(f) as fh:
+                for line in fh.readlines()[1:]:
+                    p = line.split()
+                    if p[3] == '0A':
+                        inodes.setdefault(int(p[9]), int(p[1].rsplit(':', 1)[1], 16))
+        except (OSError, IndexError, ValueError):
+            continue
+    out = dict.fromkeys(inodes.values(), 0)
+    for pid in filter(str.isdigit, os.listdir('/proc')):
+        try:
+            fds = os.listdir('/proc/%s/fd' % pid)
+        except OSError:
+            continue
+        for fd in fds:
+            try:
+                link = os.readlink('/proc/%s/fd/%s' % (pid, fd))
+            except OSError:
+                continue
+            port = inodes.get(int(link[8:-1])) if link.startswith('socket:[') else None
+            if port is not None and not out[port]:
+                out[port] = int(pid)
+    return out
+
+
+def _lsof_listeners():
+    """macOS: lsof'un dinleyen TCP soketleri (yalnız bu kullanıcının süreçleri)."""
+    try:
+        r = subprocess.run(['lsof', '-nP', '-iTCP', '-sTCP:LISTEN', '-Fpn'], capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    out, pid = {}, 0
+    for line in r.stdout.splitlines():
+        if line.startswith('p') and line[1:].isdigit():
+            pid = int(line[1:])
+        elif line.startswith('n') and line.rsplit(':', 1)[-1].isdigit():
+            out.setdefault(int(line.rsplit(':', 1)[1]), pid)
+    return out
+
+
+def port_80_sorunu():
+    """Linux 80 portunu (istemcinin web API'si) bu kullanıcıya açmıyorsa kullanıcıya gösterilecek metin, yoksa None. Port doluysa
+    None: onu başlatmadaki port denetimi söyler."""
+    if os.name == 'nt':
+        return None
+    with socket.socket() as s:
+        try:
+            s.bind(('127.0.0.1', 80))
+        except PermissionError:
+            return _("Linux 80 portunu yalnız root'a açıyor; oyunun web girişi bu portta. Terminalde bir kez çalıştır (kalıcı): %s",
+                     PORT_80_KOMUTU)
+        except OSError:
+            pass
+    return None
 
 
 def listening(port, table=None):
@@ -93,7 +160,14 @@ def port_owners(ports):
 
 
 def process_info(pid):
-    """{'pid', 'ad', 'komut'} (PowerShell CIM; bulunamazsa ad '?')."""
+    """{'pid', 'ad', 'komut'} (Windows PowerShell CIM, Linux ve macOS ps; bulunamazsa ad '?')."""
+    if os.name != 'nt':
+        ps = lambda k: subprocess.run(['ps', '-p', str(int(pid)), '-o', k], capture_output=True, text=True, timeout=10).stdout.strip()
+        try:
+            ad, komut = ps('comm='), ps('args=')
+        except (OSError, subprocess.SubprocessError):
+            ad = komut = ''
+        return {'pid': pid, 'ad': os.path.basename(ad) or '?', 'komut': komut}
     try:
         cmd = ('$p = Get-CimInstance Win32_Process -Filter "ProcessId=%d"; if ($p) { $p.Name; $p.CommandLine }' % int(pid))
         r = subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', cmd], capture_output=True, text=True,
@@ -112,7 +186,41 @@ def is_our_server(info):
 
 
 def kill(pid):
+    if os.name != 'nt':
+        try:
+            os.kill(int(pid), signal.SIGKILL)
+        except OSError:
+            pass
+        return
     subprocess.run(['taskkill', '/PID', str(int(pid)), '/T', '/F'], capture_output=True, timeout=15, creationflags=NO_WINDOW)
+
+
+def istemci_ac(folder, cmd, env, logs):
+    """İstemciyi aç -> Popen. Linux ve macOS'ta (Wine/Proton) kendi süreç grubunda (istemci_kapat bütün grubu kapatsın: Proton'da
+    istemci açılan sürecin torunu); önek klasörü yoksa açılır, Wine'ın çıktısı logs/wine.log'a."""
+    if os.name == 'nt':
+        return subprocess.Popen(cmd, cwd=folder, env=env)
+    for k in ('WINEPREFIX', 'STEAM_COMPAT_DATA_PATH'):
+        if env and env.get(k):
+            os.makedirs(env[k], exist_ok=True)
+    with open(os.path.join(logs, 'wine.log'), 'a', encoding='utf8') as fh:
+        fh.write('\n==== %s %s\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), ' '.join(cmd)))
+        fh.flush()
+        return subprocess.Popen(cmd, cwd=folder, env=env, stdin=subprocess.DEVNULL, stdout=fh, stderr=subprocess.STDOUT,
+                                start_new_session=True)
+
+
+def istemci_kapat(proc):
+    """istemci_ac'ın açtığı istemciyi kapat (Linux ve macOS'ta süreç grubunu)."""
+    if proc.poll() is not None:
+        return
+    if os.name == 'nt':
+        proc.terminate()
+        return
+    try:
+        os.killpg(proc.pid, signal.SIGTERM)
+    except OSError:
+        pass
 
 
 def pencere_basligi(pid, metin, sure=120):
@@ -303,6 +411,8 @@ class Yonetici:
                 s = self.sunucular.get(ad)
                 if s and s.alive:
                     continue
+                if ad == 'web' and port_80_sorunu():
+                    raise RuntimeError(port_80_sorunu())
                 busy = [p for p in PORTS[ad] if listening(p)]
                 if busy:
                     raise RuntimeError(_('%s portu (%s) başka bir süreçte açık. Sunucu sayfasından kapatın ya da o programı kapatın.',
@@ -343,6 +453,8 @@ class Yonetici:
         with self.lock:
             if any(s.alive for s in self.sunucular.values()):
                 raise RuntimeError(_('Önce kendi sunucunu durdur (Oyna > Sunucuyu durdur).'))
+            if port_80_sorunu():
+                raise RuntimeError(port_80_sorunu())
             busy = [p for p in PORTS['web'] if listening(p)]
             if busy:
                 raise RuntimeError(_('%s portu (%s) başka bir süreçte açık. Sunucu sayfasından kapatın ya da o programı kapatın.',
@@ -372,16 +484,16 @@ class Yonetici:
     def client_alive(self):
         return self.istemci is not None and self.istemci.poll() is None
 
-    def start_client(self, folder, args):
+    def start_client(self, folder, cmd, env=None):
+        """cmd, env: istemci.komut (Linux ve macOS'ta Wine ya da Proton ile)."""
         with self.lock:
             if self.client_alive():
                 raise RuntimeError(_('İstemci zaten açık.'))
-            exe = os.path.join(folder, 'DarkOrbit.exe')
-            self.istemci = subprocess.Popen([exe] + args, cwd=folder)
-            YAMA.arka_planda(self.istemci.pid, self.log)      # bellekte (müzayede sayacı)
+            self.istemci = istemci_ac(folder, cmd, env, self.logs)
+            YAMA.arka_planda(self.istemci.pid, self.log)      # bellekte (müzayede sayacı; yalnız Windows)
             self.istemci_basla = time.time()
             self.istemci_son = None
-            self.log('istemci başlatıldı: %s %s' % (exe, ' '.join(args)))
+            self.log('istemci başlatıldı: %s' % ' '.join(cmd))
             threading.Thread(target=self._watch_client, args=(self.istemci,), daemon=True).start()
 
     def _watch_client(self, proc):
@@ -398,7 +510,7 @@ class Yonetici:
 
     def stop_client(self):
         if self.client_alive():
-            self.istemci.terminate()
+            istemci_kapat(self.istemci)
 
     # ------------------------------------------------------------ durum
     def status(self):

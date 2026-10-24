@@ -4,10 +4,12 @@ Klasör: içinde DarkOrbit.exe ve DarkOrbit_Data/ olan klasör (DarkOrbit_Versio
 en yeni sürüm klasörü kullanılır; güncelleme gelirse ya da klasör taşınırsa panelden seçilir. Bilgisayarda yoksa panel indirir
 (indirme.py; yarım indirmenin geçici klasörü aday sayılmaz). Sunucu 1.1.115'in protokolüyle
 yazıldı (data/protocol*.json istemcinin kodundan): başka sürümde panel uyarır.
-İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090).
+İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090). Linux ve macOS'ta istemci Wine ya
+da Proton ile açılır (calistirici.py).
 """
 import glob, os, re, subprocess
 
+import calistirici as CAL
 from dil import t as _
 from indirme import GECICI
 
@@ -135,11 +137,33 @@ def args(cfg, log_file, oturum=None, pencere=False):
     return a
 
 
-def running_clients():
-    """Açık DarkOrbit.exe süreçlerinin kimlikleri (panelin açmadıkları dahil)."""
+def komut(cfg, folder, log_file, oturum=None, pencere=False):
+    """İstemcinin başlatma komutu ve ortamı -> (komut, ortam): Windows'ta DarkOrbit.exe doğrudan, Linux ve macOS'ta Wine ya da Proton
+    ile (calistirici.py). Çalıştırıcı bulunamazsa RuntimeError."""
+    return CAL.komut(cfg, os.path.join(folder, EXE), args(cfg, CAL.win_yolu(log_file), oturum, pencere))
+
+
+# Wine sürecinin komut satırı Windows yolu: Z:\...\DarkOrbit.exe … (Wine'ı ya da Proton'u açan komutlar, steam.exe değil)
+WINE_ISTEMCI = re.compile(r'"?[a-z]:\\(?:(?!\.exe).)*\\%s\b' % re.escape(EXE.lower()))
+
+
+def running_clients(haric=()):
+    """Açık DarkOrbit.exe süreçlerinin kimlikleri (panelin açmadıkları dahil); haric: sayılmayacak süreçler. Linux ve macOS'ta haric
+    süreç grubu da sayılmaz (surecler.istemci_ac grubu açtığı süreçle kurar: Proton'da istemci onun torunu)."""
+    if os.name != 'nt':
+        try:
+            r = subprocess.run(['ps', '-A', '-o', 'pid=', '-o', 'pgid=', '-o', 'args='], capture_output=True, text=True, timeout=10)
+        except (OSError, subprocess.SubprocessError):
+            return []
+        out = []
+        for line in r.stdout.splitlines():
+            p = line.split(None, 2)
+            if len(p) == 3 and WINE_ISTEMCI.match(p[2].lower()) and int(p[0]) not in haric and int(p[1]) not in haric:
+                out.append(int(p[0]))
+        return out
     try:
         r = subprocess.run(['tasklist', '/FI', 'IMAGENAME eq %s' % EXE, '/FO', 'CSV', '/NH'], capture_output=True, text=True,
                            timeout=10, creationflags=0x08000000)
-        return [int(line.split('","')[1]) for line in r.stdout.splitlines() if line.startswith('"%s"' % EXE)]
+        return [p for p in (int(line.split('","')[1]) for line in r.stdout.splitlines() if line.startswith('"%s"' % EXE)) if p not in haric]
     except Exception:
         return []

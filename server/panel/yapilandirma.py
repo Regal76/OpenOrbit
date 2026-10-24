@@ -1,4 +1,5 @@
-"""Panel ayarları (save/panel.json): dil ve kurulum, etkin kayıt yuvası, istemci klasörü ve görüntü, yedekleme, sunucu davranışı.
+"""Panel ayarları (save/panel.json): dil ve kurulum, etkin kayıt yuvası, istemci klasörü ve görüntü, yedekleme, sunucu davranışı,
+Linux ve macOS'ta istemciyi açan Wine ya da Proton.
 
 Bilinmeyen anahtarlar korunur (eski/yeni sürümler aynı dosyayı paylaşabilir); türü yanlış değer varsayılana döner.
 """
@@ -26,9 +27,13 @@ DEFAULTS = {
     'arkadas_son_adres': '',        # Join: son katılınan adres
     'coklu_istemci': True,          # çoklu istemci: en az iki kayıt varsa OYNA sunucuyu çok oturumlu açar (coklu.py)
     'coklu_en_cok': 3,              # en çok ek istemci (her istemci ~600 MB bellek)
+    'calistirici': 'otomatik',      # Linux ve macOS: istemciyi açan otomatik | wine | proton | ozel (calistirici.py)
+    'calistirici_yolu': '',         # wine programı, Proton klasörü ya da özel komut (boş: kendiliğinden)
+    'wine_onek': '',                # Wine öneki / Proton veri klasörü (boş: save/wine ya da save/proton)
 }
 CHOICES = {'pencere_modu': ('pencere', 'tam_ekran', 'kenarliksiz'), 'istemci_kapaninca': ('kapat', 'acik'),
-           'pencere_kapaninca': ('bekle', 'kapat'), 'guncelleme': ('otomatik', 'bildir', 'kapali')}
+           'pencere_kapaninca': ('bekle', 'kapat'), 'guncelleme': ('otomatik', 'bildir', 'kapali'),
+           'calistirici': ('otomatik', 'wine', 'proton', 'ozel')}
 LIMITS = {'genislik': (640, 7680), 'yukseklik': (480, 4320), 'monitor': (0, 8), 'yedek_sayisi': (1, 200), 'yedek_aralik_dk': (0, 600),
           'arkadas_en_cok': (1, 16), 'coklu_en_cok': (1, 8)}
 

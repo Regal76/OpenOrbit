@@ -77,7 +77,7 @@ images). A management panel starts the game and handles your saves, game setting
 
 ### Requirements
 
-- Windows 10 or 11.
+- Windows 10 or 11. Linux and macOS work too: the game opens with Proton or Wine (see [Linux and macOS](#linux-and-macos)).
 - [Python](https://www.python.org/downloads/windows/) 3.10 or newer. Nothing else is needed to play.
 - The **original DarkOrbit Unity client**, version **1.1.115** (not included). If the panel doesn't find it on your
   computer, the setup wizard downloads it from the game's official download server and installs it into the project
@@ -96,6 +96,31 @@ images). A management panel starts the game and handles your saves, game setting
 
 You can run the wizard again at any time from the **Panel** page, where you can also switch the language and put a
 desktop shortcut on your desktop.
+
+### Linux and macOS
+
+The panel and the servers are plain Python; the game client is a 32-bit Windows program, so the panel opens it with
+**Proton** or **Wine**. On Linux, *Automatic* uses Steam's Proton (through
+[umu-launcher](https://github.com/Open-Wine-Components/umu-launcher) if it is installed), otherwise Wine; on macOS it
+uses Wine. On the **Client** page (Wine / Proton card) you can pick one, give its path or your own command.
+
+1. Install Python 3.10 or newer (Debian/Ubuntu: also `python3-tk` for the file dialogs) and, for the panel window,
+   Chrome, Chromium, Edge or Brave (otherwise your default browser opens it).
+2. Linux: install a Proton version in Steam (Library > Tools, e.g. Proton Experimental or GE-Proton), or Wine
+   (`sudo apt install wine`; Debian and Ubuntu also need `wine32:i386`). macOS: install Wine (e.g.
+   `brew install --cask wine-stable`); CrossOver works as a *Custom command*, e.g.
+   `"/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine" --bottle DarkOrbit`.
+3. Linux only, once: the client expects its web login on port 80, which Linux opens only to root. Run this in a
+   terminal (it stays set; it lets programs open ports from 80 up without root). The panel warns you until it's done.
+   ```bash
+   echo net.ipv4.ip_unprivileged_port_start=80 | sudo tee /etc/sysctl.d/90-openorbit.conf && sudo sysctl --system
+   ```
+4. Start the panel in the project folder with `python3 "OpenOrbit Panel.pyw"`. *Create shortcut* on the **Panel** page
+   puts OpenOrbit on your desktop (and, on Linux, in the app menu).
+
+The game runs in its own prefix (`server/save/proton` or `server/save/wine`), which is set up the first time the game
+opens (about half a minute). Wine's output goes to `server/logs/wine.log`. For Play with Friends, if a firewall such as
+ufw is on, allow TCP 8081 and 7771. Linux and macOS support is new: please report problems on Discord.
 
 ### Updates
 
@@ -133,6 +158,7 @@ On the **Panel** page you can choose *Only notify* or turn it off, and check by 
 | `DarkOrbit_Version1.1.115/` | The game client, if the panel downloaded it (`istemci_indiriliyor/` while downloading) |
 | `server/save/guncelleme/` | Old versions of the files that updates replaced (last two updates) |
 | `server/cdn/do_img/` | Game images downloaded from the official CDN (news, event and window artwork) |
+| `server/save/proton/`, `server/save/wine/` | Linux and macOS: the game's Proton data or Wine prefix |
 
 All of these are created on first run and stay on your computer.
 
@@ -224,7 +250,7 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 
 ### Gereksinimler
 
-- Windows 10 ya da 11.
+- Windows 10 ya da 11. Linux ve macOS'ta da çalışır: oyun Proton ya da Wine ile açılır ([Linux ve macOS](#linux-ve-macos)).
 - [Python](https://www.python.org/downloads/windows/) 3.10 ya da daha yenisi. Oynamak için başka bir şey gerekmez.
 - **Orijinal DarkOrbit Unity istemcisi**, sürüm **1.1.115** (depoda yok). Panel onu bilgisayarında bulamazsa kurulum
   sihirbazı oyunun resmî indirme sunucusundan indirip proje klasörüne kurar: yaklaşık 3,5 GB indirme ve 4,4 GB boş disk
@@ -242,6 +268,31 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 
 Sihirbazı istediğin zaman **Panel** sayfasından yeniden açabilirsin; dili değiştirmek ve masaüstüne kısayol koymak da
 orada.
+
+### Linux ve macOS
+
+Panel ve sunucular düz Python; oyun istemcisi 32 bitlik bir Windows programı, bu yüzden panel onu **Proton** ya da **Wine** ile
+açar. Linux'ta *Otomatik* Steam'in Proton'unu kullanır ([umu-launcher](https://github.com/Open-Wine-Components/umu-launcher)
+kuruluysa onunla), yoksa Wine'ı; macOS'ta Wine'ı. **İstemci** sayfasındaki Wine / Proton kartından birini seçebilir, yolunu ya da
+kendi komutunu yazabilirsin.
+
+1. Python 3.10 ya da daha yenisini (Debian/Ubuntu'da dosya pencereleri için `python3-tk` de) ve panel penceresi için Chrome,
+   Chromium, Edge ya da Brave'i kur (yoksa varsayılan tarayıcın açar).
+2. Linux: Steam'de bir Proton sürümü kur (Kütüphane > Araçlar, ör. Proton Experimental ya da GE-Proton) ya da Wine kur
+   (`sudo apt install wine`; Debian ve Ubuntu'da `wine32:i386` de gerekir). macOS: Wine kur (ör. `brew install --cask wine-stable`);
+   CrossOver *Özel komut* olarak çalışır, ör.
+   `"/Applications/CrossOver.app/Contents/SharedSupport/CrossOver/bin/wine" --bottle DarkOrbit`.
+3. Yalnız Linux'ta, bir kez: istemci web girişini 80 portunda bekliyor, Linux bu portu yalnız root'a açıyor. Terminalde şunu
+   çalıştır (kalıcıdır; programların root olmadan 80 ve üstü portları açmasına izin verir). Yapılana dek panel uyarır.
+   ```bash
+   echo net.ipv4.ip_unprivileged_port_start=80 | sudo tee /etc/sysctl.d/90-openorbit.conf && sudo sysctl --system
+   ```
+4. Paneli proje klasöründe `python3 "OpenOrbit Panel.pyw"` ile aç. **Panel** sayfasındaki *Kısayol oluştur* OpenOrbit'i
+   masaüstüne (Linux'ta uygulama menüsüne de) koyar.
+
+Oyun kendi önekinde çalışır (`server/save/proton` ya da `server/save/wine`); önek oyun ilk açıldığında kurulur (yarım dakika
+kadar). Wine'ın çıktısı `server/logs/wine.log`'a yazılır. Arkadaşlarınla Oyna için ufw gibi bir güvenlik duvarı açıksa TCP 8081
+ve 7771'e izin ver. Linux ve macOS desteği yeni: sorunları Discord'da bildir.
 
 ### Güncellemeler
 
@@ -278,6 +329,7 @@ sayfasından *Yalnız haber ver*'i seçebilir, kapatabilir ve elle denetleyebili
 | `DarkOrbit_Version1.1.115/` | Oyun istemcisi, panel indirdiyse (inerken `istemci_indiriliyor/`) |
 | `server/save/guncelleme/` | Güncellemelerin değiştirdiği dosyaların eski hâlleri (son iki güncelleme) |
 | `server/cdn/do_img/` | Resmî CDN'den inen oyun görselleri (haber, etkinlik ve pencere görselleri) |
+| `server/save/proton/`, `server/save/wine/` | Linux ve macOS: oyunun Proton verisi ya da Wine öneki |
 
 Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 

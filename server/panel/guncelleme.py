@@ -29,7 +29,7 @@ EN_BUYUK = 500 << 20                                        # arşiv sınırı (
 GEREKLI = ('OpenOrbit Panel.pyw', 'server/panel/panel.py', 'server/game.py')   # arşiv bu projenin mi
 # 2026-10-24'ten önceki sürümler 'DarkOrbit Panel.pyw' arıyordu (dosya kaldırıldı): o kurulumlar "Arşiv bu projenin değil"
 # der, ZIP elle yeniden indirilir (README).
-NO_WINDOW = 0x08000000
+NO_WINDOW = 0x08000000 if os.name == 'nt' else 0
 
 
 class GuncellemeHatasi(Exception):
