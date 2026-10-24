@@ -8,6 +8,7 @@ açılış animasyonunun sonunda); sunucudan pencere açan bir komutun işleyici
 UIWindowUpdateRequest ile gelir (kapatınca maximized=false) ve profilde saklanır (profil.apply): kapatılan pencere sonraki girişte
 açılmaz (canlı deneme 2026-10-17).
 """
+import cok_oyunculu as CO
 import grup as GR
 import isinlama as IS
 import klan as KL
@@ -113,13 +114,17 @@ class Sosyal:
         ok = self.sohbet.authenticate(ep, self.chat_user(), self.rooms(), lang)
         if ok and not self.welcomed:                  # harita değişiminde istemci yeniden bağlanabilir: duyuru oturumda bir kez
             self.welcomed = True
-            yerel = self.sohbet.adres == '127.0.0.1'
-            text = (('%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.' if yerel else
-                     '%s, arkadaş sunucusuna hoş geldin. Sohbet, posta, grup ve rehber ortak; klan ve müzayede her oyuncunun '
-                     'kendisinin.') if lang == 'tr'
-                    else ('%s, welcome to your local server. Chat, mail, clan and auction are single-player here.' if yerel else
-                          "%s, welcome to your friend's server. Chat, mail, groups and contacts are shared; clan and auction are "
-                          "each player's own."))
+            kip = 'tek' if not CO.acik() else 'arkadas' if CO.AYAR['misafir'] else 'coklu'    # coklu: çoklu istemci (bu bilgisayar)
+            text = {'tek': '%s, yerel sunucuya hoş geldin. Burada sohbet, posta, klan ve müzayede tek oyunculudur.',
+                    'arkadas': '%s, arkadaş sunucusuna hoş geldin. Sohbet, posta, grup ve rehber ortak; klan ve müzayede her oyuncunun '
+                               'kendisinin.',
+                    'coklu': '%s, yerel sunucuya hoş geldin. Bu bilgisayardaki öteki kayıtlarınla aynı evrendesin: sohbet, posta, grup '
+                             've rehber ortak; klan ve müzayede her oyuncunun kendisinin.'}[kip] if lang == 'tr' else {
+                    'tek': '%s, welcome to your local server. Chat, mail, clan and auction are single-player here.',
+                    'arkadas': "%s, welcome to your friend's server. Chat, mail, groups and contacts are shared; clan and auction are "
+                               "each player's own.",
+                    'coklu': '%s, welcome to your local server. You share this universe with your other saves on this computer: chat, '
+                             "mail, groups and contacts are shared; clan and auction are each player's own."}[kip]
             self.sohbet.duyuru(text % self.p.d['pilot'].get('userName', ''), kim=str(self.p.user_id))
         return ok
 

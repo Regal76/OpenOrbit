@@ -24,11 +24,13 @@ DEFAULTS = {
     'arkadas_sifre': '',            # Arkadaşlarınla Oyna > Host: katılma şifresi (boş: şifresiz)
     'arkadas_en_cok': 4,            # Host: en çok misafir
     'arkadas_son_adres': '',        # Join: son katılınan adres
+    'coklu_istemci': True,          # çoklu istemci: en az iki kayıt varsa OYNA sunucuyu çok oturumlu açar (coklu.py)
+    'coklu_en_cok': 3,              # en çok ek istemci (her istemci ~600 MB bellek)
 }
 CHOICES = {'pencere_modu': ('pencere', 'tam_ekran', 'kenarliksiz'), 'istemci_kapaninca': ('kapat', 'acik'),
            'pencere_kapaninca': ('bekle', 'kapat'), 'guncelleme': ('otomatik', 'bildir', 'kapali')}
 LIMITS = {'genislik': (640, 7680), 'yukseklik': (480, 4320), 'monitor': (0, 8), 'yedek_sayisi': (1, 200), 'yedek_aralik_dk': (0, 600),
-          'arkadas_en_cok': (1, 16)}
+          'arkadas_en_cok': (1, 16), 'coklu_en_cok': (1, 8)}
 
 
 def clean(key, v):

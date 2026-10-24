@@ -329,6 +329,8 @@ class Session:
         self.secrets = set()         # LoginRequest'teki oturum anahtarı: eski metin protokolü de taşır ("S|CFG|2|<kullanıcı>|<anahtar>")
         self.profil = None
         self.misafir = None          # arkadaş sunucusunda misafirin kaydı (cok_oyunculu.Misafir); sunucunun kendi oyuncusunda None
+        self.yerel = None            # çoklu istemcinin ek oyuncusu (cok_oyunculu.Yerel)
+        self.istemci_pid = None      # bağlanan istemcinin süreci (ödeme düğmesi hangi oturumun: odeme.baglanan_pid)
         self.kuyruk = CO.Kuyruk(c) if kuyruk else None     # arkadaş sunucusunda gönderme kuyruğu: yavaş ağ dünya kilidini tutmasın
         if not bekle:
             self.bind(profil or PROFIL)
@@ -868,6 +870,15 @@ class Session:
             self.sosyal.chat_host = '%s:%d' % (m.adres or self.addr[0], SOHBET.port if SOHBET else CO.SOHBET_PORTU)
             log('   misafir girişi: %s (%s), sunucudaki kimlik %d' % (m.profil.d['pilot'].get('userName'), self.addr[0], m.uid))
             return True
+        y = CO.yerel_bul(sid) if self.addr[0] in ('127.0.0.1', '::1') else None
+        if y:                                       # çoklu istemcinin ek oyuncusu (bu bilgisayardaki başka bir kayıt)
+            old, y.session, y.son = y.session, self, time.time()
+            if old is not None and old is not self:
+                old.devret()
+            self.yerel = y
+            self.bind(y.profil)
+            log('   ek istemci girişi: %s (kayıt %s), sunucudaki kimlik %d' % (y.profil.d['pilot'].get('userName'), y.kayit, y.uid))
+            return True
         if CO.yerel_mi(sid) and self.addr[0] in ('127.0.0.1', '::1'):
             old = CURRENT
             if old is not None and old is not self:
@@ -1242,6 +1253,12 @@ class Session:
         if m is not None and m.session is self:      # misafirin son hâli yayımlanır (paneli alır); yeniden bağlanabilir
             self.profil.save(force=True)
             m.session, m.son = None, time.time()
+        y = self.yerel
+        if y is not None and y.session is self:      # ek oyuncu: istemcisi yeniden açılınca sürer; panel bırakınca kayıttan çıkar
+            with CO.COND:
+                y.session, y.son = None, time.time()
+                if y.bitti:
+                    CO.YERELLER.pop(y.oturum, None)
 
     def payment_click(self):
         """İstemcinin ödeme düğmesi (odeme.Dinleyici: 127.0.0.1:443'e bağlandı): mağaza Extras'ta açılır, ürün ekranda yazılır."""
@@ -1294,6 +1311,26 @@ def kapat_oturum(s):
     s.kapat()
 
 
+def odeme_oturumu(addr):
+    """Ödeme düğmesine basan istemcinin oturumu: tek oturumda (ya da süreç bulunamazsa) sunucunun kendi oyuncusununki; çoklu
+    istemcide bağlanan süreç oturumların istemcileriyle eşlenir (odeme.baglanan_pid; oyun bağlantısı 8081'de)."""
+    oturumlar = [s for s in list(OTURUMLAR) if s.profil is not None]
+    if len(oturumlar) > 1:
+        pid = OD.baglanan_pid(addr, OD.PORT)
+        for s in oturumlar if pid else []:
+            if s.istemci_pid is None:
+                s.istemci_pid = OD.baglanan_pid(s.addr, 8081)
+            if s.istemci_pid == pid:
+                return s
+    return CURRENT
+
+
+def odeme_tiklandi(addr):
+    s = odeme_oturumu(addr)
+    if s is not None:
+        s.payment_click()
+
+
 def sunucu_bilgisi():
     """GET /misafir/bilgi: misafirin paneli bağlanmadan önce gösterir (sunucunun pilotu, oyuncular, şifre, yer, sürümler)."""
     ms = CO.liste()
@@ -1333,10 +1370,12 @@ def stop_gracefully():
         if CURRENT is not None:
             CURRENT.play_time()
         PROFIL.save(force=True)
-        if CO.acik():                     # misafirlerin son hâli panellerine (bekleyen yoklamalara) verilir
+        if CO.acik():                     # misafirlerin son hâli panellerine (bekleyen yoklamalara) verilir, ek oyuncularınki yuvalarına
             for s in list(OTURUMLAR):
-                if s.misafir is not None:
+                if s.misafir is not None or s.yerel is not None:
                     s.play_time()
+            for y in CO.yereller():
+                save_profile(y.profil)
             CO.kapanis()
         log('panel: durdurma isteği, profil kaydedildi, sunucu kapanıyor')
     except Exception as e:
@@ -1364,7 +1403,7 @@ def main():
     if KONTROL:
         KT.Kontrol(sys.modules[__name__]).start()
         SOHBET.iz = KT.sohbet_iz          # sohbet çerçeveleri de izde ("Sohbet:<tür>")
-    OD.Dinleyici(lambda: CURRENT and CURRENT.payment_click(), log).start()     # ödeme düğmeleri -> mağaza (127.0.0.1:443)
+    OD.Dinleyici(odeme_tiklandi, log).start()     # ödeme düğmeleri -> mağaza (127.0.0.1:443)
     s = socket.socket()
     if CO.acik() and hasattr(socket, 'SO_EXCLUSIVEADDRUSE'):
         s.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)    # Windows: başka süreç aynı portu ele geçiremesin
@@ -1374,7 +1413,8 @@ def main():
     log('gs listening %s:8081 | profil: %s %s harita %s | şablon: %s%s%s' % (
         adres, PROFIL.d['pilot'].get('userName'), PROFIL.d['gemi'].get('typeId'), PROFIL.d['konum']['mapId'],
         SABLON.giris.get('kaynak', 'yok'), ' | profil dosyası: %s' % PROFIL.path if PROFIL_YOLU else '',
-        ' | arkadaş sunucusu: en çok %d misafir%s' % (CO.AYAR['en_cok'], ', şifreli' if CO.AYAR['sifre'] else '') if CO.acik() else ''))
+        (' | arkadaş sunucusu: en çok %d misafir%s' % (CO.AYAR['en_cok'], ', şifreli' if CO.AYAR['sifre'] else '')
+         if CO.AYAR['misafir'] else ' | çoklu istemci (yalnız bu bilgisayar)') if CO.acik() else ''))
     while True:
         c, addr = s.accept()
         threading.Thread(target=handle, args=(c, addr), daemon=True).start()

@@ -3,6 +3,7 @@
   web   web.py: 80, 8090 (web girişi; 843, 9339, 8082 sahte TCP)
   oyun  game.py: 8081 (oyun), 7771 (sohbet), 8099 (kontrol kanalı, ayarla)
 Arkadaş sunucusu (Arkadaşlarınla Oyna > Host): oyun sunucusu --cok-oyunculu ve DO_COK_OYUNCULU ortam değişkeniyle (arkadas.py).
+Çoklu istemci (coklu.py): oyun sunucusu yine --cok-oyunculu ile, yalnız bu bilgisayardan ve misafirsiz (coklu ortamı).
 Misafir (Join): yalnız web.py, arkadaşın sunucusunu gösteren argümanlarla (start_guest_web); oyun sunucusu açılmaz.
 Sunucular konsolsuz (CREATE_NO_WINDOW) çalışır; çıktıları logs/<ad>_konsol.log'a (çökme izi orada). Oyun sunucusu --durdur=<dosya>
 ile durdurulur: dosya belirince profili kaydedip çıkar (zorla kapatmada son kaydedilmemiş saniyeler gitmesin); yanıt vermezse
@@ -113,6 +114,53 @@ def kill(pid):
     subprocess.run(['taskkill', '/PID', str(int(pid)), '/T', '/F'], capture_output=True, timeout=15, creationflags=NO_WINDOW)
 
 
+def pencere_basligi(pid, metin, sure=120):
+    """Sürecin oyun penceresi (UnityWndClass) belirince başlığını değiştirir (birden çok istemcide pencereler ayırt edilsin); arka
+    planda, pencere çıkmazsa sure saniye sonra bırakır. Başlık bir dakika daha denetlenir (istemci yeniden yazarsa)."""
+    if os.name != 'nt':
+        return
+
+    def run():
+        import ctypes
+        from ctypes import wintypes as wt
+        u = ctypes.WinDLL('user32', use_last_error=True)
+        u.GetWindowThreadProcessId.argtypes = [wt.HWND, ctypes.POINTER(wt.DWORD)]
+        u.GetClassNameW.argtypes = [wt.HWND, wt.LPWSTR, ctypes.c_int]
+        u.GetWindowTextW.argtypes = [wt.HWND, wt.LPWSTR, ctypes.c_int]
+        u.SetWindowTextW.argtypes = [wt.HWND, wt.LPCWSTR]
+        proto = ctypes.WINFUNCTYPE(wt.BOOL, wt.HWND, wt.LPARAM)
+
+        def find():
+            found = []
+
+            def cb(h, _l):
+                p = wt.DWORD()
+                u.GetWindowThreadProcessId(h, ctypes.byref(p))
+                if p.value == pid:
+                    cls = ctypes.create_unicode_buffer(64)
+                    u.GetClassNameW(h, cls, 64)
+                    if cls.value == 'UnityWndClass':
+                        found.append(h)
+                return True
+            u.EnumWindows(proto(cb), 0)
+            return found
+
+        end = time.time() + sure
+        while time.time() < end:
+            hs = find()
+            if hs:
+                for wait in (1, 4, 10, 20, 30):
+                    time.sleep(wait)
+                    for h in find():
+                        buf = ctypes.create_unicode_buffer(256)
+                        u.GetWindowTextW(h, buf, 256)
+                        if buf.value != metin:
+                            u.SetWindowTextW(h, metin)
+                return
+            time.sleep(1)
+    threading.Thread(target=run, daemon=True).start()
+
+
 def tail(path, lines=200, max_bytes=512 * 1024):
     """Dosyanın son satırları (büyük günlükte yalnız sonu okunur)."""
     try:
@@ -199,6 +247,7 @@ class Yonetici:
         self.profil = None                  # açık sunucuların profil yolu
         self.slot = None
         self.arkadas = False                # oyun sunucusu arkadaş sunucusu olarak açık (Host)
+        self.coklu = False                  # oyun sunucusu çoklu istemci için çok oturumlu açık (yalnız bu bilgisayar; coklu.py)
         self.misafir = False                # yalnız misafirin web sunucusu açık (Join)
         self.istemci = None                 # Popen
         self.istemci_basla = None
@@ -232,14 +281,20 @@ class Yonetici:
                         'bizim': is_our_server(info)})
         return out
 
-    def start_servers(self, profil, ayarlar, kontrol=False, slot=None, arkadas=None):
+    def needs_restart(self, profil, arkadas=None, coklu=None):
+        """Açık sunucular bu kayıt ve kiple yeniden başlamalı mı (başka kayıt, Host ya da çoklu istemci kipi değişti)."""
+        return self.running() and ((self.profil and os.path.normcase(self.profil) != os.path.normcase(profil))
+                                   or self.arkadas != bool(arkadas) or (not arkadas and self.coklu != bool(coklu)))
+
+    def start_servers(self, profil, ayarlar, kontrol=False, slot=None, arkadas=None, coklu=None):
         """Web ve oyun sunucusu (açık değilse) -> başlatılanların adları. Port doluysa ya da sunucu açılmazsa RuntimeError.
-        arkadas: arkadaş sunucusunun ayarları (DO_COK_OYUNCULU; verilmezse tek oyunculu)."""
+        arkadas: arkadaş sunucusunun ayarları (DO_COK_OYUNCULU; verilmezse tek oyunculu); coklu: çoklu istemcinin ayarları
+        (DO_COK_OYUNCULU, misafirsiz; arkadaş sunucusu zaten çok oturumlu)."""
+        ortam_json = arkadas or coklu
         with self.lock:
             if self.misafir:
                 raise RuntimeError(_('Arkadaşının sunucusundasın: önce oradan ayrıl.'))
-            if self.running() and ((self.profil and os.path.normcase(self.profil) != os.path.normcase(profil))
-                                   or self.arkadas != bool(arkadas)):
+            if self.needs_restart(profil, arkadas, coklu):
                 self.stop_servers()                               # başka kayıt ya da kip: yeniden başlat
             started = []
             py = python_exe()
@@ -254,17 +309,17 @@ class Yonetici:
                 cmd = [py, '-I', os.path.join(SERVER, SCRIPTS[ad]), self.logs, '--profil=%s' % profil]
                 durdur = None
                 ortam = None
-                if ad == 'web' and arkadas:          # sunucunun kendi oyuncusunun oturumu (cok_oyunculu AYAR['yerel'])
-                    cmd.append('--oturum=%s' % json.loads(arkadas)['yerel'])
+                if ad == 'web' and ortam_json:       # sunucunun kendi oyuncusunun oturumu (cok_oyunculu AYAR['yerel'])
+                    cmd.append('--oturum=%s' % json.loads(ortam_json)['yerel'])
                 if ad == 'oyun':
                     durdur = os.path.join(self.logs, '.durdur_oyun')
                     cmd += ['--ayarlar=%s' % ayarlar, '--durdur=%s' % durdur] + (['--kontrol'] if kontrol else [])
-                    if arkadas:
+                    if ortam_json:
                         cmd.append('--cok-oyunculu')
-                        ortam = {'DO_COK_OYUNCULU': arkadas}
+                        ortam = {'DO_COK_OYUNCULU': ortam_json}
                 self.sunucular[ad] = Surec(ad, cmd, os.path.join(self.logs, '%s_konsol.log' % ad), durdur, ortam).start()
                 started.append(ad)
-            self.profil, self.slot, self.arkadas = profil, slot, bool(arkadas)
+            self.profil, self.slot, self.arkadas, self.coklu = profil, slot, bool(arkadas), bool(coklu and not arkadas)
             deadline = time.time() + 20
             while time.time() < deadline:
                 if all(listening(PORTS[ad][0]) for ad in ('web', 'oyun')):
@@ -278,7 +333,8 @@ class Yonetici:
             else:
                 raise RuntimeError(_('Sunucular 20 saniyede dinlemeye başlamadı (günlükleri inceleyin).'))
             if started:
-                self.log('sunucular başlatıldı: %s (%s)%s' % (', '.join(started), profil, ' — arkadaş sunucusu' if arkadas else ''))
+                self.log('sunucular başlatıldı: %s (%s)%s' % (', '.join(started), profil, ' — arkadaş sunucusu' if arkadas else
+                                                               ' — çoklu istemci' if coklu else ''))
             return started
 
     def start_guest_web(self, profil, slot, args):
@@ -309,7 +365,7 @@ class Yonetici:
                     s.stop()
             self.log('sunucular durduruldu')
             self.profil = self.slot = None
-            self.arkadas = self.misafir = False
+            self.arkadas = self.coklu = self.misafir = False
 
     # ------------------------------------------------------------ istemci
     def client_alive(self):
@@ -353,4 +409,4 @@ class Yonetici:
             cl.update(pid=self.istemci.pid, sure_sn=int(time.time() - self.istemci_basla))
         cl['son'] = self.istemci_son
         return {'sunucular': srv, 'istemci': cl, 'profil': self.profil, 'kayit': self.slot,
-                'kontrol_kanali': listening(8099, table), 'arkadas': self.arkadas, 'misafir': self.misafir}
+                'kontrol_kanali': listening(8099, table), 'arkadas': self.arkadas, 'coklu': self.coklu, 'misafir': self.misafir}

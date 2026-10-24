@@ -60,6 +60,8 @@ def snapshot(game):
     if game.CO.acik():                           # arkadaş sunucusu: misafirler (panelin "Arkadaşlarınla Oyna" sayfası)
         d['arkadas'] = {'en_cok': game.CO.AYAR['en_cok'], 'misafirler': [
             dict(m.ozet(), harita=H.name(m.profil.d['konum'].get('mapId'))) for m in game.CO.liste()]}
+        d['yereller'] = [dict(y.ozet(), harita=H.name(y.profil.d['konum'].get('mapId')))     # çoklu istemcinin ek oyuncuları
+                         for y in game.CO.yereller()]
     return d
 
 

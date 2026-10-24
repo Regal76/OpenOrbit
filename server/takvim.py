@@ -170,6 +170,87 @@ def upcoming(key, now=None, days=366):
     return sorted(found)
 
 
+# ------------------------------------------------------------------ aralıklar (panelin etkinlik takvimi: takvim_cizelge.py)
+def _merge(iv):
+    out = []
+    for s, e in sorted(iv):
+        if out and s <= out[-1][1]:
+            out[-1][1] = max(out[-1][1], e)
+        else:
+            out.append([s, e])
+    return out
+
+
+def _clip(iv, a, b):
+    return [[max(s, a), min(e, b)] for s, e in iv if e > a and s < b]
+
+
+def _intersect(x, y):
+    """İki birleşik aralık listesinin kesişimi."""
+    out, i, j = [], 0, 0
+    while i < len(x) and j < len(y):
+        s, e = max(x[i][0], y[j][0]), min(x[i][1], y[j][1])
+        if s < e:
+            out.append([s, e])
+        if x[i][1] < y[j][1]:
+            i += 1
+        else:
+            j += 1
+    return out
+
+
+def _days(a, b):
+    """[a, b)'ye dokunan günlerin başları (önceki gün dahil: 24'ü aşan saatler ertesi güne taşar)."""
+    d = a.replace(hour=0, minute=0, second=0, microsecond=0) - DAY
+    while d < b:
+        yield d
+        d += DAY
+
+
+def _daily(a, b, hours):
+    """Günlük saat pencereleri [a, b) içinde; hours: gün -> [[başlangıç, bitiş]] (saat)."""
+    return _merge(_clip([[d + datetime.timedelta(hours=x), d + datetime.timedelta(hours=y)] for d in _days(a, b) for x, y in hours(d)],
+                        a, b))
+
+
+def _span_windows(entries, a, b):
+    """Dönem listesinin [a, b) içindeki açık aralıkları (_span_at ile aynı kural; saatli dönemde günlük saatler)."""
+    found, t = {}, a - DAY * 7
+    while True:                                   # _spans t'nin yılına ve 52 haftalık döngüsüne bakar: aralık boyunca örneklenir
+        for s, e, h in _spans(entries, t):
+            found[(s, e, json.dumps(h))] = h
+        if t >= b:
+            break
+        t = min(t + DAY * 7, b)
+    out = []
+    for (s, e, _), h in found.items():
+        if e <= a or s >= b:
+            continue
+        out += _daily(max(s, a - DAY), min(e, b), lambda d: h[0] if s <= d < e else []) if h else [[s, e]]
+    return _merge(_clip(out, a, b))
+
+
+def intervals(key, a, b):
+    """Etkinliğin takvime göre [a, b) içindeki açık aralıkları [[başlangıç, bitiş]] (datetime; birleşik ve kırpılmış). period ile aynı
+    kural; panelin elle seçimi ve --etkinlik sayılmaz ('birlikte': o etkinliklerin takvimdeki aralıklarıyla kesişim)."""
+    e = EVENTS[key]
+    if 'donemler' in e:
+        iv = _span_windows(e['donemler'], a, b)
+    else:
+        iv = _daily(a, b, lambda d: e.get('saatler', [[0, 24]]) if _week_day(e, d) else [])
+    if e.get('birlikte'):
+        iv = _intersect(iv, _merge([x for k in e['birlikte'] for x in intervals(k, a, b)]))
+    return iv
+
+
+def section_intervals(s, a, b, hep_acik=False):
+    """Harita bölümünün [a, b) içindeki açık aralıkları (window ile aynı kural; hep_acik: panelin seans_hep_acik ayarı)."""
+    iv = _span_windows(s['donemler'], a, b) if 'donemler' in s else [[a, b]]
+    if 'saatler' in s and not hep_acik:
+        iv = _intersect(iv, _daily(a, b, lambda d: s.get('saatler_hafta_sonu', s['saatler']) if d.weekday() >= 5 else s['saatler']))
+    return iv
+
+
 def is_active(key, now=None):
     e = EVENTS.get(key)
     if not e:

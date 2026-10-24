@@ -10,6 +10,8 @@ Yollar: yollar.py (save/kayitlar, save/panel.json, save/ayarlar.json, logs/).
 Dil: Türkçe ya da İngilizce (dil.py; metinler Türkçe yazılır, İngilizceleri arayuz/en.json). İlk açılışta arayüz kurulum sihirbazını
 açar: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun bilgisayarda bulunamazsa sihirbazın oyun
 klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da).
+Çoklu istemci (coklu.py): OYNA'dan sonra öteki kayıtlarla ek istemciler aynı sunucuda (en az iki kayıt ve ayar açıksa sunucu çok
+oturumlu açılır); ek istemci açıkken sunucuyu yeniden başlatan işler reddedilir, sunucular son istemci kapanınca kapanır.
 Güncelleme (guncelleme.py): açılıştan biraz sonra ve GUNCELLEME_SN'de bir GitHub'daki son sürüm denetlenir; panel ayarı 'guncelleme'
 otomatikse ve oyun, sunucular, indirme ya da başka bir iş sürmüyorsa kurulur, ardından panel yeniden başlar (yeni süreç aynı portu
 alır, açık pencere sayfayı yeniler).
@@ -37,6 +39,7 @@ from protokol import Uyarlayici  # noqa: E402
 from indirme import Indirici, IndirmeHatasi  # noqa: E402
 from guncelleme import Guncelleyici, GuncellemeHatasi  # noqa: E402
 from arkadas import Arkadas, ArkadasHatasi  # noqa: E402
+from coklu import Coklu, CokluHatasi  # noqa: E402
 
 SURUM = '1.0'
 DISCORD = 'https://discord.gg/BUb9rNTKNt'         # topluluk sunucusu (Panel sayfası, README); süresiz davet
@@ -45,6 +48,7 @@ ARAYUZ = os.path.join(PANEL_DIR, 'arayuz')
 SABLONLAR = os.path.join(YOL.SAVE, 'ayar_sablonlari.json')
 TARAYICI_PROFILI = os.path.join(os.environ.get('LOCALAPPDATA') or YOL.SAVE, 'DarkOrbitPanel', 'tarayici')
 GUNLUKLER = ('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log', 'panel.log', 'errors.log', 'unknown.log')
+EK_GUNLUK = re.compile(r'client_[a-z0-9_]{1,40}\.log')          # çoklu istemcinin ek istemcilerinin günlükleri (coklu.py)
 NABIZ_SN = 180                      # tarayıcı penceresi izlenemiyorsa: bu kadar istek gelmezse pencere kapandı sayılır
 DEVIR_SN = 10                       # tarayıcı süreci bundan önce çıkarsa pencereyi açık bir sürece devretmiştir (watch_window)
 GUNCELLEME_SN = 6 * 3600            # GitHub'da yeni sürüm denetimi aralığı (başarısızsa bir saat sonra yeniden)
@@ -104,7 +108,8 @@ D.bagla(lambda: CFG.get('dil'))
 YON = SR.Yonetici(YOL.LOGS, log)
 KAY = Kayitlar(CFG, python=SR.python_exe())
 ARK = Arkadas(CFG, KAY, YON, log, SURUM)                        # Arkadaşlarınla Oyna: Host ve Join (arkadas.py)
-KAY.in_use = lambda slot: (YON.running() and YON.slot == slot) or ARK.kullanimda(slot)
+COK = Coklu(CFG, KAY, YON, lambda: ARK.anahtar, YOL.LOGS, log)  # çoklu istemci: öteki kayıtlarla ek istemciler (coklu.py)
+KAY.in_use = lambda slot: (YON.running() and YON.slot == slot) or ARK.kullanimda(slot) or COK.kullanimda(slot)
 TEST = Testler(SERVER, SR.python_exe(), log, SR.NO_WINDOW)     # panelden testler (testler.py)
 UYAR = Uyarlayici(ROOT, SR.python_exe(), log, SR.NO_WINDOW)    # yeni istemciye protokol uyarlaması (protokol.py)
 UPD = Guncelleyici(ROOT, YOL.SAVE, log)                          # GitHub'dan güncelleme (guncelleme.py)
@@ -226,6 +231,33 @@ def event_list():
                     'aciklama': _(ETKINLIK_ACIKLAMA.get(key, ''))})
     out.sort(key=lambda x: (x['tur'] != 'yillik', not x['etkin'], x['ad'].lower()))
     return out
+
+
+SEANS_ADLARI = {'vortex': 'Vortex seansı', 'dunya_patronu': 'Patron savaşı', 'kristallon': 'Apotheosis penceresi',
+                'mimesis': 'Mimesis seferi', 'unvan_avi': 'Prestige unvanı avı', 'uzayli': 'Etkinlik uzaylıları',
+                'kutu': 'Etkinlik kutuları', 'harita': 'Harita etkinliği'}
+
+
+def api_calendar(q):
+    """Etkinlik takvimi (takvim_cizelge.py): [bas, bit) içindeki takvim ve etkin aralıklar, seanslar, şimdiki ya da sonraki dönem."""
+    import takvim_cizelge as TC
+    now = time.time()
+    try:
+        a, b = float(q.get('bas')), float(q.get('bit'))
+    except (TypeError, ValueError):
+        raise Hata(_('Geçersiz tarih aralığı.'))
+    if not 0 < b - a <= 62 * 86400:
+        raise Hata(_('Geçersiz tarih aralığı.'))
+    hep = bool(game_settings().get('seans_hep_acik'))
+    evs = event_list()
+    c = TC.cizelge(a, b, hep, {e['anahtar']: e['durum'] for e in evs})
+    out = []
+    for e in evs:
+        x = c[e['anahtar']]
+        seans = [dict(s, ad=_(SEANS_ADLARI[s['kimlik'] if s['tur'] == 'seans' else s['tur']])) for s in x['seanslar']]
+        out.append(dict(e, araliklar=x['araliklar'], etkin_araliklar=x['etkin'], seanslar=seans,
+                        sonraki=TC.sonraki(e['anahtar'], now, 400 if e['tur'] == 'yillik' else 70)))
+    return {'simdi': now, 'bas': a, 'bit': b, 'hep_acik': hep, 'etkinlikler': out}
 
 
 def settings_summary(values):
@@ -355,9 +387,80 @@ def status():
             'ayar_ozet': settings_summary(vals), 'etkinlikler': ev,
             'uyarilar': warnings(), 'oyna': STATE['oyna'], 'istemci_klasoru': client_folder(),
             'arkadas': {'host': YON.running() and YON.arkadas, 'misafir': ARK.m['durum'], 'adres': ARK.m['adres']},
+            'coklu': coklu_durumu(slots),
             'panel': {'surum': SURUM, 'pencere_kapandi': STATE['pencere_kapandi'], 'dil': CFG.get('dil'),
                       'kurulum_tamam': CFG.get('kurulum_tamam'), 'guncellendi': STATE['guncellendi'],
                       'acik_sn': int(time.time() - STATE['acilis'])}}
+
+
+# ------------------------------------------------------------------ çoklu istemci (coklu.py)
+def coklu_ortam():
+    """Çoklu istemcinin oyun sunucusu ayarları (DO_COK_OYUNCULU; cok_oyunculu.configure): yalnız bu bilgisayar, misafir yok."""
+    return json.dumps({'adres': '127.0.0.1', 'misafir': False, 'anahtar': ARK.anahtar, 'kod': SURUM, 'yerel': ARK.yerel})
+
+
+def coklu_istenir(slot):
+    """OYNA sunucuyu çok oturumlu açsın mı: ayar açık ve en az iki kayıt var (tek kaydı olanın sunucusu tek oyunculu kalır), ya da
+    sunucu bu kayıtla zaten öyle açık."""
+    return bool(CFG.get('coklu_istemci') and len(KAY.slots()) > 1) or (YON.running() and YON.coklu and YON.slot == slot)
+
+
+def coklu_durumu(slots):
+    """Oyna sayfasının Çoklu istemci kartı: açık ek istemciler, son kapanışlar ve ek istemcide açılabilecek kayıtlar."""
+    canli = read_json(os.path.join(YOL.LOGS, 'canli_durum.json'), None) if COK.canli() else None
+    out = dict(COK.durum(canli), ayar=CFG.get('coklu_istemci'), en_cok=CFG.get('coklu_en_cok'), kayit_sayisi=len(slots),
+               sunucu=YON.running() and (YON.coklu or YON.arkadas), ana=YON.slot if YON.running() else None, kayitlar=[])
+    if out['ayar'] and len(slots) > 1:
+        for s in slots:
+            try:
+                k = KAY.summary(s)
+            except (OSError, KayitHatasi):
+                continue
+            out['kayitlar'].append({'id': s, 'ad': k['ad'], 'pilot': k.get('pilot'), 'seviye': k.get('seviye'), 'firma': k.get('firma'),
+                                    'bozuk': k.get('bozuk'), 'ek': COK.kullanimda(s), 'arkadas': ARK.kullanimda(s)})
+    return out
+
+
+def open_extra(b):
+    """Çoklu istemci: başka bir kayıtla ek istemci. Sunucu çok oturumlu açık olmalı; tek oyunculu açıksa ve oyun kapalıysa öyle
+    yeniden başlatılır."""
+    slot = str(b.get('kayit') or '')
+    if not slot or not KAY.exists(slot):
+        raise Hata(_('Kayıt bulunamadı.'))
+    if not CFG.get('coklu_istemci'):
+        raise Hata(_('Çoklu istemci kapalı: İstemci sayfasından açabilirsin.'))
+    if ARK.aktif():
+        raise Hata(_('Arkadaşının sunucusundayken ek istemci açılamaz.'))
+    if STATE['oyna']['calisiyor']:
+        raise Hata(_('Başlatma sürüyor.'))
+    if not YON.running():
+        raise Hata(_('Önce OYNA ile oyunu (ya da yalnız sunucuyu) başlat: ek istemciler aynı sunucuya bağlanır.'))
+    if ARK.kullanimda(slot):
+        raise Hata(_('Bu kayıt arkadaşının sunucusunda kullanılıyor.'))
+    if not (YON.coklu or YON.arkadas):
+        if YON.client_alive() or COK.canli():
+            raise Hata(_('Sunucu tek oyunculu açıldı: ek istemci için oyunu kapatıp yeniden OYNA\'ya bas.'))
+        log('çoklu istemci: sunucu çok oturumlu yeniden başlatılıyor')
+        YON.start_servers(KAY.profile(YON.slot), YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=YON.slot,
+                          coklu=coklu_ortam())
+    return COK.ac(slot, client_folder(), YON.slot)
+
+
+def istemciler_kapandi():
+    """Ana istemci ya da bir ek istemci kapandı: hepsi kapandıysa panelin davranışı (sunucuları kapat, pencere kapandıysa çık). Ana
+    istemci bu sunucu oturumunda açılmadıysa (yalnız sunucu) ya da erken kapandıysa sunucular açık kalır."""
+    if YON.client_alive() or COK.canli():
+        return                                        # bir istemci sürüyor: sunucular açık kalır
+    oyun, son = YON.sunucular.get('oyun'), YON.istemci_son
+    if not (oyun and oyun.alive and YON.istemci_basla and YON.istemci_basla >= oyun.basla and son and not son['erken']):
+        return
+    if CFG.get('istemci_kapaninca') == 'kapat':
+        YON.stop_servers()
+    if STATE['pencere_kapandi']:
+        threading.Thread(target=shutdown, daemon=True).start()
+
+
+COK.on_exit = istemciler_kapandi
 
 
 # ------------------------------------------------------------------ oyna
@@ -379,6 +482,8 @@ def launch(sadece_sunucu=False, arkadas=False):
         slot = KAY.active()
         if not slot:
             raise Hata(_('Önce Kayıtlar sayfasından bir kayıt oluşturun.'))
+        if COK.kullanimda(slot):
+            raise Hata(_('Etkin kayıt bir ek istemcide açık: önce o istemciyi kapat ya da başka bir kaydı etkin yap.'))
         folder = client_folder()
         if not sadece_sunucu:
             c = IST.check(folder)
@@ -388,11 +493,17 @@ def launch(sadece_sunucu=False, arkadas=False):
                 raise Hata(_('İstemci klasörü geçersiz: %s', ' '.join(c['sorunlar'])))
             if YON.client_alive():
                 raise Hata(_('Oyun zaten açık.'))
-            others = IST.running_clients()
+            others = [p for p in IST.running_clients() if p not in COK.pids()]     # panelin ek istemcileri sayılmaz
             if others:
                 raise Hata(_('Başka bir DarkOrbit istemcisi açık (süreç %s). Önce onu kapatın.', ', '.join(map(str, others))))
         prof = KAY.profile(slot)
         same = YON.running() and YON.slot == slot
+        arkadas = arkadas or (YON.running() and YON.arkadas)    # açık arkadaş sunucusu Oyna ile kapanmaz (misafirler düşmesin)
+        ark_env = ARK.host_ortam() if arkadas else None
+        coklu = None if arkadas else (coklu_ortam() if coklu_istenir(slot) else None)
+        restart = YON.needs_restart(prof, ark_env, coklu)
+        if restart and COK.canli():
+            raise Hata(_('Ek istemciler açıkken sunucu yeniden başlatılamaz: önce onları kapatın.'))
         if CFG.get('yedek_acilista') and not same:
             _step(_('Kayıt yedekleniyor'))
             KAY.backup(slot, 'oto', _('Oyna (açılış)'))
@@ -401,14 +512,14 @@ def launch(sadece_sunucu=False, arkadas=False):
             import baslat
             baslat.rotate_logs(YOL.LOGS, names=('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log',
                                                 'panel.log'))
-        arkadas = arkadas or (YON.running() and YON.arkadas)    # açık arkadaş sunucusu Oyna ile kapanmaz (misafirler düşmesin)
         _step((_('Arkadaş sunucusu başlatılıyor') if arkadas else _('Sunucular başlatılıyor'))
-              if not (same and YON.arkadas == bool(arkadas)) else _('Sunucular açık'))
-        YON.start_servers(prof, YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot,
-                          arkadas=ARK.host_ortam() if arkadas else None)
+              if not YON.running() or restart else _('Sunucular açık'))
+        YON.start_servers(prof, YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot, arkadas=ark_env, coklu=coklu)
         if not sadece_sunucu:
             _step(_('Oyun açılıyor'))
             YON.start_client(folder, IST.args(CFG, os.path.join(YOL.LOGS, 'client.log')))
+            if YON.coklu or YON.arkadas:              # birden çok istemci olabilir: pencereler pilotun adıyla ayırt edilsin
+                SR.pencere_basligi(YON.istemci.pid, 'DarkOrbit — %s' % KAY.summary(slot).get('pilot', slot))
             m = KAY.meta(slot)
             KAY.set_meta(slot, son_oynama=time.strftime('%Y-%m-%d %H:%M:%S'), oynama_sayisi=int(m.get('oynama_sayisi') or 0) + 1)
         _step(_('Hazır') if sadece_sunucu else _('Oyun açıldı: iyi uçuşlar!'), 'tamam')
@@ -462,10 +573,7 @@ def on_client_exit(early):
         return
     if early:
         return
-    if CFG.get('istemci_kapaninca') == 'kapat':
-        YON.stop_servers()
-    if STATE['pencere_kapandi']:
-        threading.Thread(target=shutdown, daemon=True).start()
+    istemciler_kapandi()                              # ek istemciler sürüyorsa sunucular açık kalır
 
 
 YON.on_client_exit = on_client_exit
@@ -475,7 +583,7 @@ def idle(strict=False):
     """Güncelleme kurulabilir mi: oyun, sunucular, başlatma, istemci indirmesi, protokol aracı ve testler durmuş (strict: panelin
     açmadığı DarkOrbit istemcisi de yok; tasklist çalışır)."""
     busy = (YON.running() or YON.client_alive() or STATE['oyna']['calisiyor'] or DL.running() or UYAR.state()['calisiyor']
-            or TEST.calisiyor or ARK.aktif())
+            or TEST.calisiyor or ARK.aktif() or COK.canli())
     return not busy and not (strict and IST.running_clients())
 
 
@@ -521,9 +629,10 @@ def ticker():
             if YON.client_alive() and YON.slot and iv and time.time() - STATE['son_yedek'] >= iv * 60:
                 KAY.backup(YON.slot, 'oto', _('Oyun sırasında'))
                 STATE['son_yedek'] = time.time()
+            COK.yedekle(iv)                           # ek istemcilerin kayıtları
             if not STATE['pencere_izleniyor'] and time.time() - STATE['nabiz'] > NABIZ_SN:
                 STATE['pencere_kapandi'] = True
-            if STATE['pencere_kapandi'] and not YON.client_alive() and not STATE['oyna']['calisiyor']:
+            if STATE['pencere_kapandi'] and not YON.client_alive() and not COK.canli() and not STATE['oyna']['calisiyor']:
                 shutdown()
         except Exception:
             log('zamanlayıcı hatası: %s' % traceback.format_exc())
@@ -536,7 +645,7 @@ def shutdown():
     log('panel kapanıyor')
     try:
         DL.cancel()                                   # indirme: açılmış dosyalar kalır, sonra kaldığı yerden
-        if not YON.client_alive():
+        if not YON.client_alive() and not COK.canli():
             ARK.kapanis()                             # arkadaşın sunucusundaysa ayrılınır (son hâl kayda)
             YON.stop_servers()
         w = STATE.get('pencere')
@@ -585,6 +694,7 @@ def watch_window(proc):
     log('panel penceresi kapandı')
     if CFG.get('pencere_kapaninca') == 'kapat':
         YON.stop_client()
+        COK.hepsini_kapat(bekle=8)                   # ek istemcilerin son kaydı sunucuya bırakılsın
         shutdown()
     STATE['pencere_kapandi'] = True
 
@@ -645,6 +755,14 @@ def api_client():
             'protokol': UYAR.state(), 'indirme': DL.state()}
 
 
+def ek_gunlukler():
+    """Ek istemcilerin günlükleri (logs/client_<kayıt>.log)."""
+    try:
+        return tuple(sorted(f for f in os.listdir(YOL.LOGS) if EK_GUNLUK.fullmatch(f)))
+    except OSError:
+        return ()
+
+
 def slot_arg(q):
     sid = q.get('id')
     if not sid or not KAY.exists(sid):
@@ -680,17 +798,20 @@ def h_get(path, q):
         return api_client()
     if path == '/api/panel_ayarlari':
         return CFG.all()
+    if path == '/api/takvim':                       # etkinlik takvimi: ?bas=&bit= (zaman damgası, en çok 62 gün)
+        return api_calendar(q)
     if path == '/api/portlar':
         return YON.foreign_ports()
     if path == '/api/gunluk':
         name = q.get('ad', 'gs.log')
-        if name not in GUNLUKLER:
+        if name not in GUNLUKLER and not EK_GUNLUK.fullmatch(name):
             raise Hata(_('Bilinmeyen günlük.'))
         p = os.path.join(YOL.LOGS, name)
         n = min(5000, max(50, int(q.get('satir', 400))))
         return {'ad': name, 'var': os.path.isfile(p), 'boyut': os.path.getsize(p) if os.path.isfile(p) else 0,
                 'satirlar': SR.tail(p, n), 'liste': [{'ad': g, 'boyut': os.path.getsize(os.path.join(YOL.LOGS, g))
-                                                       if os.path.isfile(os.path.join(YOL.LOGS, g)) else None} for g in GUNLUKLER]}
+                                                       if os.path.isfile(os.path.join(YOL.LOGS, g)) else None}
+                                                      for g in GUNLUKLER + ek_gunlukler()]}
     if path == '/api/testler':
         return TEST.state()
     if path == '/api/istemci/indirme':              # istemci indirmenin durumu (indirme.py)
@@ -743,18 +864,33 @@ def h_post(path, b):
     if path == '/api/sunucu/durdur':
         if YON.client_alive():
             raise Hata(_('Oyun açıkken sunucu durdurulamaz: önce oyunu kapatın.'))
+        if COK.canli():
+            raise Hata(_('Ek istemciler açıkken sunucu durdurulamaz: önce onları kapatın.'))
         YON.stop_servers()
         return YON.status()
     if path == '/api/sunucu/yeniden':
         slot = YON.slot or KAY.active()
         if not slot:
             raise Hata(_('Kayıt yok.'))
+        if COK.canli():
+            raise Hata(_('Ek istemciler açıkken sunucu yeniden başlatılamaz: önce onları kapatın.'))
+        ark_env = ARK.host_ortam() if YON.running() and YON.arkadas else None       # kip korunur (Host, çoklu istemci)
+        coklu = None if ark_env else (coklu_ortam() if (YON.running() and YON.coklu) or coklu_istenir(slot) else None)
         YON.stop_servers()
-        YON.start_servers(KAY.profile(slot), YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot)
+        YON.start_servers(KAY.profile(slot), YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot, arkadas=ark_env,
+                          coklu=coklu)
         return YON.status()
     if path == '/api/istemci/kapat':
         YON.stop_client()
         return YON.status()
+    if path == '/api/coklu/ac':                     # çoklu istemci: başka bir kayıtla ek istemci (coklu.py)
+        return open_extra(b)
+    if path == '/api/coklu/kapat':
+        COK.kapat(str(b.get('kayit') or ''))
+        return COK.durum()
+    if path == '/api/coklu/hepsini_kapat':
+        COK.hepsini_kapat()
+        return COK.durum()
     if path == '/api/portlar/kapat':
         pid = int(b.get('pid') or 0)
         info = SR.process_info(pid)
@@ -939,7 +1075,7 @@ def h_post(path, b):
         return TEST.stop()
     if path == '/api/gunluk/temizle':
         name = b.get('ad')
-        if name not in GUNLUKLER:
+        if name not in GUNLUKLER and not EK_GUNLUK.fullmatch(str(name or '')):
             raise Hata(_('Bilinmeyen günlük.'))
         try:
             open(os.path.join(YOL.LOGS, name), 'w').close()
@@ -967,10 +1103,10 @@ def h_post(path, b):
     if path == '/api/kisayol':
         return {'yol': create_shortcut()}
     if path == '/api/kapat':
-        if YON.client_alive() and not b.get('zorla'):
+        if (YON.client_alive() or COK.canli()) and not b.get('zorla'):
             raise Hata(_('Oyun açık: önce oyunu kapatın.'))
         YON.stop_client()
-        threading.Thread(target=lambda: (time.sleep(0.3), shutdown()), daemon=True).start()
+        threading.Thread(target=lambda: (COK.hepsini_kapat(bekle=8), shutdown()), daemon=True).start()
         return {}
     raise Hata(_('Bilinmeyen istek: %s', path))
 
@@ -1009,7 +1145,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(403, {'hata': _('Geçersiz belirteç: paneli yeniden açın.')})
         try:
             out = fn(urlparse(self.path).path, arg)
-        except (Hata, KayitHatasi, ArkadasHatasi, RuntimeError, ValueError) as e:
+        except (Hata, KayitHatasi, ArkadasHatasi, CokluHatasi, RuntimeError, ValueError) as e:
             return self._send(400, {'hata': str(e)})
         except Exception as e:
             log('API hatası %s: %s' % (self.path, traceback.format_exc()))

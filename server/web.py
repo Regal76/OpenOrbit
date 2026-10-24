@@ -6,10 +6,15 @@ HTTP: 8090 (gömülü tarayıcı), 80 (unityApi). Bilinmeyen her isteği kaydede
 Arkadaş sunucusunun misafiri (panelin "Arkadaşlarınla Oyna"sı, panel/arkadas.py): --uzak=<adres:8081> --sohbet=<adres:7771>
 --oturum=<anahtar> --uid=<kimlik> ile istemci oyuna ve sohbete arkadaşın sunucusunda girer (oturum anahtarı profili orada bulur;
 kimlik sunucunun verdiği). --adres: dinlenen yerel adres (öntanımlı 127.0.0.1).
+Çoklu istemci (panel/coklu.py): ek istemci http://127.0.0.1:8090/?oturum=<anahtar>#darkorbit:// ile açılır; anahtar oyun sunucusuna
+sorulur (GET /yerel/oturum: kaydın profili ve sunucudaki kimliği), giriş sayfası onu dosid çerezine yazar, istemci login.php'ye
+PHPSESSID çereziyle gelir: kimlik, gemi, harita, dil ve 2D o kaydınki. Bilinmeyen ek anahtar ana oyuncuya düşmez (ana istemci
+düşerdi): giriş sayfası uyarı verir, login.php başarısız döner.
 """
-import sys, os, threading, socket, time, json
+import sys, os, re, threading, socket, time, json
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.request import Request, urlopen
+from urllib.parse import parse_qs, quote
+from urllib.request import ProxyHandler, Request, build_opener, urlopen
 
 log_dir = [a for a in sys.argv[1:] if not a.startswith('--')][0]
 
@@ -41,9 +46,9 @@ def default_profile():
     return yollar.profile_path()
 
 
-def profile():
+def profile(path=None):
     """Oyun sunucusunun profili varsa kullanıcı kimliği, gemi, harita ve 2D seçimi oradan gelir."""
-    p = PROFIL_YOLU or default_profile()
+    p = path or PROFIL_YOLU or default_profile()
     try:
         d = json.load(open(p, encoding='utf8'))
         use2d = bool(((d.get('ayarlar') or {}).get('displaySettingsModule') or {}).get('displayUse2d'))
@@ -52,37 +57,84 @@ def profile():
         return 1, 'ship_goliath', 1, False
 
 
-def web_settings_path():
+def web_settings_path(path=None):
     """Web tarafının ayarları (giriş ekranında seçilen dil) profilin yanında ayrı dosyada: profili oyun sunucusu yazıyor."""
-    p = PROFIL_YOLU or default_profile()
+    p = path or PROFIL_YOLU or default_profile()
     return os.path.join(os.path.dirname(os.path.abspath(p)), 'web_ayarlari.json')
 
 
-def web_settings():
+def web_settings(path=None):
     try:
-        d = json.load(open(web_settings_path(), encoding='utf8'))
+        d = json.load(open(web_settings_path(path), encoding='utf8'))
         return d if isinstance(d, dict) else {}
     except (OSError, ValueError):
         return {}
 
 
-def stored_lang():
+def stored_lang(path=None):
     """Kayıtlı giriş dili (doğrulanmış) ya da None."""
     import re
-    lang = str(web_settings().get('lang') or '')
+    lang = str(web_settings(path).get('lang') or '')
     return lang if re.fullmatch(r'[a-z]{2}(_[a-z]{2})?', lang) else None
 
 
-def set_lang(body):
+# ------------------------------------------------------------------ çoklu istemci: ek istemcilerin oturumları
+OTURUM_RE = re.compile(r'[A-Za-z0-9_\-]{16,64}')
+_ek = {}                                # oturum -> (sorulduğu an, {'uid', 'yol', 'kayit'} ya da None)
+_yonsuz = build_opener(ProxyHandler({}))   # oyun sunucusuna sistemin vekil sunucusu üzerinden gidilmesin
+
+
+def ek_oturum(sid):
+    """Çoklu istemcinin ek oturumu: oyun sunucusuna sorulur (GET /yerel/oturum; kısa süre saklanır) -> {'uid', 'yol', 'kayit'}
+    ya da None. Arkadaşın sunucusunun misafiriyken (--uid) ek oturum yok."""
+    if not sid or sid == SESSION or UID or not OTURUM_RE.fullmatch(sid):
+        return None
+    now = time.time()
+    with lock:
+        c = _ek.get(sid)
+    if c and now - c[0] < (60 if c[1] else 2):
+        return c[1]
+    try:
+        with _yonsuz.open('http://%s/yerel/oturum?oturum=%s' % (GAME_SERVER, quote(sid)), timeout=3) as r:
+            d = json.loads(r.read().decode('utf8'))
+        v = {'uid': int(d['uid']), 'yol': str(d['yol']), 'kayit': str(d.get('kayit') or '')}
+    except Exception:                   # 404 (bilinmeyen), sunucu tek oyunculu ya da kapalı
+        v = None
+    with lock:
+        _ek[sid] = (now, v)
+    return v
+
+
+def oturum(sid):
+    """İsteğin oturumu -> (oturum, profil yolu, sunucudaki kimlik ya da None) ya da None: boş ya da ana anahtar ana oyuncunun,
+    başkası ek istemcinin (bilinmeyense None: ana oyuncuya düşmez)."""
+    if not sid or sid == SESSION:
+        return SESSION, PROFIL_YOLU or default_profile(), int(UID) if UID else None
+    e = ek_oturum(sid)
+    return (sid, e['yol'], e['uid']) if e else None
+
+
+def cerez(h, name):
+    """İsteğin çerezi (yoksa None)."""
+    for part in (h.headers.get('Cookie') or '').split(';'):
+        k, _, v = part.strip().partition('=')
+        if k == name:
+            return v.strip()
+    return None
+
+
+def set_lang(body, sid=None):
     """Giriş ekranında dil seçilince istemci (LaunchShow.DropdownValueChanged) POST /unityApi/setLang.php "lang=tr" gönderiyor.
     Saklanmıyordu, dil her açılışta İngilizceye dönüyordu (canlı test H88, kullanıcı bildirimi): artık web_ayarlari.json'da; giriş
     sayfası lang çerezi (istemci dili buradan alıyor, redirect_page) ve web girişinin lang alanı olarak verilir."""
     import re
     from urllib.parse import parse_qs
     lang = (parse_qs(body.decode('utf8', 'replace')).get('lang') or [''])[0].strip().lower()
-    if re.fullmatch(r'[a-z]{2}(_[a-z]{2})?', lang):
-        d = dict(web_settings(), lang=lang)
-        p = web_settings_path()
+    o = oturum(sid) if sid else None
+    path = o[1] if o else None          # ek istemci: kendi kaydının yanına; bilinmeyen anahtar hiçbir şey yazmaz
+    if re.fullmatch(r'[a-z]{2}(_[a-z]{2})?', lang) and (o or not sid):
+        d = dict(web_settings(path), lang=lang)
+        p = web_settings_path(path)
         with lock:
             with open(p + '.tmp', 'w', encoding='utf8') as fh:
                 json.dump(d, fh, ensure_ascii=False, indent=1)
@@ -90,17 +142,19 @@ def set_lang(body):
     return 'text/plain', ''
 
 
-def login_node():
+def login_node(o=None):
+    """o: (oturum, profil yolu, sunucudaki kimlik) — verilmezse ana oyuncu (oturum())."""
     # DarkOrbit.LoginNodeData alan türleri il2types.py ile doğrulandı (long/bool/Uri/ServerInfo/Hangars)
     now = int(time.time())
-    user_id, ship, map_id, use2d = profile()
-    user_id = int(UID) if UID else user_id
-    lang = stored_lang() or 'en'
+    sid, path, uid = o or (SESSION, None, int(UID) if UID else None)
+    user_id, ship, map_id, use2d = profile(path)
+    user_id = uid or user_id
+    lang = stored_lang(path) or 'en'
     hangar = {'modelId': 10, 'slotNumber': 1, 'mapId': map_id, 'hangarId': 1, 'shipName': ship.replace('ship_', '').title(), 'tooltipIcon': '',
               'shipDestroyed': False, 'shipId': ship, 'hangarActive': True}
     return {
         'gameclientHash': 'local', 'chatHost': CHAT_HOST, 'profileXmlHash': '1', 'loadingscreenHash': '1',
-        'pid': 175, 'opid': 0, 'sessionID': SESSION, 'userID': user_id, 'platform': 'client',
+        'pid': 175, 'opid': 0, 'sessionID': sid, 'userID': user_id, 'platform': 'client',
         'loadingscreenAssetsXmlHash': '1', 'showAdvertisingHint': False, 'useHash': 0, 'resourceJumpGateXmlHash': '1',
         'browser': 'unity', 'host': BASE, 'useDeviceFonts': 0, 'theme': BASE, 'mapID': map_id, 'lang': lang,
         'itemXmlHash': '1', 'eventStreamContext': '', 'resourcesXmlHash': '1', 'allowChat': 0, 'nextAction': 'internalWebGL',
@@ -124,9 +178,13 @@ def links():
     return {'forum': BASE, 'help': BASE, 'credits': BASE, 'imprint': BASE, 'support': BASE, 'accountCenter': BASE}
 
 
-def login():
+def login(sid=None):
+    """sid: isteğin PHPSESSID çerezi (ek istemcinin oturumu ya da ana oyuncununki)."""
+    o = oturum(sid)
+    if o is None:                       # bilinmeyen ek oturum (sunucu yeniden başladı, istemci panelden açılmadı): ana oyuncu değil
+        return {'success': 0, 'message': 'Session expired: close this game client and open it again from the DarkOrbit panel.'}
     # LoginDataNew { [JsonProperty("data")] string LoginData } -> içindeki JSON metni LoginNodeData olarak ikinci kez ayrıştırılır
-    n = login_node()
+    n = login_node(o)
     return dict(n, success=1, message='', data=json.dumps(n), loginData=json.dumps(n))
 
 
@@ -201,8 +259,8 @@ ROUTES = {
     '//unityApi/events/ssRewards.php': lambda h: ('text/xml;charset=UTF-8', galaxy_trek_xml('odul')),
     '/unityApi/guide/ggRewards.php': lambda h: ('text/xml;charset=UTF-8', gate_rewards_xml()),
     '/unityApi/links.php': lambda h: ('application/json', json.dumps(links())),
-    '/unityApi/login.php': lambda h: ('application/json', json.dumps(login())),
-    '/unityApi/setLang.php': lambda h: set_lang(h.body),
+    '/unityApi/login.php': lambda h: ('application/json', json.dumps(login(cerez(h, 'PHPSESSID')))),
+    '/unityApi/setLang.php': lambda h: set_lang(h.body, cerez(h, 'PHPSESSID')),
     '/unityApi/agent.php': lambda h: ('text/plain', ''),          # istemcinin olay izleme bildirimi (ör. Unity_ChangeLanguagetr)
 }
 
@@ -244,13 +302,19 @@ def cdn_file(base):
     return CDN_TYPES.get(os.path.splitext(p)[1].lower(), 'application/octet-stream'), open(p, 'rb').read()
 
 
-def redirect_page():
-    """Gömülü tarayıcının ilk sayfası: oturum çerezi ve oyun girişine yönlendirme. Kayıtlı giriş dili varsa önce istemciye
+def redirect_page(sid=None):
+    """Gömülü tarayıcının ilk sayfası: oturum çerezi ve oyun girişine yönlendirme (sid: ek istemcinin ?oturum= anahtarı; bilinmeyen
+    anahtarda uyarı, ana oyuncuya düşmez). Kayıtlı giriş dili varsa önce istemciye
     "Unity_ChangeLanguage<dil>" mesajı gider: istemci sayfanın konsol iletilerini dinliyor (GameLoadingManager.UpdateMessage,
     ConsoleMessageLogged -> UpdateWebData: WebGlData.message -> Settings.Language). İstemcinin öteki dil kaynağı tarayıcının lang çerezi (OpenWebLogin) ama tarayıcı her açılışta çerezsiz
     başlıyor ve istemcinin çerez okuması boş dönüyor; web girişinin lang alanını da kullanmıyor (canlı test H88)."""
-    lang = stored_lang()
-    js = 'document.cookie="dosid=%s; path=/";' % SESSION
+    o = oturum(sid) if sid else (SESSION, None, None)
+    if o is None:
+        return ('<!doctype html><html><body style="background:#000;color:#f96;font-family:Verdana">Bu istemcinin oturumu sunucuda '
+                'yok: istemciyi kapatıp paneldeki ek istemci düğmesiyle yeniden aç.<br>This client\'s session is not on the server: '
+                'close it and open it again from the panel.</body></html>')
+    lang = stored_lang(o[1])
+    js = 'document.cookie="dosid=%s; path=/";' % o[0]
     js += 'var gone=false;function go(){if(!gone){gone=true;location.href="/indexInternal.es?action=internalWebGL";}}'
     if lang:
         msg = json.dumps({'success': 1, 'message': 'Unity_ChangeLanguage' + lang})
@@ -275,9 +339,11 @@ class H(BaseHTTPRequestHandler):
         if base in ROUTES:
             ctype, out = ROUTES[base](self)
         elif port == 8090 and base == '/':
-            ctype, out = 'text/html; charset=utf-8', redirect_page()
+            q = parse_qs(path.split('?', 1)[1]) if '?' in path else {}
+            ctype, out = 'text/html; charset=utf-8', redirect_page((q.get('oturum') or [None])[0])
         elif 'indexInternal.es' in path:
-            ctype, out = 'text/plain', SESSION
+            o = oturum(cerez(self, 'dosid'))
+            ctype, out = 'text/plain', o[0] if o else 'gecersiz'
         elif cdn_file(base):
             ctype, out = cdn_file(base)
         else:                    # istemcinin bilinen uçları yukarıda; bilinmeyen istek boş 200 yerine 404 (http.log'da görünür)

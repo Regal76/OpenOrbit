@@ -63,6 +63,7 @@ const IC = {
   wand: '<path d="M15 4V2"/><path d="M15 16v-2"/><path d="M8 9h2"/><path d="M20 9h2"/><path d="M17.8 11.8 19 13"/><path d="M15 9h.01"/><path d="M17.8 6.2 19 5"/><path d="m3 21 9-9"/><path d="M12.2 6.2 11 5"/>',
   arrowL: '<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
   arrowR: '<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+  agenda: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="7" y1="14" x2="13" y2="14"/><line x1="10" y1="18" x2="17" y2="18"/>',
 };
 const SVGNS = 'http://www.w3.org/2000/svg';
 function icon(name) {
@@ -78,7 +79,7 @@ function h(tag, props, ...kids) {
   if (props) for (const [k, v] of Object.entries(props)) {
     if (v == null || v === false) continue;
     if (k === 'class') el.className = v;
-    else if (k === 'style' && typeof v === 'object') Object.assign(el.style, v);
+    else if (k === 'style' && typeof v === 'object') for (const [p, x] of Object.entries(v)) p.startsWith('--') ? el.style.setProperty(p, x) : el.style[p] = x;   // --c gibi değişkenler yalnız setProperty ile
     else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
     else if (k === 'value') el.value = v;
     else if (k === 'checked' || k === 'disabled' || k === 'selected') el[k] = !!v;
@@ -206,6 +207,7 @@ const PAGES = [
   { id: 'kayitlar', ad: N('Kayıtlar'), ic: 'save', sub: N('Kayıt yuvaları, yedekler, kopyalama, içe ve dışa aktarma.') },
   { id: 'ayarlar', ad: N('Oyun Ayarları'), ic: 'sliders', sub: N('Çarpanlar ve kurallar. Kendiliğinden kaydedilir; çoğu oyun açıkken anında uygulanır.') },
   { id: 'etkinlikler', ad: N('Etkinlikler'), ic: 'calendar', sub: N('Her etkinlik takvime göre ya da elle açık / kapalı.') },
+  { id: 'takvim', ad: N('Etkinlik Takvimi'), ic: 'agenda', sub: N('Etkinlikler ve seansları saatlik, günlük, haftalık ve aylık görünümde (yerel saat).') },
   { id: 'istemci', ad: N('İstemci'), ic: 'monitor', sub: N('Oyun klasörü, sürüm denetimi ve görüntü seçenekleri.') },
   { id: 'sunucu', ad: N('Sunucu'), ic: 'server', sub: N('Sunucu süreçleri, portlar, davranış ve günlükler.') },
   { id: 'panel', ad: N('Panel'), ic: 'info', sub: N('Dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu, klasörler ve panel hakkında.') },
@@ -252,6 +254,8 @@ function renderChrome() {
     const running = st.istemci === 'acik', srv = st.oyun === 'acik';
     kids.push(h('span', { class: 'pill' }, dot(d.oyna.calisiyor ? 'busy' : running ? 'ok' : srv ? 'warn' : ''),
       d.oyna.calisiyor ? T('Başlatılıyor…') : running ? T('Oyun açık') : srv ? T('Sunucu açık') : T('Kapalı')));
+    const extras = d.coklu?.istemciler?.length;
+    if (extras) kids.push(h('span', { class: 'pill', style: { cursor: 'pointer' }, onclick: () => go('oyna') }, icon('monitor'), T('{0} ek istemci', extras)));
     const ark = d.arkadas || {};
     if (ark.host || ARK_AKTIF(ark.misafir)) kids.push(h('span', { class: 'pill', style: { cursor: 'pointer' }, onclick: () => go('arkadas') }, icon('users'),
       ark.host ? T('Arkadaş sunucusu açık') : T('Arkadaşın sunucusunda:') + ' ', ark.host ? null : h('b', null, ark.adres)));
@@ -290,7 +294,7 @@ function renderOynaBody() {
   if (!root) return;
   if (!d) return;
   const sig = JSON.stringify([d.aktif, d.surecler.sunucular.web.durum, d.surecler.sunucular.oyun.durum, d.surecler.istemci.durum,
-    d.surecler.istemci.son, d.oyna, d.uyarilar, d.ayar_ozet, d.etkinlikler, Math.floor(Date.now() / 30000)]);
+    d.surecler.istemci.son, d.oyna, d.uyarilar, d.ayar_ozet, d.etkinlikler, multiSig(d.coklu), S.cokluBusy, Math.floor(Date.now() / 30000)]);
   if (S.sig.oyna === sig) return;
   S.sig.oyna = sig;
   const st = srvState(d), a = d.aktif, o = d.oyna;
@@ -331,7 +335,7 @@ function renderOynaBody() {
     else sub.push(btn(T('Yalnız sunucuyu başlat'), () => act(() => api('/api/oyna', { sadece_sunucu: true })), 'ghost sm', 'server', { disabled: !a }));
   }
   const playCol = h('div', { class: 'play-col' }, main, h('div', { class: 'play-sub' }, sub),
-    a ? h('div', { class: 'small muted' }, running ? (S.panelCfg?.istemci_kapaninca === 'acik' ? T('İyi uçuşlar! Oyunu kapatınca sunucular açık kalır.')
+    a ? h('div', { class: 'small muted' }, running ? (S.panelCfg?.istemci_kapaninca === 'acik' || d.coklu?.istemciler?.length ? T('İyi uçuşlar! Oyunu kapatınca sunucular açık kalır.')
       : T('İyi uçuşlar! Oyunu kapatınca sunucular kapanır.')) : srv ? T('Sunucu açık: OYNA istemciyi açar.') : T('Sunucular ve istemci birlikte açılır.')) : null);
   const hero = h('div', { class: 'hero' }, left, playCol);
 
@@ -361,7 +365,8 @@ function renderOynaBody() {
   const evCard = h('div', { class: 'card' }, h('h2', null, icon('calendar'), T('Açık etkinlikler')),
     h('p', { class: 'desc' }, d.etkinlikler.length ? T('Oyuna girdiğinde etkin olan yıllık etkinlikler:') : T('Şu an açık yıllık etkinlik yok.')),
     h('div', { class: 'chips' }, d.etkinlikler.map(n => h('span', { class: 'chip' }, '🎉 ', n))),
-    h('div', { class: 'row', style: { marginTop: '14px' } }, btn(T('Etkinlikleri yönet'), () => go('etkinlikler'), 'sm', 'calendar')));
+    h('div', { class: 'row wrap', style: { marginTop: '14px' } }, btn(T('Etkinlikleri yönet'), () => go('etkinlikler'), 'sm', 'calendar'),
+      btn(T('Takvim'), () => go('takvim'), 'ghost sm', 'agenda')));
   const srvCard = h('div', { class: 'card' }, h('h2', null, icon('server'), T('Sunucu')),
     h('div', { class: 'check-list' }, [[T('Web girişi (8090, 80)'), st.web, d.surecler.sunucular.web.sure_sn],
       [T('Oyun sunucusu (8081)'), st.oyun, d.surecler.sunucular.oyun.sure_sn], [T('İstemci'), st.istemci, d.surecler.istemci.sure_sn]].map(([n, v, t]) =>
@@ -369,7 +374,74 @@ function renderOynaBody() {
         stText(v) + (v === 'acik' && t != null ? ' · ' + fmtDur(t) : ''))))),
     h('div', { class: 'row' }, btn(T('Sunucu ve günlükler'), () => go('sunucu'), 'sm', 'server')));
 
-  root.replaceChildren(...[...warns, hero, steps, early, srv || S.live?.var ? liveCard() : null, h('div', { class: 'grid g3' }, setCard, evCard, srvCard)].filter(Boolean));
+  root.replaceChildren(...[...warns, hero, steps, early, multiCard(d), srv || S.live?.var ? liveCard() : null,
+    h('div', { class: 'grid g3' }, setCard, evCard, srvCard)].filter(Boolean));
+}
+
+// ---- çoklu istemci (coklu.py, /api/coklu): OYNA'dan sonra öteki kayıtlarla aynı sunucuya ek istemciler
+const multiSig = c => c && JSON.stringify(Object.assign({}, c, { istemciler: (c.istemciler || []).map(x => Object.assign({}, x, { sure_sn: null })) }));
+async function openExtra(id, pilot) {
+  S.cokluBusy = id; S.sig.oyna = null; renderOynaBody();
+  const r = await act(() => api('/api/coklu/ac', { kayit: id }), T('Ek istemci açılıyor: {0}', pilot));
+  S.cokluBusy = null; S.sig.oyna = null;
+  try { S.durum = await api('/api/durum'); } catch (e) { /* bir sonraki yoklamada */ }
+  renderChrome(); renderOynaBody();
+  return r;
+}
+function extraBlock(d, k) {
+  const c = d.coklu, open = c.istemciler || [];
+  const pilots = [(c.kayitlar || []).find(x => x.id === c.ana)?.pilot, ...open.map(x => x.pilot)].filter(Boolean).map(p => p.toLowerCase());
+  return srvState(d).oyun !== 'acik' ? T('Önce OYNA') : d.oyna.calisiyor ? T('Başlatma sürüyor') : k.bozuk ? T('Kayıt bozuk')
+    : k.arkadas ? T('Arkadaşının sunucusunda') : open.length >= c.en_cok ? T('Sınır dolu ({0})', c.en_cok)
+    : pilots.includes((k.pilot || '').toLowerCase()) ? T('Aynı pilot adı açık') : S.cokluBusy ? T('Açılıyor…') : null;
+}
+function multiCard(d) {
+  const c = d.coklu; if (!c) return null;
+  const open = c.istemciler || [], st = srvState(d), srv = st.oyun === 'acik';
+  if (!open.length && (!c.ayar || c.kayit_sayisi < 2)) return null;      // kapalı ya da başka kayıt yok: kart yok (İstemci sayfasında ayar)
+  const now = Date.now() / 1000;
+  const others = (c.kayitlar || []).filter(k => !k.ek && k.id !== c.ana);
+  const desc = !srv ? T('OYNA\'dan sonra öteki kayıtlarınla aynı sunucuya ek istemciler açabilirsin: her biri ayrı pencerede, kendi pilotuyla. Birbirinizi oyunda görür, grup kurup birlikte uçarsınız.')
+    : !c.sunucu ? (st.istemci === 'acik' ? T('Sunucu tek oyunculu açıldı: ek istemci için oyunu kapatıp yeniden OYNA\'ya bas.')
+      : T('Sunucu tek oyunculu açık: ilk ek istemci açılırken sunucu çok oturumlu yeniden başlar.'))
+    : T('Ek istemciler bu sunucuya bağlanır; pencere başlığı pilotun adıdır. Her istemci yaklaşık 600 MB bellek kullanır.');
+  const logBtn = id => btn('', () => { go('sunucu'); setTimeout(() => showLog('client_' + id + '.log'), 100); }, 'ghost sm icon', 'note', { title: T('Günlük') });
+  const openRows = open.map(x => h('tr', null, h('td', null, h('b', null, x.pilot),
+      [(c.kayitlar || []).find(k => k.id === x.kayit)?.ad || x.kayit].filter(a => a !== x.pilot).map(a => h('div', { class: 'small muted' }, a))),
+    h('td', null, x.seviye ?? '—'), h('td', null, x.harita || '—'),
+    h('td', null, x.durum === 'aciliyor' ? badge(T('Açılıyor'), 'info') : x.durum === 'kapaniyor' ? badge(T('Kapanıyor'), 'orange')
+      : x.bagli ? badge(T('Oyunda'), 'ok') : badge(T('Bağlanıyor'), 'info')),
+    h('td', { class: 'muted small' }, (x.pid ? 'PID ' + x.pid + ' · ' : '') + fmtDur(x.sure_sn)),
+    h('td', { class: 'num' }, h('div', { class: 'actions', style: { justifyContent: 'flex-end' } }, logBtn(x.kayit),
+      btn(T('Kapat'), async () => {
+        if (await confirmBox(T('{0} kapatılsın mı?', x.pilot), T('Ek istemcinin penceresi kapanır; kaydın son hâli yazılır.'), { ok: T('Kapat'), danger: true }))
+          act(() => api('/api/coklu/kapat', { kayit: x.kayit }), T('{0} kapatılıyor.', x.pilot));
+      }, 'ghost sm', 'power', { disabled: x.durum !== 'acik' })))));
+  const otherRows = others.map(k => {
+    const why = extraBlock(d, k), busy = S.cokluBusy === k.id;
+    return h('div', { class: 'row multi-row' }, h('span', { style: { minWidth: 0, flex: 1 } }, h('b', null, k.pilot || '?'), ' ',
+      badge(k.firma || '?', firmaCls(k.firma)), h('span', { class: 'small muted' }, ' ' + lvl(k.seviye) + ' · ' + k.ad)),
+      why && !busy ? h('span', { class: 'small dim' }, why) : null,
+      btn(busy ? T('Açılıyor…') : T('Ek istemcide aç'), () => openExtra(k.id, k.pilot), 'primary sm', busy ? null : 'play', { disabled: !!why || busy }));
+  });
+  const early = Object.entries(c.son || {}).filter(([id, s]) => s.erken && now - s.bitis < 120 && !open.some(x => x.kayit === id)).map(([id, s]) =>
+    h('div', { class: 'alert uyari' }, icon('alert'), h('div', null, T('{0} kaydının ek istemcisi açıldıktan {1} sn sonra kapandı ({2}). İstemci günlüğüne bakın.',
+      (c.kayitlar || []).find(k => k.id === id)?.ad || id, s.sure_sn, s.zaman)), logBtn(id)));
+  return h('div', { class: 'card', id: 'coklu-card' },
+    h('div', { class: 'row between wrap' }, h('h2', null, icon('monitor'), T('Çoklu istemci')),
+      h('div', { class: 'row wrap', style: { gap: '6px' } }, badge(T('{0} / {1} ek istemci', open.length, c.en_cok), open.length ? 'ok' : ''),
+        open.length > 1 ? btn(T('Hepsini kapat'), async () => {
+          if (await confirmBox(T('Ek istemcilerin hepsi kapatılsın mı?'), T('{0} pencere kapanır; kayıtların son hâli yazılır. Ana istemci açık kalır.', open.length), { ok: T('Hepsini kapat'), danger: true }))
+            act(() => api('/api/coklu/hepsini_kapat', {}), T('Ek istemciler kapatılıyor.'));
+        }, 'ghost sm', 'power') : null,
+        btn('', () => go('istemci'), 'ghost sm icon', 'sliders', { title: T('Çoklu istemci ayarları') }))),
+    h('p', { class: 'desc' }, desc),
+    early,
+    open.length ? h('table', { class: 'table', style: { marginBottom: others.length ? '12px' : 0 } },
+      h('thead', null, h('tr', null, [T('Pilot'), T('Seviye'), T('Harita'), T('Durum'), T('Süre'), ''].map(x => h('th', null, x)))),
+      h('tbody', null, openRows)) : null,
+    others.length ? h('div', { class: 'stack', style: { gap: '6px' } }, otherRows)
+      : !c.ayar ? null : h('div', { class: 'small muted' }, T('Açılabilecek başka kayıt yok.')));
 }
 
 // ---- canlı durum (oyun sunucusunun durum.json'u; canli_durum.py, /api/canli)
@@ -645,7 +717,12 @@ async function renderKayitlar() {
 }
 
 function saveCard(k) {
-  const more = ev => popMenu(ev.currentTarget, [
+  const more = ev => { const c = S.durum?.coklu, extra = c && c.ayar && c.kayit_sayisi > 1 && (c.kayitlar || []).find(x => x.id === k.id);
+    const extraWhy = extra ? (extra.ek || k.id === c.ana ? T('Kayıt kullanımda') : extraBlock(S.durum, extra)) : null;
+    popMenu(ev.currentTarget, [
+    extra ? { label: extraWhy ? T('Ek istemcide aç ({0})', extraWhy) : T('Ek istemcide aç'), ic: 'play', disabled: !!extraWhy,
+      fn: () => openExtra(k.id, k.pilot).then(() => S.page === 'kayitlar' && renderKayitlar()) } : null,
+    extra ? '-' : null,
     { label: T('Yeniden adlandır'), ic: 'edit', fn: async () => { const v = await promptBox(T('Kaydı yeniden adlandır'), T('Kayıt adı'), k.ad); if (v != null) act(() => api('/api/kayitlar/adlandir', { id: k.id, ad: v }), T('Ad değişti.')).then(renderKayitlar); } },
     { label: T('Not ekle / düzenle'), ic: 'note', fn: async () => { const v = await promptBox(T('Kayıt notu'), T('Not'), k.not_, { multiline: true }); if (v != null) act(() => api('/api/kayitlar/not', { id: k.id, not: v })).then(renderKayitlar); } },
     { label: T('Kopyala'), ic: 'copy', fn: async () => { const v = await promptBox(T('Kaydı kopyala'), T('Yeni kaydın adı'), T('{0} (kopya)', k.ad)); if (v != null) act(() => api('/api/kayitlar/kopyala', { id: k.id, ad: v }), T('Kopyalandı.')).then(renderKayitlar); } },
@@ -656,7 +733,7 @@ function saveCard(k) {
       if (await confirmBox(T('Kayıt silinsin mi?'), T('"{0}" ({1}) çöp kutusuna taşınır; Kayıtlar sayfasının altından geri alabilirsin.', k.ad, k.pilot), { ok: T('Sil'), danger: true }))
         act(() => api('/api/kayitlar/sil', { id: k.id }), T('Çöp kutusuna taşındı.')).then(renderKayitlar);
     } },
-  ]);
+  ].filter(Boolean)); };
   return h('div', { class: 'card save-card' + (k.aktif ? ' active' : '') },
     h('div', { class: 'head' }, h('div', { style: { minWidth: 0, flex: 1 } },
       h('div', { class: 'row', style: { gap: '8px' } }, h('span', { class: 'title' }, k.ad), k.aktif ? badge(T('ETKİN'), 'info') : null,
@@ -971,7 +1048,8 @@ async function renderEtkinlikler(list) {
   };
   const yearly = r.filter(e => e.tur === 'yillik'), weekly = r.filter(e => e.tur === 'haftalik');
   $('#content').replaceChildren(h('div', { class: 'stack' },
-    h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Haritadaki etkinlik uzaylıları, kutular ve indirimler oyun açıkken de değişir; istemcideki etkinlik simgeleri ve pencereleri oyuna yeniden girince güncellenir (harita değiştirmek ya da çıkıp girmek yeter).'))),
+    h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Haritadaki etkinlik uzaylıları, kutular ve indirimler oyun açıkken de değişir; istemcideki etkinlik simgeleri ve pencereleri oyuna yeniden girince güncellenir (harita değiştirmek ya da çıkıp girmek yeter).')),
+      btn(T('Takvimde gör'), () => go('takvim'), 'sm', 'agenda')),
     h('div', { class: 'card' }, h('div', { class: 'row between wrap' }, h('h2', null, icon('calendar'), T('Yıllık etkinlikler')),
       h('div', { class: 'row wrap' }, btn(T('Hepsi takvime göre'), () => bulk('takvim', 'yillik'), 'sm'), btn(T('Hepsini aç'), () => bulk('acik', 'yillik'), 'sm'), btn(T('Hepsini kapat'), () => bulk('kapali', 'yillik'), 'sm'))),
       h('p', { class: 'desc' }, T('Gerçek tarihe göre açılırlar; istediğin etkinliği istediğin zaman açabilir ya da kapatabilirsin. Birden çok etkinlik aynı anda açık olabilir.')),
@@ -980,6 +1058,207 @@ async function renderEtkinlikler(list) {
       h('div', { class: 'row wrap' }, btn(T('Hepsi takvime göre'), () => bulk('takvim', 'haftalik'), 'sm'), btn(T('Hepsini aç'), () => bulk('acik', 'haftalik'), 'sm'))),
       h('p', { class: 'desc' }, T('Haftanın belli gün ve saatlerinde (yerel saat) açılırlar. "Açık" seçilirse her zaman geçerli olur.')),
       weekly.map(row))));
+}
+
+// ================================================================== ETKİNLİK TAKVİMİ (takvim_cizelge.py, /api/takvim)
+// Görünümler: saatlik (seçili günün 24 saati, satırlar ve seanslar), günlük (o günün ayrıntılı listesi), haftalık (pazartesiden 7 gün),
+// aylık (6 haftalık ızgara). Çubuk: takvime göre dolu, elle açık çizgili, elle kapalı soluk. Zamanlar yerel saat.
+const TKV = { gorunum: 'haftalik', gun: null, filtre: { yillik: true, haftalik: true, seans: true }, ara: '', veri: null, kapsam: null };
+const TKV_GORUNUM = [['saatlik', N('Saatlik')], ['gunluk', N('Günlük')], ['haftalik', N('Haftalık')], ['aylik', N('Aylık')]];
+const TKV_RENK = ['#38c4ff', '#ff8a3d', '#3ddc97', '#ff6b81', '#a29bfe', '#ffc857', '#1dd1a1', '#f368e0', '#54a0ff', '#ff7f50', '#00d2d3', '#c8d6e5'];
+const tkvColor = k => { let x = 7; for (const c of k) x = (x * 31 + c.charCodeAt(0)) >>> 0; return TKV_RENK[x % TKV_RENK.length]; };
+const dayStart = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const hhmm = ts => new Date(ts * 1000).toLocaleTimeString(LOC(), { hour: '2-digit', minute: '2-digit' });
+const dfmt = (ts, o) => new Date(ts * 1000).toLocaleDateString(LOC(), o);
+const tkvSpan = (s, e) => {                      // "24 Eki 19:00 – 23:00" ya da "14 Eki 00:00 – 1 Kas 24:00"
+  const same = dayStart(new Date(s * 1000)).getTime() === dayStart(new Date((e - 1) * 1000)).getTime();
+  const end = new Date(e * 1000), endTxt = end.getHours() || end.getMinutes() ? hhmm(e) : '24:00';
+  return dfmt(s, { day: 'numeric', month: 'short' }) + ' ' + hhmm(s) + ' – ' + (same ? endTxt : dfmt(e - 1, { day: 'numeric', month: 'short' }) + ' ' + endTxt);
+};
+const TUR_AD = { yillik: N('Yıllık'), haftalik: N('Haftalık') };
+
+function tkvRange() {
+  const g = dayStart(TKV.gun || new Date());
+  if (TKV.gorunum === 'haftalik') { const a = addDays(g, -((g.getDay() + 6) % 7)); return [a, addDays(a, 7)]; }
+  if (TKV.gorunum === 'aylik') { const f = new Date(g.getFullYear(), g.getMonth(), 1); const a = addDays(f, -((f.getDay() + 6) % 7)); return [a, addDays(a, 42)]; }
+  return [g, addDays(g, 1)];
+}
+function tkvGo(gorunum, gun) { if (gorunum) TKV.gorunum = gorunum; if (gun) TKV.gun = gun; renderTakvim(); }
+function tkvShift(n) {
+  const g = dayStart(TKV.gun || new Date());
+  tkvGo(null, TKV.gorunum === 'aylik' ? new Date(g.getFullYear(), g.getMonth() + n, 1) : addDays(g, TKV.gorunum === 'haftalik' ? 7 * n : n));
+}
+function enterTakvim() {
+  TKV.gun = TKV.gun || new Date();
+  renderTakvim();
+  S.timers.push(setInterval(() => { if (document.visibilityState === 'visible' && !document.querySelector('.modal')) renderTakvim(); }, 60000));
+}
+async function renderTakvim() {
+  const [a, b] = tkvRange();
+  let r;
+  try { r = await api(`/api/takvim?bas=${a.getTime() / 1000}&bit=${b.getTime() / 1000}`); } catch (e) { toast(e.message, 'err'); return; }
+  if (S.page !== 'takvim') return;
+  TKV.veri = r; TKV.kapsam = [a.getTime() / 1000, b.getTime() / 1000];
+  drawTakvim();
+}
+
+// görünümde gösterilecek satırlar: süzgeçler; aralıkta açık olan, seansı olan ya da elle açılmış etkinlikler
+function tkvRows() {
+  const q = TKV.ara.trim().toLocaleLowerCase(LOC());
+  return TKV.veri.etkinlikler.filter(e => TKV.filtre[e.tur] && (!q || e.ad.toLocaleLowerCase(LOC()).includes(q)))
+    .map(e => Object.assign({}, e, { renk: tkvColor(e.anahtar), seanslar: TKV.filtre.seans ? e.seanslar.filter(s => s.araliklar.length) : [] }))
+    .filter(e => e.etkin_araliklar.length || e.araliklar.length || e.seanslar.length);
+}
+function drawTakvim() {
+  const r = TKV.veri, [A, B] = TKV.kapsam, g = TKV.gorunum;
+  const title = g === 'aylik' ? dfmt((A + B) / 2, { month: 'long', year: 'numeric' })
+    : g === 'haftalik' ? dfmt(A, { day: 'numeric', month: 'short' }) + ' – ' + dfmt(B - 1, { day: 'numeric', month: 'short', year: 'numeric' })
+      : dfmt(A, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const chip = (k, t) => h('button', { class: 'tk-filter' + (TKV.filtre[k] ? ' on' : ''), onclick: () => { TKV.filtre[k] = !TKV.filtre[k]; drawTakvim(); } }, T(t));
+  const search = h('input', { class: 'input', style: { width: '170px' }, placeholder: T('Etkinlik ara…'), value: TKV.ara,
+    oninput: e => { TKV.ara = e.target.value; clearTimeout(TKV.araT); TKV.araT = setTimeout(() => { drawTakvim(); const s = $('#tk-ara'); if (s) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } }, 250); } });
+  search.id = 'tk-ara';
+  const bar = h('div', { class: 'card tk-toolbar' },
+    h('div', { class: 'row between wrap' },
+      h('div', { class: 'seg' }, TKV_GORUNUM.map(([k, t]) => h('button', { class: g === k ? 'on info' : '', onclick: () => tkvGo(k) }, T(t)))),
+      h('div', { class: 'row' }, btn('', () => tkvShift(-1), 'ghost sm icon', 'arrowL', { title: T('Önceki') }),
+        btn(T('Bugün'), () => tkvGo(null, new Date()), 'sm'), btn('', () => tkvShift(1), 'ghost sm icon', 'arrowR', { title: T('Sonraki') }),
+        h('b', { class: 'tk-title' }, title)),
+      h('div', { class: 'row wrap' }, chip('yillik', N('Yıllık')), chip('haftalik', N('Haftalık')), chip('seans', N('Seanslar')), search)),
+    h('div', { class: 'tk-legend small muted' }, h('span', null, h('i', { class: 'tk-sw' }), T('takvime göre')),
+      h('span', null, h('i', { class: 'tk-sw forced' }), T('elle açık')), h('span', null, h('i', { class: 'tk-sw off' }), T('elle kapalı')),
+      h('span', null, h('i', { class: 'tk-sw sub' }), T('seans / doğuş saati')),
+      r.hep_acik ? h('span', { class: 'badge info' }, T('Oyun ayarı: seanslar hep açık')) : null));
+  const rows = tkvRows();
+  const view = g === 'aylik' ? tkvMonth(rows) : g === 'gunluk' ? tkvDay(rows) : tkvGantt(rows);
+  $('#content').replaceChildren(h('div', { class: 'stack' }, bar, tkvSummary(r), view));
+}
+
+// ---- özet: şu an açık olanlar ve sıradakiler (görünümden bağımsız)
+function tkvSummary(r) {
+  const now = Date.now() / 1000;
+  const on = r.etkinlikler.filter(e => e.etkin);
+  const next = r.etkinlikler.filter(e => e.durum !== 'kapali' && e.sonraki && e.sonraki[0] > now + 1).sort((x, y) => x.sonraki[0] - y.sonraki[0]).slice(0, 8);
+  const dotc = k => h('i', { class: 'tk-dot', style: { background: tkvColor(k) } });
+  return h('div', { class: 'grid g2' },
+    h('div', { class: 'card' }, h('h2', null, icon('zap'), T('Şu an açık ({0})', on.length)),
+      on.length ? h('div', { class: 'chips' }, on.map(e => h('button', { class: 'chip tk-chip', onclick: () => tkvDetail(e.anahtar) }, dotc(e.anahtar), e.ad,
+        e.durum === 'acik' && !e.takvimde ? h('span', { class: 'dim' }, T('elle')) : e.kalan_sn != null ? h('span', { class: 'dim' }, fmtDur(e.kalan_sn)) : null)))
+        : h('p', { class: 'desc' }, T('Şu an açık etkinlik yok.'))),
+    h('div', { class: 'card' }, h('h2', null, icon('clock'), T('Sıradakiler')),
+      next.length ? h('div', { class: 'tk-next' }, next.map(e => h('div', { class: 'row', onclick: () => tkvDetail(e.anahtar) }, dotc(e.anahtar),
+        h('span', { class: 'ellipsis', style: { maxWidth: 'none', flex: 1 } }, e.ad), h('span', { class: 'small muted' }, tkvSpan(e.sonraki[0], e.sonraki[1])),
+        badge(T('{0} sonra', fmtDur(e.sonraki[0] - now)), 'info'))))
+        : h('p', { class: 'desc' }, T('Yakında başlayacak etkinlik yok.'))));
+}
+
+// ---- saatlik ve haftalık: zaman çizelgesi (satır başına etkinlik, altında seansları)
+function tkvGantt(rows) {
+  const [A, B] = TKV.kapsam, now = Date.now() / 1000, week = TKV.gorunum === 'haftalik';
+  const pct = t => Math.max(0, Math.min(100, (t - A) * 100 / (B - A)));
+  const cols = week ? 7 : 24;
+  const bar = (s, e, cls, color, title) => h('div', { class: 'tk-b ' + cls, style: { left: pct(s) + '%', width: Math.max(0.25, pct(e) - pct(s)) + '%', '--c': color }, title });
+  const nowLine = () => now >= A && now < B ? h('div', { class: 'tk-now', style: { left: pct(now) + '%' } }) : null;
+  const ticks = Array.from({ length: cols }, (_, i) => {
+    if (!week) return h('div', { class: 'tk-tick' }, String(i).padStart(2, '0'));
+    const d = addDays(new Date(A * 1000), i), today = dayStart(new Date()).getTime() === d.getTime();
+    return h('div', { class: 'tk-tick click' + (today ? ' today' : ''), title: T('Günlük görünüm'), onclick: () => tkvGo('gunluk', d) },
+      d.toLocaleDateString(LOC(), { weekday: 'short', day: 'numeric' }));
+  });
+  const evRow = e => {
+    const st = e.durum, bars = st === 'acik' ? [bar(A, B, 'forced', e.renk, e.ad + ' · ' + T('elle açık'))]
+      : e.araliklar.map(([s, x]) => bar(s, x, st === 'kapali' ? 'off' : '', e.renk, e.ad + ' · ' + tkvSpan(s, x) + (st === 'kapali' ? ' · ' + T('elle kapalı') : '')));
+    return [h('div', { class: 'tk-row' }, h('div', { class: 'tk-name', onclick: () => tkvDetail(e.anahtar), title: e.aciklama || e.ad },
+      h('i', { class: 'tk-dot', style: { background: e.renk } }), h('span', { class: 'ellipsis', style: { maxWidth: 'none' } }, e.ad),
+      st ? badge(st === 'acik' ? T('elle açık') : T('elle kapalı'), st === 'acik' ? 'ok' : 'err') : null),
+      h('div', { class: 'tk-track', style: { '--cols': cols } }, bars, nowLine())),
+    ...e.seanslar.map(s => h('div', { class: 'tk-row sub' }, h('div', { class: 'tk-name', title: s.haritalar.join(', ') }, '↳ ', h('span', { class: 'ellipsis', style: { maxWidth: 'none' } },
+      s.ad + (s.haritalar.length ? ' · ' + s.haritalar.join(', ') : ''))),
+      h('div', { class: 'tk-track', style: { '--cols': cols } }, s.araliklar.map(([a, b, f]) => bar(a, b, 'sub' + (f === 1 ? ' cift' : ''), e.renk,
+        s.ad + ' · ' + tkvSpan(a, b) + (f === 1 ? ' · ' + T('çift ödül') : f > 1 ? ' · ' + T('giriş {0}\'e kadar', hhmm(f)) : ''))), nowLine())))];
+  };
+  return h('div', { class: 'card tk-gantt-card' }, rows.length ? h('div', { class: 'tk-gantt' },
+    h('div', { class: 'tk-row head' }, h('div', { class: 'tk-name muted small' }, T('{0} etkinlik', rows.length)), h('div', { class: 'tk-track ticks', style: { '--cols': cols } }, ticks)),
+    rows.map(evRow)) : h('p', { class: 'desc' }, T('Bu aralıkta gösterilecek etkinlik yok.')));
+}
+
+// ---- günlük: seçili günün ayrıntılı listesi (bütün gün sürenler, saatli aralıklar ve seanslar sırayla)
+function tkvDay(rows) {
+  const [A, B] = TKV.kapsam, now = Date.now() / 1000;
+  const allDay = [], timed = [];
+  for (const e of rows) {
+    const iv = e.durum === 'acik' ? [[A, B]] : e.durum === 'kapali' ? [] : e.araliklar;
+    if (iv.some(([s, x]) => s <= A && x >= B)) allDay.push(e);
+    else iv.forEach(([s, x]) => timed.push({ e, s, x, ad: e.ad }));
+    e.seanslar.forEach(sn => sn.araliklar.forEach(([s, x, f]) => timed.push({ e, s, x, f, ad: e.ad, alt: sn.ad + (sn.haritalar.length ? ' · ' + sn.haritalar.join(', ') : '') })));
+  }
+  timed.sort((p, q) => p.s - q.s || p.x - q.x);
+  const status = (s, x) => now >= x ? badge(T('Bitti'), '') : now >= s ? badge(T('Sürüyor · {0} kaldı', fmtDur(x - now)), 'ok') : badge(T('{0} sonra', fmtDur(s - now)), 'info');
+  const dotc = e => h('i', { class: 'tk-dot', style: { background: e.renk } });
+  const end = new Date(B * 1000);
+  return h('div', { class: 'grid g2 tk-day' },
+    h('div', { class: 'card' }, h('h2', null, icon('calendar'), T('Bütün gün ({0})', allDay.length)),
+      allDay.length ? h('div', { class: 'stack', style: { gap: '10px' } }, allDay.map(e => h('div', { class: 'tk-item', onclick: () => tkvDetail(e.anahtar) },
+        h('div', { class: 'row' }, dotc(e), h('b', null, e.ad), badge(T(TUR_AD[e.tur]), ''), e.durum ? badge(e.durum === 'acik' ? T('elle açık') : T('elle kapalı'), e.durum === 'acik' ? 'ok' : 'err') : null),
+        e.aciklama ? h('div', { class: 'small muted' }, e.aciklama) : null, h('div', { class: 'small dim' }, '📅 ', e.zaman))))
+        : h('p', { class: 'desc' }, T('Bu gün bütün gün süren etkinlik yok.'))),
+    h('div', { class: 'card' }, h('h2', null, icon('clock'), T('Saatli ({0})', timed.length)),
+      timed.length ? h('div', { class: 'tk-agenda' }, timed.map(t => h('div', { class: 'tk-item row' + (now >= t.x ? ' past' : ''), onclick: () => tkvDetail(t.e.anahtar) },
+        h('span', { class: 'mono tk-time' }, hhmm(t.s) + '–' + (t.x >= B && !end.getHours() ? '24:00' : hhmm(t.x))), dotc(t.e),
+        h('div', { style: { flex: 1, minWidth: 0 } }, h('div', null, t.ad), t.alt ? h('div', { class: 'small muted' }, t.alt,
+          t.f === 1 ? ' · ' + T('çift ödül') : t.f > 1 ? ' · ' + T('giriş {0}\'e kadar', hhmm(t.f)) : '') : null),
+        status(t.s, t.x))))
+        : h('p', { class: 'desc' }, T('Bu gün saatli etkinlik ya da seans yok.'))));
+}
+
+// ---- aylık: 6 haftalık ızgara; gün hücresinde o gün açık etkinlikler (tıklayınca günlük görünüm)
+function tkvMonth(rows) {
+  const [A] = TKV.kapsam, month = new Date(((TKV.kapsam[0] + TKV.kapsam[1]) / 2) * 1000).getMonth(), today = dayStart(new Date()).getTime();
+  const heads = Array.from({ length: 7 }, (_, i) => h('div', { class: 'tk-mhead' }, addDays(new Date(A * 1000), i).toLocaleDateString(LOC(), { weekday: 'short' })));
+  const cells = Array.from({ length: 42 }, (_, i) => {
+    const d = addDays(new Date(A * 1000), i), s = d.getTime() / 1000, x = addDays(d, 1).getTime() / 1000;
+    const items = [];
+    for (const e of rows) {
+      const iv = e.durum === 'acik' ? [[s, x]] : e.durum === 'kapali' ? [] : e.araliklar.filter(([p, q]) => p < x && q > s);
+      if (iv.length) items.push({ e, saat: iv[0][0] > s ? hhmm(iv[0][0]) : null, tam: iv.some(([p, q]) => p <= s && q >= x) });
+      else if (e.seanslar.some(sn => sn.araliklar.some(([p, q]) => p < x && q > s))) items.push({ e, saat: null, tam: false, seans: true });
+    }
+    items.sort((p, q) => (p.e.tur !== 'yillik') - (q.e.tur !== 'yillik') || (!p.tam) - (!q.tam));
+    const max = 4;
+    return h('div', { class: 'tk-cell' + (d.getMonth() !== month ? ' other' : '') + (d.getTime() === today ? ' today' : ''), onclick: () => tkvGo('gunluk', d) },
+      h('div', { class: 'tk-dnum' }, d.getDate()),
+      items.slice(0, max).map(it => h('div', { class: 'tk-mchip' + (it.e.durum === 'acik' ? ' forced' : ''), style: { '--c': it.e.renk }, title: it.e.ad },
+        it.saat ? h('span', { class: 'dim' }, it.saat + ' ') : null, it.e.ad)),
+      items.length > max ? h('div', { class: 'small muted' }, T('+{0} daha', items.length - max)) : null);
+  });
+  return h('div', { class: 'card' }, h('div', { class: 'tk-month' }, heads, cells));
+}
+
+// ---- etkinliğin ayrıntısı: açıklama, takvim, bu görünümdeki aralıklar, seanslar; elle açık / kapalı seçimi
+function tkvDetail(key) {
+  const e = TKV.veri.etkinlikler.find(x => x.anahtar === key); if (!e) return;
+  const now = Date.now() / 1000, st = e.durum || 'takvim';
+  const set = v => act(() => api('/api/etkinlikler', { degisiklik: { [key]: v } }), T('Güncellendi.')).then(x => { if (x) { m.close(); renderTakvim(); } });
+  const iv = e.durum === 'acik' ? [] : e.araliklar;
+  const cur = e.sonraki && e.sonraki[0] <= now + 1 ? T('Takvimde açık · {0} kaldı', fmtDur(e.sonraki[1] - now))
+    : e.sonraki ? T('Takvimde sonraki: {0} ({1} sonra)', tkvSpan(e.sonraki[0], e.sonraki[1]), fmtDur(e.sonraki[0] - now)) : T('Takvimde yakında dönemi yok.');
+  const m = modal({
+    title: e.ad, sub: T(TUR_AD[e.tur]) + ' · ' + (e.etkin ? T('şu an açık') : T('şu an kapalı')), wide: true,
+    body: h('div', { class: 'stack', style: { gap: '12px' } },
+      e.aciklama ? h('div', null, e.aciklama) : null,
+      h('div', { class: 'kv one tk-kv' }, [[T('Takvim'), e.zaman], [T('Durum'), cur]].map(([a, b]) => h('div', null, h('span', { class: 'muted' }, a), h('b', null, b)))),
+      h('div', null, h('div', { class: 'lbl' }, T('Bu görünümde')), iv.length ? h('div', { class: 'chips', style: { marginTop: '6px' } }, iv.slice(0, 24).map(([s, x]) => h('span', { class: 'chip' }, tkvSpan(s, x))),
+        iv.length > 24 ? h('span', { class: 'small muted' }, T('+{0} daha', iv.length - 24)) : null)
+        : h('div', { class: 'small muted' }, e.durum === 'acik' ? T('Elle açık: her zaman geçerli.') : T('Bu görünümde takvimde yok.'))),
+      e.seanslar.length ? h('div', null, h('div', { class: 'lbl' }, T('Seanslar ve doğuş saatleri')), h('div', { class: 'stack', style: { gap: '6px', marginTop: '6px' } },
+        e.seanslar.map(s => h('div', { class: 'small' }, h('b', null, s.ad), s.haritalar.length ? ' · ' + s.haritalar.join(', ') : '',
+          h('div', { class: 'muted' }, s.araliklar.length ? [...new Set(s.araliklar.map(([a, b]) => hhmm(a) + '–' + hhmm(b)))].slice(0, 12).join(', ') : T('Bu görünümde yok')))))) : null,
+      h('div', null, h('div', { class: 'lbl' }, T('Oyunda')), h('div', { class: 'seg', style: { marginTop: '6px' } },
+        [['takvim', T('Takvime göre'), 'info'], ['acik', T('Açık'), 'ok'], ['kapali', T('Kapalı'), 'err']].map(([k, t, c]) =>
+          h('button', { class: (st === k ? 'on ' : '') + c, onclick: () => set(k === 'takvim' ? null : k) }, t))))),
+    foot: [btn(T('Etkinlikler sayfası'), () => { m.close(); go('etkinlikler'); }, 'ghost', 'calendar'), btn(T('Kapat'), () => m.close(), 'primary')],
+  });
 }
 
 // ================================================================== İSTEMCİ
@@ -1091,7 +1370,15 @@ async function renderIstemci(data) {
       field(T('Başlatma komutu'), h('div', { class: 'cmd' }, r.komut.join(' ')))));
   const warn = h('div', { class: 'alert uyari' }, icon('alert'), h('div', null,
     T("Klasördeki DarkorbitLauncher.exe'yi çalıştırma: istemciyi resmî sunucudan güncelleyip yerel sunucuyla uyumu bozabilir. Panel istemci dosyalarını hiç değiştirmez; yalnız yerel giriş adresiyle başlatır.")));
-  $('#content').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'grid g2' }, folderCard, dispCard), warn));
+  const multiCfg = h('div', { class: 'card compact' }, h('h2', null, icon('users'), T('Çoklu istemci')),
+    h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, T('Öteki kayıtlarla ek istemciler')),
+      h('div', { class: 'help' }, T("Açıksa ve en az iki kaydın varsa OYNA sunucuyu çok oturumlu açar; Oyna sayfasından öteki kayıtlarınla aynı sunucuya ek istemciler açarsın. Ek istemciler pencere kipinde açılır; görüntü ayarları ortaktır."))),
+      h('div', { class: 'ctl' }, h('label', { class: 'switch' }, h('input', { type: 'checkbox', checked: cfg.coklu_istemci, onchange: e => saveCfg({ coklu_istemci: e.target.checked }) }), h('span')))),
+    h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, T('En çok ek istemci')),
+      h('div', { class: 'help' }, T('Her istemci yaklaşık 600 MB bellek ve bir miktar ekran kartı kullanır.'))),
+      h('div', { class: 'ctl' }, h('select', { class: 'input', style: { width: '90px' }, onchange: e => saveCfg({ coklu_en_cok: +e.target.value }) },
+        [1, 2, 3, 4, 5, 6, 7, 8].map(n => h('option', { value: n, selected: cfg.coklu_en_cok === n }, String(n)))))));
+  $('#content').replaceChildren(h('div', { class: 'stack' }, h('div', { class: 'grid g2' }, folderCard, dispCard), multiCfg, warn));
   S.sig = S.sig || {}; S.proto = null; S.protoClient = c;
   if (dlWrap) S.timers.push(dlWatch(dlWrap, r.indirme, () => { toast(T('Oyun indirildi ve kuruldu.'), 'ok'); renderIstemci(); }, { haveClient: c.gecerli }));
   protoTick(true);
@@ -1560,7 +1847,7 @@ const WZ_PAGES = {
 };
 
 const RENDER = { oyna: renderOyna, arkadas: renderArkadas, kayitlar: renderKayitlar, ayarlar: renderAyarlar, etkinlikler: () => renderEtkinlikler(), istemci: () => renderIstemci(),
-  sunucu: renderSunucu, panel: renderPanel };
+  takvim: enterTakvim, sunucu: renderSunucu, panel: renderPanel };
 
 // ------------------------------------------------------------------ başlangıç
 async function boot() {

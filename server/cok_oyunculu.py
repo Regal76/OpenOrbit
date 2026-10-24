@@ -25,8 +25,16 @@ Yönetim (yalnız 127.0.0.1'den, panelin anahtarıyla): POST /yonetim/at {anahta
 oyuncusununki web.py'nin SESSION'ı (AYAR['yerel']: panelin bu açılışta ürettiği belirteç; yalnız bu bilgisayardan).
 Yanlış katılma şifresi adres başına sınırlı (DENEME_SINIR denemeden sonra KILIT_SN kilit, 429).
 Sunucu kapatılırken (panelin "Durdur"u) misafirlerin son hâli yayımlanır ve bekleyen yoklamalara verilir (kapanis).
+
+Çoklu istemci (panelin OYNA'sından sonra bu bilgisayardaki öteki kayıtlarla açılan istemciler; panel/coklu.py): sunucu aynı kipte
+açılır, misafir kabul etmez (DO_COK_OYUNCULU misafir: false, adres 127.0.0.1); Host'ta misafirlerle birlikte. Yalnız 127.0.0.1'den:
+  POST /yerel/ekle {anahtar, kayit, yol}  -> {oturum, uid, devam}: yuvanın profil.json'u ek oyuncu olarak yüklenir (YerelProfil:
+       dosyaya doğrudan yazılır; kimliği sunucudaki başka bir oyuncununkiyle aynıysa bellekte kayda göre sabit geçici kimlik).
+       Aynı yuva yeniden eklenirse (istemci yeniden açıldı) oturum sürer. Ana kayıt, aynı pilot adı ve dolu sunucu reddedilir.
+  POST /yerel/cikar {anahtar, oturum}     -> bağlıysa oyun bağlantısı kapanır, son hâl yazılır, yuva bırakılır
+  GET  /yerel/oturum?oturum=              -> {uid, yol, kayit}: web.py ek istemcinin girişini bununla verir
 """
-import collections, gzip, hmac, json, os, random, secrets, socket, threading, time, zlib
+import collections, gzip, hmac, json, os, random, re, secrets, socket, threading, time, zlib
 from urllib.parse import parse_qs, urlparse
 
 import profil as PF
@@ -42,9 +50,13 @@ BOSTA_SN = 30 * 60              # bağlı değil ve yoklanmıyor: kayıt bu kada
 BITIS_SN = 120                  # biten oturumun son hâli bu kadar daha alınabilir (yoklama arasında biten oturum kaybolmasın)
 SOHBET_PORTU = 7771
 
-AYAR = {'acik': False, 'sifre': '', 'en_cok': 4, 'anahtar': None, 'kod': '', 'adres': '0.0.0.0', 'yerel': ''}
+YEREL_ALT, YEREL_UST = 2100000000, 2147000000     # ek oyuncuların geçici kimlikleri (misafirlerinkinden ayrı)
+YEREL_EN_COK = 16               # sunucunun sınırı (panelin kendi sınırı daha küçük: coklu_en_cok)
+
+AYAR = {'acik': False, 'sifre': '', 'en_cok': 4, 'anahtar': None, 'kod': '', 'adres': '0.0.0.0', 'yerel': '', 'misafir': True}
 COND = threading.Condition()
 MISAFIRLER = {}                 # oturum anahtarı -> Misafir
+YERELLER = {}                   # oturum anahtarı -> Yerel (çoklu istemcinin ek oyuncuları)
 HATALI = {}                     # adres -> [yanlış şifre sayısı, kilidin bitişi]
 log = print
 
@@ -66,7 +78,7 @@ def configure(raw, logger=print):
     # tünelle açılan sunucuda (bağlantılar 127.0.0.1'den görünür) şifresiz girişti
     AYAR.update(acik=True, sifre=str(d.get('sifre') or ''), en_cok=max(1, min(16, int(d.get('en_cok') or 4))),
                 anahtar=d.get('anahtar') or None, kod=str(d.get('kod') or ''), adres=str(d.get('adres') or '0.0.0.0'),
-                yerel=str(d.get('yerel') or '') or secrets.token_urlsafe(24))
+                yerel=str(d.get('yerel') or '') or secrets.token_urlsafe(24), misafir=bool(d.get('misafir', True)))
 
 
 def yerel_mi(sid):
@@ -210,7 +222,7 @@ def giris(body, ip, tohum, sunucu_uid):
     if err:
         return 400, {'hata': 'profil', 'mesaj': 'Kayıt geçersiz: %s.' % err}
     with COND:
-        uid = _yeni_uid({sunucu_uid} | {m.uid for m in MISAFIRLER.values()})
+        uid = _yeni_uid({sunucu_uid} | {m.uid for m in MISAFIRLER.values()} | {y.uid for y in YERELLER.values()})
         m = Misafir(secrets.token_urlsafe(18), anahtar, uid, d['pilot']['userId'], str(body.get('adres') or ''), ip)
         kimlik_cevir(d, m.asil_uid, uid)
         m.profil = MisafirProfil(tohum, d, m)
@@ -288,7 +300,8 @@ def liste():
 
 
 def tick(kapat_oturum):
-    """Bağlı olmayan ve uzun süredir yoklanmayan misafir oturumları biter, bitenlerin kaydı bırakılır (game.autosave)."""
+    """Bağlı olmayan ve uzun süredir yoklanmayan misafir oturumları biter, bitenlerin kaydı bırakılır (game.autosave). Ek oyuncular
+    da: panel istemcisi kapanınca bırakır (yerel_cikar); panel kapanmışsa bağlanmayan ek oyuncu BOSTA_SN sonra bırakılır."""
     now = time.time()
     for m in liste():
         if m.session is None and now - m.son > BOSTA_SN:
@@ -296,6 +309,9 @@ def tick(kapat_oturum):
     with COND:
         for k in [k for k, m in MISAFIRLER.items() if m.bitti and now - m.bitis > BITIS_SN]:
             del MISAFIRLER[k]
+    for y in yereller():
+        if y.session is None and now - y.son > BOSTA_SN:
+            yerel_bitir(y, kapat_oturum, 'uzun süre bağlanmadı')
 
 
 def kapanis(bekle=2.0):
@@ -310,6 +326,138 @@ def kapanis(bekle=2.0):
         COND.notify_all()
     if ms:
         time.sleep(bekle)
+
+
+# ------------------------------------------------------------------ çoklu istemci: bu bilgisayardaki öteki kayıtlar
+class YerelProfil(PF.Profil):
+    """Ek oyuncunun kaydı: kendi yuvasının dosyası (Profil gibi yazılır). Kimliği sunucudaki başka bir oyuncununkiyle aynıysa (kayıtlar
+    tohumun kimliğiyle başlar) bellekte kayda göre sabit geçici kimlik alır; dosyaya asıl kimlikle yazılır (_metin)."""
+
+    def __init__(self, tohum, path, dolu, kayit):
+        self.gecici = None
+        super().__init__(tohum, path=path)
+        self.asil_uid = self.user_id
+        if self.asil_uid in dolu:
+            n = YEREL_UST - YEREL_ALT
+            u = YEREL_ALT + zlib.crc32(kayit.encode('utf8')) % n
+            while u in dolu:
+                u = YEREL_ALT + (u - YEREL_ALT + 1) % n
+            self.gecici = u
+            kimlik_cevir(self.d, self.asil_uid, u)
+
+    def _metin(self):
+        if self.gecici is None:
+            return super()._metin()
+        d = json.loads(json.dumps(self.d, ensure_ascii=False))
+        kimlik_cevir(d, self.gecici, self.asil_uid)
+        return json.dumps(d, ensure_ascii=False, indent=1)
+
+
+class Yerel:
+    def __init__(self, oturum, kayit, yol, profil):
+        self.oturum, self.kayit, self.yol, self.profil = oturum, kayit, yol, profil
+        self.session = None           # bağlı oyun oturumu (game.Session)
+        self.giris = self.son = time.time()
+        self.bitti = False            # bırakılıyor: girilemez; bağlantı kapanınca kayıttan çıkar (game.Session.run)
+
+    @property
+    def uid(self):
+        return self.profil.user_id
+
+    def ozet(self):
+        pl = self.profil.d.get('pilot') or {}
+        return {'oturum': self.oturum[:8], 'kayit': self.kayit, 'ad': pl.get('userName', '?'), 'seviye': pl.get('level', 1),
+                'uid': self.uid, 'bagli': self.session is not None, 'giris': int(self.giris)}
+
+
+def _ayni_yol(a, b):
+    return os.path.normcase(os.path.realpath(a)) == os.path.normcase(os.path.realpath(b))
+
+
+def _ad(profil):
+    return str(((profil.d if profil else {}).get('pilot') or {}).get('userName') or '').strip().lower()
+
+
+def yerel_ekle(body, tohum, ana):
+    """POST /yerel/ekle -> (durum kodu, yanıt). ana: sunucunun kendi profili (game.PROFIL)."""
+    kayit, yol = str(body.get('kayit') or ''), str(body.get('yol') or '')
+    if not re.fullmatch(r'[a-z0-9_]{1,40}', kayit) or os.path.basename(yol) != 'profil.json' or not os.path.isfile(yol):
+        return 400, {'hata': 'kayit', 'mesaj': 'Kayıt bulunamadı.'}
+    if not os.path.normcase(os.path.realpath(yol)).startswith(os.path.normcase(os.path.realpath(YOL.KAYITLAR)) + os.sep):
+        return 400, {'hata': 'kayit', 'mesaj': 'Kayıt, kayıt klasöründe değil.'}
+    if _ayni_yol(yol, ana.path):
+        return 409, {'hata': 'ana', 'mesaj': 'Bu kayıt ana istemcide açık.'}
+    with COND:
+        eski = next((y for y in YERELLER.values() if _ayni_yol(y.yol, yol)), None)
+        if eski and eski.bitti:
+            return 409, {'hata': 'kapaniyor', 'mesaj': 'Bu kaydın önceki istemcisi kapanıyor: birkaç saniye sonra yeniden dene.'}
+        if eski:                                  # istemci yeniden açıldı: sunucudaki oturum sürer
+            eski.son = time.time()
+            return 200, {'oturum': eski.oturum, 'uid': eski.uid, 'devam': True}
+        if sum(1 for y in YERELLER.values() if not y.bitti) >= YEREL_EN_COK:
+            return 503, {'hata': 'dolu', 'mesaj': 'Sunucuda en çok %d ek istemci açılabilir.' % YEREL_EN_COK}
+        dolu = {ana.user_id} | {m.uid for m in MISAFIRLER.values() if not m.bitti} | {y.uid for y in YERELLER.values()}
+    try:
+        p = YerelProfil(tohum, yol, dolu, kayit)
+    except (OSError, ValueError, KeyError, TypeError) as e:
+        return 400, {'hata': 'profil', 'mesaj': 'Kayıt okunamadı: %s' % e}
+    err = gecerli_profil(p.d)
+    if err:
+        return 400, {'hata': 'profil', 'mesaj': 'Kayıt geçersiz: %s.' % err}
+    with COND:
+        adlar = {_ad(ana)} | {_ad(m.profil) for m in MISAFIRLER.values() if not m.bitti} | {_ad(y.profil) for y in YERELLER.values()}
+        if _ad(p) in adlar:                       # sohbet, posta, grup ve rehber oyuncuyu adıyla bulur
+            return 409, {'hata': 'ad', 'mesaj': 'Sunucuda "%s" adlı bir pilot zaten var: aynı adla iki oyuncu sohbette, postada ve '
+                                                'grupta karışır. Bu kaydın pilot adını değiştir.' % p.d['pilot']['userName']}
+        if any(_ayni_yol(y.yol, yol) for y in YERELLER.values()):
+            return 409, {'hata': 'kapaniyor', 'mesaj': 'Bu kayıt az önce açıldı.'}
+        y = Yerel(secrets.token_urlsafe(18), kayit, yol, p)
+        YERELLER[y.oturum] = y
+    log('ek oyuncu: %s (kayıt %s), sunucudaki kimlik %d%s' % (p.d['pilot'].get('userName'), kayit, y.uid,
+                                                             ' (geçici; asıl %d)' % p.asil_uid if p.gecici else ''))
+    return 200, {'oturum': y.oturum, 'uid': y.uid, 'devam': False}
+
+
+def yerel_bitir(y, kapat_oturum, neden):
+    """Ek oyuncuyu bırak: bağlantısı kapanır, son hâl yuvaya yazılır, kayıttan çıkar (bağlantı 5 sn'de kapanmazsa çıkışı oturum yapar)."""
+    with COND:
+        y.bitti = True
+    s = y.session
+    if s is not None:
+        kapat_oturum(s)                           # oturum kapanırken son hâli yazar (game.Session.run)
+        end = time.time() + 5
+        while y.session is not None and time.time() < end:
+            time.sleep(0.05)
+    try:
+        y.profil.save(force=True)
+    except Exception as e:                        # noqa: BLE001 (dosya kilitli: oturumun son kaydı yazmıştır)
+        log('ek oyuncunun son kaydı yazılamadı: %r' % e)
+    with COND:
+        if y.session is None:
+            YERELLER.pop(y.oturum, None)
+    log('ek oyuncu bırakıldı (%s): %s' % (neden, y.ozet()['ad']))
+
+
+def yerel_cikar(b, kapat_oturum):
+    """POST /yerel/cikar."""
+    with COND:
+        y = YERELLER.get(str(b.get('oturum') or ''))
+    if not y:
+        return 404, {'hata': 'oturum', 'mesaj': 'Bu sunucuda böyle bir ek oyuncu yok.'}
+    yerel_bitir(y, kapat_oturum, 'istemci kapandı')
+    return 200, {'tamam': True}
+
+
+def yerel_bul(sid):
+    """LoginRequest'in sessionID'si -> ek oyuncu (yoksa ya da bırakılıyorsa None)."""
+    with COND:
+        y = YERELLER.get(str(sid or ''))
+        return y if y and not y.bitti else None
+
+
+def yereller():
+    with COND:
+        return [y for y in YERELLER.values() if not y.bitti]
 
 
 # ------------------------------------------------------------------ gönderme kuyruğu
@@ -447,7 +595,18 @@ def http(c, addr, game):
         if not isinstance(b, dict):
             return _yanit(c, 400, {'hata': 'json'})
         ip = addr[0]
-        if u.path == '/misafir/bilgi':
+        yerel = ip in ('127.0.0.1', '::1')
+        yonetim = yerel and AYAR['anahtar'] and esit(b.get('anahtar'), AYAR['anahtar'])
+        if u.path.startswith('/misafir/') and not AYAR['misafir']:
+            code, out = 403, {'hata': 'kapali', 'mesaj': 'Bu sunucu misafir kabul etmiyor.'}
+        elif u.path == '/yerel/ekle' and method == 'POST' and yonetim:
+            code, out = yerel_ekle(b, game.SABLON.giris.get('tohum'), game.PROFIL)
+        elif u.path == '/yerel/cikar' and method == 'POST' and yonetim:
+            code, out = yerel_cikar(b, game.kapat_oturum)
+        elif u.path == '/yerel/oturum' and yerel:
+            y = yerel_bul(q.get('oturum'))
+            code, out = (200, {'uid': y.uid, 'yol': y.yol, 'kayit': y.kayit}) if y else (404, {'hata': 'oturum'})
+        elif u.path == '/misafir/bilgi':
             code, out = 200, game.sunucu_bilgisi()
         elif u.path == '/misafir/giris' and method == 'POST':
             code, out = giris(b, ip, game.SABLON.giris.get('tohum'), game.PROFIL.user_id)
@@ -455,15 +614,14 @@ def http(c, addr, game):
             code, out = profil_yokla(q)
         elif u.path == '/misafir/cikis' and method == 'POST':
             code, out = cikis(b, game.kapat_oturum)
-        elif u.path == '/yonetim/at' and method == 'POST' and ip in ('127.0.0.1', '::1') and AYAR['anahtar'] \
-                and esit(b.get('anahtar'), AYAR['anahtar']):
+        elif u.path == '/yonetim/at' and method == 'POST' and yonetim:
             m = next((x for x in liste() if x.oturum.startswith(str(b.get('oturum') or '-'))), None)
             if m:
                 bitir(m, game.kapat_oturum, 'sunucu çıkardı')
             code, out = (200, {'tamam': True}) if m else (404, {'hata': 'oturum'})
         else:
             code, out = 404, {'hata': 'yok'}
-        if u.path != '/misafir/profil':
+        if u.path not in ('/misafir/profil', '/yerel/oturum'):
             log('arkadaş: %s %s <- %s -> %d' % (method, u.path, ip, code))
         _yanit(c, code, out, gz)
     except (OSError, ValueError) as e:

@@ -1,6 +1,7 @@
 """Sunucudaki oyuncular: grup (grup.py), rehber (rehber.py), sohbetin fısıltısı, posta ve pilot kartı başka oyuncuyu buradan bulur.
 
-Tek oyunculuda yalnız oyuncunun kendisi; arkadaş sunucusunda (cok_oyunculu.py) sunucunun kendi oyuncusu ve misafirler. Kaydı sunucuda
+Tek oyunculuda yalnız oyuncunun kendisi; arkadaş sunucusunda (cok_oyunculu.py) sunucunun kendi oyuncusu ve misafirler, çoklu
+istemcide ek oyuncular (bu bilgisayardaki öteki kayıtlar). Kaydı sunucuda
 olan herkes bilinir (bağlı olmayan misafirin kaydı da bellekte durur: posta ve rehber isteği ona yazılır, son hâli paneline gider);
 oyun bağlantısı olan çevrimiçidir. Misafirin sunucudaki kimliği her katılmada başka (cok_oyunculu._yeni_uid): kalıcı bağlar (rehber)
 ada göre tutulur.
@@ -42,14 +43,14 @@ class Kisi:
 
 
 def hepsi():
-    """kimlik -> Kisi: sunucunun oyuncusu ve bitmemiş misafir oturumları."""
+    """kimlik -> Kisi: sunucunun oyuncusu, bitmemiş misafir oturumları ve çoklu istemcinin ek oyuncuları."""
     g = OYUN
     if g is None:
         return {}
     host = g.PROFIL
     cur = g.CURRENT
     out = {host.user_id: Kisi(host, cur if cur is not None and cur.profil is host else None)}
-    for m in CO.liste():
+    for m in CO.liste() + CO.yereller():
         if m.profil is not None:
             s = m.session
             out[m.profil.user_id] = Kisi(m.profil, s if s is not None and s.profil is m.profil else None)

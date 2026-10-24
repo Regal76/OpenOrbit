@@ -298,6 +298,10 @@ class Profil:
                 items.insert(items.index(ref) + 1, it)
                 self.dirty = True
 
+    def _metin(self):
+        """Dosyaya yazılacak JSON (çoklu istemcinin ek oyuncusu asıl kimliğe çevirir: cok_oyunculu.YerelProfil)."""
+        return json.dumps(self.d, ensure_ascii=False, indent=1)
+
     def save(self, force=False):
         with self.lock:
             if not (self.dirty or force):
@@ -307,7 +311,7 @@ class Profil:
             # iteration") yeniden denenir; dosyaya ancak metin tamamlanınca yazılır
             for k in range(5):
                 try:
-                    text = json.dumps(self.d, ensure_ascii=False, indent=1)
+                    text = self._metin()
                     break
                 except RuntimeError:
                     if k == 4:

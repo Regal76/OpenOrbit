@@ -12,8 +12,9 @@ resource_key_access-dse"; Echoes biletine uridyum yetmeyince de bu). Mağazanın
 Sunucu MileageMarketBuyCommand, VIPMerchantExchangeBuyCommand, ReturneeLoginBundleBuyCommand, UridiumBankClaimCommand göndermediği için
 (istemci bunlarla da ödeme isteği açıyor) 443'e gelen her bağlantı oyuncunun bir ödeme düğmesine basmasıdır; kupon kodu ve resim
 yükleme de 443'e gidiyor, onlar son açılan pencereden ayrılır (CEVRIMDISI).
+Birden çok istemcide (çoklu istemci, arkadaş sunucusu) tıklayan istemci, bağlanan sürecin kimliğiyle bulunur (baglanan_pid).
 """
-import socket, threading, time
+import os, socket, threading, time
 
 PORT = 443
 ARALIK_SN = 2.0              # aynı tıklamanın yeniden denemeleri (TLS) bir sayılır
@@ -110,8 +111,35 @@ def redirect(magaza, item):
     return [open_shop(), KAPI.screen(text(item, magaza))]
 
 
+def baglanan_pid(addr, port):
+    """Bu bilgisayardan gelen bağlantının (karşı ucu addr, bu uçtaki port) sürecinin kimliği: Windows TCP tablosundan
+    (GetExtendedTcpTable, TCP_TABLE_OWNER_PID_CONNECTIONS); bulunamazsa None."""
+    if os.name != 'nt' or not addr:
+        return None
+    import ctypes
+    from ctypes import wintypes
+    fn = ctypes.windll.iphlpapi.GetExtendedTcpTable
+    size = wintypes.DWORD(0)
+    fn(None, ctypes.byref(size), False, 2, 4, 0)                      # AF_INET, TCP_TABLE_OWNER_PID_CONNECTIONS
+    for _ in range(3):
+        buf = ctypes.create_string_buffer(size.value + 4096)
+        size = wintypes.DWORD(len(buf))
+        if fn(buf, ctypes.byref(size), False, 2, 4, 0) == 0:
+            break
+    else:
+        return None
+    n = ctypes.cast(buf, ctypes.POINTER(wintypes.DWORD))[0]
+    rows = ctypes.cast(ctypes.addressof(buf) + 4, ctypes.POINTER(wintypes.DWORD * 6))   # durum, yerel adres/port, uzak adres/port, pid
+    for i in range(n):
+        r = rows[i]
+        if socket.ntohs(r[2] & 0xFFFF) == addr[1] and socket.ntohs(r[4] & 0xFFFF) == port:
+            return r[5]
+    return None
+
+
 class Dinleyici:
-    """127.0.0.1:443: istemcinin ödeme isteği (TLS) bağlanınca kapatılır, on_click çağrılır (aynı tıklamanın denemeleri bir)."""
+    """127.0.0.1:443: istemcinin ödeme isteği (TLS) bağlanınca on_click(adres) çağrılır, bağlantı kapatılır (aynı tıklamanın
+    denemeleri bir). on_click bağlantı açıkken çağrılır: tıklayan istemcinin süreci TCP tablosunda görünür (baglanan_pid)."""
 
     def __init__(self, on_click, log=print, port=PORT):
         self.on_click, self.log, self.port = on_click, log, port
@@ -136,18 +164,17 @@ class Dinleyici:
                 c, addr = self.sock.accept()
             except OSError:
                 return
+            now = time.time()
+            if now - self.last >= ARALIK_SN:
+                self.last = now
+                try:
+                    self.on_click(addr)
+                except Exception as e:                  # noqa: BLE001 (dinleyici düşmesin)
+                    self.log('   ödeme düğmesi hatası: %s' % e)
             try:
                 c.close()
             except OSError:
                 pass
-            now = time.time()
-            if now - self.last < ARALIK_SN:
-                continue
-            self.last = now
-            try:
-                self.on_click()
-            except Exception as e:                      # noqa: BLE001 (dinleyici düşmesin)
-                self.log('   ödeme düğmesi hatası: %s' % e)
 
     def stop(self):
         if self.sock:

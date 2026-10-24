@@ -113,10 +113,11 @@ def resolve(configured):
     return c[0]['yol'] if c else None
 
 
-def args(cfg, log_file):
-    """Unity başlatma argümanları (panel ayarlarından)."""
-    a = [GIRIS_URL]
-    mode = cfg.get('pencere_modu')
+def args(cfg, log_file, oturum=None, pencere=False):
+    """Unity başlatma argümanları (panel ayarlarından). oturum: çoklu istemcinin ek istemcisi (web.py giriş sayfası ?oturum= ile
+    kaydını bulur); pencere: ayardan bağımsız pencere kipi (ek istemciler)."""
+    a = [GIRIS_URL.replace('/#', '/?oturum=%s#' % oturum) if oturum else GIRIS_URL]
+    mode = 'pencere' if pencere else cfg.get('pencere_modu')
     if mode == 'tam_ekran':
         a += ['-screen-fullscreen', '1', '-window-mode', 'exclusive']
     elif mode == 'kenarliksiz':                       # kenarlıksız tam ekran pencere (Unity 2019.3+)
