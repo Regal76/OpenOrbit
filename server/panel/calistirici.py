@@ -10,8 +10,10 @@ Panel ayarları (yapilandirma.py):
                     istemci öteki Wine programlarından ayrı bir önekte; önek ilk açılışta kurulur (yarım dakika kadar sürebilir).
 Proton Steam'siz açılır: umu-run kuruluysa onunla (Steam Linux Runtime kabında; PROTONPATH bulunan Proton, yoksa umu kendi Proton'unu
 indirir), değilse "proton run" ile (STEAM_COMPAT_CLIENT_INSTALL_PATH Steam'in klasörü; Steam yoksa veri klasörü). Fiil "run": ek
-istemciler (coklu.py) aynı önekte birlikte açılır (waitforexitandrun öncekinin kapanmasını beklerdi). İstemciye verilen dosya yolları
-Z: sürücüsünden (Wine ve Proton öneklerinde Unix kökü). Wine'ın çıktısı logs/wine.log'a (surecler.istemci_ac).
+istemciler (coklu.py) aynı önekte birlikte açılır (waitforexitandrun öncekinin kapanmasını beklerdi). Proton'da istemci S:
+sürücüsünden açılır (Steam'deki PROTON_SET_GAME_DRIVE; S: istemci klasörünün üstü): bildirilen, Z:'den açılınca gömülü Chromium
+(Vuplex) çalışmıyor. İstemciye verilen öteki dosya yolları Z: sürücüsünden (Wine ve Proton öneklerinde Unix kökü). Wine'ın çıktısı
+logs/wine.log'a (surecler.istemci_ac).
 """
 import functools, glob, os, re, shlex, shutil, subprocess, sys
 
@@ -165,6 +167,8 @@ def komut(cfg, exe, args):
         env.setdefault('WINEDLLOVERRIDES', 'mscoree,mshtml=')     # yeni önekte Mono/Gecko kurulum pencereleri çıkmasın (istemci kullanmaz)
         env.setdefault('WINEDEBUG', 'fixme-all')                 # wine.log yalnız hatalar
         return [r['yol'], exe] + args, env
+    oyun = os.path.dirname(os.path.abspath(exe))     # Proton S:'yi bunlardan kurar (umu da geçirir); Steam'siz panel verir
+    env.update(PROTON_SET_GAME_DRIVE='1', STEAM_COMPAT_INSTALL_PATH=oyun, STEAM_COMPAT_LIBRARY_PATHS=os.path.dirname(oyun))
     if r['umu']:
         env.update(WINEPREFIX=r['onek'], PROTON_VERB='run')
         if r['yol']:
