@@ -47,6 +47,10 @@ ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8
 SAVAS = CFG['savas']
 MAP_W, MAP_H = CFG['harita_boyutu']
 CREDITS_ITEM, URIDIUM_ITEM = -1908845164, -707736347      # kayıttaki InventoryItemModule.itemId değerleri
+# öldürme ödülünün ekran satırları ve istemcideki metinleri (flashres: "You received %! EP." …); ekranda en çok bu aralıkla (kill_notice)
+REWARD_LINES = ('0|LM|ST|EP|', '0|LM|ST|HON|', '0|LM|ST|CRE|', '0|LM|ST|URI|')
+REWARD_LINES_KEYS = {'EP': 'getexp', 'HON': 'gatherep', 'CRE': 'getcredits', 'URI': 'geturidium'}
+NOTICE_ARA_SN = 0.5
 LASER_AMMO = 'ammunition_laser_lcb-10'
 OLUM = ESYA['olum_ekrani']
 # istemcinin KillScreenOptionTypeModule.OptionType enum'u (global-metadata.dat)
@@ -297,6 +301,9 @@ class World:
         self.asset_types = {}      # nesne kimliği -> istemcinin AssetType'ı (görev koşulu VISIT_MAP_ASSET)
         self.near_assets = None    # yakındaki nesneler (None: bir sonraki adımda hepsinin durumu gönderilir)
         self.timers = []           # (zaman, işlev)
+        self.notice = None         # ekranda gösterilmeyi bekleyen son öldürme ödülü satırları (kill_notice)
+        self.notice_at = 0.0       # son ödül satırlarının ekrana gittiği an
+        self.notice_timer = False
         self.collect_wish = None   # (kutu, son an): gemi kutuya varınca alınacak kutu (collect)
         self.opening = None        # açılan ganimet kutusu {h, bitis} (open_booty)
         self._next_uid = OH.UID_BASE
@@ -1774,6 +1781,46 @@ class World:
             msgs += self.rank_msgs(*rank)
         return msgs
 
+    def kill_notice(self, msgs):
+        """Öldürme ödülünün ekran satırları (0|LM|ST|EP/HON/CRE/URI): ekranın ortasında yalnız son öldürmeninki, en çok
+        NOTICE_ARA_SN'de bir; araya düşenlerin satırları yalnız günlüğe. İstemcinin anlık günlüğü (InstantLog, 4 satır) aynı karede
+        gelen satırların hepsini gösteriyor: çok uzaylı öldürünce ödüller ekranda üst üste biniyordu (kullanıcı bildirimi 2026-10-25).
+        -> hemen gidecek mesajlar (satırların dışındakiler; günlüğe düşen eski satırlar)."""
+        line = lambda m: m[0] == 'LegacyModule' and m[1]['message'].startswith(REWARD_LINES)
+        lines, out = [m for m in msgs if line(m)], [m for m in msgs if not line(m)]
+        if not lines:
+            return out
+        if self.notice:
+            out = self.log_only(self.notice) + out         # yerine yenisi geldi: öncekiler yalnız günlükte
+        self.notice = lines
+        now = time.time()
+        if now >= self.notice_at + NOTICE_ARA_SN:
+            return out + self.flush_notice(now)
+        if not self.notice_timer:
+            self.notice_timer = True
+            self.later(self.notice_at + NOTICE_ARA_SN - now, lambda: self.send(self.flush_notice(time.time())))
+        return out
+
+    def flush_notice(self, now):
+        self.notice_timer = False
+        lines, self.notice = self.notice or [], None
+        if lines:
+            self.notice_at = now
+        return lines
+
+    @staticmethod
+    def log_only(lines):
+        """0|LM|ST ödül satırları -> yalnız günlüğe yazılan aynı metinler (MessageCommand displayTarget 0; istemcinin anahtarları)."""
+        out = []
+        for _, f in lines:
+            p = f['message'].split('|')
+            out.append(('MessageCommand', dict(displayTarget=0, displayStyle=1, messageModule=mod('WildcardMessageModule', message=mod(
+                'MessageKeyListWildcardModule', baseKey=REWARD_LINES_KEYS[p[3]], textStyle=0,
+                baseKeyType=mod('ReplacementTypeModule', typeValue=5),
+                wildCardReplacements=[mod('MessageWildcardReplacementModule', wildcard='%!', replacement='{:,}'.format(int(p[4])),
+                                          replacementType=mod('ReplacementTypeModule', typeValue=0))])))))
+        return out
+
     def rank_msgs(self, old, new):
         """Rütbe değişti: istemcinin metni ("Congratulations, you've reached a new rank. This rank is:" / rank_down ve rütbenin adı,
         rang_N) ve gemideki simge (badge_refresh)."""
@@ -2063,7 +2110,7 @@ class World:
             points = self.kapi.points(n) if own and n.d.get('puan') and hasattr(self.kapi, 'points') else []    # Plutus'un puanı
             quest = self.quest('kill', npc=n.d.get('npc_kimlik')) if own else \
                 self.quest('kill', npc=n.d.get('npc_kimlik'), avatar='NPC', radyasyon=in_rad, ad=n.d.get('ad'), grup=True)
-            self.send(self.reward_msgs(tot, ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum'])
+            self.send(self.kill_notice(self.reward_msgs(tot, ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum']))
                       + (self.drone_points(n) if own else []) + quest + (self.pet.gain_xp(o['ep']) if self.pet else [])
                       + self.booster_drop(n) + self.extra_loot(n) + points
                       + (self.kill_streak() + self.p.hint(IP.WEALTHY_FAMOUS) + [m for hk in self.kill_hooks for m in hk(self, n, x, y)]
@@ -2589,10 +2636,21 @@ class World:
         n.children = {c for c in n.children if c in self.npcs and self.npcs[c].alive}
         return bool(n.children)
 
-    def npc_summon(self, n, now):
-        """vurulunca_cagir {tur, adet, en_cok, bekleme_sn}: vurulunca çevresine yardımcı çağırır (Cubikon -> Protegit …)."""
+    def npc_summon(self, n, now, hit=True):
+        """vurulunca_cagir {tur, adet, en_cok, bekleme_sn, ilk_bekleme_sn, sakin_sn}: vurulunca çevresine yardımcı çağırır (Cubikon ->
+        Protegit …). ilk_bekleme_sn: sakin_sn (15) vurulmadıktan sonraki ilk vuruşta çağrı o kadar sonra (kullanıcı bildirimi 2026-10-25:
+        Protegit'ler ilk atışta hemen çıkıyordu). hit: vuruş değil, bekleyen ilk çağrı."""
         v = n.davranis.get('vurulunca_cagir')
-        if not v or now < n.next_summon:
+        if not v:
+            return
+        if hit and v.get('ilk_bekleme_sn'):
+            quiet = now - n.ab.get('cagri_vurus', -1e9) > v.get('sakin_sn', 15)
+            n.ab['cagri_vurus'] = now
+            if quiet:
+                n.next_summon = now + v['ilk_bekleme_sn']
+                self.later(v['ilk_bekleme_sn'], lambda: n.alive and n.id in self.npcs and self.npc_summon(n, time.time(), hit=False))
+                return
+        if now < n.next_summon:
             return
         n.children = {c for c in n.children if c in self.npcs and self.npcs[c].alive}
         room = v.get('en_cok', v.get('adet', 1)) + (self.alien.extra_summons(n, now) if 'ofke' in n.davranis else 0) - len(n.children)
@@ -3193,7 +3251,7 @@ class World:
 
     def guard_spot(self, n, post, hx, hy, now):
         """Saldıran koruyucunun gideceği nokta: çağıranın çevresinde (koru.yaricap), oyuncuya bakan yanda ve oyuncuyu menzilinde
-        tutan; oyuncu çağırandan uzaksa None."""
+        tutan; yoksa çevrenin oyuncuya en yakın noktası (koruyucu çağıranından uzaklaşmaz)."""
         px, py = post.mover.pos(now)
         lo, hi = n.guard[1]['yaricap']
         b = math.atan2(hy - py, hx - px)
@@ -3202,7 +3260,14 @@ class World:
             tx, ty = px + math.cos(a) * r, py + math.sin(a) * r
             if math.hypot(tx - hx, ty - hy) <= self.npc_range(n) * 0.9:
                 return tx, ty
-        return None
+        a = b + random.uniform(-0.3, 0.3)
+        return px + math.cos(a) * hi, py + math.sin(a) * hi
+
+    def leashed(self, n, post, hx, hy, now):
+        """Koruyucunun tasması (koru.tasma; yoksa çevrenin dışı + ateş menzili): oyuncu çağırandan bu kadar uzaksa peşini bırakır,
+        çağıranın çevresinde dolaşır (kullanıcı bildirimi 2026-10-25: Protegit'ler oyuncuyu Cubikon'dan çok uzağa kovalıyordu)."""
+        px, py = post.mover.pos(now)
+        return math.hypot(hx - px, hy - py) > n.guard[1].get('tasma', n.guard[1]['yaricap'][1] + self.npc_range(n))
 
     def think(self, n, now):
         """NPC yapay zekâsı: dolaş; saldırıya uğrayan ya da saldırgan türse oyuncuyu kovala ve ateş et."""
@@ -3219,24 +3284,25 @@ class World:
         # kalınca ya da oyuncu ölüp dirilince/gizlenince peşini bırakıp oyuncudan 3.000+ birim uzağa dolaşmaya gidiyor, kapıda kalan
         # uzaylılar bulunamıyordu (kullanıcı bildirimi, 2026-10-22: Delta Gate dalga III)
         hunt = n.hunt and not getattr(n, 'pasif', False)
+        post = self.ward_of(n)
+        tied = bool(post) and self.leashed(n, post, hx, hy, now)       # koruyucu: oyuncu çağıranından uzak
         if hunt and not n.engaged and not hero_safe and now >= n.next_think:
             n.engaged = True                    # oyuncu yine ulaşılabilir (dirildi, gizlenme bitti, EMP geçti …)
         if (self.aggressive(n) and not getattr(n, 'pasif', False) and not hero_safe
                 and dist < n.d.get('fark_mesafe', SAVAS['npc_fark_mesafe']) * AY.carpan('npc_fark')
                 and not self.in_peace(nx, ny)
-                and not n.engaged):
+                and not n.engaged and not tied):
             n.engaged = True
             n.next_think = min(n.next_think, now)      # hemen kovalamaya başla (--yakin-npc ile dondurulmuş olsa da)
             self.log('   %s saldırıyor (mesafe %d)' % (n.d['ad'], dist))
-        if n.engaged and (hero_safe or (dist > 2500 and not hunt)):
+        if n.engaged and (hero_safe or tied or (dist > 2500 and not hunt)):
             self.disengage(n, now, flee=not hunt)   # oyuncu güvenli bölgeye kaçtı: peşini bırak ve uzaklaş (portalın önünde beklemez)
         if n.etki.frozen(now):
             return                              # donuk: kıpırdamaz, ateş etmez (durum.py)
-        post = self.ward_of(n)
         if n.engaged:
-            # koruyucu (Cubikon'un Protegit'leri) durmaz: oyuncu çağıranın yakınındaysa çağıranın çevresinde, oyuncuyu menzilinde
-            # tutan noktalar arasında dolaşır; uzaktaysa oyuncunun çevresinde döner. Önceden 450 birimden yakında kıpırdamıyordu,
-            # Cubikon'un dibinde doğan sürü tek noktada kalıyordu (kullanıcı bildirimi 2026-10-24)
+            # koruyucu (Cubikon'un Protegit'leri) durmaz: çağıranın çevresinde, oyuncuyu menzilinde tutan noktalar arasında dolaşır;
+            # oyuncu tasmanın dışına çıkınca peşini bırakır (yukarıda). Önceden 450 birimden yakında kıpırdamıyordu, Cubikon'un dibinde
+            # doğan sürü tek noktada kalıyordu (kullanıcı bildirimi 2026-10-24)
             spot = self.guard_spot(n, post, hx, hy, now) if post and now >= n.next_think else None
             circle = bool(post) and dist <= 450
             if (dist > 450 or post) and now >= n.next_think and n.speed() > 0:

@@ -106,7 +106,7 @@ LAYOUT_COUNT = 6                    # WindowConstants.LayoutsMap (Horizontal/Ver
 QUICK_BUY_TIP = {'_': 'MessageKeyListWildcardModule', 'wildCardReplacements': [], 'baseKey': 'ttip_quick_buy_itembar',
                  'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 5}, 'textStyle': 0}
 EQUIP_MENUS = ('equipment_extra_', 'ability_', 'equipment_weapon_rocketlauncher_', 'ammunition_rocketlauncher_', 'ammunition_mine_smb-01')
-DESIGN_KEYS = {'design': 'tasarim', 'visual': 'gorunum'}     # dronun tasarım yuvaları -> dron kaydındaki {config: eşya kimliği}
+DESIGN_KEYS = {'design': 'tasarim', 'visual': 'gorunum'}     # dronun tasarım yuvaları -> geminin dron_tasarim kaydındaki anahtar
 
 _LEVELS = None
 _ESYA = None
@@ -272,15 +272,42 @@ class Profil:
             if 'dron_konfig' not in s:
                 s['dron_konfig'] = {c: {} for c in s['konfigler']}     # config -> dron kimliği -> takılı eşya kimlikleri
                 self.dirty = True
+        # dron tasarımları ve P.E.T. donanımı gemiye (hangara) bağlı: geminin dron_tasarim {config: {dron kimliği: {tasarim, gorunum}}}
+        # ve pet_konfig {config: {yuva: [eşya]}} kayıtları. Önceden config numarasına bağlıydı (dronun kaydında, P.E.T.'in konfig'inde),
+        # her gemide takılı görünüyordu; Transfer System'den sonra eski gemide de takılı kalıyordu (kullanıcı bildirimi 2026-10-25).
+        # Eskiler o anki etkin gemiye (Astral koşusundaysa oyuncunun kendi gemisine). Tasarım daha eskiyse dronun kendisindeydi, iki
+        # config'te aynı (kullanıcı bildirimi 2026-10-24: config 1'e takılan Havoc'lar config 2'de de görünüyordu)
         kosu = ((self.d.get('pve') or {}).get('astral') or {}).get('kosu') or {}
-        for x in self.d['dronlar'] + (kosu.get('yedek') or {}).get('dronlar', []):     # Astral koşusunda saklanan dronlar da
-            for k in DESIGN_KEYS.values():
-                if not isinstance(x.get(k), dict):
-                    # dron tasarımı config başına {config: eşya kimliği}; önceden dronun kendisindeydi, iki config'te aynı
-                    # (kullanıcı bildirimi 2026-10-24: config 1'e takılan Havoc'lar config 2'de de görünüyordu)
-                    v = x.get(k)
-                    x[k] = {'1': v, '2': v} if v else {}
+        yedek = kosu.get('yedek') or {}
+        own = [(self.d['aktif_gemi'], self.d['dronlar'])]
+        if kosu.get('icerde') and yedek.get('aktif') in self.d['gemiler']:
+            own = [(yedek['aktif'], yedek.get('dronlar', [])), (self.d['aktif_gemi'], self.d['dronlar'])]
+        for sid, drones in own:
+            for x in drones:
+                for k in DESIGN_KEYS.values():
+                    if k not in x:
+                        continue
+                    v = x.pop(k)
+                    for c, iid in ((v if isinstance(v, dict) else {'1': v, '2': v}) if v else {}).items():
+                        if iid:
+                            self.d['gemiler'][sid].setdefault('dron_tasarim', {}).setdefault(str(c), {}).setdefault(
+                                str(x['kimlik']), {})[k] = iid
                     self.dirty = True
+        pet = self.d.get('pet')
+        if pet and 'konfig' in pet:
+            self.d['gemiler'][own[0][0]].setdefault('pet_konfig', {}).update(pet.pop('konfig'))
+            self.dirty = True
+        for s in self.d['gemiler'].values():       # kayıtlı config'teki tasarımlar: {dron: {tasarim: {config: eşya}}} -> yeni biçim
+            old = s.get('kayitli_dron_tasarim') or {}
+            if any(k in DESIGN_KEYS.values() for per in old.values() for k in per):
+                new = {}
+                for d, per in old.items():
+                    for k, cs in per.items():
+                        for c, iid in (cs or {}).items():
+                            if iid:
+                                new.setdefault(str(c), {}).setdefault(str(d), {})[k] = iid
+                s['kayitli_dron_tasarim'] = new
+                self.dirty = True
         osmium = self.d.get('diger_esyalar', {}).pop('resource_ore_osmium', 0)
         if osmium:                           # Osmium (OreType 28) cevher sayılmıyordu, depoya düşmüştü (2026-10-22 taraması, E2)
             self.add_ores({28: osmium})
@@ -639,17 +666,25 @@ class Profil:
         return set(self.hangar_map())
 
     def hangar_map(self):
-        """itemId -> takılı olduğu geminin hangarId'si (envanterde hangarId dolu görünür; takılı değilse 0). Dronlara takılılar dahil.
-        Dron tasarımları ve P.E.T. donanımı gemiye bağlı değil (config numarasına bağlı): etkin geminin hangarId'si."""
-        out = {i: s['hangarId'] for s in self.d['gemiler'].values() for c in s['konfigler'].values() for ids in c.values() for i in ids}
-        out.update({i: s['hangarId'] for s in self.d['gemiler'].values() for c in s.get('dron_konfig', {}).values()
-                    for ids in c.values() for i in ids})
-        here = self.ship()['hangarId']
-        out.update({i: here for x in self.d.get('dronlar', []) for k in DESIGN_KEYS.values() for i in (x.get(k) or {}).values() if i})
-        pet = self.d.get('pet')
-        if pet:
-            out.update({i: here for c in pet['konfig'].values() for ids in c.values() for i in ids})
+        """itemId -> takılı olduğu geminin hangarId'si (envanterde hangarId dolu görünür; takılı değilse 0). Gemi yuvaları, dronlara
+        takılılar, dron tasarımları ve P.E.T. donanımı; hepsi takıldığı gemiye (hangara) bağlı."""
+        return {i: s['hangarId'] for sid, s in self.d['gemiler'].items() for i in self.ship_items(sid)}
+
+    def ship_items(self, sid=None, cid=None):
+        """Bir geminin (cid verilirse yalnız o config'inin) takılı eşya kimlikleri: gemi yuvaları, dronlar, dron tasarımları, P.E.T."""
+        s = self.ship(sid)
+        cids = [str(cid)] if cid is not None else None
+        pick = lambda cfgs: [v for c, v in cfgs.items() if cids is None or c in cids]
+        out = [i for cfg in pick(s['konfigler']) for ids in cfg.values() for i in ids]
+        out += [i for cfg in pick(s.get('dron_konfig', {})) for ids in cfg.values() for i in ids]
+        out += [i for cfg in pick(s.get('dron_tasarim', {})) for per in cfg.values() for i in per.values() if i]
+        out += [i for cfg in pick(s.get('pet_konfig', {})) for ids in cfg.values() for i in ids]
         return out
+
+    def pet_config(self, cid=None, sid=None):
+        """Bir geminin bir config'inde (varsayılan: etkin gemi, onun etkin config'i) P.E.T. yuvası -> takılı eşya kimlikleri."""
+        s = self.ship(sid)
+        return s.setdefault('pet_konfig', {}).setdefault(str(cid or s['aktif_konfig']), {})
 
     def loadout(self, sid=None, cid=None):
         """Bir geminin bir config'indeki ekipman: yuva -> lootId listesi."""
@@ -695,21 +730,39 @@ class Profil:
         """Seçili formasyonun bonusları (lazer, roket, kalkan, can, hiz, emme, kacinma, roket_bekleme, ep, onur)."""
         return _formations().get(formation_loot(self.d.get('formasyon', 0)), {})
 
-    def drone_design_id(self, x, slot, cid=None):
-        """Dronun bir config'teki (varsayılan: etkin) tasarımı ('design', bonuslu) ya da görünümü ('visual') -> eşya kimliği."""
-        return (x.get(DESIGN_KEYS[slot]) or {}).get(str(cid or self.aktif_konfig))
+    def drone_designs(self, cid=None, sid=None):
+        """Bir geminin bir config'inde (varsayılan: etkin gemi, onun etkin config'i) dron kimliği (metin) -> {tasarim, gorunum}."""
+        s = self.ship(sid)
+        return s.setdefault('dron_tasarim', {}).setdefault(str(cid or s['aktif_konfig']), {})
 
-    def drone_design(self, x, slot, cid=None):
+    def drone_design_id(self, x, slot, cid=None, sid=None):
+        """Dronun bir geminin bir config'indeki (varsayılan: etkin) tasarımı ('design', bonuslu) ya da görünümü ('visual') -> eşya
+        kimliği."""
+        s = self.ship(sid)
+        return s.get('dron_tasarim', {}).get(str(cid or s['aktif_konfig']), {}).get(str(x['kimlik']), {}).get(DESIGN_KEYS[slot])
+
+    def set_drone_design(self, x, slot, iid, cid=None, sid=None):
+        """Dronun tasarım/görünüm yuvasına eşya (None: boşalt)."""
+        per = self.drone_designs(cid, sid)
+        if iid:
+            per.setdefault(str(x['kimlik']), {})[DESIGN_KEYS[slot]] = iid
+            return
+        cur = per.get(str(x['kimlik']), {})
+        cur.pop(DESIGN_KEYS[slot], None)
+        if not cur:
+            per.pop(str(x['kimlik']), None)
+
+    def drone_design(self, x, slot, cid=None, sid=None):
         """drone_design_id'nin lootId'si."""
-        iid = self.drone_design_id(x, slot, cid)
+        iid = self.drone_design_id(x, slot, cid, sid)
         return self.d['esyalar'].get(str(iid)) if iid else None
 
-    def design_mods(self, cid=None):
-        """Bir config'in (varsayılan: etkin) dron tasarımlarının bonusları: dron başına olanlar toplanır; sahip olunan bütün dronlar
-        aynı tasarımı taşıyorsa takım bonusu da (istemci metinleri: Havoc +%10 dron lazeri (dron_lazer), Hercules +%20 can …;
-        Havoc: "If all of the drones are equipped")."""
+    def design_mods(self, cid=None, sid=None):
+        """Bir config'in (varsayılan: etkin gemi, etkin config) dron tasarımlarının bonusları: dron başına olanlar toplanır; sahip
+        olunan bütün dronlar aynı tasarımı taşıyorsa takım bonusu da (istemci metinleri: Havoc +%10 dron lazeri (dron_lazer), Hercules
+        +%20 can …; Havoc: "If all of the drones are equipped")."""
         designs = esya()['dron_tasarimlari']
-        looks = [self.drone_design(x, 'design', cid) for x in self.d.get('dronlar', [])]
+        looks = [self.drone_design(x, 'design', cid, sid) for x in self.d.get('dronlar', [])]
         out = {}
         for l in looks:
             for k, v in designs.get(l or '', {}).get('dron_basina', {}).items():

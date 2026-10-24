@@ -149,10 +149,9 @@ def locator_id(n):
 
 
 def new_pet(profil):
-    """Satın alınan P.E.T. (seviye 0, 10.000 yakıt, boş iki config)."""
+    """Satın alınan P.E.T. (seviye 0, 10.000 yakıt). Donanımı her geminin kendi iki config'inde (profil.pet_config)."""
     return {'kimlik': 7001, 'ad': PET['ad'], 'seviye': 0, 'ep': 0, 'can': PET['can'], 'kalkan': 0, 'yakit': PET['baslangic_yakit'],
-            'yikik': False, 'disli': GUARD, 'yuva': dict(PET['baslangic_yuva']), 'isi': 0.0, 'can_yukseltme': 0,
-            'konfig': {c: {s: [] for s in ALL_SLOTS} for c in ('1', '2')}}
+            'yikik': False, 'disli': GUARD, 'yuva': dict(PET['baslangic_yuva']), 'isi': 0.0, 'can_yukseltme': 0}
 
 
 class Pet:
@@ -207,8 +206,9 @@ class Pet:
     def row(self, lv=None):
         return PET['seviyeler'][self.d['seviye'] if lv is None else lv]
 
-    def config(self, cid=None):
-        c = self.d['konfig'].setdefault(str(cid or self.p.aktif_konfig), {})
+    def config(self, cid=None, sid=None):
+        """Bir geminin (varsayılan: etkin) bir config'inde P.E.T.'in yuvaları: P.E.T. tek, donanımı geminin (hangarın) kaydında."""
+        c = self.p.pet_config(cid, sid)
         for s in ALL_SLOTS:
             c.setdefault(s, [])
         return c
@@ -539,13 +539,13 @@ class Pet:
                     maxHeatSlots=self.open_slots('heat'), petHeatSlotPrice=self.slot_price('heat'))
         return dict(base, _='HangarShipPetView')       # alan adı 'name': mod() ile çakışır
 
-    def config_msgs(self, cur):
-        """HangarShipEquipmentCommand.petConfigs: config başına takılı eşya kimlikleri."""
+    def config_msgs(self, cur, sid=None):
+        """HangarShipEquipmentCommand.petConfigs: bir geminin config başına takılı eşya kimlikleri."""
         if not self.owned:
             return []
         out = []
         for cid in ('1', '2'):
-            c = self.config(cid)
+            c = self.config(cid, sid)
             out.append(mod('HangarPetEquipmentMsg', setId=int(cid), active=int(cid) == int(cur), laser=list(c['lasers']),
                            generator=list(c['generators']), gear=list(c['gears']), protocol=list(c['protocols']), heat=list(c['heat']),
                            visual=list(c['visual'])))
