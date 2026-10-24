@@ -34,6 +34,7 @@ ROCKETS = _E['roketler']
 MINES = S['mayinlar']
 LAUNCHERS = S['fircatici']['turler']
 LAUNCHER_AMMO = S['fircatici_cephane']
+SALVO_GAP = S['fircatici']['roket_aralik_sn']
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
 ALIEN_CPUS = S['uzayli_cpu']                  # Chaos Alien CPU'ları, Cubi Portal -> harita sınıfları, doğan türler
 TOGGLE_DEFAULT = {'nisan': False}             # Xenomit harcar: kendiliğinden açılmaz; ötekiler takılınca açık
@@ -205,6 +206,23 @@ def launcher_upgrade(p):
 
 def capacity(p):
     return sum(LAUNCHERS[l]['kapasite'] for l in launchers(p))
+
+
+def salvo(send, alive, attacker, target, hit, cnt, tur, later):
+    """Fırlatıcı salvosu: roketler SALVO_GAP arayla birer roketlik HellstormAttackCommand'la (esyalar.json fircatici _not: istemci
+    çok roketli komutu 0,5 sn içinde üst üste fırlatıp bir anda vardırıyor, roketler görünmüyordu). İlki hemen, ötekiler alive()
+    doğruyken."""
+    msg = lambda: ('HellstormAttackCommand', dict(attackerId=attacker, targetId=target, hit=hit, currentLoad=1,
+                                                  rocketType=mod('AmmunitionTypeModule', typeValue=tur)))
+    for k in range(1, cnt):
+        later(k * SALVO_GAP, lambda: send([msg()]) if alive() else None)
+    return msg()
+
+
+def salvo_time(dist, cnt):
+    """Salvonun son roketinin hedefe varışı (sn): istemci tek roketi düz çizgide max(1, mesafe/500) sn uçurur
+    (RocketComponentSystem.PlayTweenLine)."""
+    return (cnt - 1) * SALVO_GAP + max(1.0, dist / 500.0)
 
 
 def launcher_type(p):
@@ -914,9 +932,8 @@ class Esyalar:
         self.next_load = now + (S['fircatici']['dolum_sn'] * max(0.1, 1 + p.mods().get('fircatici_bekleme', 0))   # Star +%33 …
                                 * AY.carpan('roket_bekleme'))                                               # panel
         p.ach('shot', silah='ROCKET_LAUNCHER')
-        self.send([('HellstormAttackCommand', dict(attackerId=w.hid, targetId=n.id, hit=hit, currentLoad=cnt,
-                                                   rocketType=mod('AmmunitionTypeModule', typeValue=cfg['tur']))),
-                   legacy('0|RL|S|%d|%d|0' % (launcher_type(p), cfg['kimlik']))] + self.status(S['fircatici']['menu']))
+        first = salvo(self.send, lambda: n.alive and not (w.hero_dead or w.jumping), w.hid, n.id, hit, cnt, cfg['tur'], w.later)
+        self.send([first, legacy('0|RL|S|%d|%d|0' % (launcher_type(p), cfg['kimlik']))] + self.status(S['fircatici']['menu']))
         self.log('   fırlatıcı: %d x %s%s' % (cnt, ammo, '' if hit else ' (ıska)'))
         if not hit:
             return
@@ -937,7 +954,7 @@ class Esyalar:
                     self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
             if dmg:
                 w.hit_npc(uid, dmg, 0)
-        w.later(S['fircatici']['ucus_sn'], land)
+        w.later(salvo_time(math.hypot(nx - hx, ny - hy), cnt), land)       # son roket varınca
 
     # ------------------------------------------------------------ özel roketler
     def fire_special(self, rocket, n, now):

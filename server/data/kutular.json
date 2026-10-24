@@ -18,7 +18,7 @@
   "PIRATE_BOOTY": {
    "ad": "Green Box",
    "anahtar": "resource_booty-key",
-   "kod": "BKP",
+   "kod": "BK",
    "yok_mesaji": "msg_loot_failed_no_booty-key-green",
    "haritalar": [
     "X-2..X-8",
@@ -303,7 +303,7 @@
   "PIRATE_BOOTY_GOLD": {
    "ad": "Gold Box",
    "anahtar": "resource_booty-key",
-   "kod": "BKP",
+   "kod": "BK",
    "yok_mesaji": "msg_loot_failed_no_booty-key-green",
    "haritalar": [
     "X-2..X-8",
@@ -1995,7 +1995,7 @@
   "PROMETHEUS_BOOTY_BOX": {
    "ad": "Prometheus Box",
    "anahtar": "resource_booty-key-prometheus",
-   "kod": null,
+   "kod": "BKPR",
    "yok_mesaji": "msg_loot_failed_no_booty-key-prometheus",
    "haritalar": [
     "X-2..X-8",
@@ -3579,7 +3579,7 @@
   "PROSPEROUS_BOOTY_BOX": {
    "ad": "Prosperous Box",
    "anahtar": "resource_booty-key-prosperous",
-   "kod": "BKPR",
+   "kod": "BKP",
    "yok_mesaji": "msg_loot_failed_no_booty-key-prosperous",
    "haritalar": [
     "X-2..X-8",
@@ -4022,7 +4022,7 @@
   "GREEN_ECHO_BOX": {
    "ad": "Common Echo Chest",
    "anahtar": "resource_echo-key-green",
-   "kod": null,
+   "kod": "BKEG",
    "yok_mesaji": "msg_loot_failed_no_echo-key-green",
    "haritalar": [],
    "adet": 0,
@@ -4056,7 +4056,7 @@
   "BLUE_ECHO_BOX": {
    "ad": "Rare Echo Chest",
    "anahtar": "resource_echo-key-blue",
-   "kod": null,
+   "kod": "BKEB",
    "yok_mesaji": "msg_loot_failed_no_echo-key-blue",
    "haritalar": [],
    "adet": 0,
@@ -4090,7 +4090,7 @@
   "PURPLE_ECHO_BOX": {
    "ad": "Epic Echo Chest",
    "anahtar": "resource_echo-key-purple",
-   "kod": null,
+   "kod": "BKEP",
    "yok_mesaji": "msg_loot_failed_no_echo-key-purple",
    "haritalar": [],
    "adet": 0,
@@ -4124,7 +4124,7 @@
   "RED_ECHO_BOX": {
    "ad": "Legendary Echo Chest",
    "anahtar": "resource_echo-key-red",
-   "kod": null,
+   "kod": "BKER",
    "yok_mesaji": "msg_loot_failed_no_echo-key-red",
    "haritalar": [],
    "adet": 0,

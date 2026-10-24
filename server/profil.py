@@ -387,7 +387,15 @@ class Profil:
         if marker == '@gemi':
             return 'ShipInitializationCommand', self.ship_init()
         if marker == '@ayarlar':
-            return 'UserSettingsCommand', self.d['ayarlar']
+            a = self.d['ayarlar']
+            q = a.get('qualitySettingsModule') or {}
+            if q.get('notSet'):
+                # kalite hiç kaydedilmemiş (yeni profil): istemci modülü atlıyor, öntanımlısı 0; motor izi (ShipAsset.SetEngineVisible:
+                # QualityEngine > 0) bütün gemilerde kapalı kalıyordu (kullanıcı bildirimi 2026-10-24). Yüksek ön ayar gider, oyuncu
+                # değiştirince QualitySettingsRequest kaydedilir.
+                high = {k: 3 for k in q if k.startswith('quality') and k != 'qualityCustomized'}
+                a = dict(a, qualitySettingsModule=dict(q, notSet=False, qualityCustomized=False, **high))
+            return 'UserSettingsCommand', a
         if marker == '@tuslar':
             return 'UserKeyBindingsUpdate', {'changedKeyBindings': self.d['tus_atamalari']}
         if marker == '@arayuz':

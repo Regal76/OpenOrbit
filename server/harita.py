@@ -83,6 +83,9 @@ EXTRA_NAMES = {94: '5-4', 42: '???', 200: 'LoW'}
 for _m, _n in EXTRA_NAMES.items():
     NAMES.setdefault(_m, _n)
 SPECIAL = {42, 200}              # Cubikon Mezarlığı, LoW: atlama CPU'su listesinde yok; mezarlıktan çıkış atlama CPU'suyla
+# kayıttaki 2-1'in eğitim portalı (designId 55; istemcinin ipucu "This Jump Gate takes you to Tutorial."): sunucuda eğitim haritası
+# yok, atlama "Jump not possible" diyordu. 10. seviyeden sonra gönderilmez (kullanıcı bildirimi 2026-10-24)
+TUTORIAL_GATE, TUTORIAL_MAX_LEVEL = 150000774, 10
 # sunucunun eklediği portallar (wiki): 5-4'ün portalı 5-2'de (giriş bir Gümüş Booty Key; istemcinin metni
 # msg_hidden_pirate_map_no_silverkey), 5-4'ten 5-2'ye dönüş; LoW'un portalı X-3'te (low.py).
 # (harita, anahtar, x, y, hedef, ek alanlar); portal kimliği GATE_ID_BASE + anahtar (istemcinin anahtarları 920042'ye kadar)

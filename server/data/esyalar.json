@@ -10874,8 +10874,8 @@
    },
    "dolum_sn": 1.0,
    "menzil": 650,
-   "ucus_sn": 1.5,
-   "_not": "dolum her roket için istemcinin tablosundaki 1 sn (tahmin); menzil istemciden; ucus_sn canlı ölçüm (H25): istemci salvoyu HellstormAttackCommand'dan ~1 sn sonra fırlatıyor, roketler ~1,6 sn'de hedefte (1,0 sn'de hasar roketler yoldayken çıkıyordu)",
+   "roket_aralik_sn": 0.25,
+   "_not": "dolum her roket için istemcinin tablosundaki 1 sn (tahmin); menzil istemciden. Salvo roket_aralik_sn arayla tek roketlik HellstormAttackCommand'larla (savas_esya.salvo_time): istemci çok roketli komutun roketlerini 0,5 sn içinde üst üste fırlatıp InQuint yavaşlamasıyla uçuruyor (AttackRocketRun, RocketComponentSystem.PlayTweenCurve), roketler ilk ~1 sn gemide bekleyip bir anda hedefe varıyordu (kullanıcı bildirimi 2026-10-24); tek roket düz çizgide sabit hızla max(1, mesafe/500) sn uçar (PlayTweenLine). Hasar son roket varınca (H25: hasar roketler yoldayken çıkmasın)",
    "_not_plus": "Plus fırlatıcılar (HST-2 türevleri, tür 2): kapasite istemci metninden (Hydra 5, Neptune 5, Triskelion 3, Ouroboros 6); roket hasarı ve ek bonuslar wiki rockets.md (Hydra +%30 can +%25 kalkan, Neptune +%5 hasar, Triskelion yetenek beklemesi -%25); yükseltme istemcinin seviye tablosuyla"
   },
   "fircatici_cephane": {

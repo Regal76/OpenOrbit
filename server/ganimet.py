@@ -22,11 +22,12 @@ for _k, _b in BOXES.items():                 # etkinlik görünümleri: kutunun 
     _b['odul'] += EG.box_rows(_k)
 MAPS = {k: re.compile(v) for k, v in K['haritalar'].items()}
 GREEN_KEY = 'resource_booty-key'
+ACMA_SN = 3                                   # açılış süresi (tam saniye: istemcinin sayacı): resmî ~5 sn, kullanıcının kararı 3 sn
 BL_CACHE = 'UNSTABLE_BLACKLIGHT_CACHE'
 KEYS = {}                                     # anahtar -> onu kullanan ilk kutu türü (HUD kodu için)
 for _k, _b in BOXES.items():
     KEYS.setdefault(_b['anahtar'], _k)
-CODES = {b['kod']: KEYS[b['anahtar']] for b in BOXES.values() if b.get('kod')}   # HUD kodu -> kutu türü (girişteki "0|A|BKP|0" satırları)
+CODES = {b['kod']: KEYS[b['anahtar']] for b in BOXES.values() if b.get('kod')}   # HUD kodu -> kutu türü (girişteki "0|A|BK…|0" satırları)
 
 
 def active(kind, now=None):
@@ -88,7 +89,8 @@ def pick(p, kind, rng=random):
 
 
 def key_line(p, kind):
-    """HUD'daki anahtar sayacı (eski protokol: SetAttributeAssemblyHelper.AssembleBootyKeysUpdate); sayacı olmayan anahtarda
-    (Echo Key) None."""
+    """HUD'daki anahtar sayacı (eski protokol: SetAttributeAssemblyHelper.AssembleBootyKeysUpdate, kod -> Hero.BootyKeys*Amount: BK yeşil,
+    BKP Prosperous, BKPR Prometheus; yeşil BKP gidiyordu, istemci Prosperous yazıyordu: kullanıcı bildirimi 2026-10-24); sayacı olmayan
+    anahtarda (Battle Pass Key) None."""
     b = BOXES[kind]
     return '0|A|%s|%d' % (b['kod'], p.resource(b['anahtar'])) if b.get('kod') else None

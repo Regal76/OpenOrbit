@@ -318,9 +318,9 @@ class Yetenekler:
         if r.get('firlatici'):
             import savas_esya as SE
             tur = SE.LAUNCHER_AMMO.get('ammunition_rocketlauncher_eco-10', {}).get('tur', 1)
-            flight = SE.S['fircatici']['ucus_sn']          # salvo istemcide ~1 sn sonra fırlar (oyuncununki gibi; canlı test H25)
-            w.send([('HellstormAttackCommand', dict(attackerId=n.id, targetId=w.hid, hit=hit, currentLoad=r.get('adet', 5),
-                                                    rocketType=mod('AmmunitionTypeModule', typeValue=tur)))])
+            cnt = r.get('adet', 5)
+            flight = SE.salvo_time(self.dist(n, now), cnt)        # roketler tek tek (oyuncununki gibi), hasar sonuncusu varınca
+            w.send([SE.salvo(w.send, lambda: n.alive and not (w.hero_dead or w.jumping), n.id, w.hid, hit, cnt, tur, w.later)])
         else:
             from eski_protokol import legacy
             w.send([legacy('0|v|%d|%d|%s|%d|0|0' % (n.id, w.hid, 'H' if hit else 'M', r.get('tur', 1)))])

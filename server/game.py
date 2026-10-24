@@ -169,7 +169,9 @@ class Sablonlar:
                     continue
                 windows.add(m.get('itemId'))
             if mk in ('@harita_giris', '@harita_hazir'):
-                out += self.world_msgs(map_id, 'giris' if mk == '@harita_giris' else 'hazir')
+                lv = profil.d['pilot'].get('level', 1)
+                out += [(n, f) for n, f in self.world_msgs(map_id, 'giris' if mk == '@harita_giris' else 'hazir')
+                        if not (n == 'JumpgateCreateCommand' and f['gateId'] == H.TUTORIAL_GATE and lv >= H.TUTORIAL_MAX_LEVEL)]
             elif kind == 'hazir' and (mk == 'EquipReadyCommand' or m.get('message', '').startswith('0|n|MSG|3|2|msg_equip_')):
                 continue               # kayıtta her yerde true; dünya istasyon bölgesine girip çıktıkça gönderir (dunya.check_gates)
             elif mk.startswith('@'):
@@ -637,6 +639,7 @@ class Session:
         self.world.auto_lab = self.magaza.auto_lab                  # otomatik laboratuvar CPU'ları
         self.world.money_msgs = self.magaza.money_msgs
         self.world.drone_msgs = self.magaza.drone_msgs
+        self.world.drone_item = self.magaza.drone_item
         self.world.unit_msgs = lambda: (self.basarim.title_msgs() + self.magaza.drone_msgs()
                                         + [self.magaza.module_update(), self.profil.generate('@formasyon')])
         self.world.quest_event = self.quest_event

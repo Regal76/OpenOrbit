@@ -481,8 +481,13 @@ class Magaza:
     def drone_item(self, x):
         """Dron, istemcinin envanterinde eşya olarak (kimliği dronun kimliği, seviyesi yükseltme seviyesi): Assembly'nin Upgrade
         sekmesi yükseltilecekleri yalnız envanterdeki eşyalardan seçiyor; dronlar hiç gönderilmediği için Iris, Apis, Zeus (ve Flax)
-        listede yoktu (kullanıcı bildirimi 2026-10-24). Build isteğinin targetItemId'si dronun kimliği (yukseltme.target)."""
-        return self.inv_item(x['kimlik'], x['lootId'], 1, self.hangar_id, level=YK.drone_level(x))
+        listede yoktu (kullanıcı bildirimi 2026-10-24). Build isteğinin targetItemId'si dronun kimliği (yukseltme.target).
+        Dronun seviyesi (1-6) InventoryItemAttributeKey.LEVEL (1) niteliğinde: Upgrade sekmesi bonus satırını ondan kuruyor
+        (ItemBuff.ParseDrone: lootId + (seviye - 1) adlı seviye verisinin "upgradable"ı). Liste boşken "drone_iris-1" bulunamıyor,
+        satır beyaz simge ve "-1%" gösteriyordu (kullanıcı bildirimi 2026-10-24)."""
+        msg = self.inv_item(x['kimlik'], x['lootId'], 1, self.hangar_id, level=YK.drone_level(x))
+        msg[1]['item']['inventoryItemAttributes'] = [mod('InventoryItemAttributeModule', key=1, value=str(x['seviye']))]
+        return msg
 
     def hangar_item(self, iid, loot, count, hangar=0, level=None):
         it = copy(self.item_tpl) if self.item_tpl else mod(
@@ -862,8 +867,8 @@ class Magaza:
         equip_ids, free = [], 0
         for g, n in grants:
             if design_base(g):
-                sid = next((k for k, s in self.p.d['gemiler'].items() if s['lootId'] == design_base(g)), None)
-                if sid is None:                            # paketteki tasarım, gemi yok: depoda bekler (pending_designs)
+                sid = self.own_ship(design_base(g))
+                if sid is None:                           # paketteki tasarım, gemi yok: depoda bekler (pending_designs)
                     if not self.p.resource(g):
                         self.p.add_resource(g, 1)
                     self.log('   tasarım saklandı: %s (%s yok)' % (g, design_base(g)))
@@ -880,6 +885,7 @@ class Magaza:
             elif g.startswith('ship_'):
                 sid = self.p.add_ship(g)
                 msgs.append(legacy('0|LM|ST|LOT|%s|1' % g))
+                msgs += self.pending_designs(g)            # gemi yokken gelen tasarımlar (Assembly, kutu, paket)
                 msgs += self.ship_count_msgs([g])          # Plus tarifinin taban gemisi (Assembly sayacı)
                 self.log('   yeni gemi: %s (shipId %d, hangarId %d)' % (g, sid, self.p.ship(sid)['hangarId']))
             elif g in DRONES:                              # paketteki dronlar (Stellar: 8 Iris) hepsi, yer kadar (package_fit)
@@ -1139,6 +1145,10 @@ class Magaza:
         içerik birleşir, seyir defteri dolmasın). Hâlâ tanınmayanlar depoda kalır, günlükte uyarılır. Oturum her bağlantıda bir kez,
         giriş mesajlarından önce çağırır -> taşınan [(lootId, adet)]."""
         moved, opened = [], {}
+        # gemisi sonradan alınan tasarımlar: mağazadan alınan gemi bekleyenleri vermiyordu (kullanıcı bildirimi 2026-10-24: Assembly'nin
+        # Spectrum Legend'ı Spectrum alınınca da yoktu)
+        for base in sorted({s['lootId'] for s in self.p.d['gemiler'].values()}):
+            moved += [(f['lootId'], 1) for n_, f in self.pending_designs(base)]
         for loot, n in sorted(self.p.d.get('diger_esyalar', {}).items()):
             n = int(n)
             if n <= 0 or not hidden(loot):
@@ -1279,8 +1289,7 @@ class Magaza:
 
     def grant_design(self, loot):
         """Gemi tasarımı ödülü: gemi profilde varsa tasarımlarına eklenir -> True; yoksa False (ödül saklanır)."""
-        base = design_base(loot)
-        sid = next((k for k, s in self.p.d['gemiler'].items() if s['lootId'] == base), None)
+        sid = self.own_ship(design_base(loot))
         if not sid:
             return False
         with self.p.lock:
@@ -1290,6 +1299,12 @@ class Magaza:
             self.p.dirty = True
         self.log('   tasarım ödülü: %s' % loot)
         return True
+
+    def own_ship(self, base):
+        """Bu türden sahip olunan gemi (shipId) ya da None. Astral'ın kiralık gemisi sayılmaz: koşu bitince geri alınır, tasarım
+        onunla giderdi."""
+        loan = (((self.p.d.get('pve') or {}).get('astral') or {}).get('kosu') or {}).get('sid')
+        return next((k for k, s in self.p.d['gemiler'].items() if s['lootId'] == base and k != loan), None)
 
     def pending_designs(self, ship_loot):
         """Gemi alındı: saklanan tasarım ödülleri (gemi yokken gelenler) artık verilir."""
@@ -1780,29 +1795,41 @@ class Magaza:
         return msgs + (self.pet.refresh() if s_pet is not None else [])
 
     def import_config(self, f):
-        """Transfer System: kaynak geminin iki config'indeki eşyalar hedef gemiye taşınır (hedefin eşyaları envantere). Hedefin her
-        yuvası kaynaktaki eşya sayısını almalı."""
+        """Transfer System: kaynak geminin iki config'indeki eşyalar hedef gemiye taşınır (hedefin eşyaları envantere): gemi yuvaları
+        ve dronlara takılı lazer/jeneratörler (dron yuvaları gemi başına, dron_konfig; taşınmıyordu, eski gemide kalıyordu: kullanıcı
+        bildirimi 2026-10-24). Dron tasarımları ve P.E.T. donanımı gemiye bağlı değil, yerinde kalır. Hedefe takılamayan gemi modülü
+        ve başka gemiye bağlı QFC kaynakta kalır (move'daki kural). Hedefin her yuvası taşınan eşya sayısını almalı."""
         src, dst = str(f.get('originShipId')), str(f.get('targetShipId'))
         fail = lambda: [('HangarShipImportConfigCommand', {'shipId': int(dst) if dst.isdigit() else 0,
                                                            'errorMessage': stack_msg('error_can_not_equip_to_slot'), 'resultId': 0})]
         if src == dst or src not in self.p.d['gemiler'] or dst not in self.p.d['gemiler']:
             return fail()
         a, b = self.p.ship(src), self.p.ship(dst)
-        for c, cfg in a['konfigler'].items():
+        stays = lambda s, i: ((s == 'upgrades' and not GM.equip_allowed(self.p, i, b['lootId']))
+                              or (s == 'QuantumFluidCore' and QF.equip_allowed(self.p, i, b['lootId'], []) is not None))
+        go = {c: {s: [i for i in ids if not stays(s, i)] for s, ids in cfg.items()} for c, cfg in a['konfigler'].items()}
+        for c, cfg in go.items():
             extras = [self.p.d['esyalar'].get(str(i), '') for i in cfg.get('extra', [])]       # Slot CPU'su da taşınır
             for s, ids in cfg.items():
                 if len(ids) > self.capacity(s, dst, extras=extras):
                     self.log('   hangar: aktarım yok: %s %s yuvası %d > %d' % (b['lootId'], s, len(ids), self.capacity(s, dst, extras=extras)))
                     return fail()
-        touched = [i for s in (a, b) for cfg in s['konfigler'].values() for ids in cfg.values() for i in ids]
+        touched = [i for s in (a, b) for cfgs in (s['konfigler'], s.get('dron_konfig', {})) for cfg in cfgs.values()
+                   for ids in cfg.values() for i in ids]
+        left = 0
         with self.p.lock:
-            for c, cfg in a['konfigler'].items():
-                b['konfigler'][c] = {s: list(ids) for s, ids in cfg.items()}
-                for s in cfg:
-                    cfg[s] = []
+            for c, cfg in go.items():
+                b['konfigler'][c] = cfg
+                for s, ids in a['konfigler'][c].items():
+                    a['konfigler'][c][s] = [i for i in ids if i not in cfg[s]]
+                    left += len(a['konfigler'][c][s])
+                ad = a.setdefault('dron_konfig', {}).setdefault(c, {})
+                b.setdefault('dron_konfig', {})[c] = {d: list(ids) for d, ids in ad.items()}
+                for d in ad:
+                    ad[d] = []
             self.p.dirty = True
             self.p.sync_ekipman()
-        self.log('   hangar: config %s -> %s aktarıldı' % (a['lootId'], b['lootId']))
+        self.log('   hangar: config %s -> %s aktarıldı%s' % (a['lootId'], b['lootId'], ' (%d gemiye bağlı eşya kaldı)' % left if left else ''))
         msgs = [('HangarShipImportConfigCommand', {'shipId': int(dst), 'errorMessage': None, 'resultId': 1}), self.equipment_cmd(dst)]
         msgs += self.item_updates(touched)                 # aktarılanlar hedef gemide, hedefin eskileri envanterde
         return msgs + (self.apply_stats() if self.p.d['aktif_gemi'] in (src, dst) else [])

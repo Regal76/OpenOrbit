@@ -186,6 +186,7 @@ class NPC:
         self.davranis = UZ.of(self.d)       # davranış kancaları ve yetenekler (npc.json, uzayli_yetenekleri.json; uzayli.py)
         self.summoned = False               # çağrılan ya da ölünce doğan: yeniden doğmaz
         self.children = set()               # çağırdıkları (kimlik)
+        self.guard = None                   # (çağıranın kimliği, koru) : çağıranın çevresinde dolaşır (Cubikon'un Protegit'leri)
         self.last_hit = 0.0                 # son vurulduğu an (savaş dışı yenilenme)
         self.next_summon = 0.0
         self.next_regen = 0.0
@@ -297,6 +298,7 @@ class World:
         self.near_assets = None    # yakındaki nesneler (None: bir sonraki adımda hepsinin durumu gönderilir)
         self.timers = []           # (zaman, işlev)
         self.collect_wish = None   # (kutu, son an): gemi kutuya varınca alınacak kutu (collect)
+        self.opening = None        # açılan ganimet kutusu {h, bitis} (open_booty)
         self._next_uid = OH.UID_BASE
         k = self.p.d['konum']
         self.hero = Mover(k['x'], k['y'])
@@ -373,6 +375,7 @@ class World:
         self.death_time = 0.0          # ölüm anı (Hades'te kapıda yeniden doğma süresi)
         self.invuln_until = 0.0        # yerinde tamirden sonra saldırı koruması (oyuncu saldırınca kalkar)
         self.drone_msgs = None         # dronlar değişince (seviye atlama) uzaydaki dron dizilimi (magaza.py)
+        self.drone_item = None         # seviye atlayan dronun envanter eşyası (Assembly'nin Upgrade sekmesi seviyeyi ondan okur)
         self.unit_msgs = None          # gemiye bağlı görünüm (unvan, dronlar, modüller): gemi yerinde yeniden kurulunca (badge_refresh)
         self.stats_msgs = None         # dron seviyesi değişince kalkan vb. yeniden hesap (magaza.apply_stats)
         self.ayar_surum, self.next_ayar = None, 0.0     # panelin ayar dosyası değişince geminin değerleri yeniden (settings_tick)
@@ -1684,10 +1687,17 @@ class World:
 
     def open_booty(self, h, b):
         """Anahtarlı kutu (ganimet.py): anahtar yoksa kutu kalır ve istemcinin metni; yeşil anahtar ayarda otomatik alınabilir.
-        Varsa bir anahtar harcanır, içerikten bir ödül mağazanın ödül işleviyle verilir. Kilit tutulurken çağrılır."""
+        Varsa açılış başlar: ganimet.ACMA_SN boyunca toplama ışını ve geminin üstünde geri sayım (0|A|SLA|0|gemi|sn: istemcinin
+        SetAttributeAssemblyHelper.AssembleCollectionBeamActive'i 6. alanı saniye olarak okur, TimerCountdownEffect) ve günlükte
+        "Collecting pirate booty." (0|LM|ST|SLA); süre dolunca finish_booty. Önce anında açılıyordu (kullanıcı bildirimi 2026-10-24;
+        resmî oyunda ~5 sn, kullanıcının kararı 3 sn). Açılış sürerken ikinci tık: "Collecting box already" (0|LM|ST|BAH). Kilit
+        tutulurken çağrılır -> açılış başladı mı."""
         kind = b['tip']
         box = GN.BOXES[kind]
         key, msgs = box['anahtar'], []
+        if self.opening:
+            self.send([legacy('0|LM|ST|BAH')])
+            return False
         if self.p.resource(key) < 1 and key == GN.GREEN_KEY:
             if not self.p.gameplay('autoBuyGreenBootyKeys'):           # Ayarlar > Gameplay
                 self.send([legacy('0|A|STM|msg_booty-key-green_auto_buy_not_active')])
@@ -1699,12 +1709,38 @@ class World:
         if self.p.resource(key) < 1:
             self.send([legacy('0|A|STM|%s' % box['yok_mesaji'])])
             return False
+        self.opening = {'h': h, 'bitis': time.time() + GN.ACMA_SN}
+        self.send(msgs + [legacy('0|LM|ST|SLA'), legacy('0|A|SLA|0|%d|%d' % (self.hid, GN.ACMA_SN))])
+        self.log('   %s açılıyor (%d sn)' % (box['ad'], GN.ACMA_SN))
+        return True
+
+    def booty_tick(self, now):
+        """Açılan ganimet kutusu: süre dolunca açılır. Gemi kutudan uzaklaşırsa, ölür, atlarsa ya da kutu giderse (ortak haritada
+        başkası aldı) iptal: 0|A|SLC (istemci "Collection canceled." yazar, 3D'de ışını ve sayacı kaldırır). İstemcinin kendi iptali
+        yok, sunucu karar verir."""
+        h = self.opening['h']
+        if h not in self.boxes or self.hero_dead or self.jumping or not self.box_near(h, now):
+            self.opening = None
+            self.send([legacy('0|A|SLC')])
+            self.log('   ganimet kutusu açılışı iptal')
+        elif now >= self.opening['bitis']:
+            self.opening = None
+            self.finish_booty(h, self.boxes[h])
+
+    def finish_booty(self, h, b):
+        """Açılış bitti: bir anahtar harcanır, içerikten bir ödül mağazanın ödül işleviyle verilir (ışın ve sayaç kendiliğinden biter)."""
+        kind = b['tip']
+        box = GN.BOXES[kind]
+        key, msgs = box['anahtar'], []
+        if self.p.resource(key) < 1:                                    # anahtar açılış sürerken gitti (satış, başka harcama)
+            self.send([legacy('0|A|STM|%s' % box['yok_mesaji'])])
+            return False
         del self.boxes[h]
         self.p.add_resource(key, -1)
         if box.get('defter'):
             RT.note(self.p, box['defter'])                              # seyir defteri: "… booty key used"
         loot, n = GN.pick(self.p, kind)
-        msgs += [self.beam_msg(), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
+        msgs += [('RemoveCollectableCommand', {'collected': True, 'hash': h})]
         if GN.key_line(self.p, kind):
             msgs.append(legacy(GN.key_line(self.p, kind)))
         msgs += self.grant_loot(loot, n)          # para (Prime Astral'ın EP/onuru …) hesaba, gerisi mağazanın ödül işleviyle; panelin çarpanları
@@ -2100,7 +2136,8 @@ class World:
         if not up:
             return []
         self.log('   dron seviye atladı: %s' % ', '.join('%s %d' % (x['lootId'][6:], x['seviye']) for x in up))
-        return (self.drone_msgs() if self.drone_msgs else []) + (self.stats_msgs() if self.stats_msgs else [])
+        return ((self.drone_msgs() if self.drone_msgs else []) + (self.stats_msgs() if self.stats_msgs else [])
+                + ([self.drone_item(x) for x in {id(x): x for x in up}.values()] if self.drone_item else []))
 
     # ------------------------------------------------------------ ekipman ve cephane
     def lasers(self):
@@ -2524,6 +2561,8 @@ class World:
             c = self.spawn_npc_at(v['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200)
             self.alien.adopt(n, c)
             c.engaged, c.next_think = True, now      # sürü hemen saldırır (fandom: Protegit'ler bir anda üstüne gelir)
+            if v.get('koru'):
+                c.guard = (n.id, v['koru'])
             n.children.add(c.id)
         self.log('   %s yardım çağırdı: %d %s' % (n.d['ad'], min(room, v.get('adet', 1)), CFG['tipler'][v['tur']]['ad']))
 
@@ -3103,6 +3142,24 @@ class World:
         self.combat_sent = (state, now)
         return [('CombatStateCommand', {'combatState': state})]
 
+    def ward_of(self, n):
+        """Koruyucunun (NPC.guard) yaşayan çağıranı ya da None: çağıran ölünce sıradan uzaylı gibi dolaşır."""
+        p = self.npcs.get(n.guard[0]) if n.guard else None
+        return p if p and p.alive else None
+
+    def guard_spot(self, n, post, hx, hy, now):
+        """Saldıran koruyucunun gideceği nokta: çağıranın çevresinde (koru.yaricap), oyuncuya bakan yanda ve oyuncuyu menzilinde
+        tutan; oyuncu çağırandan uzaksa None."""
+        px, py = post.mover.pos(now)
+        lo, hi = n.guard[1]['yaricap']
+        b = math.atan2(hy - py, hx - px)
+        for _ in range(8):
+            a, r = b + random.uniform(-1.2, 1.2), random.uniform(lo, hi)
+            tx, ty = px + math.cos(a) * r, py + math.sin(a) * r
+            if math.hypot(tx - hx, ty - hy) <= self.npc_range(n) * 0.9:
+                return tx, ty
+        return None
+
     def think(self, n, now):
         """NPC yapay zekâsı: dolaş; saldırıya uğrayan ya da saldırgan türse oyuncuyu kovala ve ateş et."""
         if n.d.get('dost'):
@@ -3131,19 +3188,27 @@ class World:
             self.disengage(n, now, flee=not hunt)   # oyuncu güvenli bölgeye kaçtı: peşini bırak ve uzaklaş (portalın önünde beklemez)
         if n.etki.frozen(now):
             return                              # donuk: kıpırdamaz, ateş etmez (durum.py)
+        post = self.ward_of(n)
         if n.engaged:
-            if dist > 450 and now >= n.next_think and n.speed() > 0:
-                a = math.atan2(ny - hy, nx - hx) + n.spread
+            # koruyucu (Cubikon'un Protegit'leri) durmaz: oyuncu çağıranın yakınındaysa çağıranın çevresinde, oyuncuyu menzilinde
+            # tutan noktalar arasında dolaşır; uzaktaysa oyuncunun çevresinde döner. Önceden 450 birimden yakında kıpırdamıyordu,
+            # Cubikon'un dibinde doğan sürü tek noktada kalıyordu (kullanıcı bildirimi 2026-10-24)
+            spot = self.guard_spot(n, post, hx, hy, now) if post and now >= n.next_think else None
+            circle = bool(post) and dist <= 450
+            if (dist > 450 or post) and now >= n.next_think and n.speed() > 0:
+                a = math.atan2(ny - hy, nx - hx) + (random.choice((-1, 1)) * random.uniform(0.6, 1.3) if circle else n.spread)
+                tx, ty = spot or (hx + math.cos(a) * n.keep, hy + math.sin(a) * n.keep)
                 # harita içinde: oyuncu kenarda ya da sınırın dışındayken (radyasyon) uzaylı haritadan çıkmasın
-                tx = min(max(hx + math.cos(a) * n.keep, 300), self.map_w - 300)
-                ty = min(max(hy + math.sin(a) * n.keep, 300), self.map_h - 300)
+                tx = min(max(tx, 300), self.map_w - 300)
+                ty = min(max(ty, 300), self.map_h - 300)
                 if not hunt and self.near_zone(tx, ty, 0):
                     self.disengage(n, now)          # güvenli bölgeye girmez
                     return
+                ms = 0
                 if not (hunt and self.in_peace(tx, ty)):     # dalga uzaylısı güvenli bölgenin kenarında bekler
                     ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
                     self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
-                n.next_think = now + 1.0
+                n.next_think = now + (max(0.5, ms / 1000) if post else 1.0)
             if dist <= self.npc_range(n) and now >= n.next_shot and n.d['hasar'] > 0 and now >= self.invuln_until:
                 if n.next_shot == 0.0:
                     self.send([legacy('0|n|LSH|%d|%d' % (self.hid, n.id))])
@@ -3153,6 +3218,17 @@ class World:
             return                              # dalga uzaylısı dolaşmaz: oyuncu yine ulaşılabilir olunca peşine düşer
         if now >= n.next_think and n.speed() <= 0:
             n.next_think = now + 3600          # hareketsiz (Cubikon, Mindfire Behemoth)
+        elif now >= n.next_think and post:
+            # koruyucu çağıranın çevresinde dolaşır (koru.yaricap), kaçmaz; her adımda çevresinde biraz daha döner
+            px, py = post.mover.pos(now)
+            r = random.uniform(*n.guard[1]['yaricap'])
+            a = math.atan2(ny - py, nx - px) + random.choice((-1, 1)) * random.uniform(0.5, 1.5)
+            tx = min(max(px + math.cos(a) * r, 300), self.map_w - 300)
+            ty = min(max(py + math.sin(a) * r, 300), self.map_h - 300)
+            n.flee = False
+            ms = n.mover.go(tx, ty, n.speed() * 0.6 * n.etki.speed_factor(now), now)
+            self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
+            n.next_think = now + ms / 1000 + random.uniform(0.2, 1.0)
         elif now >= n.next_think:
             r = random.uniform(300, 1200)
             a = random.uniform(0, 2 * math.pi)
@@ -3210,6 +3286,8 @@ class World:
                 self.step_error('zamanlayıcı')
         if self.collect_wish:
             self.collect_tick(now)
+        if self.opening:
+            self.booty_tick(now)
         if not self.jumping:
             self.check_gates(now)
             self.check_assets(now)
