@@ -304,6 +304,7 @@ class World:
         self.attacking = False
         self.next_laser = 0.0
         self.ammo_ready = {}           # kendi beklemesi olan cephane (RSB-75, RCB-140: 3 sn) -> yeniden atabileceği an
+        self.ammo_timer_end = {}       # cooldown group -> end of the countdown shown on the shortcut bar (ammo_timer)
         self.rocket_ready = 0.0
         self.running = False
         self.hero_dead = False
@@ -2247,6 +2248,24 @@ class World:
         if not pet.active:
             self.laser_stop()
 
+    def ammo_timer(self, ammo, now):
+        """Shortcut-bar countdown for laser ammo with its own cooldown (RSB-75, RCB-140: client CooldownType
+        RAPID_SALVO_BLAST = 10, the cooldownGroup of their MenuItemInitializationCommand). Returns the start message
+        and schedules the reset; a reset is skipped if a newer shot of the same group restarted the timer."""
+        cfg = ESYA['lazer_cephane'].get(ammo, {})
+        group, sec = cfg.get('bekleme_grubu'), cfg.get('aralik_sn')
+        if not group or not sec:
+            return []
+        ms = int(sec * 1000)
+        end = now + sec
+        self.ammo_timer_end[group] = end
+
+        def reset():
+            if self.ammo_timer_end.get(group) == end:
+                self.send([SE.timer_msg(group, ms, cooling=False)])
+        self.later(sec, reset)
+        return [SE.timer_msg(group, ms)]
+
     def side_laser(self, now, uid, pos, hit):
         """Uzaylı olmayan hedefe lazer (asset_laser, pet_laser): menzil, cephane, isabet; isabet ederse hit(hasar)."""
         hx, hy = self.hero_pos(now)
@@ -2279,7 +2298,7 @@ class World:
         self.next_laser = now + SAVAS['lazer_aralik_sn']
         if cooldown:
             self.ammo_ready[ammo] = now + cooldown
-        self.send(self.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid, laserColor=self.laser_color(ammo),
+        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid,laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
         self.p.ach('shot', silah='LASER')
@@ -2331,7 +2350,7 @@ class World:
         self.next_laser = now + SAVAS['lazer_aralik_sn']
         if cooldown:
             self.ammo_ready[ammo] = now + cooldown
-        self.send(self.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=n.id,
+        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=n.id,
                                                                          laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
