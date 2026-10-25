@@ -35,7 +35,6 @@ ROCKETS = _E['roketler']
 MINES = S['mayinlar']
 LAUNCHERS = S['fircatici']['turler']
 LAUNCHER_AMMO = S['fircatici_cephane']
-SALVO_GAP = S['fircatici']['roket_aralik_sn']
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
 ALIEN_CPUS = S['uzayli_cpu']                  # Chaos Alien CPU'ları, Cubi Portal -> harita sınıfları, doğan türler
 FORMATIONS = _E['formasyonlar']               # drone formation menu items: one shared wait between two changes (S['formasyon'])
@@ -212,21 +211,18 @@ def capacity(p):
     return sum(LAUNCHERS[l]['kapasite'] for l in launchers(p))
 
 
-def salvo(send, alive, attacker, target, hit, cnt, tur, later):
-    """Fırlatıcı salvosu: roketler SALVO_GAP arayla birer roketlik HellstormAttackCommand'la (esyalar.json fircatici _not: istemci
-    çok roketli komutu 0,5 sn içinde üst üste fırlatıp bir anda vardırıyor, roketler görünmüyordu). İlki hemen, ötekiler alive()
-    doğruyken."""
-    msg = lambda: ('HellstormAttackCommand', dict(attackerId=attacker, targetId=target, hit=hit, currentLoad=1,
-                                                  rocketType=mod('AmmunitionTypeModule', typeValue=tur)))
-    for k in range(1, cnt):
-        later(k * SALVO_GAP, lambda: send([msg()]) if alive() else None)
-    return msg()
+def salvo(attacker, target, hit, cnt, tur):
+    """Bir HellstormAttackCommand bütün salvoyu taşır. İstemci currentLoad > 1 olduğunda
+    roketleri kendi aralığıyla eğri yörüngede uçurur (1.1.115 AttackRocketRun.Run).
+    Her roketi currentLoad=1 olarak yollamak Hellstorm yörüngesini düzleştirir."""
+    return ('HellstormAttackCommand', dict(attackerId=attacker, targetId=target, hit=hit, currentLoad=cnt,
+                                          rocketType=mod('AmmunitionTypeModule', typeValue=tur)))
 
 
 def salvo_time(dist, cnt):
-    """Salvonun son roketinin hedefe varışı (sn): istemci tek roketi düz çizgide max(1, mesafe/500) sn uçurur
-    (RocketComponentSystem.PlayTweenLine)."""
-    return (cnt - 1) * SALVO_GAP + max(1.0, dist / 500.0)
+    """Son roketin istemcideki varışı (sn): AttackRocketRun.Run roketi i*0,5/adet sonra
+    başlatır; InitRocketCurve uçuşu max(1, mesafe/500) + (eğriyse 0,3) sn yapar."""
+    return max(1.0, dist / 500.0) + (0.3 + (cnt - 1) * 0.5 / cnt if cnt > 1 else 0.0)
 
 
 def launcher_type(p):
@@ -265,7 +261,7 @@ def menu_status(p, menu_id, st):
     start_map = H.map_class(p.d['konum'].get('mapId', 0)) == 'X-1'
     if menu_id in MINES:
         n = p.ammo(menu_id)
-        st.update(counterValue=n, visible=st.get('visible') or n > 0, available=n > 0 and not start_map,
+        st.update(counterValue=n, counterStyle=4 if n > 0 else 1, visible=st.get('visible') or n > 0, available=n > 0 and not start_map,
                   activatable=n > 0 and not start_map)
         if not start_map:                      # kayıt (başlangıç haritası): ttip_inactive_mine_start_map
             _explosive(st, menu_id, n)
@@ -384,6 +380,7 @@ def vouchers_msg(p):
 class Esyalar:
     def __init__(self, world):
         self.w, self.p = world, world.p
+        self.mine_visuals = {}     # tür -> istemciye son gönderilen bitiş; profil okumaları etkileri erken ayıklayabilir
         self.mines = {}            # hash -> {loot, x, y, sahip, kurulma, bitis}
         self.fireworks = []        # kurulu havai fişek kutularının karmaları (ateşlenince istemci kaldırır)
         self.seq = 0
@@ -519,6 +516,30 @@ class Esyalar:
         self.log('   %s %s' % (item, 'açık' if on else 'kapalı'))
 
     # ------------------------------------------------------------ mayınlar
+    def mine_worlds(self):
+        """Aynı haritadaki oyuncular; görünürlük/gizlenme mayın tetiklemesini değiştirmez."""
+        w = self.w
+        return [w] + [other for other in (w.ortak.uyeler if w.ortak else [])
+                      if other is not w and other.running]
+
+    def mine_snapshot(self, now=None):
+        """Yüklenen istemciye mevcut mayınlar; paylaşılmış oyuncu mayınları ve yalnız kendi uzaylı mayınları."""
+        now = time.time() if now is None else now
+        out, seen = [], set()
+        for other in self.mine_worlds():
+            if str(other.map_id) != str(self.w.map_id):
+                continue
+            for h, mine in other.items.mines.items():
+                player = mine['sahip'] == other.hid
+                if h in seen or mine['bitis'] <= now or (other is not self.w and not player):
+                    continue
+                seen.add(h)
+                out.append(('AddMineCommand', dict(hash=h, x=int(mine['x']), y=int(mine['y']),
+                                                   typeId=MINES[mine['loot']]['tip'],
+                                                   maxSkill1=mine.get('maxSkill1', player and YT.maxed(other.p, '1')),
+                                                   maxSkill5b=mine.get('maxSkill5b', player and YT.maxed(other.p, '5b')))))
+        return out
+
     def place_mine(self, loot, now):
         w, p, M = self.w, self.p, S['mayin']
         cfg = MINES[loot]
@@ -527,24 +548,28 @@ class Esyalar:
             self.log('   mayın konmadı: %s' % loot)
             return
         x, y = w.hero_pos(now)
-        if w.in_peace(x, y):
+        if w.in_pvp_peace(x, y):
             self.log('   mayın konmadı: güvenli bölge')
             return
-        if any(math.hypot(m['x'] - x, m['y'] - y) < M['istif'] for m in self.mines.values()):
+        mines = [m for other in self.mine_worlds() for m in other.items.mines.values() if m['bitis'] > now]
+        if any(m['loot'] == loot and math.hypot(m['x'] - x, m['y'] - y) < M['istif'] for m in mines):
             self.send([stm('msg_no_mine_stacking')])
             return
-        if len(self.mines) >= M['harita_siniri']:
+        if len(mines) >= M['harita_siniri']:
             self.send([stm('msg_map_too_many_mine')])
             return
         p.use_ammo(loot, 1)
         self.seq += 1
         h = 'M%d_%d' % (w.hid, self.seq)
         self.mines[h] = dict(loot=loot, x=x, y=y, sahip=w.hid, kurulma=now + cfg.get('kurulma_sn', M['kurulma_sn']),   # SLM-01 1 sn
-                             bitis=now + cfg.get('omur_sn', M['omur_sn']))
+                             bitis=now + cfg.get('omur_sn', M['omur_sn']),
+                             hasar=max(0.0, 1 + p.mods().get('mayin', 0)),
+                             yaricap=M['patlama'] * max(0.0, 1 + p.mods().get('mayin_yaricap', 0)),
+                             maxSkill1=YT.maxed(p, '1'), maxSkill5b=YT.maxed(p, '5b'))
         p.ach('shot', silah='MINE')
         # mayının görseli: Explosives (1) ve Detonation II (5b) son seviyesinde (resmî SSS: "mine visuals")
         self.send(w.ammo_msgs(loot) + [('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=cfg['tip'],
-                                                               maxSkill1=YT.maxed(p, '1'), maxSkill5b=YT.maxed(p, '5b'))),
+                                                               maxSkill1=self.mines[h]['maxSkill1'], maxSkill5b=self.mines[h]['maxSkill5b'])),
                                        self.cooldown(loot, now)])
         self.log('   mayın: %s (%d, %d)' % (loot, x, y))
 
@@ -613,6 +638,32 @@ class Esyalar:
         return [('AddMineCommand', dict(hash=h, x=int(m['x']), y=int(m['y']), typeId=MINES[m['loot']]['tip'], maxSkill1=False,
                                         maxSkill5b=False)) for h, m in self.mines.items()]
 
+    def mine_effect_msgs(self, now=None, replay=False, remember=True):
+        """Mayının gemideki kalıcı görseli: PLAGUE (57), SL-M01'in slow-effect'i; patlama bunları kendiliğinden başlatmaz."""
+        now = time.time() if now is None else now
+        w, msgs = self.w, []
+        for kind in ('enfeksiyon', 'yavas'):
+            effects = [] if w.hero_dead else w.hero_etki.get(kind, now)
+            effects = [e for e in effects if kind == 'enfeksiyon' or e.get('kaynak') in MINES]
+            until = max((e['bitis'] for e in effects), default=0)
+            previous = self.mine_visuals.get(kind, 0)
+            def message(on):
+                if kind == 'enfeksiyon':
+                    return ('VisualModifierCommand', dict(userId=w.hid, modifier=57, attribute=0,
+                                                           additionalAttribute=str(max(0, math.ceil(until - now))) if on else '',
+                                                           count=0, activated=on))
+                return legacy('0|n|fx|%s|SABOTEUR_DEBUFF|%d' % ('start' if on else 'end', w.hid))
+            if previous and not replay and previous != until:
+                msgs.append(message(False))     # yenilenen enfeksiyonun eski parçacığını/timer'ını kaldır
+            if until and (replay or previous != until):
+                msgs.append(message(True))
+            if remember:                       # başka istemcinin yeni gemi görünümü yerel bitiş takibini değiştirmez
+                if until:
+                    self.mine_visuals[kind] = until
+                else:
+                    self.mine_visuals.pop(kind, None)
+        return msgs
+
     def mine_tick(self, now):
         if not self.mines:
             return
@@ -627,21 +678,26 @@ class Esyalar:
                 continue
             if now < m['kurulma'] or 'yem' in MINES[m['loot']]:
                 continue
-            if m['sahip'] == w.hid:          # kendi mayını uzaylılarca tetiklenir
-                hit = any(math.hypot(*(a - b for a, b in zip(n.mover.pos(now), (m['x'], m['y'])))) <= M['tetik']
-                          for n in w.npcs.values() if n.alive)
-            else:                            # uzaylı mayını (Aşama 4: Agatus, Iceterion) oyuncuyla
-                hit = (not w.hero_dead and math.hypot(hx - m['x'], hy - m['y']) <= M['tetik']
-                       and not w.tech.mine_protected(now))                         # Anti-Mine Transmitter
+            players = self.mine_worlds() if m['sahip'] == w.hid else [w]
+            hit = any(not other.hero_dead and not other.jumping
+                      and (other.hid != m['sahip'] or (M.get('kendine_hasar') and AY.get('kendi_mayin')))
+                      and math.hypot(*(a - b for a, b in zip(other.hero_pos(now), (m['x'], m['y'])))) <= M['tetik']
+                      and not other.in_pvp_peace(*other.hero_pos(now))
+                      and not other.tech.mine_protected(now) for other in players)
+            if not hit and m['sahip'] == w.hid and M.get('npc_uyarlama', False):
+                hit = any(n.alive and math.hypot(*(a - b for a, b in zip(n.mover.pos(now), (m['x'], m['y'])))) <= M['tetik']
+                          for n in w.npcs.values())       # yerel PvE uyarlaması; resmî oyunda NPC tetiklemez
             if hit:
                 self.explode(h, now)
 
     def explode(self, h, now):
-        m = self.mines.pop(h)
+        m = self.mines.pop(h, None)
+        if m is None:
+            return
         self.send([legacy('0|n|MIN|%s' % h)])
         self.log('   mayın patladı: %s' % m['loot'])
-        self.blast(m['x'], m['y'], S['mayin']['patlama'], MINES[m['loot']], m['sahip'], now, m['loot'],
-                   self_hit=S['mayin'].get('kendine_hasar', False) and AY.get('kendi_mayin'))       # panel: kendi mayının
+        self.blast(m['x'], m['y'], m.get('yaricap', S['mayin']['patlama']), MINES[m['loot']], m['sahip'], now, m['loot'],
+                   factor=m.get('hasar'), self_hit=S['mayin'].get('kendine_hasar', False) and AY.get('kendi_mayin'))       # panel: kendi mayının
         if m.get('alan'):                     # mayın alanı: yenisi aynı alanda biraz sonra
             rect = HD.mine_field_of(self.w.map_id, m['x'], m['y'])
 
@@ -651,10 +707,25 @@ class Esyalar:
                     self.send([self.field_mine(p[0], p[1], time.time())])
             self.w.later(random.uniform(*HD.MINE['yeniden_sn']), again)
 
-    def blast(self, x, y, radius, cfg, owner, now, source, self_hit=False):
+    def blast(self, x, y, radius, cfg, owner, now, source, self_hit=False, factor=None):
         """Patlama: yarıçaptaki uzaylılara (sahibi oyuncuysa) ve oyuncuya (uzaylının mayınıysa ya da self_hit) mayın etkisi."""
         w = self.w
         m = self.p.mods()
+        f = factor if factor is not None else max(0.0, 1 + m.get('mayin', 0)) if owner == w.hid else 1.0
+        if source in MINES:                   # resmî SSS: mayınlar gemileri etkiler; uzaylıları değil
+            if 'yem' in cfg:
+                return
+            if owner == w.hid and S['mayin'].get('npc_uyarlama', False):
+                for n in list(w.npcs.values()):
+                    if n.alive and math.hypot(*(a - b for a, b in zip(n.mover.pos(now), (x, y)))) <= radius:
+                        self.mine_npc(n, cfg, f, now, source)
+            for other in self.mine_worlds() if owner == w.hid else [w]:
+                if other.hero_dead or other.jumping or (other.hid == owner and not self_hit):
+                    continue
+                hx, hy = other.hero_pos(now)
+                if not other.in_pvp_peace(hx, hy) and math.hypot(hx - x, hy - y) <= radius:
+                    other.items.mine_hero(cfg, f, owner, now, source)
+            return
         f = max(0.0, 1 + m.get('mayin', 0)) if owner == w.hid else 1.0      # Lance +%50, Turtle -%7,5, Detonation I/II
         if owner == w.hid:
             radius *= 1 + m.get('mayin_yaricap', 0)                         # Explosives
@@ -669,7 +740,11 @@ class Esyalar:
 
     def mine_npc(self, n, cfg, f, now, source):
         w = self.w
-        sh, hp = n.d['kalkan'] * cfg.get('kalkan', 0) * f, n.d['hp'] * cfg.get('can', 0) * f
+        sh = min(n.shield, n.d['kalkan'] * cfg.get('kalkan', 0) * min(f, 1.0))
+        hp = n.d['hp'] * cfg.get('can', 0) * f
+        if cfg.get('hasar_turu') == 'standart':
+            sh = min(n.shield, int(hp * n.d.get('kalkan_emme', _N['savas']['npc_kalkan_emme'])))
+            hp = min(max(0, n.hp - 1), hp - sh)
         if sh or hp:
             w.hit_npc(n.id, 0, ATTACK_MINE, split=(int(sh), int(hp)))
         if not n.alive:
@@ -688,47 +763,64 @@ class Esyalar:
         g = p.d['gemi']
         if w.hero_dead:
             return
-        yer = 'dalga' if getattr(w.npcs.get(owner), 'hunt', False) else 'harita'
-        k = AY.carpan('npc_hasar', yer) if owner != w.hid else 1.0       # panelin hasar çarpanı: uzaylının mayını
-        sh = min(g.get('shield', 0), g.get('shieldMax', 0) * cfg.get('kalkan', 0) * f * k)
-        hp = g.get('hitMax', 0) * cfg.get('can', 0) * f * k
+        npc_owner = w.npcs.get(owner)
+        yer = 'dalga' if getattr(npc_owner, 'hunt', False) else 'harita'
+        k = AY.carpan('npc_hasar', yer) if npc_owner else 1.0
+        shield, hull = g.get('shield', 0), g.get('hitPoints', 0)
+        sh = min(shield, int(g.get('shieldMax', 0) * cfg.get('kalkan', 0) * min(f, 1.0) * k))
+        hp = int(g.get('hitMax', 0) * cfg.get('can', 0) * f * k)
+        if cfg.get('hasar_turu') == 'standart':
+            sh = min(shield, int(hp * p.d.get('kalkan_emme', 0.8)))
+            hp = min(max(0, hull - 1), hp - sh)          # ACM/IM tek başına gemi yok etmez
+        elif cfg.get('hasar_turu') == 'dogrudan':
+            base = p.ship_row().get('hp', g.get('hitMax', 0)) + YT.mods(p).get('can_mutlak', 0)
+            hp = int(base * cfg.get('can', 0) * f * k)   # DD-M01: temel gövde + Pilot Bio
         if w.hero_etki.invulnerable(now) or w.invulnerable:
             sh = hp = 0
-        if cfg.get('emp'):                     # EMPM-01: "patlayınca %100 gizlenme kaldırır" (eşya açıklaması); uzaylılar gizlenmez
+        if cfg.get('emp'):
             w.abilities.reveal()
             self.reveal('msg_uncloaked')
-        if owner != w.hid and 'yavas' in cfg:
+        if 'yavas' in cfg:
             w.hero_effect('yavas', cfg['yavas'][1], cfg['yavas'][0], source=source)
+        infection = cfg.get('enfeksiyon')
         if not sh and not hp:
+            if infection:
+                w.hero_effect('enfeksiyon', infection['sn'], source=source)
             return
         w.last_combat = w.last_hurt = now
         w.stop_repair()
-        new = g.get('hitPoints', 0) - hp
-        if owner != w.hid:
-            new = max(new, w.tech.hp_floor(now))                  # Anti-AI Emergency Reserves (uzaylı hasarı)
-        p.set_hull(hp=max(0, new), shield=g.get('shield', 0) - sh)
+        new = hull - hp
+        if npc_owner:
+            new = max(new, w.tech.hp_floor(now))
+        hp = hull - max(0, new)
+        p.set_hull(hp=max(0, new), shield=shield - sh)
         msgs = [('AttackHitCommand', dict(attackType=attack_type(ATTACK_MINE), attackerId=owner, victimId=w.hid,
                                           victimHitpoints=int(g['hitPoints']), victimShield=int(g.get('shield', 0)),
                                           victimNanoHull=int(g.get('nanoHull', 0)), damage=int(sh + hp), skilled=False, strike=False,
                                           cannonType=0))]
         self.log('   mayın oyuncuyu vurdu: %d' % (sh + hp))
         if g['hitPoints'] <= 0:
-            w.hero_death(msgs, w.npcs.get(owner), note='killed_by_mine')
+            w.hero_death(msgs, npc_owner, note='killed_by_mine')
         self.send(msgs)
+        if infection and not w.hero_dead:
+            w.hero_effect('enfeksiyon', infection['sn'], source=source)  # önce ACM hasarı, ardından gövde kapasitesi değişimi
 
     def lure_tick(self, now):
         """AGL-M01: Agatus ve Spinel'ler yeme gelir (saldırıda değilken)."""
         if now < self.next_lure:
             return
         self.next_lure = now + 2.0
-        baits = [m for m in self.mines.values() if 'yem' in MINES[m['loot']]]
+        baits = [m for other in self.mine_worlds() for m in other.items.mines.values()
+                 if 'yem' in MINES[m['loot']] and m['kurulma'] <= now < m['bitis']]
         if not baits:
             return
         w = self.w
         for n in w.npcs.values():
             if not n.alive or n.engaged or n.d['hiz'] <= 0:
                 continue
-            names = [b for b in baits if any(k in n.d['ad'] for k in MINES[b['loot']]['yem'])]
+            nx, ny = n.mover.pos(now)
+            names = [b for b in baits if any(k in n.d['ad'] for k in MINES[b['loot']]['yem'])
+                     and math.hypot(b['x'] - nx, b['y'] - ny) <= MINES[b['loot']]['yaricap']]
             if not names:
                 continue
             nx, ny = n.mover.pos(now)
@@ -788,7 +880,7 @@ class Esyalar:
         if w.hero_etki.get('yavas') or w.hero_etki.get('hiz_siniri'):
             w.hero_etki.remove('yavas')                             # EMP yavaşlatmaları kaldırır (aliens.md: Slowdown Orb)
             w.hero_etki.remove('hiz_siniri')
-            msgs += w.stats_msgs() if w.stats_msgs else []
+            msgs += self.mine_effect_msgs(now) + w.effect_stats_msgs(now)
         self.send(msgs + w.ammo_msgs(loot) + [self.cooldown(loot, now)])
         self.log('   EMP: %d uzaylının hedefi sıfırlandı' % reset)
 
@@ -886,10 +978,11 @@ class Esyalar:
     def auto_weapons(self, n, now):
         """Lazer saldırısında: AROL-X seçili roketi, RL-LB1 dolu fırlatıcıyı kendiliğinden ateşler."""
         w = self.w
+        uid = getattr(n, 'id', n)
         if toggled(self.p, 'equipment_extra_cpu_arol-x'):
             r = self.p.d['secili'].get('roket')
             if r and (self.ready(item_cooldown(r)[0], now) if special(r) else now >= w.rocket_ready):
-                w.rocket({'targetId': n.id})
+                w.rocket({'targetId': uid})
         if toggled(self.p, 'equipment_extra_cpu_rllb-x') and capacity(self.p) and loaded(self.p)[1] >= capacity(self.p):
             self.launcher_fire(now, n)
 
@@ -935,15 +1028,21 @@ class Esyalar:
         w, p = self.w, self.p
         if n is None and not capacity(p):              # kısayoldan, fırlatıcı takılı değil
             return self.send([stm('hellstorm_launcher_not_equipped')])
-        n = n or w.npcs.get(w.target)
+        uid = getattr(n, 'id', n) if n is not None else w.target
+        n = w.npcs.get(uid)
+        asset = w.asset_at(uid) if not n else None
         ammo, cnt = loaded(p)
-        if not n or not n.alive or cnt <= 0 or w.hero_dead or w.jumping or ammo not in LAUNCHER_AMMO:
+        if (not asset and (not n or not n.alive)) or cnt <= 0 or w.hero_dead or w.jumping or ammo not in LAUNCHER_AMMO:
             return
+        if asset:
+            denied = w.asset_targets.asset_attackable(uid)
+            if denied:
+                return self.send(denied)
         hx, hy = w.hero_pos(now)
-        nx, ny = n.mover.pos(now)
+        nx, ny = asset if asset else n.mover.pos(now)
         rng = S['fircatici']['menzil']
         if math.hypot(nx - hx, ny - hy) > rng:
-            self.send([('AttackRangeExceededCommand', {'uid': n.id, 'maxRange': rng, 'type': 0})])
+            self.send([('AttackRangeExceededCommand', {'uid': uid, 'maxRange': rng, 'type': 0})])
             return
         w.end_invuln(force=True)
         w.abilities.reveal()
@@ -958,34 +1057,39 @@ class Esyalar:
         self.next_load = now + (S['fircatici']['dolum_sn'] * max(0.1, 1 + p.mods().get('fircatici_bekleme', 0))   # Star +%33 …
                                 * AY.carpan('roket_bekleme'))                                               # panel
         p.ach('shot', silah='ROCKET_LAUNCHER')
-        first = salvo(self.send, lambda: n.alive and not (w.hero_dead or w.jumping), w.hid, n.id, hit, cnt, cfg['tur'], w.later)
+        first = salvo(w.hid, uid, hit, cnt, cfg['tur'])
         self.send([first, legacy('0|RL|S|%d|%d|0' % (launcher_type(p), cfg['kimlik']))] + self.status(S['fircatici']['menu']))
         self.log('   fırlatıcı: %d x %s%s' % (cnt, ammo, '' if hit else ' (ıska)'))
         if not hit:
             return
         mods = p.mods()
         dmg = sum(cfg.get('hasar', 0) * random.uniform(0.85, 1.0) for _ in range(cnt))
-        dmg = int(dmg * (1 + mods.get('roket', 0) + mods.get('npc', 0) + mods.get('fircatici_hasar', 0))     # Rapid Fire Plus +%20
+        dmg = int(dmg * (1 + mods.get('roket', 0) + (mods.get('npc', 0) if n else 0) + mods.get('fircatici_hasar', 0))     # Rapid Fire Plus +%20
                   * (1 + p.lab_bonus(1)) * launcher_upgrade(p))
         drain = cfg.get('kalkan_cek', 0) * cnt
-        uid = n.id
+        impact = w.hit_asset if asset else w.hit_npc
 
         def land():
             if drain:                          # SAR/CBR/PIR: uzaylının kalkanından çekilen oyuncuya
                 w.last_shield_hit = 0
-                w.hit_npc(uid, drain, cfg.get('saldiri', 0), shield_only=True)
+                impact(uid, drain, cfg.get('saldiri', 0), shield_only=True)
                 if w.last_shield_hit:
                     g = p.d['gemi']
                     p.set_hull(shield=g.get('shield', 0) + w.last_shield_hit)
                     self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
             if dmg:
-                w.hit_npc(uid, dmg, 0)
+                impact(uid, dmg, 0)
         w.later(salvo_time(math.hypot(nx - hx, ny - hy), cnt), land)       # son roket varınca
 
     # ------------------------------------------------------------ özel roketler
     def fire_special(self, rocket, n, now):
         w, p = self.w, self.p
         r = ROCKETS[rocket]
+        uid = getattr(n, 'id', n)
+        asset = not hasattr(n, 'id')
+        if asset and (not w.asset_at(uid) or w.asset_targets.asset_attackable(uid)
+                      or not (r.get('hasar') or r.get('kalkan_hasar'))):
+            return
         if not self.ready(r['bekleme_grubu'], now) or p.use_ammo(rocket, 1) is None:
             return
         w.end_invuln(force=True)
@@ -997,8 +1101,7 @@ class Esyalar:
         roll = random.random()
         hit = roll < w.rocket_hit(rocket)
         saved = hit and roll >= w.rocket_hit(rocket, skill=False)             # güdüm görseli (dunya.rocket_look)
-        self.send(w.ammo_msgs(rocket) + [w.rocket_msg(n.id, hit, r.get('kimlik', 1), saved), self.cooldown(rocket, now)])
-        uid = n.id
+        self.send(w.ammo_msgs(rocket) + [w.rocket_msg(uid, hit, r.get('kimlik', 1), saved), self.cooldown(rocket, now)])
         if hit:
             w.later(ROCKET_FLIGHT, lambda: self.special_hit(rocket, uid))
         else:
@@ -1010,17 +1113,21 @@ class Esyalar:
         import lazer as LAZER
         w, p = self.w, self.p
         n = w.npcs.get(uid)
-        if not n or not n.alive:
+        asset = w.asset_at(uid) if not n else None
+        if w.hero_dead or w.jumping or (not asset and (not n or not n.alive)):
             return
+        if asset and w.asset_targets.asset_attackable(uid):
+            return
+        impact = w.hit_asset if asset else w.hit_npc
         r = ROCKETS[rocket]
-        dmg = r.get('hasar', 0) * (LAZER.name_match(r.get('hedef_carpan', {}), n) or 1)      # AGT-500: Agatus'a x5
+        dmg = r.get('hasar', 0) * ((LAZER.name_match(r.get('hedef_carpan', {}), n) or 1) if n else 1)      # AGT-500: Agatus'a x5
         if dmg:
             mods = p.mods()
-            w.hit_npc(uid, int(dmg * random.uniform(0.85, 1.0) * (1 + mods.get('roket', 0) + mods.get('npc', 0))), 0,
+            impact(uid, int(dmg * random.uniform(0.85, 1.0) * (1 + mods.get('roket', 0) + (mods.get('npc', 0) if n else 0))), 0,
                       hull_only=bool(r.get('yalniz_govde')))                                  # SP-100X: kalkanı atlar
         if r.get('kalkan_hasar'):                                                             # SR-5: kalkandan çal
             w.last_shield_hit = 0
-            w.hit_npc(uid, r['kalkan_hasar'], 0, shield_only=True)
+            impact(uid, r['kalkan_hasar'], 0, shield_only=True)
             got = int(w.last_shield_hit * r.get('kalkan_cal', 0))
             if got:
                 g = p.d['gemi']
@@ -1028,6 +1135,8 @@ class Esyalar:
                 self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
             if r.get('kendine_yavas'):
                 w.hero_effect('yavas', r['kendine_yavas'][1], r['kendine_yavas'][0], source=rocket)
+        if asset:                       # yapıların gemi görünümü, hızı ve isabet etkileri yok
+            return
         if not n.alive:
             return
         if r.get('gorunum_sn'):                                                               # WIZ-X: başka bir geminin görünümü

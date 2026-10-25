@@ -410,7 +410,7 @@ class Profil:
         if station:
             r = station.get('peaceRadius', 0)
             inside = (x - station['posX']) ** 2 + (y - station['posY']) ** 2 <= r * r
-        b.update(inPeaceArea=bool(inside or gate_peace), inStation=inside)     # portal çevresi de güvenli (kayıt), istasyon değil
+        b.update(inPeaceArea=bool((inside and station.get('pvpPeace', True)) or gate_peace), inStation=inside)     # portal çevresi de güvenli (kayıt), istasyon değil
         return b
 
     def generate(self, marker, station=None):
@@ -902,7 +902,8 @@ class Profil:
             n = self.ammo(menu_id)
             kind = SE.ammo_kind(menu_id)
             # kayıttaki hesapta olmayan cephaneler (R-IC3, SR-5, RSB dışı lazerler …) şablonda gizli: eldeyse görünür (canlı test H26)
-            st.update(counterValue=n, available=n > 0, activatable=n > 0, selected=bool(kind) and self.d['secili'].get(kind) == menu_id,
+            st.update(counterValue=n, counterStyle=4 if n > 0 else 1, available=n > 0, activatable=n > 0,
+                      selected=bool(kind) and self.d['secili'].get(kind) == menu_id,
                       visible=bool(st.get('visible')) or n > 0)
             for tip in ('toolTipSlotBar', 'toolTipItemBar'):
                 for line in (st.get(tip) or {}).get('commandList', []):

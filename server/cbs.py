@@ -22,7 +22,7 @@ diplomasisi). Takılan modül yuvaya taşınır (sahibiyle; benzersiz kimlik): h
 döner (çevrimdışıysa sonraki girişinde). Asteroitlerin zamanlı işleri (kurulum, deflector, onarım, rakip) sunucuda bir kez; her
 oturum asteroidin sürümü değişince varlıkları ve penceresini yeniler. Günlük ve sayılar klanın kaydında.
 """
-import datetime, json, math, os, random, threading, time, traceback, types
+import datetime, functools, json, math, os, random, threading, time, traceback, types
 
 import ayar as AY
 import cok_oyunculu as CO
@@ -32,6 +32,7 @@ import dunya
 import harita as H
 import kapi as KAPI
 import pve_ortak as PO
+import yollar as YOL
 from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -73,18 +74,65 @@ def asset_id(aid, slot=None):
     return ASSET_BASE + aid * 100 + (slot if slot is not None and slot > DEFLECTOR else 0)
 
 
+@functools.lru_cache(maxsize=None)
+def placement_obstacles(map_id):
+    """Use the same recorded/generated structures as the session's map loader."""
+    path = YOL.sablon('haritalar.json')
+    with open(path, encoding='utf8') as source:
+        maps = json.load(source)
+    world = maps.get(str(map_id)) or H.map_world(map_id, maps.get('5'))
+    obstacles = [(g['x'], g['y'], H.GATE_PEACE_RADIUS + 700) for g in H.GATES.get(map_id, [])]
+    obstacles += [(m['posX'], m['posY'], H.ASSET_RANGE + 700) for m in world.get('giris', [])
+                  if m['_m'] == 'AssetCreateCommand']
+    obstacles += [(m['posX'], m['posY'], m['peaceRadius'] + 700) for m in world.get('hazir', [])
+                  if m['_m'] == 'SpaceStationCommand']
+    return obstacles
+
+
+@functools.lru_cache(maxsize=None)
 def position(aid):
+    """Keep the configured centre unless its 600-unit footprint overlaps a map object.
+
+    Project only colliding centres beyond the obstacle, with 100 units of clearance.
+    Angular boundary candidates handle overlapping exclusions deterministically.
+    """
     a = AST[aid]
     w, h = H.map_size(a['harita'])
-    return int(w * a['x_yuzde'] / 100.0), int(h * a['y_yuzde'] / 100.0)
+    x, y = int(w * a['x_yuzde'] / 100.0), int(h * a['y_yuzde'] / 100.0)
+    obstacles = placement_obstacles(int(a['harita']))
+
+    def clamp(point):
+        return int(min(max(point[0], 700), w - 700)), int(min(max(point[1], 700), h - 700))
+
+    def clear(point):
+        return all(math.hypot(point[0] - ox, point[1] - oy) >= radius for ox, oy, radius in obstacles)
+
+    original = clamp((x, y))
+    if clear(original):
+        return original
+    candidates = []
+    for ox, oy, radius in obstacles:
+        angle = math.atan2(y - oy, x - ox)
+        for direction in [angle] + [math.radians(degrees) for degrees in range(0, 360, 5)]:
+            point = clamp((ox + math.cos(direction) * (radius + 2), oy + math.sin(direction) * (radius + 2)))
+            if clear(point):
+                candidates.append(point)
+    if not candidates:
+        raise ValueError('CBS %s has no clear layout position' % aid)
+    return min(candidates, key=lambda p: (p[0] - x) ** 2 + (p[1] - y) ** 2)
 
 
 def satellite_pos(aid, slot):
-    """Uydu modülünün konumu: merkezin çevresinde sekizgen (yuva 2-9, 22,5 dereceden başlayarak 45 derece arayla; resmî sunucu kaydı:
-    merkezden ±413/±171 ve ±98/±236 birim)."""
+    """Recorded 22.5-degree octagon orientation, with extra vertical clearance for native module sprites."""
     x, y = position(aid)
     a = (slot - 2) * math.pi / 4 + math.pi / 8
-    return int(x + math.cos(a) * 447), int(y + math.sin(a) * 255)
+    # Preserve the recorded octagon angle; increase height for 210px native module clearance.
+    return int(x + math.cos(a) * 447), int(y + math.sin(a) * 330)
+
+
+def exclusion_zones(map_id):
+    """Physical station/asteroid area, available before the world spawns NPCs."""
+    return [(*position(aid), D['menzil']) for aid in BY_MAP.get(int(map_id), [])]
 
 
 def prime_time(now=None):
@@ -131,8 +179,52 @@ class Cbs:
         d = self.p.d.setdefault('cbs', {})
         for k, v in (('moduller', {}), ('asteroitler', {}), ('gunluk', []), ('istatistik', {}), ('sira', 0)):
             d.setdefault(k, v)
+        self.migrate_rival_stats(self.p, d)
         self.absorb(d)
         return d
+
+    @staticmethod
+    def migrate_rival_stats(profile, state):
+        """Upgrade synthetic saved rival capacities once, preserving damage fractions.
+
+        Owned inventory/stations never participate. Old rivals stored a reduced
+        capacity in azami, so changing the data table alone could not update them.
+        """
+        version = 1  # published CBS stats configuration, 2026-10-25
+        if state.get('rakip_istatistik_surumu', 0) == version:
+            return
+        asteroids = state.get('asteroitler', {})
+        for a in asteroids.values() if isinstance(asteroids, dict) else []:
+            if not isinstance(a, dict) or a.get('sahip') != 'rakip' or a.get('durum') != 'kurulu':
+                continue
+            slots = a.get('yuvalar', {})
+            changed = False
+            for row in slots.values() if isinstance(slots, dict) else []:
+                if not isinstance(row, dict) or 'iid' in row or 'modul' in row:
+                    continue
+                loot = row.get('loot')
+                md = MODS.get(loot) if isinstance(loot, str) else None
+                if not md:
+                    continue
+                try:
+                    old_max, hp, shield = (float(row[k]) for k in ('azami', 'can', 'kalkan'))
+                    level = float(row['seviye'])
+                    if not all(math.isfinite(v) for v in (old_max, hp, shield, level)) or old_max <= 0 or level != int(level):
+                        continue
+                    maximum = int(level_value(md['can'], int(level)) * D['rakip']['can_carpani'])
+                    if maximum <= 0:
+                        continue
+                    old_shield = int(old_max * D['kalkan_orani'])
+                    new_shield = int(maximum * D['kalkan_orani'])
+                    row.update(azami=maximum, can=int(maximum * max(0.0, min(1.0, hp / old_max))),
+                               kalkan=int(new_shield * max(0.0, min(1.0, shield / old_shield))) if hp > 0 and old_shield > 0 else 0)
+                    changed = True
+                except (KeyError, TypeError, ValueError, OverflowError):
+                    continue
+            if changed:
+                a['surum'] = a.get('surum', 0) + 1
+        state['rakip_istatistik_surumu'] = version
+        profile.dirty = True
 
     def absorb(self, d):
         """Ödül yolundan depoya düşen modüller (module_* sayaçları) tek tek örneğe çevrilir (can, kalkan, seviye). Ortak yuvadan
@@ -169,6 +261,7 @@ class Cbs:
         d = h.d.setdefault('cbs', {})
         if not d.get('ortak'):
             self.embed(h, d)
+        self.migrate_rival_stats(h, d)
         return d['asteroitler']
 
     def embed(self, h, d):
@@ -411,9 +504,18 @@ class Cbs:
                 rep += level_value(md['onarim_sn'], m['seviye'])
         return att // 1000, dfn // 1000, rep
 
-    def deflector_rate(self, now=None):
+    def deflector_rate(self, now=None, aid=None):
         r = D['deflector_hiz']
-        return r['prime_time'] if prime_time(now) else r['normal']
+        base = r['prime_time'] if prime_time(now) else r['normal']
+        level = 0
+        if aid is not None:
+            a = self.ast(aid)
+            y = a['yuvalar'].get(str(DEFLECTOR))
+            m = (y if a.get('sahip') == 'rakip' else self.module(y.get('iid'))) if y else None
+            if m and m.get('loot') == 'module_defm-1':
+                level = max(0, min(15, int(m['seviye'])))
+        # Published +1% of base per upgrade: 120 minutes/hour -> 138 at L16.
+        return base * (100 + level) / 100.0
 
     def status_cmd(self, aid, now=None):
         now = time.time() if now is None else now
@@ -424,15 +526,15 @@ class Cbs:
                    deflectorShieldActive=bool(df['acik']), deflectorShieldSeconds=int(df['sn']), deflectorShieldSecondsMax=D['deflector_azami_sn'],
                    attackRating=att, defenceRating=dfn, repairRating=rep, honorBoosterRating=int(round(self.booster_pct(aid, 'onur', now))),
                    experienceBoosterRating=int(round(self.booster_pct(aid, 'ep', now))),
-                   damageBoosterRating=int(round(self.booster_pct(aid, 'hasar', now))), deflectorShieldRate=self.deflector_rate(now),
+                   damageBoosterRating=int(round(self.booster_pct(aid, 'hasar', now))), deflectorShieldRate=int(self.deflector_rate(now, aid)),
                    repairPrice=D['acil_onarim']['bedel'], equipment=self.equipped(aid, now), isOreTradeAvailable=True)
 
-    def management_ui(self, aid):
+    def management_ui(self, aid, now=None):
         dm = D['deflector_dk']
         a = self.ast(aid)
         return ('BattleStationManagementUiInitializationCommand', dict(
             mapAssetId=asset_id(aid), battleStationId=aid, battleStationName=AST[aid]['ad'], clanName=self.st_name(a),
-            faction=mod('FactionModule', faction=self.st_faction(a)), state=self.status_cmd(aid), availableModules=self.available_cmd(),
+            faction=mod('FactionModule', faction=self.st_faction(a)), state=self.status_cmd(aid, now), availableModules=self.available_cmd(),
             deflectorShieldMinutesMin=dm[0], deflectorShieldMinutesMax=dm[1], deflectorShieldMinutesIncrement=dm[2],
             deflectorDeactivationPossible=bool(a['deflector']['acik'])))
 
@@ -468,19 +570,34 @@ class Cbs:
                                            clanRelation=mod('ClanRelationModule', type=relation), clanTag=(clan or {}).get('etiket', ''),
                                            factionId=faction, posX=int(x), visibleOnWarnRadar=False))
 
+    def hub_stage(self, aid):
+        """Native .115: Hull occupies bits 16+, Deflector occupies bits 0..7.
+
+        GetLowerByte actually shifts right 16; GetUpperByte reads the low byte.
+        Both AssetCreate and AssetInfo feed UpdateBattleStationVisuals.
+        """
+        a = self.ast(aid)
+        levels = []
+        for slot in (HULL, DEFLECTOR):
+            y = a['yuvalar'].get(str(slot))
+            m = (y if a.get('sahip') == 'rakip' else self.module(y.get('iid'))) if y else None
+            levels.append(max(0, min(15, int(m['seviye']))) if m else 0)
+        return (levels[0] << 16) | levels[1]
+
     def map_assets(self, aid):
         """Asteroidin varlıkları: boşsa asteroit (35); kuruluysa merkez (36) ve uydular (37)."""
         a = self.ast(aid)
         x, y = position(aid)
         if a['durum'] != 'kurulu':
-            return [(asset_id(aid), ASTEROID, self.asset_cmd(asset_id(aid), ASTEROID, x, y, AST[aid]['ad']))]
+            cmd = self.asset_cmd(asset_id(aid), ASTEROID, x, y, AST[aid]['ad'])
+            if a['durum'] == 'kurma':
+                cmd[1]['modifier'] = [self.construction_modifier(aid)]
+            return [(asset_id(aid), ASTEROID, cmd)]
         rival = a.get('sahip') == 'rakip'
         clan = {'id': 9000 + aid, 'etiket': (a.get('rakip') or '')[:3].upper()} if rival else self.st_clan(a)
         fac = a.get('rakip_firma', 0) if rival else self.st_faction(a)
         rel = self.relation(a)
-        hull = a['yuvalar'].get(str(HULL))
-        hm = (hull if rival else self.module(hull['iid'])) if hull else None       # rakibin yuvasında modülün kendisi
-        stage = hm['seviye'] if hm else 0
+        stage = self.hub_stage(aid)
         out = [(asset_id(aid), BATTLESTATION, self.asset_cmd(asset_id(aid), BATTLESTATION, x, y, a.get('rakip') if rival else self.st_name(a),
                                                              stage=stage, clan=clan, faction=fac, relation=rel))]
         for slot, yv in sorted(a['yuvalar'].items(), key=lambda kv: int(kv[0])):
@@ -496,7 +613,47 @@ class Cbs:
             out.append((asset_id(aid, s), SATELLITE, self.asset_cmd(asset_id(aid, s), SATELLITE, sx, sy, 'wreck' if dead else MODS[loot]['kod'],
                                                                    design=0 if dead else MODS[loot]['tasarim'], stage=m['seviye'],
                                                                    clan=clan, faction=fac, relation=rel)))
+        for uid, kind, cmd in out:
+            if kind == SATELLITE and cmd[1]['designId'] == 0:
+                continue
+            df = a['deflector']
+            if df.get('acik'):
+                cmd[1]['modifier'] = [self.deflector_modifier(uid, 34, True, int(df.get('sn', 0)))]
+            elif kind == BATTLESTATION:
+                seconds = max(0, math.ceil(df.get('kapali_bitis', 0) - time.time()))
+                if seconds:
+                    cmd[1]['modifier'] = [self.deflector_modifier(uid, 35, True, seconds)]
         return out
+
+    @staticmethod
+    def construction_modifier(aid):
+        # Native .115 modifier 37 creates ConstructingEffect2D/3D; the building UI alone does not.
+        return mod('VisualModifierCommand', userId=asset_id(aid), modifier=37, attribute=0,
+                   additionalAttribute='', count=0, activated=True)
+
+    @staticmethod
+    def deflector_modifier(uid, modifier, active, seconds=0):
+        # Native 1.1.115: 34 = shield + hub timer; 35 = hub downtime timer.
+        return mod('VisualModifierCommand', userId=uid, modifier=modifier, attribute=max(0, int(seconds)),
+                   additionalAttribute='', count=0, activated=active)
+
+    def deflector_visuals(self, aid, now):
+        """Update every displayed living asset, including viewers outside management range."""
+        df = self.ast(aid)['deflector']
+        shown = {uid for uid, _ in self.shown_assets}
+        assets = [(uid, kind) for uid, kind, cmd in self.map_assets(aid)
+                  if uid in shown and not (kind == SATELLITE and cmd[1]['designId'] == 0)]
+        hub = asset_id(aid)
+        if df['acik']:
+            # Clearing timer 35 after shield 34 would delete the active shield's own timer (both effect 49).
+            msgs = [('VisualModifierCommand', self.deflector_modifier(hub, 35, False))] if hub in shown else []
+            return msgs + [('VisualModifierCommand', self.deflector_modifier(uid, 34, True, df.get('sn', 0)))
+                           for uid, _ in assets]
+        msgs = [('VisualModifierCommand', self.deflector_modifier(uid, 34, False)) for uid, _ in assets]
+        seconds = max(0, math.ceil(df.get('kapali_bitis', 0) - now))
+        if hub in shown:
+            msgs.append(('VisualModifierCommand', self.deflector_modifier(hub, 35, seconds > 0, seconds)))
+        return msgs
 
     def remove_assets(self):
         msgs = [('AssetRemoveCommand', {'assetType': mod('AssetTypeModule', typeValue=k), 'uid': i}) for i, k in self.shown_assets]
@@ -523,18 +680,44 @@ class Cbs:
         ms = int(mh * D['kalkan_orani'])
         kind = BATTLESTATION if slot <= DEFLECTOR else SATELLITE
         return ('AssetInfoCommand', dict(assetId=asset_id(aid, slot), type=mod('AssetTypeModule', typeValue=kind),
-                                         designId=1 if kind == BATTLESTATION else MODS[m['loot']]['tasarim'], expansionStage=int(m['seviye']),
-                                         hitpoints=int(m['can']), maxHitpoints=mh, shielded=m['kalkan'] > 0, shieldEnergy=int(m['kalkan']),
+                                         designId=1 if kind == BATTLESTATION else MODS[m['loot']]['tasarim'],
+                                         expansionStage=self.hub_stage(aid) if kind == BATTLESTATION else int(m['seviye']),
+                                         hitpoints=int(m['can']), maxHitpoints=mh, shielded=ms > 0, shieldEnergy=int(m['kalkan']),
                                          maxShieldEnergy=ms))
 
     # ------------------------------------------------------------ dünya
     def attach(self, world):
         self.world = world
         self.near = None
+        self.shown_assets = []                 # refreshMap already removed the previous client's assets
         world.cbs_trade = self.trade_mult
         world.asset_targets = self                      # rakip istasyonun modülleri seçilir ve vurulur (dunya.asset_laser)
         msgs = self.show_assets(world.map_id)
         return msgs
+
+    def can_dock(self, aid):
+        """Local own/allied docking rule, independent of shield/PvP immunity."""
+        k = self.klan()
+        if not k or not k.get('id'):
+            return False
+        a = self.ast(aid)
+        if a['durum'] != 'kurulu' or a.get('sahip') == 'rakip':
+            return False
+        owner = a.get('klan') or (k['id'] if self.host is None else None)
+        relation = (KL.iliski_klan(k['id'], owner) if self.host is not None else
+                    next((d['tur'] for d in k.get('diplomasi', []) if d['klan'] == owner), 0))
+        return owner == k['id'] or relation == 1
+
+    def docking_station(self, x, y):
+        if self.world is None:
+            return None
+        for aid in BY_MAP.get(int(self.world.map_id), []):
+            if not self.can_dock(aid):
+                continue
+            sx, sy = position(aid)
+            if math.hypot(x - sx, y - sy) <= D['menzil']:
+                return dict(posX=sx, posY=sy, peaceRadius=D['menzil'], pvpPeace=False)
+        return None
 
     def starmap_msgs(self):
         """Yıldız haritasının istasyon durumları değişti (kuruldu, rakip kurdu, yıkıldı): girişteki şablonla yeniden."""
@@ -601,6 +784,12 @@ class Cbs:
             if w:
                 msgs += self.raid_tick(now)
                 msgs += self.rival_fire(now)
+        # AssetInfo invokes native BuildSelect. Background repairs/raids must
+        # update other structures without replacing the player's target.
+        if w is not None:
+            msgs = [('AttackHitAssetCommand', dict(assetId=f['assetId'], hitpointsNow=f['hitpoints'],
+                        hitpointsMax=f['maxHitpoints']))
+                    if n == 'AssetInfoCommand' and f['assetId'] != w.target else (n, f) for n, f in msgs]
         return msgs
 
     def refresh_changed(self):
@@ -804,7 +993,7 @@ class Cbs:
             self.mark()
         self.note(aid, 'BUILD_START', buildSeconds=minutes * 60)
         self.log('   CBS: %s kuruluyor (%d dk)' % (AST[aid]['ad'], minutes))
-        return [self.building_state(aid, now)]
+        return [self.building_state(aid, now), ('VisualModifierCommand', self.construction_modifier(aid))]
 
     def stats(self, a):
         """İstasyon sayıları: tek oyunculuda profilde, ortakta istasyonun klanının kaydında."""
@@ -835,51 +1024,86 @@ class Cbs:
                 msgs.append(self.management_ui(aid))
         return msgs
 
+    def deflector_charge(self, start, end, aid=None):
+        """Integrate recharge over local prime-time boundaries, including offline time."""
+        total = 0.0
+        while start < end:
+            day = datetime.datetime.fromtimestamp(start).replace(hour=0, minute=0, second=0, microsecond=0)
+            boundaries = [day + datetime.timedelta(days=1)]
+            for text in D.get('prime_time', ['18:00', '21:00']):
+                hour, minute = map(int, text.split(':'))
+                boundaries.append(day.replace(hour=hour, minute=minute))
+            stop = min([end] + [t.timestamp() for t in boundaries if t.timestamp() > start])
+            total += (stop - start) * self.deflector_rate(start, aid) / 60.0
+            start = stop
+        return total
+
     def deflector_tick(self, aid, a, now):
         df = a['deflector']
-        dt = max(0.0, now - df.get('son', now))
-        df['son'] = now
-        msgs = []
-        if df['acik']:
-            df['sn'] = max(0.0, df['sn'] - dt)
-            if df['sn'] <= 0:
-                df.update(acik=False, kapali_bitis=now + D['deflector_bitince_dk'] * 60)
+        cursor = min(now, df.get('son', now))
+        changed, exhausted = False, False
+        while True:
+            if df['acik']:
+                elapsed = min(max(0.0, df['sn']), now - cursor)
+                df['sn'] = max(0.0, df['sn'] - elapsed)
+                cursor += elapsed
+                if df['sn'] > 0:
+                    break
+                # Downtime starts at the actual exhaustion instant, even after a delayed tick.
+                df.update(acik=False, kapali_bitis=cursor + D['deflector_bitince_dk'] * 60)
+                changed = exhausted = True
                 self.bump(a)
                 self.note(aid, 'DEFLECTOR_OFF')
-                msgs += self.tell(a, [KAPI.screen('The deflector shield of your Battle Station at %s is down!' % AST[aid]['ad'])])
-                msgs += self.near_status(aid, now)
-        else:
-            df['sn'] = min(D['deflector_azami_sn'], df['sn'] + dt * self.deflector_rate(now) / 60.0)
-            if now >= df.get('kapali_bitis', 0) and df['sn'] > 0:
+            else:
+                deadline = df.get('kapali_bitis', 0)
+                stop = min(now, max(cursor, deadline))
+                if stop == cursor and df['sn'] <= 0:
+                    stop = now
+                df['sn'] = min(D['deflector_azami_sn'], df['sn'] + self.deflector_charge(cursor, stop, aid))
+                cursor = stop
+                if cursor < deadline or df['sn'] <= 0:
+                    break
                 df['acik'] = True
+                changed = True
                 self.bump(a)
                 self.note(aid, 'DEFLECTOR_ON')
-                msgs += self.near_status(aid, now)
+            if cursor >= now:
+                break
+        df['son'] = now
         self.mark()
+        msgs = self.near_status(aid, now) if changed else []
+        if exhausted and not df['acik']:
+            msgs += self.tell(a, [KAPI.screen('The deflector shield of your Battle Station at %s is down!' % AST[aid]['ad'])])
         return msgs
 
     def near_status(self, aid, now):
-        """Deflector açıldı/kapandı: durum + yönetim verisi (Deactivate düğmesinin kaydırıcısı deflectorDeactivationPossible'dan)."""
-        return [self.status_msg(aid, now), self.management_ui(aid)] if self.near == aid else []
+        """World shield/timer effects and the nearby owner's management controls."""
+        msgs = self.deflector_visuals(aid, now)
+        if self.near == aid and self.mine(self.ast(aid)):
+            msgs += [self.status_msg(aid, now), self.management_ui(aid, now)]
+        return msgs
 
     def deflector_off(self, aid, minutes):
         a = self.ast(aid)
         if a['durum'] != 'kurulu':
             return self.error('UNSPECIFIED')
-        df = a['deflector']
-        if not df['acik']:
-            return self.error('DEFLECTOR_ALREADY_OFF')
         if not self.can('battle_station_deflector'):
             return self.error('UNSPECIFIED')
+        now = time.time()
+        # Settle the active countdown before resetting its clock for the requested downtime.
+        pending = self.deflector_tick(aid, a, now)
+        df = a['deflector']
+        if not df['acik']:
+            return pending + self.error('DEFLECTOR_ALREADY_OFF')
         dm = D['deflector_dk']
         minutes = max(dm[0], min(dm[1], minutes or dm[0]))
-        now = time.time()
         with self.lock:
             df.update(acik=False, kapali_bitis=now + minutes * 60, son=now)
+            self.bump(a)
             self.mark()
         self.note(aid, 'DEFLECTOR_OFF', userName=self.p.d['pilot'].get('userName', ''))
         self.log('   CBS: %s deflector %d dk kapalı' % (AST[aid]['ad'], minutes))
-        return [self.status_msg(aid, now), self.management_ui(aid)]
+        return pending + self.deflector_visuals(aid, now) + [self.status_msg(aid, now), self.management_ui(aid, now)]
 
     def emergency(self, aid, slot):
         a = self.ast(aid)
@@ -905,7 +1129,7 @@ class Cbs:
         rep = 0
         for y in a['yuvalar'].values():
             m = self.module(y['iid'])
-            if m and MODS[m['loot']].get('onarim_sn') and m['can'] > 0:
+            if m and MODS[m['loot']].get('onarim_sn') and m['can'] > 0 and y.get('kurulum_bitis', 0) <= now:
                 rep = level_value(MODS[m['loot']]['onarim_sn'], m['seviye'])
         changed = []
         for slot, y in a['yuvalar'].items():
@@ -954,15 +1178,18 @@ class Cbs:
 
     # ------------------------------------------------------------ boosterlar ve ticaret
     def mods(self):
-        """Profilin bonusları (profil.mods): onur ve EP her yerde, hasar istasyonun haritasında (en güçlü istasyonun)."""
+        """Clan-wide XP/honor stack globally up to 50%; damage applies on the station map."""
+        clan = self.klan()
+        if not self.p.d['pilot'].get('clanId') or not clan:
+            return {}
         out = {}
         here = int(self.p.d['konum'].get('mapId', 0))
         for aid_s, a in list(self.asts.items()):
-            if a.get('durum') != 'kurulu' or not self.mine(a):
+            if a.get('durum') != 'kurulu' or not self.mine(a) or a.get('klan') not in (None, clan['id']):
                 continue
             aid = int(aid_s)
-            out['onur'] = max(out.get('onur', 0), self.booster_pct(aid, 'onur') / 100.0)
-            out['ep'] = max(out.get('ep', 0), self.booster_pct(aid, 'ep') / 100.0)
+            out['onur'] = min(D['booster']['tavan'], out.get('onur', 0) + self.booster_pct(aid, 'onur') / 100.0)
+            out['ep'] = min(D['booster']['tavan'], out.get('ep', 0) + self.booster_pct(aid, 'ep') / 100.0)
             if int(AST[aid]['harita']) == here:
                 d = self.booster_pct(aid, 'hasar') / 100.0
                 out['lazer'] = max(out.get('lazer', 0), d)
@@ -976,7 +1203,7 @@ class Cbs:
         return None
 
     # ------------------------------------------------------------ hasar ve yıkım (baskın ve rakip)
-    def damage_module(self, aid, slot, dmg, attacker_name=''):
+    def damage_module(self, aid, slot, dmg, attacker_name='', shield_only=False, hull_only=False):
         """Modüle hasar (kalkan %80 emer) -> mesajlar; can 0: yok olur; merkez (Hull) giderse istasyon düşer."""
         a = self.ast(aid)
         y = a['yuvalar'].get(str(slot))
@@ -984,7 +1211,10 @@ class Cbs:
         m = y if rival else (self.module(y['iid']) if y else None)
         if not m or m['can'] <= 0:
             return []
-        to_shield = min(m['kalkan'], int(dmg * 0.8))
+        dmg = max(0, int(dmg))
+        if shield_only:
+            dmg = min(dmg, m['kalkan'])
+        to_shield = dmg if shield_only else 0 if hull_only else min(m['kalkan'], int(dmg * 0.8))
         m['kalkan'] -= to_shield
         m['can'] = max(0, m['can'] - (dmg - to_shield))
         a['son_hasar'] = time.time()
@@ -1060,6 +1290,19 @@ class Cbs:
         if self.near == aid and not rival:
             msgs += [self.building_ui(aid), self.available_msg()]
         return msgs
+
+    @staticmethod
+    def weapon_visual(md, attacker, target, hit):
+        """Single native rocket for RAM modules; lasers keep the beam command.
+
+        1.1.115 Hellstorm handler resolves generic map entities, including CBS
+        satellites. ECO-10 appearance is a local reuse, not an official RAM skin.
+        """
+        if md['silah'] == 'roket':
+            return ('HellstormAttackCommand', dict(attackerId=attacker, targetId=target, hit=hit, currentLoad=1,
+                                                  rocketType=mod('AmmunitionTypeModule', typeValue=23)))
+        return ('AttackLaserRunCommand', dict(attackerId=attacker, targetId=target, laserColor=0,
+                                             isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))
 
     # ------------------------------------------------------------ CBS-3: uzaylı baskınları
     def raid_tick(self, now):
@@ -1164,10 +1407,13 @@ class Cbs:
                 continue
             self.next_shot[key] = now + md['aralik_sn']
             n = random.choice(near)
-            w.send([('AttackLaserRunCommand', dict(attackerId=asset_id(aid, int(s)), targetId=n.id, laserColor=0,
-                                                   isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
-            if random.random() < md['isabet']:
-                w.hit_npc(n.id, int(level_value(md['hasar'], m['seviye']) * dmg_boost), 1, attacker=asset_id(aid, int(s)), engage=False)
+            hit = random.random() < md['isabet']
+            atype = 0 if md['silah'] == 'roket' else 1
+            w.send([self.weapon_visual(md, asset_id(aid, int(s)), n.id, hit)])
+            if hit:
+                w.hit_npc(n.id, int(level_value(md['hasar'], m['seviye']) * dmg_boost), atype, attacker=asset_id(aid, int(s)), engage=False, source_asset=True)
+            else:
+                w.send([('AttackMissedCommand', dict(attackType=dunya.attack_type(atype), targetUserId=n.id, skillColorId=0))])
         return msgs
 
     # ------------------------------------------------------------ CBS-4: sanal rakip klanlar
@@ -1195,7 +1441,13 @@ class Cbs:
                     msgs += self.rival_build(aid, a, now)
         elif a.get('sahip') == 'rakip':
             df = a.setdefault('deflector', {})
-            df['acik'] = not prime_time(now) if D['rakip'].get('deflector_prime_disinda') else False
+            active = bool(D['rakip'].get('deflector_prime_disinda') and not prime_time(now)
+                          and now >= df.get('kapali_bitis', 0))
+            if bool(df.get('acik')) != active:
+                df['acik'] = active
+                self.bump(a)
+                self.mark()
+                msgs += self.deflector_visuals(aid, now)
             msgs += self.rival_repair(aid, a, now)
         return msgs
 
@@ -1265,59 +1517,86 @@ class Cbs:
     # ------------------------------------------------------------ dünyanın asset_targets arayüzü (dunya.select/laser_start/asset_laser)
     @staticmethod
     def asset_slot(uid):
-        uid = int(uid or 0)
+        try:
+            uid = int(uid or 0)
+        except (TypeError, ValueError, OverflowError):
+            return None, None
         aid = (uid - ASSET_BASE) // 100
         slot = uid - ASSET_BASE - aid * 100
         return (aid, slot) if aid in AST and 0 <= slot < SLOTS and slot != DEFLECTOR else (None, None)
 
-    def asset_pos(self, uid):
-        """Bu haritadaki rakip istasyonun canlı modülü (merkez = Hull yuvası) -> konum ya da None."""
+    def asset_module(self, uid):
+        """Current-map live installed module, resolved from its owner store."""
         aid, slot = self.asset_slot(uid)
         w = self.world
         if aid is None or not w or int(w.map_id) != int(AST[aid]['harita']):
             return None
         a = self.ast(aid)
-        y = a['yuvalar'].get(str(slot)) if a.get('sahip') == 'rakip' and a['durum'] == 'kurulu' else None
-        if not y or y['can'] <= 0:
+        y = a['yuvalar'].get(str(slot)) if a['durum'] == 'kurulu' else None
+        m = (y if a.get('sahip') == 'rakip' else self.module(y.get('iid'))) if y else None
+        return m if m and m.get('can', 0) > 0 else None
+
+    def asset_pos(self, uid):
+        """Selection is available for friendly and shielded assets too."""
+        if not self.asset_module(uid):
             return None
+        aid, slot = self.asset_slot(uid)
         return position(aid) if slot == HULL else satellite_pos(aid, slot)
 
     def asset_select(self, uid):
+        m = self.asset_module(uid)
+        if not m:
+            return []
         aid, slot = self.asset_slot(uid)
-        y = self.ast(aid)['yuvalar'][str(slot)]
-        mh = y.get('azami') or level_value(MODS[y['loot']]['can'], y['seviye'])
-        return [('ShipSelectionCommand', dict(userId=int(uid), shipType=0, shield=int(y['kalkan']), shieldMax=int(mh * D['kalkan_orani']),
-                                              hitpoints=int(y['can']), hitpointsMax=int(mh), nanoHull=0, maxNanoHull=0, shieldSkill=False)),
-                self.info_cmd(aid, slot, y)]
+        # Native BuildSelect consumes AssetInfo, not the ship-only selection handler.
+        return [self.info_cmd(aid, slot, m)]
 
     def asset_attackable(self, uid):
         """[] vurulabilir; deflector açıksa istemcinin uyarısı."""
         aid, slot = self.asset_slot(uid)
-        if aid is not None and self.rival_attackable(aid):
-            return []
+        if self.asset_module(uid):
+            a = self.ast(aid)
+            hostile = self.rival_attackable(aid) or (self.host is not None and not self.mine(a)
+                and self.relation(a) == 3 and not a['deflector'].get('acik'))
+            if hostile:
+                return []
         return [legacy('0|A|STM|msg_station_not_atackable')]
 
     def asset_hit(self, uid, dmg):
+        return self.asset_damage(uid, dmg, atype=1)
+
+    def asset_damage(self, uid, dmg, atype=0, shield_only=False, hull_only=False, attacker=None):
+        denied = self.asset_attackable(uid)
+        if denied:
+            return denied
         aid, slot = self.asset_slot(uid)
         a = self.ast(aid)
         a['saldiri'] = time.time()
-        msgs = self.damage_module(aid, slot, dmg, self.clan_name())
+        hit_module = self.asset_module(uid)
+        hp_before, shield_before = hit_module['can'], hit_module['kalkan']
+        msgs = self.damage_module(aid, slot, dmg, self.clan_name(), shield_only=shield_only, hull_only=hull_only)
         w = self.world
-        bars = [c for c in msgs if c[0] == 'AssetInfoCommand']
-        if bars and self.host is not None and w is not None and w.ortak is not None:   # can çubuğu haritadaki öteki oyuncularda da
+        if w is not None:
+            w.last_shield_hit = shield_before - hit_module['kalkan']
+        # AssetInfo invokes BuildSelect -> UnitDeselect on every hit, clearing
+        # ShipInfo.IsAtk and making a moving hero face its route instead of the target.
+        # AttackHit updates Entity numeric values and emits the floating damage number.
+        msgs = [(name, fields) for name, fields in msgs if name != 'AssetInfoCommand']
+        amount = int(hp_before - hit_module['can'] + shield_before - hit_module['kalkan'])
+        hit = ('AttackHitCommand', dict(attackType=dunya.attack_type(atype), attackerId=attacker if attacker is not None else w.hid if w else self.p.user_id,
+            victimId=int(uid), victimHitpoints=int(hit_module['can']), victimShield=int(hit_module['kalkan']),
+            victimNanoHull=0, damage=amount, skilled=atype == 1, strike=False, cannonType=0))
+        bar = ('AttackHitAssetCommand', dict(assetId=int(uid), hitpointsNow=int(hit_module['can']),
+            hitpointsMax=int(hit_module.get('azami') or level_value(MODS[hit_module['loot']]['can'], hit_module['seviye']))))
+        if self.host is not None and w is not None and w.ortak is not None:
             for o in list(w.ortak.uyeler):
-                if o is not w and o.running:
-                    o.teslim(bars)
-        b = self.ast(aid)
-        y = b['yuvalar'].get(str(slot)) if b.get('sahip') == 'rakip' else None
-        if y:
-            msgs.append(('AttackHitAssetCommand', dict(assetId=int(uid), hitpointsNow=int(y['can']),
-                                                       hitpointsMax=int(y.get('azami') or level_value(MODS[y['loot']]['can'], y['seviye'])))))
-        return msgs
+                if o is not w and o.running and o.target == uid:
+                    o.teslim([hit, bar])
+        return [hit, bar] + msgs
 
     def rival_fire(self, now):
-        """Rakip istasyonun silah uyduları vurulabilirken (deflector kapalı) menzildeki oyuncuya ateş eder; hasar tek oyunculu
-        çarpanla (rakip.hasar_carpani). Ölüm ekranında neden BATTLESTATION."""
+        """Deflector kapalıyken menzildeki oyuncuya tam modül hasarı (rakip.hasar_carpani varsayılan 1,0).
+        Ölüm ekranında neden BATTLESTATION; lazer/roket kendi saldırı türünü kullanır."""
         w = self.world
         if not w or w.hero_dead or getattr(w, 'jumping', False):
             return []
@@ -1332,18 +1611,46 @@ class Cbs:
                     continue
                 sx, sy = satellite_pos(aid, int(s))
                 key = ('rakip', aid, int(s))
-                if math.hypot(sx - hx, sy - hy) > md['menzil'] or now < self.next_shot.get(key, 0):
+                if now < self.next_shot.get(key, 0):
                     continue
+                candidates = []
+                distance = math.hypot(sx - hx, sy - hy)
+                if distance <= md['menzil']:
+                    candidates.append((distance, 0, w.hid, None))
+                pet = getattr(w, 'pet', None)
+                if pet and pet.active and pet.alive and pet.w is w:
+                    px, py = pet.pos(now)
+                    distance = math.hypot(sx - px, sy - py)
+                    if distance <= md['menzil']:
+                        candidates.append((distance, 1, pet.pid, pet))
+                if not candidates:
+                    continue
+                _, _, target_uid, target_pet = min(candidates, key=lambda row: row[:2])
                 self.next_shot[key] = now + md['aralik_sn']
                 uid = asset_id(aid, int(s))
-                w.send([('AttackLaserRunCommand', dict(attackerId=uid, targetId=w.hid, laserColor=0, isDiminishedBySkillShield=w.skill_shield(),
-                                                       skilledLaser=False, visualType=0))])
-                if random.random() < md['isabet']:
-                    dmg = int(level_value(md['hasar'], y['seviye']) * D['rakip']['hasar_carpani'])
-                    who = types.SimpleNamespace(id=uid, alive=False, d={'ad': '%s [%s]' % (md['kod'], a.get('rakip', ''))})
-                    w.send(w.hurt_hero(dmg, killer=who, cause=DESTRUCTION_BATTLESTATION, now=now))
+                defense = {} if target_pet else self.p.mods()
+                evasion = max(0.0, min(1.0, target_pet.proto('kacinma') if target_pet else defense.get('kacinma', 0)))
+                hit = random.random() < md['isabet'] * (1 - evasion)
+                atype = 0 if md['silah'] == 'roket' else 1
+                laser_factor = max(0.0, 1 + defense.get('alinan_lazer', 0)) if atype == 1 else 1.0
+                visual = self.weapon_visual(md, uid, target_uid, hit)
+                if atype == 1:
+                    visual[1]['isDiminishedBySkillShield'] = laser_factor < 1 or (not target_pet and w.skill_shield())
+                w.send([visual])
+                if hit:
+                    dmg = int(round(level_value(md['hasar'], y['seviye']) * D['rakip']['hasar_carpani'] * laser_factor))
+                    if target_pet:
+                        actual = target_pet.station_hit(dmg, uid, atype=atype, now=now)
+                    else:
+                        who = types.SimpleNamespace(id=uid, alive=False, d={'ad': '%s [%s]' % (md['kod'], a.get('rakip', ''))})
+                        g = self.p.d['gemi']
+                        before = g.get('hitPoints', 0) + g.get('shield', 0) + g.get('nanoHull', 0)
+                        w.send(w.hurt_hero(dmg, killer=who, atype=atype, cause=DESTRUCTION_BATTLESTATION, now=now, source_asset=True))
+                        actual = before - g.get('hitPoints', 0) - g.get('shield', 0) - g.get('nanoHull', 0)
+                    if actual > 0:
+                        w.last_asset_attacker = (uid, now)
                 else:
-                    w.send([('AttackMissedCommand', dict(attackType=dunya.attack_type(1), targetUserId=w.hid, skillColorId=0))])
+                    w.send([('AttackMissedCommand', dict(attackType=dunya.attack_type(atype), targetUserId=target_uid, skillColorId=0))])
         return []
 
     # ------------------------------------------------------------ klan sekmesi ve günlük
@@ -1441,7 +1748,10 @@ class Cbs:
             df['acik'] = not df.get('acik')
             df['kapali_bitis'] = 0 if df['acik'] else time.time() + 3600
             df['sn'] = max(df.get('sn', 0), 3600) if df['acik'] else df.get('sn', 0)
-            msgs += [self.status_msg(aid), self.management_ui(aid)]
+            df['son'] = time.time()
+            self.bump(self.ast(aid))
+            self.mark()
+            msgs += self.near_status(aid, df['son'])
         if aid and 'raid' in what:
             msgs += self.spawn_raid(aid)
         if aid and 'rival' in what:

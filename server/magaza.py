@@ -13,7 +13,8 @@ Tek oyunculu: gerçek parayla satılan ("Payment") eşyalar uridyumla satılır 
   Paketlerin içeriği odeme_paketleri tablosundan verilir (gemi paketleri dahil); içeriği sunucuda olmayan eşya listede gösterilmez.
   Paketin verilemeyen parçaları (sahip olunan gemi, P.E.T., formasyon; dronlar boş yer kadar) atlanır, gerisi verilir, ekranda
   "Already owned, not given: …" (package_fit); hepsi zaten varsa alım olmaz. Fiyat değişmez.
-Hızlı alım: kısayol çubuğundaki buy_<lootId> (MenuActionRequest actionType 0); adet öğenin sayacı (lazer 1000, roket 100).
+Hızlı alım: buy_<lootId> (kayıttaki SELECTION öğesi; MenuActionRequest actionType 1: kısayol çubuğunda tek tık, öğe çubuğunda çift tık;
+  öğe çubuğundaki tek tık actionType 0, gerçek sunucu yanıtlamıyor); adet öğenin sayacı (lazer 1000, roket 100).
 Hangar:
   HangarShipEquipmentRequest -> HangarShipEquipmentCommand (iki config'in eşya kimlikleri profilden)
   HangarListRequest          -> HangarShipsCommand (envanter: ekipman örnekleri, cephane, cevher)
@@ -356,7 +357,8 @@ class Magaza:
     def handles(self, name, f):
         if name == 'MenuActionRequest':
             mid = f.get('menuItemId', '')
-            return (mid.startswith('buy_') and f.get('actionType') == 0) or mid in FORMS
+            # Quick-buy activation is actionType=1 (slot-bar click, item-bar double click); the recorded server ignores 0.
+            return (mid.startswith('buy_') and f.get('actionType') == 1) or mid in FORMS
         return name in ('ShopItemListRequest', 'ShopItemBuyRequest', 'HangarShipEquipmentRequest', 'HangarListRequest',
                         'HangarShipDetailRequest', 'HangarShipMoveItemsRequest', 'LabRefinementRequest', 'LabUpdateItemRequest',
                         'LabUpdateRequest', 'HangarShipUnlockSlotRequest', 'HangarShipRenamePetRequest', 'HangarShipSellItemRequest',
@@ -524,6 +526,12 @@ class Magaza:
             it.update(PC.hangar_fields(self.p, iid, loot))              # top: temel hasar, nitelikler, yıldız, UL'nin gemisi
         elif RZ.is_item(loot) and str(iid) in self.p.d['esyalar']:
             it['modifiers'] = RZ.modifiers_str(self.p, iid)             # Xeno Resonator'ın nitelikleri (Ö6)
+        if loot.startswith(QF.PREFIX) and QF.state(self.p, iid):
+            # Hangar tooltips read modifiers/ships, independently of Hyperforge data.
+            core = QF.state(self.p, iid)
+            it['modifiers'] = ';'.join('%s,%s' % (a.upper(), format(v, '.2f').rstrip('0').rstrip('.'))
+                                       for a, v in core['nitelikler'] if v > 0)
+            it['ships'] = GM.ship_ids([core['gemi']])
         if EK.attached(self.p, loot):
             it['attachedAmmo'] = EK.attached(self.p, loot)      # otomatik alım CPU'sunun seçili cephanesi
         if PETM.has_levels(loot):
@@ -1560,6 +1568,8 @@ class Magaza:
         # panelin geminin canı ve kalkanı çarpanları; kalkan istemciye 32 bitle gider (AttributeShieldUpdateCommand)
         shield_max = min(AY.I32, int(total * (1 + form.get('kalkan', 0)) * AY.carpan('gemi_kalkan')))
         hp_max = max(1, int(hp * (1 + form.get('can', 0)) * AY.carpan('gemi_can') + form.get('can_mutlak', 0))) if hp else None
+        if hp_max and active:
+            hp_max = max(1, int(hp_max * form.get('can_carpan', 1.0)))   # enfeksiyon: toplam gövdenin %15'i, Pilot Bio dahil
         return dict(display=display, speed=speed, shield_max=shield_max, absorb=absorb,
                     lasers=len(eq.get('laser', [])), speed_gens=sum(1 for g in gens if g in ESYA['hiz_jeneratorleri']),
                     shield_gens=ship_gens, hp_max=hp_max)

@@ -80,10 +80,14 @@ class Yetenekler:
         nx, ny = n.mover.pos(now)
         return math.hypot(nx - hx, ny - hy)
 
-    def hero_open(self, now):
-        """Oyuncu uzaylı yeteneklerine açık mı (ölü, atlamada, güvenli bölgede, yerinde tamir koruması değil)."""
+    def hero_open(self, now, n=None):
+        """NPC abilities share laser retaliation rules, with portal/spawn/cloak protection."""
         w = self.w
-        return not (w.hero_dead or w.jumping or now < w.invuln_until or w.in_peace(*w.hero_pos(now)))
+        if (w.hero_dead or w.jumping or now < w.invuln_until or w.abilities.cloaked(now) or w.items.cloaked()):
+            return False
+        x, y = w.hero_pos(now)
+        return (not w.in_peace(x, y) or bool(n is not None and w.station_at(x, y)
+                and not w.near_gate_peace(x, y) and w.npc_retaliating(n)))
 
     def adopt(self, parent, child):
         """Uzaylının doğurduğu/çağırdığı: yeniden doğmaz; kapıda dalganın uzaylısı sayılır (dalga o ölmeden bitmez)."""
@@ -308,7 +312,7 @@ class Yetenekler:
     def rocket(self, n, now):
         """Uzaylının roketi ya da roket fırlatıcı salvosu: kendi beklemesiyle, ateş menzilinde."""
         w, r = self.w, n.davranis['roket']
-        if (not n.engaged or now < n.ab.get('roket', 0) or n.etki.frozen(now) or not self.hero_open(now)
+        if (not n.engaged or now < n.ab.get('roket', 0) or n.etki.frozen(now) or not self.hero_open(now, n)
                 or self.dist(n, now) > w.npc_range(n)):
             return
         n.ab['roket'] = now + r.get('bekleme_sn', 8)
@@ -319,8 +323,8 @@ class Yetenekler:
             import savas_esya as SE
             tur = SE.LAUNCHER_AMMO.get('ammunition_rocketlauncher_eco-10', {}).get('tur', 1)
             cnt = r.get('adet', 5)
-            flight = SE.salvo_time(self.dist(n, now), cnt)        # roketler tek tek (oyuncununki gibi), hasar sonuncusu varınca
-            w.send([SE.salvo(w.send, lambda: n.alive and not (w.hero_dead or w.jumping), n.id, w.hid, hit, cnt, tur, w.later)])
+            flight = SE.salvo_time(self.dist(n, now), cnt)        # yerel eğri salvo: hasar son roket varınca
+            w.send([SE.salvo(n.id, w.hid, hit, cnt, tur)])
         else:
             from eski_protokol import legacy
             w.send([legacy('0|v|%d|%d|%s|%d|0|0' % (n.id, w.hid, 'H' if hit else 'M', r.get('tur', 1)))])
@@ -340,7 +344,7 @@ class Yetenekler:
     def singularity(self, n, now):
         """The Stinger'ın tekilliği başlar: oyuncunun üzerinde saniyede hasar (dot_tick)."""
         t = n.davranis['tekillik']
-        if not n.engaged or now < n.ab.get('tekillik', 0) or not self.hero_open(now) or self.dist(n, now) > t['menzil']:
+        if not n.engaged or now < n.ab.get('tekillik', 0) or not self.hero_open(now, n) or self.dist(n, now) > t['menzil']:
             return
         n.ab['tekillik'] = now + t['bekleme_sn']
         gorsel = t.get('gorsel', True)                     # Reflector Mimesis'in radyasyonu: girdap yok
@@ -353,7 +357,7 @@ class Yetenekler:
     def kamikaze(self, n, now):
         """Kamikaze Mimesis: oyuncuya yaricap kadar yaklaşınca patlar (bomba hasarı) ve ödülsüz kalkar."""
         t, w = n.davranis['temasla_patla'], self.w
-        if not n.engaged or not self.hero_open(now) or self.dist(n, now) > t['yaricap']:
+        if not n.engaged or not self.hero_open(now, n) or self.dist(n, now) > t['yaricap']:
             return
         boom = [('ShipDestroyedCommand', dict(destroyedUserId=n.id, explosionTypeId=0))] if n.id in w.visible else []
         w.send(w.hurt_hero(t['hasar'], n, atype=0) + boom + w.remove_npc(n))
@@ -379,7 +383,7 @@ class Yetenekler:
             n.ab['yaklas'] = now + t['yaklas_sn']
             n.engaged, n.next_think = True, now
             w.send([self.visual(n.id, RED_GLOW, False)])
-        if self.hero_open(now) and self.dist(n, now) <= t['yaricap']:
+        if self.hero_open(now, n) and self.dist(n, now) <= t['yaricap']:
             dmg = int(n.hp * t['hasar_can_orani'])
             boom = [('ShipDestroyedCommand', dict(destroyedUserId=n.id, explosionTypeId=0))] if n.id in w.visible else []
             w.send(w.hurt_hero(dmg, n, atype=0) + boom + w.remove_npc(n))
@@ -410,7 +414,7 @@ class Yetenekler:
             if now < dot['sonraki']:
                 continue
             dot['sonraki'] += 1.0
-            if self.dist(n, now) > dot['menzil'] or not self.hero_open(now):
+            if self.dist(n, now) > dot['menzil'] or not self.hero_open(now, n):
                 continue
             dmg = min(dot['sn_hasar'], dot['kalan'])
             dot['kalan'] -= dmg
@@ -422,7 +426,7 @@ class Yetenekler:
     def bomb(self, n, now):
         """Emperor Kristallon'un yapışkan bombası: aralıkla, gecikmeli; tek oyunculu: hasar grup boyuna bölünür."""
         b, w = n.davranis['yapiskan_bomba'], self.w
-        if not n.engaged or not self.hero_open(now) or self.dist(n, now) > w.npc_range(n) * 2:
+        if not n.engaged or not self.hero_open(now, n) or self.dist(n, now) > w.npc_range(n) * 2:
             return
         if 'bomba' not in n.ab:
             n.ab['bomba'] = now + b['aralik_sn']           # ilk bomba savaş başladıktan aralik_sn sonra

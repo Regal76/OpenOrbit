@@ -80,7 +80,7 @@ def create(p, loot, attrs):
 def modifiers_str(p, iid):
     """Hangar ipucunun nitelik satırları (parcacik.modifiers_str biçimi: "AD,değer;…")."""
     st = ensure(p, iid) or {}
-    return ';'.join('%s,%d' % (a.upper(), int(round(v))) for a, v in st.get('nitelik', []))
+    return ';'.join('%s,%g' % (a.upper(), v) for a, v in st.get('nitelik', []))
 
 
 def best(p, tur='strike'):

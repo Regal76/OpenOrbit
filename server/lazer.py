@@ -34,10 +34,12 @@ def name_match(table, target):
     return None
 
 
-def hit(loot, target=None):
+def hit(loot, target=None, pvp=False):
     """Bir lazerin uzaylıya isabet hasarı (cephane ve formasyon çarpanından önce)."""
     d = LZ[loot]
     h = random.randint(*d['hasar_aralik']) if 'hasar_aralik' in d else d['hasar']
+    if pvp:
+        return d.get('pvp_hasar', h) + d.get('pvp_ek', 0)
     h = h * (1 + d.get('uzayli_bonus', 0)) + d.get('uzayli_ek', 0)
     c = name_match(d.get('hedef_carpan', {}), target)
     return h * c if c else h
@@ -47,8 +49,9 @@ def _table(tab, n):
     return tab[min(n, len(tab)) - 1] if n > 0 else 0
 
 
-def set_bonus(ship):
-    return sum(_table(LZ[l]['set_bonus'], ship.count(l)) for l in set(ship) if 'set_bonus' in LZ.get(l, {}))
+def set_bonus(ship, pvp=False):
+    bonus = sum(_table(LZ[l]['set_bonus'], ship.count(l)) for l in set(ship) if 'set_bonus' in LZ.get(l, {}))
+    return bonus + (sum(_table(LZ[l]['pvp_set'], ship.count(l)) for l in set(ship) if 'pvp_set' in LZ.get(l, {})) if pvp else 0)
 
 
 def crit_chance(ship):

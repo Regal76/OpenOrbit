@@ -10718,6 +10718,8 @@
  "savas_esyalari": {
   "_kaynak": "belgeler/wiki/extras_cpu_tech.md, rockets.md; istemcinin kodu (mayın türleri, bekleme grupları ve süreleri, EMP menzili 455, fırlatıcı menzili 650). Uyarlamalar _not alanlarında.",
   "mayin": {
+   "npc_uyarlama": true,
+   "_npc_not": "Yerel tek oyunculu PvE uyarlaması: NPC mayın tetikler ve etkilenir. Resmî oyunda sıradan mayınlar oyuncu gemilerini etkiler.",
    "bekleme_grubu": 1,
    "bekleme_sn": 30,
    "kurulma_sn": 5,
@@ -10732,11 +10734,13 @@
   "mayinlar": {
    "ammunition_mine_acm-01": {
     "tip": 1,
+    "hasar_turu": "standart",
     "kalkan": 0.2,
     "can": 0.2
    },
    "ammunition_mine_ddm-01": {
     "tip": 4,
+    "hasar_turu": "dogrudan",
     "can": 0.2
    },
    "ammunition_mine_sabm-01": {
@@ -10757,16 +10761,19 @@
    },
    "ammunition_mine_im-01": {
     "tip": 17,
+    "hasar_turu": "standart",
     "can": 0.2,
     "enfeksiyon": {
-     "sn": 60,
+     "sn": 900,
      "yavas": 0.1,
-     "hasar_bonus": 0.1
+     "hasar_bonus": 0.1,
+     "can": -0.15
     },
-    "_not": "enfeksiyon süresi wiki'de yok (uyarlama 60 sn); \"can -%15\" uygulanmadı"
+    "_not": "Parasite Tide Event FAQ: 900 sn; +%10 hasar, -%15 gövde, -%10 hız; tekrar bulaşma süreyi yeniler"
    },
    "ammunition_mine_agl-m01": {
     "tip": 26,
+    "yaricap": 2000,
     "yem": [
      "Agatus",
      "Spinel"
@@ -10774,7 +10781,7 @@
     "omur_sn": 300,
     "bekleme_grubu": 59,
     "bekleme_sn": 300,
-    "_not": "Agatus ve Spinel yeme gelir (bu uzaylılar Aşama 4 ile)"
+    "_not": "Agatus ve Spinel en yakın yeme gelir; 300 sn ömür/bekleme resmî SSS; 2000 birim yarıçap yerel uyarlama"
    }
   },
   "akilli_bomba": {
@@ -10882,8 +10889,7 @@
    },
    "dolum_sn": 1.0,
    "menzil": 650,
-   "roket_aralik_sn": 0.25,
-   "_not": "dolum her roket için istemcinin tablosundaki 1 sn (tahmin); menzil istemciden. Salvo roket_aralik_sn arayla tek roketlik HellstormAttackCommand'larla (savas_esya.salvo_time): istemci çok roketli komutun roketlerini 0,5 sn içinde üst üste fırlatıp InQuint yavaşlamasıyla uçuruyor (AttackRocketRun, RocketComponentSystem.PlayTweenCurve), roketler ilk ~1 sn gemide bekleyip bir anda hedefe varıyordu (kullanıcı bildirimi 2026-10-24); tek roket düz çizgide sabit hızla max(1, mesafe/500) sn uçar (PlayTweenLine). Hasar son roket varınca (H25: hasar roketler yoldayken çıkmasın)",
+   "_not": "dolum her roket için istemcinin tablosundaki 1 sn (tahmin); menzil istemciden. HellstormAttackCommand.currentLoad bütün salvo adedidir; istemci AttackRocketRun.Run roketleri i*0,5/adet arayla eğri yörüngede uçurur. InitRocketCurve uçuşu max(1, mesafe/500) + 0,3 sn (tek roket için ek süre yok); hasar son roket varınca (savas_esya.salvo_time). Her rokete ayrı currentLoad=1 komutu göndermek yerel Hellstorm yörüngesini düzleştiriyordu.",
    "_not_plus": "Plus fırlatıcılar (HST-2 türevleri, tür 2): kapasite istemci metninden (Hydra 5, Neptune 5, Triskelion 3, Ouroboros 6); roket hasarı ve ek bonuslar wiki rockets.md (Hydra +%30 can +%25 kalkan, Neptune +%5 hasar, Triskelion yetenek beklemesi -%25); yükseltme istemcinin seviye tablosuyla"
   },
   "fircatici_cephane": {
