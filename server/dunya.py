@@ -22,6 +22,7 @@ Sayısal değerler data/npc.json'dan, tamir fiyatları data/esyalar.json'dan (ol
 import json, math, os, random, re, string, threading, time, traceback, weakref
 
 import harita as H
+import harita_duzeni as HD
 import booster as BOOSTER
 import gemi_yetenek as GY
 import durum as DURUM
@@ -567,11 +568,12 @@ class World:
         return True
 
     def in_peace(self, x, y):
-        """Güvenli bölge: kendi firmasının istasyonunun çevresi ya da harita portallarının çevresi (NPC saldırmaz, doğmaz, oraya dolaşmaz)."""
+        """Güvenli bölge: kendi firmasının istasyonunun çevresi, harita portallarının çevresi ya da düzenin güvenli bölgesi (5-2 korsan
+        üssü; harita_duzeni.json) (NPC saldırmaz, doğmaz, oraya dolaşmaz)."""
         s = self.home_station()
         if s and (x - s['posX']) ** 2 + (y - s['posY']) ** 2 <= s['peaceRadius'] ** 2:
             return True
-        return self.near_gate_peace(x, y)
+        return self.near_gate_peace(x, y) or HD.in_safe(self.map_id, x, y)
 
     def peace_gates(self):
         """Güvenli bölgesi olan portallar: harita portalları (Galaksi Kapısı ve kapı haritası portalları değil; harita.py). Düşman
@@ -583,7 +585,8 @@ class World:
         return [g for g in self.gates if not g.get('kapi') and not g.get('gizli')]
 
     def near_gate_peace(self, x, y):
-        return any(math.hypot(g['x'] - x, g['y'] - y) <= H.GATE_PEACE_RADIUS for g in self.peace_gates())
+        r = HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)        # X-BL'de "çok küçük" (harita_duzeni.json)
+        return any(math.hypot(g['x'] - x, g['y'] - y) <= r for g in self.peace_gates())
 
     def home_station(self):
         """Oyuncunun firmasının istasyonu: başka firmanın üssünde (X-1, X-8) güvenli bölge, rafineri, hangar, donanım değiştirme ve
@@ -618,7 +621,8 @@ class World:
             x, y = random.uniform(600, self.map_w - 600), random.uniform(600, self.map_h - 600)
             s = self.station
             if (not s or math.hypot(x - s['posX'], y - s['posY']) > s['peaceRadius'] + 700) and \
-                    all(math.hypot(g['x'] - x, g['y'] - y) > H.GATE_PEACE_RADIUS + 500 for g in self.gates):
+                    all(math.hypot(g['x'] - x, g['y'] - y) > H.GATE_PEACE_RADIUS + 500 for g in self.gates) and \
+                    not HD.blocked(self.map_id, x, y, 300) and not HD.in_safe(self.map_id, x, y, 700):    # engellerin dışında
                 return int(x), int(y)
         return self.map_w // 2, self.map_h // 2
 
@@ -777,7 +781,7 @@ class World:
 
     def fixed_spot(self, tip):
         """Türün sabit doğma noktalarından boş olanı (npc.json haritalar.sabit_noktalar; Cubikon'un dört noktası) ya da None."""
-        pts = self.rules.get('sabit_noktalar', {}).get(tip)
+        pts = self.rules.get('sabit_noktalar', {}).get(tip) or HD.lairs(self.map_id).get(tip)    # inler: harita_duzeni.json
         if not pts:
             return None
         free = [p for p in pts if not any(n.tip == tip and math.hypot(n.mover.x1 - p[0], n.mover.y1 - p[1]) < 800
@@ -917,6 +921,9 @@ class World:
                         self.spawn_booty(kind)
                 self.spawn_ores()
             self.send([self.ore_msg(h) for h in self.ores])
+            mines = HD.mine_spots(self.map_id, self.gates)        # 5-1, 5-3 mayın alanları (harita_duzeni.json; her yüklemede)
+            if mines:
+                self.send([self.items.field_mine(x, y, time.time()) for x, y in mines])
             if restored:                  # saklanan kutular yeniden bildirilir (görüş süzgecinden geçer)
                 self.send([('AddBoxCommand', dict(hash=h, boxType=b['tip'], x=b['x'], y=b['y'])) for h, b in self.boxes.items()])
             for g in self.extra_gates:
@@ -1090,6 +1097,9 @@ class World:
         self.log('   cevher kümeleri: %s' % ' '.join('(%d,%d)' % c for c in self.ore_fields))
 
     def ore_spot(self):
+        field = HD.of(self.map_id).get('palladium')      # 5-1, 5-3: Palladium sisli alanında, engellerin arasında (harita_duzeni.json)
+        if field:
+            return HD.free_spot(self.map_id, field['alan']) or self.random_spot()
         for _ in range(30):
             cx, cy = random.choice(self.ore_fields)
             a, r = random.uniform(0, 2 * math.pi), random.uniform(0, ORE['kume_yaricap'])
@@ -1341,7 +1351,7 @@ class World:
         hx, hy = self.hero_pos(now)
         g = next((g for g in self.gates if math.hypot(g['x'] - hx, g['y'] - hy) <= H.JUMP_RADIUS), None)
         gid = g['gateId'] if g else None
-        peace = self.near_gate_peace(hx, hy)
+        peace = self.near_gate_peace(hx, hy) or HD.in_safe(self.map_id, hx, hy)      # 5-2 korsan üssü de güvenli
         s = self.home_station()
         inside = bool(s) and math.hypot(hx - s['posX'], hy - s['posY']) <= s['peaceRadius']
         if gid == self.near_gate and peace == self.gate_peace and inside == self.station_inside:
@@ -1415,7 +1425,7 @@ class World:
             msgs = self.visible_msgs(time.time()) + \
                    [('AddBoxCommand', dict(hash=h, boxType=b['tip'], x=b['x'], y=b['y'])) for h, b in self.boxes.items()] + \
                    [self.ore_msg(h) for h in self.ores] + [H.jumpgate_create(g) for g in self.gates if 'designId' in g] + \
-                   self.alien.capsule_msgs() + (self.low.asset_msgs() if self.low else [])
+                   self.alien.capsule_msgs() + (self.low.asset_msgs() if self.low else []) + self.items.mine_msgs()
             self.near_assets, self.near_giver = None, None
             left = self.invuln_until - time.time()
             if left > 0:
@@ -2295,6 +2305,12 @@ class World:
         Bounty Hunter II 3/3'ün ön koşulları; fandom Battery). Renk aynı kalır (laser_color)."""
         return YT.maxed(self.p, '22b')
 
+    def skill_shield(self):
+        """AttackLaserRunCommand.isDiminishedBySkillShield (gemiye gelen lazer): istemci (LaserSalvo2DNew/3DNew) mermiyi geminin
+        vurulan yüzünde "shieldDamage" etkisiyle karşılar (atışın yönüne bakan beyaz, yarı saydam kalkan; ayarlardaki gemi kalitesi
+        0 değilse). Shield Mechanics (8) son seviyesinde ve kalkan doluyken (resmî SSS: 5/5'te beyaz kalkan); yalnız görüntü."""
+        return YT.maxed(self.p, '8') and self.p.d['gemi'].get('shield', 0) > 0
+
     def rocket_look(self, saved=False):
         """Roketin görünümü -> (iz, güdüm): eski metnin 0|v|…|iz|güdüm alanları (istemci NetConnectionHelper.OnData 'v': 7. alan
         rocketSmoke kimliği, 8. alan 1 ise AttackRocketRun/BezierRocketEffect isHeatSeeking: kavisli uçuş ve kırmızı parıltı). İz
@@ -2836,7 +2852,7 @@ class World:
         n.next_shot = now + (random.uniform(*ddol[0]['aralik']) if ddol else n.d.get('atis_aralik_sn', SAVAS['npc_saldiri_aralik_sn']))
         m = self.p.mods()
         msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.hid, laserColor=0,
-                                               isDiminishedBySkillShield=m.get('alinan_lazer', 0) < 0,     # Spectrum
+                                               isDiminishedBySkillShield=m.get('alinan_lazer', 0) < 0 or self.skill_shield(),  # Spectrum
                                                skilledLaser=False, visualType=0))]
         aim = AY.chance('npc_isabet', n.d.get('isabet', SAVAS['npc_isabet'])) * (1 - n.etki.accuracy_loss(now))
         roll = random.random()
@@ -3215,7 +3231,8 @@ class World:
         s = self.station
         if s and math.hypot(x - s['posX'], y - s['posY']) <= s['peaceRadius'] + margin:
             return True
-        return any(math.hypot(g['x'] - x, g['y'] - y) <= H.GATE_PEACE_RADIUS + margin for g in self.gates)
+        return any(math.hypot(g['x'] - x, g['y'] - y) <= H.GATE_PEACE_RADIUS + margin for g in self.gates) or \
+            HD.in_safe(self.map_id, x, y, margin)
 
     def spot_away(self, hx, hy):
         """Güvenli bölgelerden ve oyuncudan uzak bir dolaşma noktası."""
@@ -3314,6 +3331,10 @@ class World:
                 if not hunt and self.near_zone(tx, ty, 0):
                     self.disengage(n, now)          # güvenli bölgeye girmez
                     return
+                if HD.navigates(self.map_id):      # X-BL: duvarın çevresinden (yolun ilk ara noktası; her düşüncede yeniden)
+                    if not HD.clear(self.map_id, hx, hy, tx, ty):
+                        tx, ty = hx, hy             # kovalama noktası duvarın uzaylı tarafında: yol oyuncunun kendisine
+                    tx, ty = HD.waypoint(self.map_id, self.map_w, self.map_h, nx, ny, tx, ty)
                 ms = 0
                 if not (hunt and self.in_peace(tx, ty)):     # dalga uzaylısı güvenli bölgenin kenarında bekler
                     ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
@@ -3347,6 +3368,8 @@ class World:
             leaving = n.flee or self.near_zone(nx, ny, 500)
             if leaving or self.near_zone(tx, ty, 500):
                 tx, ty = self.spot_away(hx, hy)     # güvenli bölgenin içinden/kenarından uzaklaş, oyuncudan uzağa
+            if HD.navigates(self.map_id):
+                tx, ty = HD.waypoint(self.map_id, self.map_w, self.map_h, nx, ny, tx, ty)
             n.flee = False
             ms = n.mover.go(tx, ty, n.speed() * (1.0 if leaving else 0.6) * n.etki.speed_factor(now), now)
             self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])

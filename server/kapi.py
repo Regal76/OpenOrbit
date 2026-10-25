@@ -58,11 +58,22 @@ NEXT_PORTAL = 100                         # + 100 + kimlik (çok haritalı kapı
 HOME_MAP = {1: 1, 2: 5, 3: 9}
 ABG = ('alpha', 'beta', 'gamma')        # üreticide ortak çekiliş: parça üçünden birine düşer (Kapilar.draw)
 MAP_W, MAP_H = 21000, 13100
+# Kapı halkaları (ShipInitializationCommand / ShipCreateCommand galaxyGatesDone): istemci 7 bitlik maske okur
+# (UnitDataComponentSystem.UpdateIcons: bit i açıksa ad plakasındaki i. halka; simgeler alphaToDelta_gg x4, epsilonZeta_gg x2,
+# kronos_gg; yedisi birden açıksa yalnız taç). Önceden her tamamlamada sayı 1 artıyordu: Gamma'dan sonra 1 Alpha'nın, ardından
+# Alpha'dan sonra 2 Beta'nın halkası görünüyordu (kullanıcı bildirimi 2026-10-25).
+RINGS = {'alpha': 1, 'beta': 2, 'gamma': 4, 'delta': 8, 'epsilon': 16, 'zeta': 32, 'kronos': 64}
 
 
 def mod(name, **f):
     f['_'] = name
     return f
+
+
+def rings(profil):
+    """Profilin kapı halkaları (galaxyGatesDone): en az bir kez tamamlanan kapıların bitleri (Dispatch'le tamamlanan da sayılır)."""
+    gates = (profil.d.get('kapilar') or {}).get('kapilar', {})
+    return sum(bit for key, bit in RINGS.items() if gates.get(key, {}).get('tamam'))
 
 
 DISPLAY_BOTH, STYLE_BIG, STYLE_NORMAL = 2, 0, 1       # MessageCommand.DisplayTarget / DisplayStyle (istemci)
@@ -684,8 +695,6 @@ class Kapilar:
         x2 = 1 if dispatch or not TK.is_active('gg_cift_odul') else 2
         rm = reward_msgs or (lambda tot, **kw: self.m.money_msgs() if self.m else [])
         self.p.ach('gate', tur='%s_GATE' % key.upper(), dispatch=dispatch)      # istemcinin GalaxyGateType'ı (STREUNER_GATE …)
-        with self.p.lock:
-            self.p.d['gemi']['galaxyGatesDone'] = self.p.d['gemi'].get('galaxyGatesDone', 0) + 1    # ShipInitializationCommand
         ep = int(R['ep'] * x2 * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0))))    # N.O.V.A. Field Intelligence (nova.py)
         ep, onur, uri = AY.miktar('ep', ep, 'kapi'), AY.miktar('onur', R['onur'] * x2, 'kapi'), AY.miktar('uridyum', R['uridyum'], 'kapi')   # panel
         tot = self.p.gain(ep=ep, onur=onur, uridyum=uri, neden='galaxy_gate_done')
@@ -761,6 +770,8 @@ class Kosu:
         G = kapilar.gate(key)
         self.npcs = set()            # bu dalganın uzaylıları
         self.keep = set()            # kalıcı uzaylılar (Zeta Devourer): alt dalgalardan bağımsız
+        self.groups = []             # bu dalgada doğan grupların uzaylıları (süreli gruplar: timed_tick)
+        self.due = 0                 # süreli gruplarda sonraki grubun saati
         self.sub = 0
         self.counted = None          # son gönderilen geri sayım saniyesi
         self.left = None             # son bildirilen kalan uzaylı sayısı
@@ -831,12 +842,48 @@ class Kosu:
         return ('GalaxyGateBuilderGateWaveUpdateCommand', dict(gateId=self.g['kimlik'],
                                                                currWave=sub_waves(self.g, G['dalga']) + self.cleared))
 
+    def timed(self):
+        """Süreli gruplar (kapilar.json grup_araligi_sn: Alpha, Beta, Gamma): grubun saniyesi (panelin dalga_bekleme çarpanıyla) ya
+        da None (öteki kapılarda grup, önceki temizlenince gelir)."""
+        sn = self.g.get('grup_araligi_sn')
+        return int(round(sn * AY.carpan('dalga_bekleme'))) if sn else None
+
+    def timed_tick(self, now, alive):
+        """Süreli gruplu dalga: sonraki grup öncekiler yaşarken de süresi dolunca gelir (doğanların hepsi erken ölürse
+        alt_dalga_bekleme_sn sonra); bütün gruplar doğup hepsi ölünce dalga biter (kullanıcı bildirimi 2026-10-25: Gamma'da grup
+        ancak önceki bitince geliyordu). Pencerenin dalga sayacı uzaylısı kalmayan grupları sayar."""
+        w, total = self.w, len(self.wave()['gruplar'])
+        cleared = sum(1 for ids in self.groups if not any(i in w.npcs for i in ids))
+        if cleared != self.cleared:
+            self.cleared = cleared
+            msgs = self.sub_msgs()
+            if not alive and self.sub + 1 < total:
+                self.due = min(self.due, now + pace('alt_dalga_bekleme_sn'))
+                msgs += self.say('grup_bitti', grup=cleared, sn=int(math.ceil(self.due - now)))
+            w.send(msgs)
+        if self.sub + 1 < total:
+            if now >= self.due:
+                self.sub += 1
+                self.spawn()
+                self.left = None
+                w.send(self.say('grup_geldi', grup=self.sub + 1))
+            return
+        if alive:
+            if alive <= 3 and alive != self.left:
+                self.left = alive
+                w.send(self.say('dalga_kalan', kalan=alive))
+            return
+        self.wave_done(now)
+
     def tick(self, now):
         w, G = self.w, self.k.gate(self.key)
         if w.hero_dead or w.jumping or self.phase in ('void', 'done', 'dead', 'move'):
             return
         if self.phase == 'fight':
             alive = sum(1 for i in self.npcs - self.keep if i in w.npcs)
+            if self.timed():
+                self.timed_tick(now, alive)
+                return
             if alive:
                 if alive <= 3 and alive != self.left:
                     self.left = alive
@@ -861,7 +908,7 @@ class Kosu:
                 self.countdown(now)
             return
         if self.phase in ('intro', 'break'):
-            self.sub, self.counted, self.exposed, self.cleared = 0, None, False, 0
+            self.sub, self.counted, self.exposed, self.cleared, self.groups = 0, None, False, 0, []
             self.npcs.clear()
             self.keep.clear()
             w.remove_gate(self.k.exit_portal(self.key, self.map)['gateId'])
@@ -896,6 +943,10 @@ class Kosu:
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyan patron bir tane)
             counts.append((i, count))
         hold = time.time() + pace('halka_bekleme_sn')
+        group = set()
+        self.groups.append(group)
+        if self.timed():
+            self.due = time.time() + self.timed()        # sonraki grubun saati (timed_tick)
         for i, x, y in ring(*w.hero_pos(), counts, w.map_w, w.map_h):
             a = wave['uzaylilar'][i]
             model = self.k.p.ship_look() if a['tur'] == 'oyuncu' else None
@@ -903,6 +954,7 @@ class Kosu:
             n.gate, n.hunt = True, True
             n.next_think = hold                  # halkada bekler; sonra peşine düşer (dunya.think: hunt)
             self.npcs.add(n.id)
+            group.add(n.id)
             if a.get('kalici'):
                 self.keep.add(n.id)
                 n.invulnerable = lambda: any(j in self.w.npcs for j in self.npcs - self.keep)

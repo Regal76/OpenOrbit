@@ -1335,7 +1335,7 @@ class Cbs:
                     continue
                 self.next_shot[key] = now + md['aralik_sn']
                 uid = asset_id(aid, int(s))
-                w.send([('AttackLaserRunCommand', dict(attackerId=uid, targetId=w.hid, laserColor=0, isDiminishedBySkillShield=False,
+                w.send([('AttackLaserRunCommand', dict(attackerId=uid, targetId=w.hid, laserColor=0, isDiminishedBySkillShield=w.skill_shield(),
                                                        skilledLaser=False, visualType=0))])
                 if random.random() < md['isabet']:
                     dmg = int(level_value(md['hasar'], y['seviye']) * D['rakip']['hasar_carpani'])

@@ -317,6 +317,8 @@ class Profil:
             v = q['qualityExplosion']
             q['qualityExplosion'] = (v >> 8 & 0xFF) | (v << 8 & 0xFF00)
             self.dirty = True
+        if self.d['gemi'].pop('galaxyGatesDone', None) is not None:     # eski kapı sayacı: halkalar artık kapılardan (kapi.rings)
+            self.dirty = True
         self.add_windows()
         self.sync_ekipman()
 
@@ -384,6 +386,8 @@ class Profil:
         f.update(self.tohum.get('ShipInitializationCommand') or {})
         f.update(self.d['pilot']); f.update(self.d['gemi']); f.update(self.d['konum'])
         f['premium'] = self.premium      # Profile yazılmaz
+        import kapi as KAPI
+        f['galaxyGatesDone'] = KAPI.rings(self)     # kapı halkaları: tamamlanan kapıların bit maskesi
         if getattr(self, 'captain_energy', None):
             f.update(self.captain_energy())                  # takılı N.O.V.A.'nın enerjisi (nova.py)
         f['refreshMap'] = True   # ilk girişte gemiyi kur ve haritaya geç

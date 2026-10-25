@@ -212,9 +212,11 @@ LOOSE_FIELDS = {'startIndex', 'page', 'start', 'newsInfo'}       # yanıtın tü
 # kayıtlı yanıtlardan sunucunun kullandıkları: yanıt olarak (Command Center, pilot kartı) ve veri şablonu olarak (mağaza, hangar, kapı)
 USED_RESPONSES = {'CommandCenterGetDontShowRequest', 'CommandCenterNewsInfoRequest', 'InternalPilotBioRequest', 'ShopItemListRequest',
                   'HangarShipEquipmentRequest', 'HangarListRequest', 'HangarShipDetailRequest', 'GalaxyGateBuilderInfoRequest'}
-# giriş şablonunun ölü yükü (E10): R-Zone durumu (171 kez; işleyicisi ölü), CTB ve POI (istemcide işleyicisi yok), 0|TR ve 0|8
-# (istemcinin OnData'sında dalı yok)
-DEAD_TEMPLATE = {'RzoneStatusCommand', 'CTBMatchStateCommand', 'POIReadyCommand'}
+# giriş şablonunun ölü yükü (E10): R-Zone durumu (171 kez; işleyicisi ölü), CTB (istemcide işleyicisi yok), 0|TR ve 0|8
+# (istemcinin OnData'sında dalı yok). POIReadyCommand ölü değil: istemci bölgelerin görünümünü ancak onunla çizer
+# (PoiReadyCommandHandler -> PoiZoneManager.AssemblePoiReady -> UpdateDesign/UpdateDesign2D); gelmeyince 5-X ve X-BL engelleri
+# asteroit/enkaz yerine düz gri tarama görünüyordu (kullanıcı bildirimi 2026-10-25). Kayıttaki gibi haritanın hazır demetinden sonra.
+DEAD_TEMPLATE = {'RzoneStatusCommand', 'CTBMatchStateCommand'}
 DEAD_LEGACY = {'0|TR', '0|8'}
 # gerçek sunucunun da yanıt vermediği istekler (kayıt): günlüğe "yanıtsız" diye düşmesin
 SILENT = {'TrackVariableRequest',
@@ -860,6 +862,8 @@ class Session:
                 st = SABLON.station(dest)
                 pos = (st['posX'], st['posY']) if st else None
             pos = pos or (gate or {}).get('varis')      # kapı portalları: kapı haritasının ortasına / X-1'de kapının yanına
+            if pos == 'rastgele':                       # 5-3'ün çıkışları 4-4'te rastgele yere (harita_duzeni.json)
+                pos = H.random_arrival(dest)
             x, y = pos or H.arrival(old, dest, self.profil.d['pilot'].get('factionId'))
             self.profil.d['konum'].update(mapId=dest, x=x, y=y, portalda=pos is None)
             self.profil.dirty = True
@@ -912,7 +916,7 @@ class Session:
             userId=p.user_id, typeId=g.get('typeId', 'ship_liberator'), expansionStage=p.d.get('uzanti_asamasi', 1),
             clanTag=pl.get('clanTag', ''), userName=pl.get('userName', ''), x=x, y=y, factionId=pl.get('factionId', 0),
             clanId=pl.get('clanId', 0), dailyRank=pl.get('dailyRank', 0), warnBox=False, clanDiplomacy=dunya.mod('ClanRelationModule', type=0),
-            galaxyGatesDone=pl.get('galaxyGatesDone', 0), useSystemFont=pl.get('useSystemFont', True), npc=False, cloaked=False,
+            galaxyGatesDone=KAPI.rings(p), useSystemFont=pl.get('useSystemFont', True), npc=False, cloaked=False,
             motherShipId=0, positionIndex=0, designSet='', modifier=[], minimapStrategyModule=dunya.mod('MinimapStrategyModule', minimapStrategy=0),
             specialNpcType=''))
         return [create] + self.basarim.title_msgs() + self.magaza.drone_msgs() + [self.magaza.module_update()]

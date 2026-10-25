@@ -7535,7 +7535,7 @@
     },
     {
      "tip": "221",
-     "adet": 2
+     "adet": 3
     },
     {
      "tip": "225",
@@ -7570,7 +7570,7 @@
     },
     {
      "tip": "221",
-     "adet": 2
+     "adet": 3
     },
     {
      "tip": "225",
@@ -7605,7 +7605,7 @@
     },
     {
      "tip": "221",
-     "adet": 2
+     "adet": 3
     },
     {
      "tip": "225",
@@ -7805,6 +7805,10 @@
     300,
     600
    ],
+   "221": [
+    900,
+    960
+   ],
    "225": [
     900,
     960
@@ -7822,7 +7826,7 @@
     330
    ]
   },
-  "_yeniden_dogma_ozel": "Boss/Uber, Cubikon (80), Battleray (115), Deadly Battleray (npc121) ve Mindfire Behemoth (225) sıradan uzaylı gibi 12-25 sn'de dönmesin. Anahtar: tür ya da ada göre \"boss\" (..::{), \"uber\". Battleray 7-10 dk, Deadly Battleray 5-5,5 dk, Behemoth 15-16 dk fandom; Strokelight Barrage (320) Behemoth gibi; Boss/Uber ve Cubikon uyarlama",
+  "_yeniden_dogma_ozel": "Boss/Uber, Cubikon (80), Battleray (115), Deadly Battleray (npc121), Invoke XVI (221) ve Mindfire Behemoth (225) sıradan uzaylı gibi 12-25 sn'de dönmesin. Anahtar: tür ya da ada göre \"boss\" (..::{), \"uber\". Battleray 7-10 dk, Deadly Battleray 5-5,5 dk, Behemoth 15-16 dk fandom, Invoke XVI 15 dk (board-fr 127829 s. 69; en çok 3 Invoke); Strokelight Barrage (320) Behemoth gibi; Boss/Uber ve Cubikon uyarlama",
   "zamanli_sure_sn": 3600,
   "_zamanli": "Zaman çizelgeli Black Light başıboşları (haritalar.zamanli; wiki saatleri, yerel saat): saatinden sonra bu kadar saniye içinde haritaya gelinirse doğar (uyarlama); ölünce o saat bir daha doğmaz (profil zamanli)."
  },

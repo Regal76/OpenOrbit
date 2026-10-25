@@ -609,7 +609,8 @@
       "olasilik": 0.1
      }
     ]
-   }
+   },
+   "grup_araligi_sn": 10
   },
   "beta": {
    "kimlik": 2,
@@ -1219,7 +1220,8 @@
       "olasilik": 0.1
      }
     ]
-   }
+   },
+   "grup_araligi_sn": 10
   },
   "gamma": {
    "kimlik": 3,
@@ -1829,7 +1831,8 @@
       "olasilik": 0.1
      }
     ]
-   }
+   },
+   "grup_araligi_sn": 10
   },
   "delta": {
    "kimlik": 4,
@@ -10336,7 +10339,7 @@
   2,
   1
  ],
- "_mesajlar": "Kapı haritasındaki ekran mesajları (istemcinin MessageCommand komutu: buyuk = büyük bildirim + günlük, kisa = üstte kısa mesaj). İstemci İngilizce olduğu için İngilizce; \"key:\" ile başlayanlar istemcinin kendi çeviri metni (log_galaxygate_wave_name: \"%NAME% - Wave %WAVE%\"). {kapi} kapı adı, {dalga} dalga numarası, {toplam} dalga sayısı, {sn} saniye, {grup}/{gruplar} alt dalga, {kalan} kalan uzaylı, {ad} uzaylı adı, {sk} Kronos parçası tekil/çoğul (s/p; adedi %COUNT%). \"kalan\" yalnız grupta 3 ve daha az uzaylı kalınca. Giriş ve devamın ardından kalan can istemcinin lifes_left metniyle (kapi.py).",
+ "_mesajlar": "Kapı haritasındaki ekran mesajları (istemcinin MessageCommand komutu: buyuk = büyük bildirim + günlük, kisa = üstte kısa mesaj). İstemci İngilizce olduğu için İngilizce; \"key:\" ile başlayanlar istemcinin kendi çeviri metni (log_galaxygate_wave_name: \"%NAME% - Wave %WAVE%\"). {kapi} kapı adı, {dalga} dalga numarası, {toplam} dalga sayısı, {sn} saniye, {grup}/{gruplar} alt dalga, {kalan} kalan uzaylı, {ad} uzaylı adı, {sk} Kronos parçası tekil/çoğul (s/p; adedi %COUNT%). \"kalan\" yalnız grupta 3 ve daha az uzaylı kalınca. Giriş ve devamın ardından kalan can istemcinin lifes_left metniyle (kapi.py). Süreli gruplu kapıda (grup_araligi_sn: Alpha, Beta, Gamma) \"grup_geldi\" her yeni grupta, \"grup_bitti\" yalnız doğanların hepsi ölünce, \"dalga_kalan\" bütün gruplar doğduktan sonra.",
  "mesajlar": {
   "giris": {
    "kisa": "Galaxy Gate {kapi}: {toplam} attack waves."
@@ -10355,6 +10358,12 @@
   },
   "kalan": {
    "kisa": "Aliens left in this group: {kalan}"
+  },
+  "grup_geldi": {
+   "kisa": "Group {grup}/{gruplar} is coming!"
+  },
+  "dalga_kalan": {
+   "kisa": "Aliens left in this wave: {kalan}"
   },
   "dalga_bitti": {
    "buyuk": "Attack wave {dalga} survived!",

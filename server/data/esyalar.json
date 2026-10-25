@@ -4707,10 +4707,10 @@
     "2": 35
    },
    "5-1": {
-    "8": 40
+    "8": 50
    },
    "5-3": {
-    "8": 40
+    "8": 250
    }
   },
   "kume_basina": 10,
@@ -4722,7 +4722,7 @@
   "toplama_sn": 0.5,
   "toplama_mesafe": 300,
   "palladium_enerji": 15,
-  "_palladium": "Palladium yalnız 5-1 ve 5-3'te (wiki ve istemcinin eşya açıklaması; harita başına 40 uyarlama); 5-2'deki korsan tüccarında 15 Palladium = 1 kapı enerjisi (belgeler/wiki/resources_refining.md; istemci: OreTradeInfoCommand palladiumExchangeRate, PIRATE_STATION)"
+  "_palladium": "Palladium yalnız 5-1 ve 5-3'te (wiki ve istemcinin eşya açıklaması); 5-1'de 50, 5-3'te 250, haritanın Palladium sisli alanında (emu-dark Field_01/Field_03; harita_duzeni.json); 5-2'deki korsan tüccarında 15 Palladium = 1 kapı enerjisi (belgeler/wiki/resources_refining.md; istemci: OreTradeInfoCommand palladiumExchangeRate, PIRATE_STATION)"
  },
  "_cevherler_kaynak": "Türler istemcinin OreType enum'u ve resource_ore_* eşyaları. Haritalar (wiki, belgeler/wiki/maps.md ve resources_refining.md): X-1 Prometium/Endurium, X-2 üçü, X-3 ve X-4 Endurium/Terbium; kayıtta 2-1'de Prometium ve Endurium kümeleri. Adetler, küme büyüklüğü ve yeniden doğma uyarlama. Satış fiyatı [taban, onur böleni, üst sınır]: taban + onur/bölen, üst sınırlı (wiki); kayıttaki OreTradeInfoCommand taban fiyatları veriyor (Prometium 10, Endurium 15, Terbium 25, Prometid/Duranium 200, Promerium 500, Seprom 750, Osmium 3000). Her cevher kargoda 1 birim (kayıt: 73 cevherle boş alan 400 -> 327). Toplama yanıtı ~0,5 sn sonra (kayıt).",
  "laboratuvar": {

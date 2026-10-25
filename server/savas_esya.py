@@ -19,6 +19,7 @@ import itertools, json, math, os, random, time
 
 import ekstra as EK
 import harita as H
+import harita_duzeni as HD
 import ayar as AY
 import takvim as TKV
 import yetenek as YT
@@ -595,6 +596,20 @@ class Esyalar:
                              bitis=now + M['omur_sn'])
         self.send([('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=MINES[loot]['tip'], maxSkill1=False, maxSkill5b=False))])
 
+    def field_mine(self, x, y, now):
+        """Haritanın mayın alanındaki mayın (5-1, 5-3; harita_duzeni.json): kurulu, süresiz, sahipsiz (uzaylı mayını gibi oyuncuyla
+        patlar; mine_tick). Patlayınca yenisi alanında (explode). -> AddMineCommand"""
+        loot = HD.MINE['tur']
+        self.seq += 1
+        h = 'A%d' % self.seq
+        self.mines[h] = dict(loot=loot, x=x, y=y, sahip=0, kurulma=now, bitis=float('inf'), alan=True)
+        return ('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=MINES[loot]['tip'], maxSkill1=False, maxSkill5b=False))
+
+    def mine_msgs(self):
+        """Harita yeniden yüklenince (yeniden doğma) duran mayınlar yeniden."""
+        return [('AddMineCommand', dict(hash=h, x=int(m['x']), y=int(m['y']), typeId=MINES[m['loot']]['tip'], maxSkill1=False,
+                                        maxSkill5b=False)) for h, m in self.mines.items()]
+
     def mine_tick(self, now):
         if not self.mines:
             return
@@ -624,6 +639,14 @@ class Esyalar:
         self.log('   mayın patladı: %s' % m['loot'])
         self.blast(m['x'], m['y'], S['mayin']['patlama'], MINES[m['loot']], m['sahip'], now, m['loot'],
                    self_hit=S['mayin'].get('kendine_hasar', False) and AY.get('kendi_mayin'))       # panel: kendi mayının
+        if m.get('alan'):                     # mayın alanı: yenisi aynı alanda biraz sonra
+            rect = HD.mine_field_of(self.w.map_id, m['x'], m['y'])
+
+            def again():
+                p = rect and HD.free_spot(self.w.map_id, rect, pad=100)
+                if p:
+                    self.send([self.field_mine(p[0], p[1], time.time())])
+            self.w.later(random.uniform(*HD.MINE['yeniden_sn']), again)
 
     def blast(self, x, y, radius, cfg, owner, now, source, self_hit=False):
         """Patlama: yarıçaptaki uzaylılara (sahibi oyuncuysa) ve oyuncuya (uzaylının mayınıysa ya da self_hit) mayın etkisi."""

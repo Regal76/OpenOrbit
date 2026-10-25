@@ -5,7 +5,9 @@ Oyun içi konum, standart harita boyutuna (21000×13100) ölçeklenip DarkOrbit'
 kayıtla doğrulandı: 2-1 (2000,11500) -> 2-2, 2-2 (18500,2000) -> 2-1, (2000,11500) -> 2-3, (18500,11500) -> 2-4.
 Portal kimliği = 150000167 + key (kayıttaki 150000182/183/177/184 ile birebir).
 """
-import math, os, re
+import math, os, random, re
+
+import harita_duzeni as HD
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'data', 'spacemap-config.xml')
@@ -95,6 +97,15 @@ EXTRA_GATES = [(92, 990001, 18500, 11500, 94, {'ucret': 'gumus_anahtar', 'ipucu'
                (11, 990005, 10500, 2000, 200, {'low': True})]
 for _m, _k, _x, _y, _to, _extra in EXTRA_GATES:
     GATES.setdefault(_m, []).append(dict(gateId=GATE_ID_BASE + _k, key=_k, x=_x, y=_y, hedef=_to, **_extra))
+# korsan ve Black Light haritalarının portalları düzendeki yerlerinde (ipucu ızgarasına oturtulan yer kabaca); varış yeri portala
+# bağlı (5-X: hedefte kırık portalın yanı; 5-3'ten 4-4'e rastgele): harita_duzeni.json
+for _m, _gs in GATES.items():
+    for _g in _gs:
+        _p, _v = HD.gate_pos(_m, _g['key']), HD.arrival(_m, _g['key'])
+        if _p:
+            _g['x'], _g['y'] = _p
+        if _v:
+            _g['varis'] = _v
 # maps-config 5-X için 1 yazıyor; wiki seviye 12 (belgeler/wiki/maps.md)
 for _m, _n in NAMES.items():
     if _n.startswith('5-'):
@@ -113,8 +124,8 @@ CORNERS = [(19000, 2000), (2000, 2000), (19000, 11100), (2000, 11100)]
 # istasyonun ve yapının oyundaki yeri (merkez); yazılmayan haritada portallardan en uzak köşe. 2-8: üst orta (oyuncuların
 # bildirdiği resmî sunucu mini haritası: üs simgesi 2-8 104/19, oyuncu 108/32'de üssün hangar bölgesinde: x 10.590-11.010);
 # 1-8 sol, 3-8 sağ kenarın ortası (fandom 1-8/3-8; Kalaazu ve 2009 emülatörü y 6000); 5-2 pazarı ortada (fandom 5-2, darkorbitwiki
-# harita görseli)
-STATION_POS = {24: (10650, 2000), 20: (2000, 6550), 28: (19000, 6550), 92: (10500, 6550)}
+# harita görseli). 5-2'nin korsan istasyonu ve X-BL'nin görev vericisi harita_duzeni.json'da (yapi)
+STATION_POS = {24: (10650, 2000), 20: (2000, 6550), 28: (19000, 6550)}
 
 
 def map_world(map_id, tpl):
@@ -131,7 +142,7 @@ def map_world(map_id, tpl):
             w, h = map_size(map_id)
             hazir.append({'_m': 'SpaceStationCommand', 'posX': w // 2, 'posY': h // 2, 'peaceRadius': 0, 'id': 0,
                           'type': LOW_STATION[int(map_id)]})
-        return {'giris': giris, 'hazir': hazir + gate_msgs}
+        return {'giris': giris, 'hazir': hazir + gate_msgs + HD.poi_msgs(map_id)}
     cx, cy = STATION_POS.get(int(map_id)) or max(CORNERS, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
                                                                             default=0))
     dx, dy = cx - TPL_CENTER[0], cy - TPL_CENTER[1]
@@ -190,7 +201,7 @@ def structure(map_id, tpl, gs):
     if not kind or not src:
         return [], []
     spots = CORNERS + [(10500, 6550), (10500, 2000), (10500, 11100), (2000, 6550), (19000, 6550)]   # köşeler, kenar ortaları, merkez
-    cx, cy = STATION_POS.get(int(map_id)) or max(spots, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
+    cx, cy = HD.structure_pos(map_id) or STATION_POS.get(int(map_id)) or max(spots, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
                                                                           default=0))
     aid = 151000000 + int(map_id) * 100 + 90
     giris = [quest_giver(dict(src, assetId=aid, posX=cx, posY=cy, factionId=src['factionId'] if kind == QUEST_GIVER else company(map_id) or 0),
@@ -198,8 +209,9 @@ def structure(map_id, tpl, gs):
     if int(map_id) in STRUCTURE_ASSET_TYPE:
         giris[0]['type'] = dict(src['type'], typeValue=STRUCTURE_ASSET_TYPE[int(map_id)])
     hazir = []
-    if int(map_id) in STRUCTURE_STATION:
-        hazir.append({'_m': 'SpaceStationCommand', 'posX': cx, 'posY': cy, 'peaceRadius': 0, 'id': 0,
+    if int(map_id) in STRUCTURE_STATION:          # 5-2 korsan üssünün güvenli bölgesi (harita_duzeni.json guvenli; dunya.in_peace)
+        peace = next((r for x, y, r in HD.safe_zones(map_id) if (x, y) == (cx, cy)), 0)
+        hazir.append({'_m': 'SpaceStationCommand', 'posX': cx, 'posY': cy, 'peaceRadius': peace, 'id': 0,
                       'type': STRUCTURE_STATION[int(map_id)]})
     for m in tpl.get('hazir', []):
         if m['_m'] == 'MapAddPOICommand' and m['poiId'] == 'mapAssetRangeZone-%d' % src['assetId']:
@@ -233,6 +245,12 @@ def arrival(src_map, dst_map, faction=None):
         return back['x'], back['y']
     w, h = map_size(dst_map)          # tek yönlü giriş (5-1, 5-3, 4-4): haritanın gerçek ortası (büyük haritalar)
     return w // 2, h // 2
+
+
+def random_arrival(map_id):
+    """Rastgele varış yeri (5-3'ün çıkışları 4-4'e; emu-dark Vector.Random): kenarlardan uzak, engellerin dışında."""
+    w, h = map_size(map_id)
+    return HD.free_spot(map_id, (2000, 2000, w - 2000, h - 2000)) or (w // 2, h // 2)
 
 
 def name(map_id):
