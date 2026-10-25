@@ -205,7 +205,7 @@ SHOP_MAX = 255                     # ShopItemListCommand.itemList'in sayacı bir
 # bakiye / price[0] ile buluyor; fiyat 0 ise adet 0 (UIShopSystem.CalculateAffordableAmount, SetRightNumberLevel), Buy kapanıyordu
 # (kullanıcı 2026-10-25). Listede price[0] bu kadar (Decimal'e 1E-09 çevrilir: bakiye / fiyat taşmaz; tutar 2 haneye yuvarlanıp 0
 # görünür), metni (cost) 0; alımın fiyatı buy_price'tan (0). Cephanede adet sınırı BEDAVA_ADET (fiyat x adet hep 0,00 kalır).
-# Tıklamada toplam kutusu fiyatı yuvarlamadan yazıyor ("0.000000001 U."): panelin istemci yaması yuvarlar (istemci_yama.magaza_tutari).
+# Tıklamada toplam kutusu fiyatı yuvarlamadan yazıyor ("0.000000001 U."): istemcinin BepInEx eklentisi yuvarlar (panel/eklenti/Yamalar.cs MagazaTutari).
 BEDAVA_FIYAT = 1e-9
 BEDAVA_ADET = 1000000
 

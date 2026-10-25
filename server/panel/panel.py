@@ -9,7 +9,8 @@ göndermesini engeller. Yalnız 127.0.0.1'e bağlanır.
 Yollar: yollar.py (save/kayitlar, save/panel.json, save/ayarlar.json, logs/).
 Dil: Türkçe ya da İngilizce (dil.py; metinler Türkçe yazılır, İngilizceleri arayuz/en.json). İlk açılışta arayüz kurulum sihirbazını
 açar: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun bilgisayarda bulunamazsa sihirbazın oyun
-klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da).
+klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). Windows'ta istemcinin düzeltmelerini yükleyen BepInEx de
+istemci klasörüne kurulur (istemci_yama.py: sihirbazın oyun klasörü adımında, istemci inince, İstemci sayfasından ya da ilk OYNA'da).
 Çoklu istemci (coklu.py): OYNA'dan sonra öteki kayıtlarla ek istemciler aynı sunucuda (en az iki kayıt ve ayar açıksa sunucu çok
 oturumlu açılır); ek istemci açıkken sunucuyu yeniden başlatan işler reddedilir, sunucular son istemci kapanınca kapanır.
 Güncelleme (guncelleme.py): açılıştan biraz sonra ve GUNCELLEME_SN'de bir GitHub'daki son sürüm denetlenir; panel ayarı 'guncelleme'
@@ -38,6 +39,7 @@ import dil as D               # noqa: E402
 from dil import t as _        # noqa: E402
 import istemci as IST         # noqa: E402
 import calistirici as CAL     # noqa: E402
+import istemci_yama as YAMA   # noqa: E402
 import surecler as SR         # noqa: E402
 from kayitlar import Kayitlar, KayitHatasi, FIRMALAR  # noqa: E402
 from yapilandirma import PanelConfig  # noqa: E402
@@ -128,6 +130,7 @@ UYAR = Uyarlayici(ROOT, SR.python_exe(), log, SR.NO_WINDOW)    # yeni istemciye 
 UPD = Guncelleyici(ROOT, YOL.SAVE, log)                          # GitHub'dan güncelleme (guncelleme.py)
 MOT = CAL.motor()                                                # macOS: panelin kurduğu Wine + DXMT (wine_motoru.py)
 MOT.log = log
+YAM = YAMA.Yamaci(log)                                           # Windows: istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py)
 TOKEN = secrets.token_hex(16)
 STATE = {'oyna': {'calisiyor': False, 'adimlar': [], 'hata': None, 'bitti': None, 'sadece_sunucu': False},
          'nabiz': time.monotonic(), 'pencere_kapandi': False, 'pencere_izleniyor': False, 'son_yedek': 0.0, 'kapaniyor': False,
@@ -169,6 +172,7 @@ def _downloaded(path):
         auto = IST.resolve(None)
         same = auto and os.path.normcase(os.path.normpath(auto)) == os.path.normcase(os.path.normpath(path))
         CFG.update({'istemci_klasoru': None if same else path})
+    YAM.start(path)                                   # Windows: istemcinin düzeltmeleri için BepInEx (istemci_yama.py)
 
 
 DL = Indirici(ROOT, IST.check, log, on_done=_downloaded)       # oyun istemcisini indirme (indirme.py)
@@ -556,6 +560,11 @@ def launch(sadece_sunucu=False, arkadas=False):
             if r['tur'] == 'motor' and not r['hata'] and not r['yol']:      # macOS: panelin Wine'ı ilk OYNA'da iner (wine_motoru.py)
                 _step(_('Wine ve DXMT indiriliyor'))
                 MOT.bekle(lambda pct: STATE['oyna']['adimlar'][-1].update(metin=_('Wine ve DXMT indiriliyor: %%%d', pct)))
+            if YAMA.WINDOWS and not YAMA.kurulu(folder):  # istemcinin düzeltmeleri: BepInEx sihirbazda kurulmadıysa ilk OYNA'da
+                _step(_('BepInEx kuruluyor'))
+                if not YAM.bekle(folder, lambda pct: o['adimlar'][-1].update(metin=_('BepInEx kuruluyor: %%%d', pct))):
+                    o['adimlar'][-1].update(metin=_('BepInEx kurulamadı, oyun düzeltmeler olmadan açılır: %s',
+                                                    YAM.state(folder)['hata']), durum='hata')
             cmd, env = IST.komut(CFG, folder, os.path.join(YOL.LOGS, 'client.log'))     # Wine / Proton yoksa sunucular açılmadan hata
         prof = KAY.profile(slot)
         same = YON.running() and YON.slot == slot
@@ -645,7 +654,7 @@ def idle(strict=False):
     """Güncelleme kurulabilir mi: oyun, sunucular, başlatma, istemci indirmesi, protokol aracı ve testler durmuş (strict: panelin
     açmadığı DarkOrbit istemcisi de yok; tasklist çalışır)."""
     busy = (YON.running() or YON.client_alive() or STATE['oyna']['calisiyor'] or DL.running() or UYAR.state()['calisiyor']
-            or TEST.calisiyor or ARK.aktif() or COK.canli() or MOT.running())
+            or TEST.calisiyor or ARK.aktif() or COK.canli() or MOT.running() or YAM.running())
     return not busy and not (strict and IST.running_clients())
 
 
@@ -955,7 +964,8 @@ def api_settings():
 def launch_command():
     """İstemci sayfasında gösterilen başlatma komutu (Linux ve macOS'ta Wine ya da Proton'la; bulunamadıysa yalnız istemcininki)."""
     if os.name == 'nt':
-        return ['DarkOrbit.exe'] + IST.args(CFG, 'logs\\client.log')
+        folder = client_folder()
+        return ['DarkOrbit.exe'] + IST.args(CFG, 'logs\\client.log') + (YAMA.ARGUMANLAR if folder and YAMA.kurulu(folder) else [])
     try:
         return IST.komut(CFG, client_folder() or ROOT, os.path.join(YOL.LOGS, 'client.log'), hazirla=False)[0]
     except RuntimeError:
@@ -968,7 +978,7 @@ def api_client():
     return {'secili': sel, 'kullanilan': used, 'kontrol': IST.check(used), 'adaylar': IST.candidates(),
             'cozunurlukler': IST.COZUNURLUKLER, 'ekran': screen_size(), 'ayarlar': CFG.all(),
             'komut': launch_command(), 'calistirici': CAL.ozet(CFG), 'desteklenen': IST.supported(),
-            'protokol': UYAR.state(), 'indirme': DL.state()}
+            'protokol': UYAR.state(), 'indirme': DL.state(), 'yama': YAM.state(used)}
 
 
 def ek_gunlukler():
@@ -1034,6 +1044,8 @@ def h_get(path, q):
         return DL.state()
     if path == '/api/motor':                        # macOS: panelin Wine'ı ve Rosetta (wine_motoru.py)
         return MOT.state()
+    if path == '/api/yama':                         # Windows: istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py)
+        return YAM.state(client_folder())
     if path == '/api/guncelleme':                   # GitHub'dan güncelleme (guncelleme.py)
         return dict(UPD.state(), ayar=CFG.get('guncelleme'), bosta=idle())
     if path == '/api/protokol':                     # protokol uyarlamasının durumu (protokol.py)
@@ -1270,6 +1282,11 @@ def h_post(path, b):
         return DL.start()
     if path == '/api/motor/kur':
         return MOT.start()
+    if path == '/api/yama/kur':
+        return YAM.start(client_folder())
+    if path == '/api/yama/durdur':
+        YAM.cancel()
+        return YAM.state(client_folder())
     if path == '/api/motor/durdur':
         return MOT.cancel()
     if path == '/api/rosetta/kur':                  # macOS'un yönetici penceresi açılır

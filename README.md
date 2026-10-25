@@ -22,8 +22,9 @@ Orijinal DarkOrbit Unity istemcisi için tek oyunculu, çevrimdışı sunucu ve 
 ### What it is
 
 OpenOrbit runs a local server on your computer and starts the **original DarkOrbit client** against it.
-You play alone and offline: the client never connects to the official servers and its files are never changed. Internet
-is needed only to download the game (once, if the panel does it for you), to check for updates and to fetch the game's
+You play alone and offline: the client never connects to the official servers and its own files are never changed (on
+Windows the panel adds BepInEx next to them for a few small [client fixes](#client-fixes-bepinex)). Internet is needed only
+to download the game and BepInEx (once, if the panel does it for you), to check for updates and to fetch the game's
 images from the official CDN the first time they are shown (without internet the game still runs, without those
 images). A management panel starts the game and handles your saves, game settings and events.
 
@@ -98,6 +99,17 @@ images). A management panel starts the game and handles your saves, game setting
 You can run the wizard again at any time from the **Panel** page, where you can also switch the language and put a
 desktop shortcut on your desktop.
 
+### Client fixes (BepInEx)
+
+On Windows the panel installs [BepInEx](https://github.com/BepInEx/BepInEx) 6 into the game folder (about 32 MB, in the
+setup wizard's game folder step or on the first PLAY; the **Client** page shows its state) and loads a small OpenOrbit
+plugin with it that fixes a few bugs of the client itself: the auction countdown after a period ends, the "Your Rank" line
+of the rank window and the total box of free shop items. The client's own files are not changed; BepInEx's files are added
+next to them (`winhttp.dll`, `doorstop_config.ini`, `BepInEx/`, `dotnet/`). BepInEx is active only when the panel starts
+the game: started any other way, the client runs unchanged. The first start after installing takes about half a minute
+longer while BepInEx prepares. If BepInEx can't be installed, the game opens without the fixes. The plugin's source is
+`server/panel/eklenti/Yamalar.cs`.
+
 ### Linux and macOS
 
 The panel and the servers are plain Python; the game client is a 32-bit Windows program, so the panel opens it with
@@ -131,9 +143,9 @@ an *Install Rosetta* button that asks for your administrator password once. The 
 
 The game runs in its own prefix (`server/save/proton` or `server/save/wine`), which is set up the first time the game
 opens (about half a minute). Wine's output goes to `server/logs/wine.log`. For Play with Friends, allow incoming connections
-for Python when macOS asks; on Linux, if a firewall such as ufw is on, allow TCP 8081 and 7771. The small client fixes the
-panel applies in memory on Windows (auction countdown, rank window, shop totals) are not applied under Wine or Proton. Linux
-and macOS support is new: please report problems on Discord.
+for Python when macOS asks; on Linux, if a firewall such as ufw is on, allow TCP 8081 and 7771. The
+[client fixes](#client-fixes-bepinex) (BepInEx) are applied only on Windows, not under Wine or Proton. Linux and macOS
+support is new: please report problems on Discord.
 
 ### Updates
 
@@ -210,10 +222,11 @@ sounds, texts or game data.
 ### Nedir
 
 OpenOrbit bilgisayarında yerel bir sunucu çalıştırır ve **orijinal DarkOrbit istemcisini** ona bağlar.
-Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, dosyaları değiştirilmez. İnternet yalnız oyunu
-indirmek (panel senin için indirirse, bir kez), güncellemeleri denetlemek ve oyunun görsellerini ilk gösterildiklerinde
-resmî CDN'den almak için gerekir (internet yoksa oyun yine çalışır, o görseller olmadan). Bir yönetim paneli oyunu başlatır;
-kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
+Tek başına ve çevrimdışı oynarsın: istemci resmî sunuculara bağlanmaz, kendi dosyaları değiştirilmez (Windows'ta panel
+birkaç küçük istemci düzeltmesi için yanlarına BepInEx ekler; aşağıda *İstemci düzeltmeleri*). İnternet yalnız oyunu ve
+BepInEx'i indirmek (panel senin için indirirse, bir kez), güncellemeleri denetlemek ve oyunun görsellerini ilk
+gösterildiklerinde resmî CDN'den almak için gerekir (internet yoksa oyun yine çalışır, o görseller olmadan). Bir yönetim
+paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 
 ### Özellikler
 
@@ -285,6 +298,16 @@ kayıtlarını, oyun ayarlarını ve etkinlikleri yönetir.
 Sihirbazı istediğin zaman **Panel** sayfasından yeniden açabilirsin; dili değiştirmek ve masaüstüne kısayol koymak da
 orada.
 
+### İstemci düzeltmeleri (BepInEx)
+
+Windows'ta panel oyun klasörüne [BepInEx](https://github.com/BepInEx/BepInEx) 6'yı kurar (yaklaşık 32 MB; sihirbazın oyun
+klasörü adımında ya da ilk OYNA'da, durumu **İstemci** sayfasında) ve onunla istemcinin kendi birkaç hatasını düzelten küçük
+bir OpenOrbit eklentisi yükler: dönem bitince müzayede sayacı, rütbe penceresindeki "Your Rank" satırı ve bedava mağaza
+ürünlerinin toplam kutusu. İstemcinin kendi dosyaları değişmez; BepInEx'in dosyaları yanlarına eklenir (`winhttp.dll`,
+`doorstop_config.ini`, `BepInEx/`, `dotnet/`). BepInEx yalnız oyunu panel açınca etkindir: başka yoldan açılan istemci
+olduğu gibi çalışır. Kurulumdan sonraki ilk açılış, BepInEx hazırlandığı için yarım dakika kadar uzun sürer. BepInEx
+kurulamazsa oyun düzeltmeler olmadan açılır. Eklentinin kaynağı `server/panel/eklenti/Yamalar.cs`.
+
 ### Linux ve macOS
 
 Panel ve sunucular düz Python; oyun istemcisi 32 bitlik bir Windows programı, bu yüzden panel onu **Proton** ya da **Wine** ile
@@ -318,9 +341,8 @@ kuruluysa onunla), yoksa Wine'ı.
 
 Oyun kendi önekinde çalışır (`server/save/proton` ya da `server/save/wine`); önek oyun ilk açıldığında kurulur (yarım dakika
 kadar). Wine'ın çıktısı `server/logs/wine.log`'a yazılır. Arkadaşlarınla Oyna için macOS sorarsa Python'a gelen bağlantı izni ver;
-Linux'ta ufw gibi bir güvenlik duvarı açıksa TCP 8081 ve 7771'e izin ver. Panelin Windows'ta bellekte yaptığı küçük istemci
-düzeltmeleri (müzayede sayacı, rütbe penceresi, mağaza tutarları) Wine ve Proton'da uygulanmaz. Linux ve macOS desteği yeni:
-sorunları Discord'da bildir.
+Linux'ta ufw gibi bir güvenlik duvarı açıksa TCP 8081 ve 7771'e izin ver. İstemci düzeltmeleri (BepInEx) yalnız Windows'ta
+uygulanır, Wine ve Proton'da uygulanmaz. Linux ve macOS desteği yeni: sorunları Discord'da bildir.
 
 ### Güncellemeler
 

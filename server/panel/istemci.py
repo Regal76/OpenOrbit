@@ -4,12 +4,14 @@ Klasör: içinde DarkOrbit.exe ve DarkOrbit_Data/ olan klasör (DarkOrbit_Versio
 en yeni sürüm klasörü kullanılır; güncelleme gelirse ya da klasör taşınırsa panelden seçilir. Bilgisayarda yoksa panel indirir
 (indirme.py; yarım indirmenin geçici klasörü aday sayılmaz). Sunucu 1.1.115'in protokolüyle
 yazıldı (data/protocol*.json istemcinin kodundan): başka sürümde panel uyarır.
-İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090). Linux ve macOS'ta istemci Wine ya
-da Proton ile açılır (calistirici.py).
+İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090). Windows'ta istemcinin yanına
+kurulan BepInEx (istemci_yama.py) istemcinin düzeltmelerini yükler, kuruluysa argümanla açılır. Linux ve macOS'ta istemci Wine ya da
+Proton ile açılır (calistirici.py).
 """
 import glob, os, re, subprocess
 
 import calistirici as CAL
+import istemci_yama as YAMA
 from dil import t as _
 from indirme import GECICI
 
@@ -139,8 +141,10 @@ def args(cfg, log_file, oturum=None, pencere=False):
 
 def komut(cfg, folder, log_file, oturum=None, pencere=False, hazirla=True):
     """İstemcinin başlatma komutu ve ortamı -> (komut, ortam): Windows'ta DarkOrbit.exe doğrudan, Linux ve macOS'ta Wine ya da Proton
-    ile (calistirici.py; hazirla: önekte istemcinin sürücüsünü kur). Çalıştırıcı bulunamazsa RuntimeError."""
-    return CAL.komut(cfg, os.path.join(folder, EXE), args(cfg, CAL.win_yolu(log_file), oturum, pencere), hazirla)
+    ile (calistirici.py; hazirla: önekte istemcinin sürücüsünü kur). BepInEx kuruluysa onu etkinleştiren argümanlar da (istemci_yama.py).
+    Çalıştırıcı bulunamazsa RuntimeError."""
+    return CAL.komut(cfg, os.path.join(folder, EXE), args(cfg, CAL.win_yolu(log_file), oturum, pencere) + YAMA.argumanlar(folder),
+                     hazirla)
 
 
 # Wine sürecinin komut satırı Windows yolu: Z:\...\DarkOrbit.exe ya da S:\<klasör>\DarkOrbit.exe … (Wine'ı ya da Proton'u açan

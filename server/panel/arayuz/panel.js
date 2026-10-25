@@ -1408,6 +1408,36 @@ function motorWatch(wrap, m, opts) {
   return id;
 }
 
+// ---- Windows: istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py, /api/yama): İstemci sayfası ve sihirbazın oyun klasörü adımı
+function yamaBox(y, refresh) {
+  const call = path => act(() => api(path, {})).then(x => { if (x) refresh(x); });
+  const pct = y.toplam ? Math.floor(100 * y.alinan / y.toplam) : 0, run = y.calisiyor;
+  const head = run ? (y.durum === 'kuruluyor' ? T('BepInEx kuruluyor…') : T('BepInEx indiriliyor: %{0}', pct))
+    : y.durum === 'kurulu' ? T('İstemci düzeltmeleri hazır: {0}', y.ad) : y.durum === 'hata' ? T('BepInEx kurulamadı.')
+    : y.durum === 'durdu' ? T('BepInEx indirmesi durduruldu.') : T('BepInEx henüz kurulmadı.');
+  const info = run ? `${fmtBytes(y.alinan)} / ${fmtBytes(y.toplam)}` : y.durum === 'hata' ? y.hata
+    : y.durum === 'kurulu' ? T('Müzayede sayacı, rütbe penceresi ve mağaza tutarı düzeltilir. Oyunun ilk açılışında BepInEx yarım dakika kadar hazırlanır.')
+    : T("İstemcinin küçük hatalarını düzelten eklenti BepInEx ile yüklenir: {0} oyun klasörüne kurulur (yaklaşık {1}); ilk OYNA'da da kendiliğinden kurulur.", y.ad, fmtBytes(y.toplam));
+  const btns = run ? [btn(T('Durdur'), () => call('/api/yama/durdur'), 'ghost sm', 'stop')]
+    : y.durum === 'kurulu' ? [] : [btn(y.durum === 'hata' || y.durum === 'durdu' ? T('Yeniden dene') : T('İndir ve kur'), () => call('/api/yama/kur'), 'primary sm', 'download')];
+  return h('div', { class: 'dl-box ' + (y.durum === 'hata' ? 'err' : y.durum === 'kurulu' ? 'ok' : '') }, h('b', null, head),
+    run ? h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } }))) : null,
+    info ? h('div', { class: 'small muted dl-info' }, info) : null,
+    btns.length ? h('div', { class: 'row wrap' }, btns) : null);
+}
+// kutuyu saniyede bir yeniler (sayfadan çıkınca kendiliğinden durur) -> setInterval kimliği
+function yamaWatch(wrap, y) {
+  let sig = JSON.stringify(y);
+  const draw = x => { sig = JSON.stringify(x); wrap.replaceChildren(yamaBox(x, draw)); };
+  draw(y);
+  const id = setInterval(async () => {
+    if (!wrap.isConnected) { clearInterval(id); return; }
+    let x; try { x = await api('/api/yama'); } catch (e) { return; }
+    if (JSON.stringify(x) !== sig) draw(x);
+  }, 1000);
+  return id;
+}
+
 // ---- Linux ve macOS: istemciyi açan Wine ya da Proton (calistirici.py; /api/istemci 'calistirici', Windows'ta null)
 function runnerCard(c, cfg, saveCfg) {
   const mac = c.platform === 'darwin';
@@ -1443,6 +1473,7 @@ async function renderIstemci(data) {
   const r = data || await act(() => api('/api/istemci')); if (!r || S.page !== 'istemci') return;
   const c = r.kontrol, cfg = r.ayarlar;
   const dlWrap = !c.gecerli || DL_ACTIVE(r.indirme) ? h('div', { class: 'dl-wrap' }) : null;
+  const yWrap = c.gecerli && r.yama.gerekli ? h('div', { class: 'dl-wrap' }) : null;
   const saveCfg = (vals, msg = T('Kaydedildi.')) => act(() => api('/api/panel_ayarlari', { degerler: vals }), msg).then(x => x && renderIstemci(x));
   const folderCard = h('div', { class: 'card' }, h('h2', null, icon('folder'), T('İstemci klasörü')),
     h('p', { class: 'desc' }, T('Orijinal DarkOrbit Unity istemcisinin klasörü (içinde DarkOrbit.exe ve DarkOrbit_Data olan). Güncelleme gelirse ya da klasörü taşırsan buradan seç.')),
@@ -1453,6 +1484,7 @@ async function renderIstemci(data) {
       c.gecerli ? checkRow(c.uyumlu, versionText(c, r.desteklenen), !c.uyumlu) : null),
     c.sorunlar.length && !c.gecerli && !r.indirme.calisiyor ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, c.sorunlar.join(' '))) : null,
     dlWrap ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('Oyunu indir')), dlWrap] : null,
+    yWrap ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('İstemci düzeltmeleri (BepInEx)')), yWrap] : null,
     h('div', { id: 'proto-box' }),
     h('div', { class: 'row wrap', style: { marginTop: '12px' } },
       btn(T('Klasör seç…'), () => act(() => api('/api/istemci/sec', {}), x => x.iptal ? T('İptal edildi.') : T('İstemci klasörü kaydedildi.')).then(x => x && renderIstemci(x)), 'primary', 'folder'),
@@ -1486,7 +1518,7 @@ async function renderIstemci(data) {
       field(T('Ek Unity argümanları (gelişmiş)'), extra),
       field(T('Başlatma komutu'), h('div', { class: 'cmd' }, r.komut.join(' ')))));
   const warn = h('div', { class: 'alert uyari' }, icon('alert'), h('div', null,
-    T("Klasördeki DarkorbitLauncher.exe'yi çalıştırma: istemciyi resmî sunucudan güncelleyip yerel sunucuyla uyumu bozabilir. Panel istemci dosyalarını hiç değiştirmez; yalnız yerel giriş adresiyle başlatır.")));
+    T("Klasördeki DarkorbitLauncher.exe'yi çalıştırma: istemciyi resmî sunucudan güncelleyip yerel sunucuyla uyumu bozabilir. Panel istemcinin kendi dosyalarını değiştirmez; yerel giriş adresiyle başlatır, Windows'ta yanına kurduğu BepInEx'le küçük düzeltmeleri yükler.")));
   const multiCfg = h('div', { class: 'card compact' }, h('h2', null, icon('users'), T('Çoklu istemci')),
     h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, T('Öteki kayıtlarla ek istemciler')),
       h('div', { class: 'help' }, T("Açıksa ve en az iki kaydın varsa OYNA sunucuyu çok oturumlu açar; Oyna sayfasından öteki kayıtlarınla aynı sunucuya ek istemciler açarsın. Ek istemciler pencere kipinde açılır; görüntü ayarları ortaktır."))),
@@ -1499,6 +1531,7 @@ async function renderIstemci(data) {
     r.calistirici ? runnerCard(r.calistirici, cfg, saveCfg) : null, multiCfg, warn));
   S.sig = S.sig || {}; S.proto = null; S.protoClient = c;
   if (dlWrap) S.timers.push(dlWatch(dlWrap, r.indirme, () => { toast(T('Oyun indirildi ve kuruldu.'), 'ok'); renderIstemci(); }, { haveClient: c.gecerli }));
+  if (yWrap) S.timers.push(yamaWatch(yWrap, r.yama));
   protoTick(true);
   S.timers.push(setInterval(() => protoTick(), 1000));
 }
@@ -1866,6 +1899,9 @@ const WZ_PAGES = {
     let m = r.calistirici?.tur === 'motor' ? r.calistirici.motor : null;   // macOS: oyunu açacak Wine da kendiliğinden iner
     if (m && m.durum === 'yok' && !WZ.motorAuto) { WZ.motorAuto = true; m = await act(() => api('/api/motor/kur', {})) || m; }
     const mWrap = m ? h('div', { class: 'dl-wrap' }) : null;
+    let y = c.gecerli && r.yama.gerekli ? r.yama : null;  // Windows: istemcinin düzeltmeleri için BepInEx de kendiliğinden kurulur
+    if (y && y.durum === 'yok' && !WZ.yamaAuto) { WZ.yamaAuto = true; y = await act(() => api('/api/yama/kur', {})) || y; }
+    const yWrap = y ? h('div', { class: 'dl-wrap' }) : null;
     const chosen = x => { if (x) drawWizard(); };
     const use = p => act(() => api('/api/istemci/kullan', { yol: p })).then(chosen);
     const browse = () => act(() => api('/api/istemci/sec', {}), x => x.iptal ? T('İptal edildi.') : T('Oyun klasörü seçildi.')).then(chosen);
@@ -1873,12 +1909,13 @@ const WZ_PAGES = {
       h('span', { class: 'wz-radio' }), h('span', { class: 'mono' }, a.yol), badge(a.surum || '?', a.uyumlu ? 'ok' : 'warn')));
     return {
       title: T('DarkOrbit oyun klasörü'),
-      sub: T('Orijinal DarkOrbit istemcisinin klasörü: içinde DarkOrbit.exe ve DarkOrbit_Data olmalı. Panel istemci dosyalarını değiştirmez.'),
+      sub: T("Orijinal DarkOrbit istemcisinin klasörü: içinde DarkOrbit.exe ve DarkOrbit_Data olmalı. Panel istemcinin kendi dosyalarını değiştirmez; Windows'ta yanına küçük düzeltmeler için BepInEx kurar."),
       content: [
         rows.length ? field(T('Bulunan klasörler'), h('div', { class: 'wz-opts' }, rows))
           : c.gecerli ? null : h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Bilgisayarında DarkOrbit bulunamadı, bu yüzden oyun indirilip proje klasörüne kuruluyor. Kurulu bir oyunun varsa klasörünü seç.'))),
         dlWrap,
         mWrap ? field(T('Oyunu açacak Wine (macOS)'), mWrap) : null,
+        yWrap ? field(T('İstemci düzeltmeleri (BepInEx)'), yWrap) : null,
         bg ? h('div', { class: 'small muted' }, T('İndirme arka planda sürer: bu arada pilotunu oluşturabilirsin.')) : null,
         dlWrap ? null : field(T('Seçili klasör'), h('div', { class: 'path' }, c.yol || T('Seçilmedi'))),
         c.yol ? h('div', { class: 'check-list', style: { margin: 0 } }, checkRow(c.exe, 'DarkOrbit.exe'), checkRow(c.veri, T('DarkOrbit_Data klasörü')),
@@ -1889,6 +1926,7 @@ const WZ_PAGES = {
       after: () => {
         if (dlWrap) WZ.timer = dlWatch(dlWrap, dl, () => drawWizard(), { haveClient: c.gecerli });
         if (mWrap) motorWatch(mWrap, m);              // sihirbaz yeniden çizilince kutu kalkar, yenileme kendiliğinden durur
+        if (yWrap) yamaWatch(yWrap, y);
       },
     };
   },

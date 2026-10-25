@@ -21,6 +21,10 @@ server/data/protokol/
 # Game images, downloaded from the official CDN when the game first asks for them / Oyunun görselleri, oyun ilk istediğinde resmî CDN'den iner
 server/cdn/do_img/
 
+# Build output of the client plugin; the built OpenOrbitYama.dll is in the repository / İstemci eklentisinin derleme çıktısı; derlenmiş OpenOrbitYama.dll depoda
+server/panel/eklenti/bin/
+server/panel/eklenti/obj/
+
 # macOS Finder
 .DS_Store
 

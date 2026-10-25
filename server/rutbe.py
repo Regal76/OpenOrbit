@@ -200,7 +200,7 @@ def ranking_points(p, now=None):
     rütbenin puanı (belowPoints: eşiği). İstemci (UIHallOfFameSystem.UpdateDailyRankForServer) "hof_your_rank_below" metnini
     ("The rank directly below yours is that of rang_<yourRanking-1>. Space pilots with this rank have approx. belowPoints rank
     points.") yourRanking 2-20 iken, 1'de "hof_rank_lowest", 21'de "hof_rank_highest" kurar; aboveRanking/belowRanking'i okumaz. Kurduğu
-    satırı pencereye koymayıp hep "hof_rank_lowest" yazıyor: istemcinin bellek yaması (panel/istemci_yama.py rutbe_penceresi)."""
+    satırı pencereye koymayıp hep "hof_rank_lowest" yazıyor: istemcinin BepInEx eklentisi (panel/eklenti/Yamalar.cs RutbePenceresi)."""
     b = breakdown(p, now)
     rank = rank_for(b['rankPoints'])
     nxt = R['esikler'][rank] if rank < len(R['esikler']) else b['rankPoints']

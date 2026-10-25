@@ -17,7 +17,6 @@ config.txt'si, değiştirilmez), port_80_sorunu kullanıcıya bir kerelik izin k
 import json, os, signal, socket, subprocess, sys, threading, time
 
 from dil import t as _
-import istemci_yama as YAMA
 
 PANEL_DIR = os.path.dirname(os.path.abspath(__file__))
 SERVER = os.path.dirname(PANEL_DIR)
@@ -495,7 +494,6 @@ class Yonetici:
             if self.client_alive():
                 raise RuntimeError(_('İstemci zaten açık.'))
             self.istemci = istemci_ac(folder, cmd, env, self.logs)
-            YAMA.arka_planda(self.istemci.pid, self.log)      # bellekte (müzayede sayacı, rütbe penceresi; yalnız Windows)
             self.istemci_basla = time.time()
             self.istemci_son = None
             self.log('istemci başlatıldı: %s' % ' '.join(cmd))

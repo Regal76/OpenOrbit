@@ -110,7 +110,6 @@ class Coklu:
             baslat.rotate_logs(self.logs, names=(os.path.basename(gunluk),))
             cmd, env = IST.komut(self.cfg, folder, gunluk, oturum=out['oturum'], pencere=True)
             proc = SR.istemci_ac(folder, cmd, env, self.logs)
-            SR.YAMA.arka_planda(proc.pid, self.log)
         except Exception:
             with self.lock:
                 self.acik.pop(slot, None)
