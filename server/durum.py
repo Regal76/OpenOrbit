@@ -55,7 +55,8 @@ class Etkiler:
 
     # ------------------------------------------------------------ birleşik değerler
     def slow(self, now=None):
-        return max((e['deger'] for e in self.get('yavas', now)), default=0.0)
+        return max(max((e['deger'] for e in self.get('yavas', now)), default=0.0),
+                   0.1 if self.get('enfeksiyon', now) else 0.0)
 
     def frozen(self, now=None):
         return bool(self.get('donuk', now))
@@ -95,6 +96,8 @@ class Etkiler:
     def mods(self, now=None):
         """Oyuncunun etkileri profil bonuslarına (profil.mods): yavaşlık hiz, donukluk sabit_hiz 0, isabet düşüşü."""
         out = {}
+        if self.get('enfeksiyon', now):
+            out.update(lazer=0.1, roket=0.1, can_carpan=0.85)
         if self.slow(now):
             out['hiz'] = -self.slow(now)
         if self.frozen(now):

@@ -696,8 +696,10 @@ class Kapilar:
         x2 = 1 if dispatch or not TK.is_active('gg_cift_odul') else 2
         rm = reward_msgs or (lambda tot, **kw: self.m.money_msgs() if self.m else [])
         self.p.ach('gate', tur='%s_GATE' % key.upper(), dispatch=dispatch)      # istemcinin GalaxyGateType'ı (STREUNER_GATE …)
-        ep = int(R['ep'] * x2 * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0))))    # N.O.V.A. Field Intelligence (nova.py)
-        ep, onur, uri = AY.miktar('ep', ep, 'kapi'), AY.miktar('onur', R['onur'] * x2, 'kapi'), AY.miktar('uridyum', R['uridyum'], 'kapi')   # panel
+        cbs = self.p.cbs_mods() if not dispatch and getattr(self.p, 'cbs_mods', None) else {}
+        ep = int(R['ep'] * x2 * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0)) + cbs.get('ep', 0)))
+        onur = int(R['onur'] * x2 * (1 + cbs.get('onur', 0)))
+        ep, onur, uri = AY.miktar('ep', ep, 'kapi'), AY.miktar('onur', onur, 'kapi'), AY.miktar('uridyum', R['uridyum'], 'kapi')   # panel
         tot = self.p.gain(ep=ep, onur=onur, uridyum=uri, neden='galaxy_gate_done')
         msgs = rm(tot, ep=ep, onur=onur, uridyum=uri)
         q = lambda v: AY.miktar('mod_odul', v, 'kapi')      # panel: kapı/mod ödülü çarpanı

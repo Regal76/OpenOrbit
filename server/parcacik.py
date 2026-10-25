@@ -391,7 +391,7 @@ class Atis:
         """Kısayol çubuğu: slug ya da GSP seçilir ve hedef varsa ateşlenir."""
         now = now or time.time()
         kind = 'slug' if item in SLUGS else 'gsp'
-        if act != 1:
+        if act not in (0, 1):
             return
         old = self.p.d['secili'].get(kind)
         if item != old and self.p.ammo(item) > 0:
@@ -399,6 +399,8 @@ class Atis:
             self.p.dirty = True
             self.w.send([('MenuItemStatusCommand', st) for st in (self.p.menu_status(old) if old else None, self.p.menu_status(item)) if st])
             self.w.log('   %s seçildi: %s' % ('slug' if kind == 'slug' else 'GSP', item))
+        if act == 0:
+            return  # Category SELECT chooses ammo without firing a cannon/drive.
         n = self.w.npcs.get(self.w.target)
         if n and n.alive:
             (self.fire_cannon if kind == 'slug' else self.fire_drive)(n, now, item)
@@ -573,29 +575,50 @@ class Atis:
         return z
 
     def zone_tick(self, z, now):
-        if now < z['sonraki']:
+        if now < z['sonraki'] or self.w.hero_dead:
             return
+        zones = self.zones
         z['sonraki'] = now + 1.0
         t = self.w.npcs.get(z['hedef'])
         if z.get('izle', 0) > now and t is not None and t.alive:       # Adhesion: alan ana hedefle gider
             z['x'], z['y'] = t.mover.pos(now)
         for m in self.others(z['x'], z['y'], z.get('alan', DR['alan']), set(), now):
+            if self.w.hero_dead or self.zones is not zones:
+                break                                   # a hit can kill the hero or stop the world and clear all zones
             if z.get('yavas'):                                          # Stagnation: alandayken yavaş (çıkınca 1,2 sn'de biter)
                 self.w.npc_effect(m, 'yavas', 1.2, z['yavas'], source='rezonator')
             if random.random() < DR['isabet']:
                 self.w.hit_npc(m.id, int(z['hasar']), DRIVE_ATTACK)
 
+    @staticmethod
+    def zone_end(z):
+        return ('VisualModifierCommand', dict(userId=z['hedef'], modifier=z['vm'], attribute=0,
+                                               additionalAttribute='', count=0, activated=False))
+
+    def clear(self):
+        """Cancel pending drive visuals and damage when leaving this world or dying."""
+        # Replacing the list also invalidates a damage iteration running inside a hit callback.
+        zones, self.zones = self.zones, []
+        if zones:
+            self.w.send([self.zone_end(z) for z in zones])
+
     def tick(self, now):
         if self.zones:
-            for z in list(self.zones):
+            zones = self.zones
+            for z in list(zones):
+                if self.zones is not zones:
+                    break
+                if z not in self.zones:
+                    continue
                 if now >= z['bitis']:
                     self.zones.remove(z)
                     if z.get('artci'):                                  # Aftershock: kalan %25 bitişte patlar
                         for m in self.others(z['x'], z['y'], z['artci_alan'], set(), now):
+                            if self.w.hero_dead or self.zones is not zones:
+                                break
                             self.w.hit_npc(m.id, int(z['artci']), DRIVE_ATTACK)
-                    if z['hedef'] in self.w.npcs:
-                        self.w.send([('VisualModifierCommand', dict(userId=z['hedef'], modifier=z['vm'], attribute=0, additionalAttribute='',
-                                                                    count=0, activated=False))])
+                    # The client can cancel an effect by unit ID after that unit was removed.
+                    self.w.send([self.zone_end(z)])
                 else:
                     self.zone_tick(z, now)
         for uid, k in list(self.korozif.items()):

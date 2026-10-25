@@ -10,8 +10,8 @@ yuva adları, game.xml P.E.T. gemi türleri):
   durdur    PetRequest DEACTIVATE -> PetDeactivationCommand
   dişli     PetGearActivationRequest {gearTypeToActivate, optParam} -> PetGearSelectCommand
   hareket   MoveCommand (P.E.T. kimliğiyle): gemiyi izler; toplayıcı dişlilerle kutuya/cevhere gider
-  savaş     koruma modunda gemi hedefine (ya da gemiye saldıran NPC'ye) seçili cephaneyle ateş eder
-  hasar     uzaylılar P.E.T.'e ateş etmez (gerçek oyunda yalnız düşman oyuncular); oyuncu kendi P.E.T.'ini seçip vurabilir (Kamikaze'nin
+  savaş     koruma modunda gemi hedefine (NPC/CBS) ya da gemiye/P.E.T.'e saldıran istasyona seçili cephaneyle ateş eder
+  hasar     düşman CBS menzildeki P.E.T.'i vurur; oyuncu da kendi P.E.T.'ini seçip vurabilir (Kamikaze'nin
             can eşiği için; ödül yok). Ölünce ShipDestroyedCommand + PetIsDestroyedCommand + tamir düğmesi (PetUIRepairButtonCommand);
             PetRequest REPAIR_DESTROYED_PET -> PetRepairCompleteCommand, P.E.T. azami canın tamir_can kadarıyla döner
   yakıt     etkinken dakika başına harcar (PetFuelUpdateCommand); biterse PetOutOfFuelCommand; HOTKEY_BUY_FUEL 1.000 birim
@@ -163,7 +163,7 @@ class Pet:
         self.relaunch = False        # harita değişti/yeniden yüklendi: hazır olunca yeniden çıkar
         self.mover = None
         self.task = None             # ('box' | 'ore', hash): toplayıcı dişlinin hedefi
-        self.shooting = None         # ateş edilen NPC
+        self.shooting = None         # ateş edilen NPC/CBS kimliği
         self.next_shot = self.next_follow = self.next_second = self.next_locate = 0.0
         self.fuel_clock = 0.0        # harcanmamış yakıt (birim)
         self.tick_t = time.time()
@@ -279,11 +279,11 @@ class Pet:
     def lasers(self):
         return [l for l in self.loadout()['lasers'] + self.heat_items('lasers') if l in ESYA['lazerler']]
 
-    def laser_damage(self, target=None):
+    def laser_damage(self, target=None, pvp=False):
         """Lazerlerin toplam hasarı: gemideki gibi lazer.py'nin isabeti (AAP-1'in hedef_carpan'ı, uzaylı bonusu), LF-PX01 HEAT
         bonusu ve yükseltme seviyesi (istemci LASER_DAMAGE_UPGRADE %0,5)."""
         hl = self.heat_lv()
-        return sum(LAZER.hit(l, target) * (1 + px_bonus(l, hl)) * YK.factor(l, lv, YK.LASER)
+        return sum(LAZER.hit(l, target, pvp=pvp) * (1 + px_bonus(l, hl)) * YK.factor(l, lv, YK.LASER)
                    for l, lv in self.upgraded('lasers') if l in ESYA['lazerler'])
 
     def speed(self):
@@ -944,9 +944,12 @@ class Pet:
 
     def tick(self, now):
         """Dünya döngüsünden (kilit altında): izleme, toplama, ateş, yakıt, onarım, bulucu."""
-        if not self.active or not self.w:
+        if not self.active or not self.alive or not self.w:
             return
         w = self.w
+        if self.d['yakit'] <= 0:
+            self.deactivate(msg='msg_pet_out_of_fuel')
+            return
         dt, self.tick_t = now - self.tick_t, now
         if w.hero_dead or w.jumping:
             return
@@ -1110,58 +1113,82 @@ class Pet:
         return True
 
     def fight(self, now):
-        """Koruma: geminin hedefine, yoksa gemiye saldıran en yakın NPC'ye ateş et (seçili cephane, lazer başına 1). P.E.T. hedefin
-        yanına gider (gemiden en çok yakin_mesafe uzağa). Savaşıyorsa True (izleme yapılmaz)."""
+        """Koruma: geminin canlı hedefine, yoksa yakındaki saldırgana ateş et. CBS hedefleri de her atışta
+        güncel harita, düşmanlık ve deflector denetiminden geçer; NPC davranışı aynı kalır."""
         w = self.w
         n = w.npcs.get(w.target) if w.attacking else None
+        uid = w.target if w.attacking else None
+        asset = w.asset_at(uid) if not n and uid is not None else None
+        if asset and w.asset_targets.asset_attackable(uid):
+            asset = None
         px, py = self.pos(now)
         hx, hy = w.hero_pos(now)
-        if not n or not n.alive:
-            near = [(math.hypot(x.mover.pos(now)[0] - hx, x.mover.pos(now)[1] - hy), x) for x in w.npcs.values() if x.alive and x.engaged]
-            near = [c for c in near if c[0] <= PET['savas_mesafe']]
-            n = min(near, key=lambda c: c[0])[1] if near else None
-        nx, ny = n.mover.pos(now) if n else (0, 0)
-        if not n or math.hypot(nx - hx, ny - hy) > PET['savas_mesafe']:
+        if not (n and n.alive) and not asset:
+            n = None
+            recent = getattr(w, 'last_asset_attacker', None)
+            if recent and 0 <= now - recent[1] <= ESYA['savas_disi_sn']:
+                uid = recent[0]
+                asset = w.asset_at(uid)
+                if asset and w.asset_targets.asset_attackable(uid):
+                    asset = None
+            if not asset:
+                near = [(math.hypot(x.mover.pos(now)[0] - hx, x.mover.pos(now)[1] - hy), x) for x in w.npcs.values() if x.alive and x.engaged]
+                near = [c for c in near if c[0] <= PET['savas_mesafe']]
+                n = min(near, key=lambda c: c[0])[1] if near else None
+        if n:
+            uid = n.id
+        pos = asset or (n.mover.pos(now) if n else None)
+        if not pos or math.hypot(pos[0] - hx, pos[1] - hy) > PET['savas_mesafe']:
             if self.shooting:
                 self.stop_shooting()
             return False
+        nx, ny = pos
         lasers = self.lasers()
         if not lasers:
+            if self.shooting:
+                self.stop_shooting()
             return False
         dist = math.hypot(nx - px, ny - py)
         if dist > PET['yakin_mesafe'] and now >= self.next_follow:
             a = math.atan2(py - ny, px - nx)          # hedefin P.E.T. tarafındaki bir noktaya
             self.move(nx + math.cos(a) * PET['yakin_mesafe'] * 0.8, ny + math.sin(a) * PET['yakin_mesafe'] * 0.8, self.speed() * 1.2, now)
             self.next_follow = now + 0.5
-        if dist > SAVAS['lazer_menzil'] or now < self.next_shot:
+        if dist > SAVAS['lazer_menzil']:
+            if asset and self.shooting:
+                self.stop_shooting()
+            return True
+        if now < self.next_shot:
             return True
         ammo = self.p.d['secili']['lazer']
         if self.p.use_ammo(ammo, len(lasers)) is None:
             if self.shooting:
                 self.stop_shooting()
             return False
-        if self.shooting != n.id:
-            self.log('   P.E.T. ateş ediyor: %s (%d lazer, %s)' % (n.d['ad'], len(lasers), ammo))
-        self.shooting = n.id
+        if self.shooting != uid:
+            self.log('   P.E.T. ateş ediyor: %s (%d lazer, %s)' % (n.d['ad'] if n else 'CBS %s' % uid, len(lasers), ammo))
+        self.shooting = uid
         self.next_shot = now + ESYA['lazer_cephane'].get(ammo, {}).get('aralik_sn', SAVAS['lazer_aralik_sn'])
         w.last_combat = now
-        w.send(w.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.pid, targetId=n.id,
+        w.send(w.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.pid, targetId=uid,
                                                                    laserColor=ESYA['lazer_renkleri']['cephane'].get(ammo, 0),
                                                                    isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
-        if random.random() < AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + self.proto('isabet'))):      # panel
-            base = self.laser_damage(n)                                  # LF-PX01: HEAT seviyesine göre
-            base *= 1 + self.row()['hasar'] + self.proto('lazer') + self.proto('uzayli')
+        if random.random() < AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + self.proto('isabet'))):
+            base = self.laser_damage(n, pvp=bool(asset))
+            base *= 1 + self.row()['hasar'] + self.proto('lazer') + (self.proto('uzayli') if n else 0)
             if self.d.get('disli') == HP_LINK:
-                base *= self.gear(HP_LINK).get('pet_hasar', 1)          # G-HPL1: bağlıyken %25 hasar
+                base *= self.gear(HP_LINK).get('pet_hasar', 1)
             a = ESYA['lazer_cephane'].get(ammo, {'carpan': 1})
             r = random.uniform(*ESYA['hasar_rastgele'])
             shield = int(base * a.get('kalkan_carpan', 0) * r)
-            if shield:
-                w.hit_npc(n.id, shield, 1, shield_only=True, attacker=self.pid)
+            dmg = shield or int(base * a.get('carpan', 1) * r)
+            if asset:
+                w.hit_asset(uid, dmg, 1, shield_only=bool(shield), attacker=self.pid)
+                if not w.asset_at(uid):
+                    self.stop_shooting()
             else:
-                w.hit_npc(n.id, int(base * a.get('carpan', 1) * r), 1, attacker=self.pid)
+                w.hit_npc(uid, dmg, 1, shield_only=bool(shield), attacker=self.pid)
         else:
-            w.send([('AttackMissedCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=1), targetUserId=n.id, skillColorId=0))])
+            w.send([('AttackMissedCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=1), targetUserId=uid, skillColorId=0))])
         return True
 
     def stop_shooting(self):
@@ -1217,6 +1244,32 @@ class Pet:
         return ('ShipSelectionCommand', dict(userId=self.pid, shipType=self.look or self.ship_type(), shield=int(self.d['kalkan']),
                                              shieldMax=self.shield_max(), hitpoints=int(self.d['can']), hitpointsMax=self.hp_max(),
                                              nanoHull=0, maxNanoHull=0, shieldSkill=False))
+
+    def station_hit(self, dmg, attacker, atype=0, now=None):
+        """CBS vuruşu: P.E.T.'in kendi kalkan emmesi; gerçek kayıp ve istasyon kimliğiyle hasar bildirimi."""
+        w = self.w
+        if not self.active or not self.alive or not w or w.hero_dead or w.jumping:
+            return 0
+        dmg = max(0, int(dmg))
+        if not dmg:
+            return 0
+        now = time.time() if now is None else now
+        d = self.d
+        with self.p.lock:
+            shield = min(d['kalkan'], int(dmg * self.absorb()))
+            hull = min(d['can'], dmg - shield)
+            d['kalkan'] -= shield
+            d['can'] -= hull
+            self.p.dirty = True
+        amount = int(shield + hull)
+        if amount:
+            w.last_combat = now
+            w.send([('AttackHitCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=atype), attackerId=int(attacker),
+                victimId=self.pid, victimHitpoints=int(d['can']), victimShield=int(d['kalkan']), victimNanoHull=0,
+                damage=amount, skilled=False, strike=False, cannonType=0)), self.hp_msg(), self.shield_msg()])
+            if d['can'] <= 0:
+                self.destroyed(DESTROYED_NONE)
+        return amount
 
     def owner_hit(self, dmg):
         """Oyuncunun kendi P.E.T.'ine lazeri (dunya.pet_laser): kalkan emer, kalanı candan; can biterse yok olur, ödül yok. Uzaylılar

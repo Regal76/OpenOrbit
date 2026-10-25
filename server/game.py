@@ -820,6 +820,9 @@ class Session:
     def quest_reward(self, loot, n):
         cur = {'currency_credits': 'kredi', 'currency_uridium': 'uridyum', 'currency_experience': 'ep', 'currency_honour': 'onur'}
         if loot in cur:
+            cbs = self.profil.cbs_mods() if getattr(self.profil, 'cbs_mods', None) else {}
+            if cur[loot] in ('ep', 'onur'):
+                n = int(n * (1 + cbs.get(cur[loot], 0)))
             n = AY.miktar(cur[loot], n, 'gorev')           # panelin ödül çarpanları
             tot = self.profil.gain(neden='quest_won', **{cur[loot]: n})
             return self.world.reward_msgs(tot, **{cur[loot]: n}) if self.world else []
@@ -965,6 +968,7 @@ class Session:
                 if grup:
                     self.send(grup, 'grup: giriş')
             else:
+                self.send(self.cbs.attach(self.world), 'CBS: harita yeniden yüklendi')
                 self.world.resend()
             if self.ready_n > 1:                 # harita yüklendi (portal, ışınlama, yeniden doğma): istemci menüyü yeniden kuruyor
                 self.ek.on_ready()               # (Urgent Missions'ın simgesi, acil_gorevler.py)
@@ -1228,6 +1232,11 @@ class Session:
             log('   profile yazıldı: %s' % name)
             if name == 'DisplaySettingsRequest':
                 self.profil.ach('display', use2d=f.get('displayUse2d'))      # başarım: 3B görünüm (Uses3D)
+                # SaveInterfaceSettingsTab changes flags, but the client only applies toolbar visibility on UIBag refresh.
+                tpl = next((m for m in SABLON.giris.get('hazir', []) if m['_m'] == 'MenuInitializationCommand'), None)
+                if tpl:
+                    self.send([('MenuInitializationCommand', self.profil.patch_template('MenuInitializationCommand', tpl))],
+                              'arayüz: kısayol çubukları')
             if name == 'UIWindowUpdateRequest':
                 if f.get('maximized'):
                     self.pencereler.opened(f.get('itemId'))

@@ -2,7 +2,8 @@
 
 İstemci 1.1.114'te yalnız metinleri var (eşya verisi, simgesi ve hangar yuvası yok; yayımlanmamış içerik). Synthesis'in Resonator
 sekmesi sunucu verisiyle çalışıyor (canlı deneme 2026-10-18): SynthesisGroupCommand group synthesis_resonator_title, sol düğmeler
-synthesis_resonator_strike / _aegis; eşyalar "?" simgeli, adları ipucunda istemcinin metinlerinden.
+synthesis_resonator_strike / _aegis; eşyalar "?" simgeli, adları ipucunda istemcinin metinlerinden. 1.1.115 simge açığı için
+geri alınabilir yerel eşleme: tools/resonator_icon_compat.py (docs/resonator-icons.md).
   C: türün kaynaklarından (resource_attack-* / resource_defensive-*) 3 tane + 1.000 U. Bedel satırı oyuncunun en çok tuttuğu kaynak;
      rezonatörün niteliği o kaynağın niteliği (C aralığından).
   UC..UL: 4 alt kalite (seçilen ilki ana rezonatör) + uridyum: ana rezonatörün nitelikleri yeni kalitenin aralığından yeniden çekilir,
@@ -80,7 +81,7 @@ def create(p, loot, attrs):
 def modifiers_str(p, iid):
     """Hangar ipucunun nitelik satırları (parcacik.modifiers_str biçimi: "AD,değer;…")."""
     st = ensure(p, iid) or {}
-    return ';'.join('%s,%d' % (a.upper(), int(round(v))) for a, v in st.get('nitelik', []))
+    return ';'.join('%s,%g' % (a.upper(), v) for a, v in st.get('nitelik', []))
 
 
 def best(p, tur='strike'):

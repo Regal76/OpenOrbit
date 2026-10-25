@@ -232,7 +232,9 @@ class EtkinlikKapilari:
         g, G, now = GATES[key], self.gate(key), time.time()
         o = g.get('odul', {})
         msgs = []
-        para = {k: AY.miktar(k, o[k], 'kapi') for k in ('ep', 'onur', 'kredi', 'uridyum') if o.get(k)}      # panelin çarpanları
+        cbs = self.p.cbs_mods() if getattr(self.p, 'cbs_mods', None) else {}
+        para = {k: AY.miktar(k, int(o[k] * (1 + cbs.get(k, 0))) if k in ('ep', 'onur') else o[k], 'kapi')
+                for k in ('ep', 'onur', 'kredi', 'uridyum') if o.get(k)}      # panelin çarpanları
         if para:
             tot = self.p.gain(neden='galaxy_gate_done', **para)
             msgs += reward_msgs(tot, **para) if reward_msgs else []
