@@ -5,7 +5,7 @@ list: [SkillTreeInfoCommand {id, curLevel}], researchPoints, resetCount, logFile
 ConvertResearchPointsCommand {required, success, researchPoints, logfiles}; UpLevelSkillTreeRequest {id} -> UpLevelSkillTreeCommand
 {id, researchPoints, stack, success, curLevel}; ResetSkillTreeRequest -> ResetSkillTreeCommand.
 Kurallar: log diskleri pilot puanına çevrilir (wiki: 1. puan 30, 2. 33 … log diski); her seviye 1 puan + kredi + Seprom (kademe 1:
-yalnız kredi); ön koşullar istemcinin ağacındaki gibi. Sıfırlama puanları geri verir (kredi ve Seprom dönmez), ücreti uridyum,
+yalnız kredi; Seprom kargodan, yetmeyeni Skylab deposundan); ön koşullar istemcinin ağacındaki gibi. Sıfırlama puanları geri verir (kredi ve Seprom dönmez), ücreti uridyum,
 her seferinde iki katı (wiki: 1.000, 2.000 …). Log diskleri Galaksi Kapısı üreticisinin sayacında (kapilar.log_disk).
 """
 import json, os
@@ -15,6 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 Y = json.load(open(os.path.join(HERE, 'data', 'yetenekler.json'), encoding='utf8'))
 SKILLS = Y['yetenekler']
 SEPROM = 7                       # cevher türü
+SKYLAB_SEPROM = '14'             # Skylab deposundaki kimliği (skylab.json cevherler)
 
 
 def mod(name, **f):
@@ -103,8 +104,19 @@ class Yetenekler:
         return [('ConvertResearchPointsCommand', dict(required=self.required(), success=ok, researchPoints=st['puan'],
                                                       logfiles=self.logs()))]
 
+    def skylab_seprom(self):
+        """Skylab deposundaki Seprom (Skylab cevheri 14)."""
+        return int((self.p.d.get('skylab') or {}).get('depo', {}).get(SKYLAB_SEPROM, 0))
+
+    def seprom(self):
+        """Harcanabilir Seprom: kargodaki ve Skylab deposundaki (resmî forum: yetenek ağacı Skylab'dakini kullanır; kullanıcı isteği
+        2026-10-25: yalnız kargodaki sayılıyordu)."""
+        return self.p.ore_count(SEPROM) + self.skylab_seprom()
+
     def up_level(self, f):
-        """UpLevelSkillTreeRequest {id}: puan, kredi ve Seprom harcanır; ön koşullar istemcinin ağacındaki gibi."""
+        """UpLevelSkillTreeRequest {id}: puan, kredi ve Seprom (önce kargodan, kalanı Skylab'dan) harcanır; ön koşullar istemcinin
+        ağacındaki gibi. Yetmeyen şeyin metni (kredi, Seprom, puan, ön koşul); önceden hepsinde "An error occurred" çıkıyordu
+        (kullanıcı bildirimi 2026-10-25)."""
         sid = str(f.get('id') or '')
         st = state(self.p)
         s = SKILLS.get(sid)
@@ -112,11 +124,13 @@ class Yetenekler:
         cost = s['maliyet'][cur] if s and cur < len(s['degerler']) else None
         why = ('yetenek yok' if not s else 'en üst seviye' if cost is None else 'ön koşul' if not requirements_met(self.p, sid)
                else 'puan yetmiyor' if st['puan'] < cost['puan'] else 'kredi yetmiyor' if self.p.d['pilot'].get('credits', 0) < cost['kredi']
-               else 'Seprom yetmiyor' if self.p.ore_count(SEPROM) < cost['seprom'] else None)
+               else 'Seprom yetmiyor' if self.seprom() < cost['seprom'] else None)
         if why:
             self.log('   yetenek %s yükselmedi: %s' % (sid, why))
-            return [('UpLevelSkillTreeCommand', dict(id=sid, researchPoints=st['puan'], stack=self.m.stack('eqt_error_generic'),
-                                                     success=False, curLevel=cur))]
+            stack = {'ön koşul': lambda: self.m.neden('on_kosul'), 'puan yetmiyor': lambda: self.m.neden('arastirma_puani'),
+                     'kredi yetmiyor': lambda: self.m.stack('not_enough_credits'),
+                     'Seprom yetmiyor': lambda: self.m.stack('tf_message_not_enough_seprom')}.get(why, lambda: self.m.stack('eqt_error_generic'))
+            return [('UpLevelSkillTreeCommand', dict(id=sid, researchPoints=st['puan'], stack=stack(), success=False, curLevel=cur))]
         with self.p.lock:
             st['puan'] -= cost['puan']
             self.p.d['pilot']['credits'] -= cost['kredi']
@@ -124,9 +138,16 @@ class Yetenekler:
             self.p.dirty = True
         RT.money(self.p, 'kredi', -cost['kredi'], 'buy_SPECIAL')
         msgs = []
-        if cost['seprom']:
-            totals = self.p.remove_ores({SEPROM: cost['seprom']})
+        cargo = min(cost['seprom'], self.p.ore_count(SEPROM))
+        if cargo:
+            totals = self.p.remove_ores({SEPROM: cargo})
             msgs += [('AttributeOreCountUpdateCommand', {'oreCountList': totals}), self.m.ore_pack([SEPROM])]
+        if cost['seprom'] > cargo:
+            with self.p.lock:
+                depo = self.p.d['skylab']['depo']
+                depo[SKYLAB_SEPROM] = depo.get(SKYLAB_SEPROM, 0) - (cost['seprom'] - cargo)
+                self.p.dirty = True
+            self.log('   yetenek: %d Seprom Skylab deposundan' % (cost['seprom'] - cargo))
         self.log('   yetenek %s (%s) seviye %d (-%d kredi, -%d Seprom)' % (sid, s['ad'], cur + 1, cost['kredi'], cost['seprom']))
         return ([('UpLevelSkillTreeCommand', dict(id=sid, researchPoints=st['puan'], stack=None, success=True, curLevel=cur + 1))]
                 + self.m.money_msgs() + msgs + self.m.apply_stats() + ([shield_cmd(self.p)] if sid in ('8', '17') else []))

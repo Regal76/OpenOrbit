@@ -179,6 +179,12 @@ NEDENLER = {
     'aktarim_envanter': ('Some equipment cannot be equipped on the new ship and was moved to your inventory.',
                          'Bazı eşyalar yeni gemiye takılamadığı için envantere kaldırıldı.'),
     'yakit_dolu': ("Your P.E.T.'s fuel tank is full.", "P.E.T.'inin yakıt deposu dolu."),
+    'arastirma_puani': ('Not enough Research Points available.', 'Yeterli araştırma puanı yok.'),
+    'on_kosul': ('The prerequisites for the next level of this skill are not met.', 'Bu yeteneğin sonraki seviyesinin ön koşulları karşılanmıyor.'),
+    'ayni_modul': ('Only one module of each type (Damage, HP, Shield, Special) can be equipped on a ship.',
+                   'Bir gemiye her türden (hasar, can, kalkan, özel) yalnız bir modül takılabilir.'),
+    'qfc_satis': ('Quantum Fluid Cores cannot be sold. You can recycle them in the Hyperforge (Assembly).',
+                  "Quantum Fluid Core satılamaz; Hyperforge'da (Assembly) geri dönüştürebilirsin."),
 }
 
 
@@ -188,6 +194,7 @@ NEDENLER = {
 RES_YERINE = {'drone_have_max': ('items_drone_have_max', {}),
               'drone_slotCPUinUse': ('drone_slotCPUinUse', {}),        # resource_system_inc'te; BaseKey'lerde yok
               'special_generic_hint': ('items_special_generic_hint', {}),
+              'tf_message_not_enough_seprom': ('tf_message_not_enough_seprom', {}),   # "Not enough Seprom available" (yetenek ağacı)
               'clan_errmsg_desc_to_long': ('clan_errmsg_to_long', {'_NAME_': res('label_description')})}
 
 
@@ -526,12 +533,9 @@ class Magaza:
             it.update(PC.hangar_fields(self.p, iid, loot))              # top: temel hasar, nitelikler, yıldız, UL'nin gemisi
         elif RZ.is_item(loot) and str(iid) in self.p.d['esyalar']:
             it['modifiers'] = RZ.modifiers_str(self.p, iid)             # Xeno Resonator'ın nitelikleri (Ö6)
-        if loot.startswith(QF.PREFIX) and QF.state(self.p, iid):
-            # Hangar tooltips read modifiers/ships, independently of Hyperforge data.
-            core = QF.state(self.p, iid)
-            it['modifiers'] = ';'.join('%s,%s' % (a.upper(), format(v, '.2f').rstrip('0').rstrip('.'))
-                                       for a, v in core['nitelikler'] if v > 0)
-            it['ships'] = GM.ship_ids([core['gemi']])
+        elif loot.startswith(QF.PREFIX) and QF.state(self.p, iid):
+            it['ships'] = GM.ship_ids([QF.state(self.p, iid)['gemi']])  # QFC: bağlı gemi ve nitelikleri (qfc.modifiers_str)
+            it['modifiers'] = QF.modifiers_str(self.p, iid)
         if EK.attached(self.p, loot):
             it['attachedAmmo'] = EK.attached(self.p, loot)      # otomatik alım CPU'sunun seçili cephanesi
         if PETM.has_levels(loot):
@@ -820,6 +824,21 @@ class Magaza:
     def free_slots(self, slot, cid=None):
         return max(0, self.capacity(slot) - len(self.p.config(cid).get(slot, [])))
 
+    def fits(self, slot, iid, loot, pending=()):
+        """Yeni gelen eşya etkin config'e kendiliğinden takılabilir (ya da takılması önerilebilir) mi: move()'un kuralları (modülün
+        gemisi ve türü, yuva CPU'su, onarım robotu); QFC ve parçacık eşyalarını oyuncu takar. pending: aynı alımda takılması önerilen
+        öteki eşyalar. Kullanıcı bildirimi 2026-10-25: ödül modülü etkin geminin olmasa da takılıyordu."""
+        cur = list(self.p.config().get(slot, [])) + [i for i in pending if slot_of(self.p.d['esyalar'].get(str(i), '')) == slot]
+        loots = [self.p.d['esyalar'].get(str(i), '') for i in cur]
+        if slot == 'upgrades':
+            return GM.equip_allowed(self.p, iid, self.p.ship()['lootId']) and not GM.type_taken(self.p, iid, cur)
+        if slot == 'QuantumFluidCore' or slot in PC.SLOTS:
+            return False
+        if slot == 'extra':
+            return not (EK.slot_bonus_of([loot]) and EK.slot_bonus_of(loots)) and \
+                not (loot.startswith(REPBOT) and any(l.startswith(REPBOT) for l in loots))
+        return True
+
     @staticmethod
     def contents(loot, amount):
         """Satın alınınca verilecekler [(lootId, adet)]: cephane, ekipman ve gemi kendisi, paketler esyalar.json odeme_paketleri'nden.
@@ -1005,7 +1024,7 @@ class Magaza:
                 for _ in range(n):
                     iid = self.p.new_item(g)
                     msgs += [self.inv_item(iid, g, 1), self.pack([self.hangar_item(iid, g, 1)])]
-                    if got < room:
+                    if got < room and self.fits(slot_of(g), iid, g, equip_ids):
                         equip_ids.append(iid)
                         got += 1
                 EK.recharge(self.p, g, n)                  # atlama/gizlenme CPU'su: yeni hak
@@ -1120,7 +1139,7 @@ class Magaza:
             for _ in range(n):
                 iid = self.p.new_item(loot)
                 msgs += [self.inv_item(iid, loot, 1), self.pack([self.hangar_item(iid, loot, 1)])]
-                if self.free_slots(slot) > 0 and not pet_only(loot):
+                if self.free_slots(slot) > 0 and not pet_only(loot) and self.fits(slot, iid, loot):
                     with self.p.lock:
                         self.p.config().setdefault(slot, []).append(iid)
                         self.p.sync_ekipman()
@@ -1291,6 +1310,9 @@ class Magaza:
                 if iid in equipped:
                     self.log('   satış yok: %s takılı' % loot)
                     return fail('takili_satis')
+                if loot.startswith(QF.PREFIX):                  # QFC satılmaz, Hyperforge'da geri dönüşür (resmî SSS)
+                    self.log('   satış yok: %s (QFC)' % loot)
+                    return fail('qfc_satis')
                 q = 1
             elif iid in ammo_ids:
                 loot = ammo_ids[iid]
@@ -1400,13 +1422,15 @@ class Magaza:
         return [legacy('0|ammobuy_fail_%s' % ('uri' if pr[0] == 'uridium' else 'cre'))]
 
     def auto_buy_ammo(self, f):
-        """HangarShipAutoBuyCpuAmmoRequest: otomatik alım CPU'sunun (ALB-X lazer, RB-X roket) alacağı cephane (profilde) ->
-        HangarShipAutoBuyCpuAmmoCommand (istemci envanterdeki eşyanın attachedAmmo'sunu günceller)."""
+        """HangarShipAutoBuyCpuAmmoRequest: otomatik alım CPU'sunun (ALB-X lazer, RB-X roket ve fırlatıcı roketi) alacağı cephane
+        (profilde) -> HangarShipAutoBuyCpuAmmoCommand (istemci envanterdeki eşyanın attachedAmmo'sunu günceller). RB-X'in listesinde
+        fırlatıcı roketleri de var; ECO-10 seçilince hata veriyordu (kullanıcı bildirimi 2026-10-25)."""
         iid, ammo = f.get('itemId'), f.get('ammoLootId') or ''
         loot = self.p.d['esyalar'].get(str(iid))
         cfg = EK.X.get(loot, {}).get('oto_alim')
         ok = bool(cfg) and cfg['tur'] in ('lazer', 'roket') and ammo.startswith(
-            'ammunition_laser_' if cfg['tur'] == 'lazer' else 'ammunition_rocket_') and bool(self.price(ammo))
+            ('ammunition_laser_',) if cfg['tur'] == 'lazer' else ('ammunition_rocket_', 'ammunition_rocketlauncher_')) \
+            and bool(self.price(ammo))
         if ok:
             with self.p.lock:
                 self.p.d.setdefault('oto_alim_cephane', {})[loot] = ammo
@@ -1840,7 +1864,9 @@ class Magaza:
                 extras = [self.p.d['esyalar'].get(str(i), '') for i in slots.get('extra', [])]     # kayıttaki Slot CPU'suyla
                 for s, ids in slots.items():
                     for i in ids:
-                        if len(cfg.get(s, [])) < self.capacity(s, sid, extras=extras) and free(i, c):
+                        if s == 'upgrades' and GM.type_taken(self.p, i, cfg.get(s, [])):
+                            missing += 1                    # her türden bir modül (kural öncesi kaydedilmiş config)
+                        elif len(cfg.get(s, [])) < self.capacity(s, sid, extras=extras) and free(i, c):
                             cfg.setdefault(s, []).append(i)
                         else:
                             missing += 1
@@ -2050,6 +2076,8 @@ class Magaza:
                         fail('%s başka gemide takılı' % loot, 'baska_gemi')
                     elif slot == 'upgrades' and not GM.equip_allowed(self.p, iid, ship['lootId']):
                         fail('%s bu gemiye takılmaz (%s)' % (loot, ship['lootId']))      # modülün gemileri
+                    elif slot == 'upgrades' and GM.type_taken(self.p, iid, lst):
+                        fail('%s: gemide %s türünden modül var' % (loot, GM.kind(loot)), 'ayni_modul')    # her türden bir modül
                     elif slot == 'QuantumFluidCore' and QF.equip_allowed(self.p, iid, ship['lootId'], lst):
                         fail('%s: %s' % (loot, QF.equip_allowed(self.p, iid, ship['lootId'], lst)),     # bağlı gemi, AX/DF birer
                              'qfc_gemi' if (QF.state(self.p, iid) or {}).get('gemi') != ship['lootId'] else 'ayni_qfc')

@@ -256,7 +256,7 @@ class StationBehavior(unittest.TestCase):
         self.assertTrue(self.w.beacon_msg(self.now)[1]['inStation'])
 
     def test_player_shooting_from_inside_cbs_can_be_attacked_back(self):
-        n = self.npc(self.x+550,self.y)
+        n = self.npc(self.x+400,self.y)       # inside npc_menzil (450)
         n.d['hasar'] = 100
         self.w.hit_npc(n.id,1,1)
         self.w.think(n,self.now+.01)
@@ -286,7 +286,7 @@ class StationBehavior(unittest.TestCase):
 
     def launcher_npc(self):
         # Actual configured Annihilator: native three-projectile launcher salvo.
-        n = dunya.NPC(91002,'114',self.x+500,self.y)
+        n = dunya.NPC(91002,'114',self.x+400,self.y)       # inside npc_menzil (450)
         self.w.npcs[n.id] = n
         return n
 

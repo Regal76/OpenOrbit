@@ -95,7 +95,7 @@ SCHEMA = [
     _c('npc_fark', 'Uzaylıların fark etme mesafesi', 'savas', 'Saldırgan uzaylıların seni fark edip kovalamaya başladığı uzaklık '
        '(oyunun değeri 1.000 birim).', lo=0.1, hi=3.0, sinir=20.0),
     _c('npc_menzil', 'Uzaylıların ateş menzili', 'savas', 'Uzaylıların sana lazer, roket ve bomba atabildiği uzaklık (oyunun '
-       'değeri çoğunda 600, hareketsizlerde 1.000 birim; dünya patronlarının saldırıları dahil).', lo=0.1, hi=3.0, sinir=20.0),
+       'değeri çoğunda 450, Kristallon türlerinde 550, hareketsizlerde 1.000 birim; dünya patronlarının saldırıları dahil).', lo=0.1, hi=3.0, sinir=20.0),
     _b('yavaslatan_atis', 'Yavaşlatan uzaylı atışları', 'savas', 'Barb, The Stinger, Saboteur ve Mindfire Behemoth gibi '
        'uzaylıların atışları gemini yavaşlatır. Kapatılırsa yalnız hasar verirler.', varsayilan=True),
     _c('radyasyon', 'Radyasyon hasarı', 'savas', 'Harita sınırının dışındaki radyasyonun gövdeye verdiği hasar. 0: radyasyon '

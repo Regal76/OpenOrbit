@@ -83,6 +83,13 @@ def mods(p, ship_loot, iids):
     return out
 
 
+def modifiers_str(p, iid):
+    """Hangar ipucunun nitelikleri (gemi_modul.modifiers_str biçimi "AD,yüzde;…"): ipucunda "Tür:" satırı boş, değerler yoktu
+    (kullanıcı bildirimi 2026-10-25: QFC-AX40'ta değer görünmüyor)."""
+    rec = state(p, iid) or {}
+    return ';'.join('%s,%s' % (a.upper(), format(v, '.2f').rstrip('0').rstrip('.')) for a, v in rec.get('nitelikler', []) if v > 0)
+
+
 def equip_allowed(p, iid, ship_loot, current):
     """-> hata metni ya da None: bağlı gemi, gemide aynı türden ikinci QFC."""
     loot = p.d['esyalar'].get(str(iid), '')
@@ -126,10 +133,20 @@ class Qfc:
         (lo, hi), _, _ = ranges(loot, not have)
         return [rng.choice(pool), round(rng.uniform(lo, hi), 2)]
 
+    def heal(self, rng=random):
+        """Kaydı olmayan QFC'lere kayıt (bağlı gemi, ilk nitelik): kayıtsız QFC takılamıyor, değeri yok, Hyperforge listesinde
+        görünmüyordu. Oturum her girişte çağırır -> kaydı yapılan itemId'ler."""
+        done = [int(i) for i, l in list(self.p.d['esyalar'].items()) if l in TYPES and not state(self.p, i)]
+        for iid in done:
+            self.record(self.p.d['esyalar'][str(iid)], iid, rng=rng)
+        return done
+
     def create(self, loot, ship=None, rng=random):
         """Yeni QFC: rastgele gemi (oyuncunun gemilerinden; uyarlama), ilk nitelik -> itemId."""
+        return self.record(loot, self.p.new_item(loot), ship, rng)
+
+    def record(self, loot, iid, ship=None, rng=random):
         ships = sorted({s['lootId'] for s in self.p.d['gemiler'].values()}) or [self.p.ship()['lootId']]
-        iid = self.p.new_item(loot)
         rec = {'gemi': ship or rng.choice(ships), 'seviye': 1, 'nitelikler': []}
         rec['nitelikler'].append(self.roll_attr(loot, [], rng))
         with self.p.lock:

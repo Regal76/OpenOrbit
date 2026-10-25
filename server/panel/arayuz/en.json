@@ -678,7 +678,7 @@
 "Uzaylıların hızı": "Alien speed",
 "Uzaylıların isabet şansı": "Alien hit chance",
 "Uzaylıların saldırganlığı": "Alien aggression",
-"Uzaylıların sana lazer, roket ve bomba atabildiği uzaklık (oyunun değeri çoğunda 600, hareketsizlerde 1.000 birim; dünya patronlarının saldırıları dahil).": "Distance from which aliens can fire lasers, rockets and bombs at you (game value 600 for most, 1,000 for stationary ones; world boss attacks included).",
+"Uzaylıların sana lazer, roket ve bomba atabildiği uzaklık (oyunun değeri çoğunda 450, Kristallon türlerinde 550, hareketsizlerde 1.000 birim; dünya patronlarının saldırıları dahil).": "Distance from which aliens can fire lasers, rockets and bombs at you (game value 450 for most, 550 for Kristallons, 1,000 for stationary ones; world boss attacks included).",
 "Uzaylıların seni kendiliğinden kovalayıp kovalamadığı (kapı ve mod dalgalarındakiler dahil).": "Whether aliens chase you on their own (including those in gate and mode waves).",
 "Uzaylıların uçuş hızı (hareketsiz olanlar kıpırdamaz).": "Flight speed of aliens (stationary ones stay put).",
 "Uzaylıların verdiği hasar": "Damage from aliens",

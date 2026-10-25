@@ -182,6 +182,7 @@ class NPC:
         self.hunt = False                   # dalga uzaylısı (kapılar, modlar): oyuncunun peşini bırakmaz, kaçıp dolaşmaya gitmez
         self.flee = False                   # oyuncu güvenli bölgeye kaçtı: uzaklaş
         self.invulnerable = None            # işlev: True dönerken hasar almaz (Zeta Devourer: diğer uzaylılar yaşarken; kapi.py)
+        self.vm = {}                        # süren görsel etkiler (VisualModifier -> alanlar): görüşe yeniden girince ShipCreateCommand'la
         self.next_think = time.time() + random.uniform(1, 6)
         self.next_shot = 0.0
         self.alive = True
@@ -303,6 +304,7 @@ class World:
         self.assets = []           # (kimlik, x, y, ipucu): istasyonun tıklanabilir nesneleri (HQ, hangar, rafineri)
         self.asset_types = {}      # nesne kimliği -> istemcinin AssetType'ı (görev koşulu VISIT_MAP_ASSET)
         self.near_assets = None    # yakındaki nesneler (None: bir sonraki adımda hepsinin durumu gönderilir)
+        self.foreign_assets = []   # başka firmanın üssünün nesneleri ve görev vericisi: tıklanamaz (check_assets)
         self.timers = []           # (zaman, işlev)
         self.notice = None         # ekranda gösterilmeyi bekleyen son öldürme ödülü satırları (kill_notice)
         self.notice_at = 0.0       # son ödül satırlarının ekrana gittiği an
@@ -462,6 +464,11 @@ class World:
         msgs = [m for m in msgs if self.item_filter(m)]
         if not msgs:
             return
+        if any(m[0] == 'AttributeShieldUpdateCommand' for m in msgs):
+            # resmî sunucu her kalkan güncellemesinin ardından kalkanın görünümünü de yineler (referans kaydı 2026-10-25:
+            # AttributeSkillShieldUpdateCommand hemen arkasından). Yalnız girişte gidince istemci Shield Engineering'in kalkanını
+            # gemiden kaymış, düz bir halka gibi çiziyordu (kullanıcı bildirimi 2026-10-25; canlıda yinelenince gemiyi sardı)
+            msgs = [x for m in msgs for x in ([m, YT.shield_cmd(self.p)] if m[0] == 'AttributeShieldUpdateCommand' else [m])]
         if self._batch is not None:         # döngü adımında: adım sonunda hepsi birden (gönderim toplama)
             self._batch.extend(msgs)
             return
@@ -659,8 +666,19 @@ class World:
         return ('ShipCreateCommand', dict(
             userId=n.id, typeId=n.model, expansionStage=1, clanTag='', userName=n.d['ad'], x=int(x), y=int(y), factionId=0, clanId=0,
             dailyRank=0, warnBox=False, clanDiplomacy=mod('ClanRelationModule', type=0), galaxyGatesDone=0, useSystemFont=False, npc=True,
-            cloaked=bool(getattr(n, 'gizli', False)), motherShipId=0, positionIndex=0, designSet='', modifier=[],      # Infiltration
+            cloaked=bool(getattr(n, 'gizli', False)), motherShipId=0, positionIndex=0, designSet='',      # Infiltration
+            modifier=[mod('VisualModifierCommand', **v) for v in n.vm.values()],
             minimapStrategyModule=mod('MinimapStrategyModule', minimapStrategy=0), specialNpcType=''))
+
+    def npc_visual(self, n, modifier, on):
+        """Uzaylının süren görsel etkisi (VisualModifierCommand; Zeta Devourer'ın koruma kalkanı): açıkken n.vm'de kalır, uzaylı görüşe
+        yeniden girince ShipCreateCommand'la gelir."""
+        v = dict(userId=n.id, modifier=modifier, attribute=0, additionalAttribute='', count=1 if on else 0, activated=on)
+        if on:
+            n.vm[modifier] = v
+        else:
+            n.vm.pop(modifier, None)
+        return ('VisualModifierCommand', v)
 
     def item_pos(self, h):
         it = self.boxes.get(h) or self.ores.get(h)
@@ -958,13 +976,23 @@ class World:
             self.start_rules()
             if joined:                    # harita etkinliğinin göstergesi (lider haritaya girdiğinde yalnız ona gitmişti)
                 self.send(self.etkinlik.info_msgs())
+            own = self.p.d['pilot'].get('factionId')
             for name, a in (self.map_msgs() if self.map_msgs else []):
-                if name == 'AssetCreateCommand' and a['type']['typeValue'] in H.STATION_ASSETS \
-                        and a.get('factionId') in (0, None, self.p.d['pilot'].get('factionId')):   # düşman üssününkiler kullanılmaz
-                    self.assets.append((a['assetId'], a['posX'], a['posY'], H.STATION_ASSETS[a['type']['typeValue']]))
-                    self.asset_types[a['assetId']] = a['type']['typeValue']
-                if name == 'AssetCreateCommand' and a['type']['typeValue'] == H.QUEST_GIVER:
-                    self.givers.append((a['assetId'], a['posX'], a['posY']))
+                if name != 'AssetCreateCommand':
+                    continue
+                if a['type']['typeValue'] in H.STATION_ASSETS:
+                    if a.get('factionId') in (0, None, own):
+                        self.assets.append((a['assetId'], a['posX'], a['posY'], H.STATION_ASSETS[a['type']['typeValue']]))
+                        self.asset_types[a['assetId']] = a['type']['typeValue']
+                    else:
+                        self.foreign_assets.append(a['assetId'])        # düşman üssününkiler kullanılmaz
+                if a['type']['typeValue'] == H.QUEST_GIVER:
+                    # görev verici yalnız kendi firmasınınki ("Browse your company's missions"; kullanıcı bildirimi 2026-10-25: EIC
+                    # pilotu VRU/MMO üssünün ve X-5'lerinin Mission Control'ünü kullanabiliyordu)
+                    if H.company(self.map_id) in (None, own):
+                        self.givers.append((a['assetId'], a['posX'], a['posY']))
+                    else:
+                        self.foreign_assets.append(a['assetId'])
         self.running = True
         with self.lock:
             if self.ortak:
@@ -1258,7 +1286,11 @@ class World:
             if gid and self.quest_list:
                 msgs.append(self.quest_list())
             self.send(msgs)
+        if self.near_assets is None and self.foreign_assets:
+            # başka firmanın üssü: girişteki şablonun HQ'su tıklanabilir geliyordu (kayıttaki 2-1 HQ'sunun durumu)
+            self.send([H.asset_available(a, '', False) for a in self.foreign_assets])
         if not self.assets:
+            self.near_assets = set()
             return
         near = {a for a, x, y, tip in self.assets if math.hypot(x - hx, y - hy) <= H.ASSET_RANGE}
         arrived = near - (self.near_assets or set())
@@ -2382,10 +2414,12 @@ class World:
         """Roketin görünümü -> (iz, güdüm): eski metnin 0|v|…|iz|güdüm alanları (istemci NetConnectionHelper.OnData 'v': 7. alan
         rocketSmoke kimliği, 8. alan 1 ise AttackRocketRun/BezierRocketEffect isHeatSeeking: kavisli uçuş ve kırmızı parıltı). İz
         (canlıda görüldü): 0 turuncu-kırmızı alev (resmî sunucu kaydında yeteneksiz hesabın izi), 1 mor-mavi: Rocket Fusion (6) son
-        seviyesinde (resmî SSS: "purple trail"), 2 ince gri: Precision Targeter açıkken; güdüm: saved, Heat-Seeking Missiles (20)
-        olmasa ıskalayacak roket (resmî SSS: "red glow on missiles that would have missed")."""
+        seviyesinde (resmî SSS: "purple trail"), 2 ince gri: Precision Targeter açıkken; güdüm: Heat-Seeking Missiles (20) son
+        seviyesindeyken her roket (darkorbitwiki pilot-skills: görsel yalnız 5/5'te; özel sunucu Ow AttackManager heatseekingMissiles
+        == 5), değilse yalnız yeteneksiz ıskalayacak (saved) roket. Önceden yalnız saved'de: görsel hemen hiç görünmüyordu (kullanıcı
+        bildirimi 2026-10-25)."""
         smoke = 2 if self.tech.full_rocket_hit() else 1 if YT.maxed(self.p, '6') else 0
-        return smoke, int(saved)
+        return smoke, int(saved or YT.maxed(self.p, '20'))
 
     def rocket_msg(self, target, hit, kind, saved=False):
         """Oyuncunun roket görseli (eski metin 0|v|saldıran|hedef|H/M|tür|iz|güdüm)."""
@@ -2788,20 +2822,36 @@ class World:
         if now < n.next_summon:
             return
         n.children = {c for c in n.children if c in self.npcs and self.npcs[c].alive}
-        room = v.get('en_cok', v.get('adet', 1)) + (self.alien.extra_summons(n, now) if 'ofke' in n.davranis else 0) - len(n.children)
+        room = (v.get('en_cok', v.get('adet', 1)) + (self.alien.extra_summons(n, now) if 'ofke' in n.davranis else 0) - len(n.children)
+                - n.ab.get('cagri_sirada', 0))
         if room <= 0:
             return
-        n.next_summon = now + v.get('bekleme_sn', 10)
+        count, gap = min(room, v.get('adet', 1)), v.get('aralik_sn', 0)
+        # aralik_sn: sürü art arda çıkar (Cubikon'un 25 Protegit'i aynı anda çıkınca istemci anlık takılıyordu; kullanıcı bildirimi
+        # 2026-10-25); sırada bekleyenler en_cok'a sayılır. Sonraki çağrı sürünün hepsi çıktıktan sonra
+        n.next_summon = now + max(v.get('bekleme_sn', 10), count * gap)
+
+        def queued():
+            n.ab['cagri_sirada'] -= 1
+            if n.alive and n.id in self.npcs:
+                self.summon_one(n, v, time.time())
+        for k in range(count):
+            if k and gap:
+                n.ab['cagri_sirada'] = n.ab.get('cagri_sirada', 0) + 1
+                self.later(k * gap, queued)
+            else:
+                self.summon_one(n, v, now)
+        self.log('   %s yardım çağırdı: %d %s' % (n.d['ad'], count, CFG['tipler'][v['tur']]['ad']))
+
+    def summon_one(self, n, v, now):
         x, y = n.mover.pos(now)
-        for k in range(min(room, v.get('adet', 1))):
-            a = random.uniform(0, 2 * math.pi)
-            c = self.spawn_npc_at(v['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200)
-            self.alien.adopt(n, c)
-            c.engaged, c.next_think = True, now      # sürü hemen saldırır (fandom: Protegit'ler bir anda üstüne gelir)
-            if v.get('koru'):
-                c.guard = (n.id, v['koru'])
-            n.children.add(c.id)
-        self.log('   %s yardım çağırdı: %d %s' % (n.d['ad'], min(room, v.get('adet', 1)), CFG['tipler'][v['tur']]['ad']))
+        a = random.uniform(0, 2 * math.pi)
+        c = self.spawn_npc_at(v['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200)
+        self.alien.adopt(n, c)
+        c.engaged, c.next_think = True, now      # sürü hemen saldırır (fandom: Protegit'ler bir anda üstüne gelir)
+        if v.get('koru'):
+            c.guard = (n.id, v['koru'])
+        n.children.add(c.id)
 
     def npc_regen(self, n, now):
         """yenilenme {can_sn, kalkan_sn, bekleme_sn}: bekleme_sn boyunca vurulmazsa saniyede can/kalkan dolar (Cubikon …)."""

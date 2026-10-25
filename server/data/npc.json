@@ -496,6 +496,7 @@
    "hasar": 4450,
    "hiz": 200,
    "saldirgan": false,
+   "menzil": 550,
    "odul": {
     "ep": 51200,
     "onur": 256,
@@ -581,6 +582,7 @@
    "hasar": 20000,
    "hiz": 180,
    "saldirgan": false,
+   "menzil": 550,
    "odul": {
     "ep": 204800,
     "onur": 1024,
@@ -954,6 +956,7 @@
    "hasar": 40000,
    "hiz": 180,
    "saldirgan": false,
+   "menzil": 550,
    "odul": {
     "ep": 490000,
     "onur": 2048,
@@ -7727,7 +7730,8 @@
   "npc_kalkan_emme": 0.7,
   "_npc_kalkan_emme": "Varsayılan kalkan emme oranı; türün kalkan_emme değeri varsa o (fandom: Aider Streuner, Kristallon, Uber Kristallon %90, Cubikon %80, Uber Annihilator %85, Uber Interceptor %60)",
   "npc_isabet": 0.6,
-  "npc_menzil": 600,
+  "npc_menzil": 450,
+  "_npc_menzil": "Uzaylıların ateş menzili (türün menzil alanı yoksa): özel sunucu kodu (Ow, Attackable.AttackRange: uzaylı 450, oyuncu lazeri 700); DarkBot uzaylıları 550-610 birimden döner (çevirme). Önceden 600: dönerken çok uzaktan vuruluyordu (kullanıcı bildirimi 2026-10-25, Boss Sibelon). Kristallon ailesi 550 (fandom: \"en uzun menzil\")",
   "npc_saldiri_aralik_sn": 1.1,
   "yeniden_dogma_sn": [
    12,

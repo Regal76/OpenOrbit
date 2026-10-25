@@ -384,6 +384,10 @@ def money(p, cur, amount, description, internal='', qty=0, t=None):
                            amount=abs(amount), infoText=int(qty), description=description, userId=p.d['pilot'].get('userId', 0)))
         del lst[KAYIT_SINIRI:]
         p.dirty = True
+    if amount < 0 and CUR[cur] == 'PEARL':
+        # tek oyunculu: uridyum harcamak Pass'lerin "Make a payment" görevini (RECHARGE_AMOUNT) ilerletir; gerçek oyunda ödeme
+        # (kullanıcı bildirimi 2026-10-25: Galaxy Trade 0/1 kalıyordu). Uridium Bank'tan alım da sayılır (game.py)
+        p.ach('recharge')
 
 
 # Eski kayıtların açıklamaları -> istemcinin doğru gösterdiği anahtar (canlı test H27; kontrol kanalıyla tek tek denendi):

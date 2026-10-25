@@ -133,14 +133,27 @@ def list_cmd(p, reset=False):
 
 
 # ------------------------------------------------------------ etkiler
+def kind(loot):
+    """Modülün türü (DAMAGE, HP, SHIELD, SPECIAL) ya da None."""
+    return M.get(loot or '', {}).get('tur')
+
+
+def type_taken(p, iid, current):
+    """Gemide bu modülün türünden başka bir modül takılı mı: resmî SSS ("New Ship Upgrade Modules FAQ"): bir modül gemide bir kez,
+    her türden (HP, Damage, Shield, Special) bir modül (kullanıcı bildirimi 2026-10-25: aynı türden birden çok takılabiliyordu)."""
+    k = kind(p.d['esyalar'].get(str(iid)))
+    return bool(k) and any(i != iid and kind(p.d['esyalar'].get(str(i))) == k for i in current)
+
+
 def mods(p, ship_loot, iids, level=None):
-    """Takılı modüllerin bonusları (yalnız geçerli gemide)."""
-    out = {}
+    """Takılı modüllerin bonusları (yalnız geçerli gemide; her türden ilki: kural öncesi takılmış ikinciler sayılmaz)."""
+    out, seen = {}, set()
     for iid in iids:
         loot = p.d['esyalar'].get(str(iid))
         info = M.get(loot or '')
-        if not info:
+        if not info or info['tur'] in seen:
             continue
+        seen.add(info['tur'])
         if 'kararsiz' in info:
             rec = state(p, iid)
             if ship_loot not in rec['gemiler']:

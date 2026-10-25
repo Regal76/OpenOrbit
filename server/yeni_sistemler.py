@@ -34,6 +34,9 @@ class YeniSistemler:
         moved = PC.migrate(profil)                                  # depodaki top, kırıcı, sürücü, mercek -> envanter (Aşama 9b)
         if moved:
             log('   parçacık eşyaları depodan envantere: %d' % moved)
+        healed = self.qfc.heal()                                    # kaydı olmayan QFC'ler (bağlı gemi, nitelik)
+        if healed:
+            log('   kaydı olmayan QFC: %d' % len(healed))
 
     def attach(self, world):
         self.world = world

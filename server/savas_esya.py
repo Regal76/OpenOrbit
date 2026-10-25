@@ -336,11 +336,13 @@ def menu_status(p, menu_id, st):
         ammo, n = loaded(p)
         cap = capacity(p)
         sel = p.d.get('secili', {}).get('fircatici')
-        if n:
-            _tips(st, [_line('ttip_rocketlauncher', [('%TYPE%', lns[0], 1)]),
-                       _line('ttip_rocketlauncher_loadcount', [('%COUNT%', n, 0), ('%TYPE%', ammo, 1)])])
-        else:
-            _tips(st, [_line('ttip_rocketlauncher', [('%TYPE%', lns[0], 1)]), _line('ttip_rocketlauncher_unloaded')])
+        # boş fırlatıcıda da yüklü roket sayısı (0): ttip_rocketlauncher_unloaded "Attention: No launcher installed" fırlatıcısız
+        # hesabın metni (kayıt); takılı ama boş fırlatıcıda da gidiyordu (kullanıcı bildirimi 2026-10-25: "Hellstorm takılı ama
+        # kurulmamış diyor")
+        lines = [_line('ttip_rocketlauncher', [('%TYPE%', lns[0], 1)])]
+        if n or sel:
+            lines.append(_line('ttip_rocketlauncher_loadcount', [('%COUNT%', n, 0), ('%TYPE%', ammo if n else sel, 1)]))
+        _tips(st, lines)
         st.update(visible=True, available=n > 0, activatable=n > 0, counterValue=n, maxCounterValue=cap, iconLootId=lns[0],
                   selected=False)
         if sel is None:
