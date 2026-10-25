@@ -4,7 +4,7 @@ porting.passevent.PassEventCommand'ı: VoyagersPassCommand, TrinityTrialsPassCom
 Bir geçiş: seviyeler (her seviyenin puan eşiği), ücretsiz ve VIP sıranın ödülleri (seviye başına bir eşya). Puan modun
 bitişlerinden gelir; seviyeye ulaşılınca ödül alınabilir (PassItemModule.statusType: 0 LOCK, 1 CLAIMED, 2 CLAIMABLE,
 3 BELOW_LEVEL; istemcinin PassItemStatusType'ı). VIP geçiş mağazadan uridyumla (tek oyunculu kural); VIP sırası açılır, puanlar
-'vip_puan' oranında artar. Dönem takvim ayı: ay değişince puan, seviye ve alınanlar sıfırlanır (VIP de).
+'vip_puan' oranında artar. The mode's VIP badge (Trinity / Voyagers VIP Badge) in the inventory also opens the VIP track. Dönem takvim ayı: ay değişince puan, seviye ve alınanlar sıfırlanır (VIP de).
 Profilde: gecisler {ad: {donem, puan, vip, alinan: {"n": [seviye], "v": [seviye]}}}.
 """
 import datetime, time
@@ -27,8 +27,13 @@ class Gecis:
     """data: {seviyeler: [eşik puan …] (seviye i+1 için toplam puan), ucretsiz: [[seviye, lootId, adet]], vip: [[…]],
     vip_puan: oran, vip_parametreler: [...]}."""
 
-    def __init__(self, profil, name, data):
+    def __init__(self, profil, name, data, badge=None):
         self.p, self.name, self.D = profil, name, data
+        self.badge = badge               # VIP badge lootId (e.g. resource_trinity-vip-badge): owning it unlocks the VIP track
+
+    def is_vip(self):
+        """VIP track open: bought (st['vip']) or the mode's VIP badge is in the inventory (kept, not consumed)."""
+        return bool(self.st['vip']) or bool(self.badge and self.p.resource(self.badge) > 0)
 
     @property
     def st(self):
@@ -46,7 +51,7 @@ class Gecis:
     def add(self, points):
         """Puan ekler (VIP oranıyla) -> eklenen."""
         s = self.st
-        n = int(points * (1 + (self.D.get('vip_puan', 0) if s['vip'] else 0)))
+        n = int(points * (1 + (self.D.get('vip_puan', 0) if self.is_vip() else 0)))
         with self.p.lock:
             s['puan'] += n
             self.p.dirty = True
@@ -58,7 +63,7 @@ class Gecis:
             return CLAIMED
         if lvl > cur:
             return BELOW_LEVEL
-        if vip and not s['vip']:
+        if vip and not self.is_vip():
             return LOCK
         return CLAIMABLE
 
@@ -69,7 +74,7 @@ class Gecis:
         nxt = th[cur] - prev if cur < len(th) else 0
         items = lambda rows, vip: [dict(_='PassItemModule', level=l, lootId=loot, amount=n, statusType=self.status(l, vip))
                                    for l, loot, n in rows]
-        return (name, dict(isVip=s['vip'], normalItemList=items(self.D['ucretsiz'], False), vipItemList=items(self.D['vip'], True),
+        return (name, dict(isVip=self.is_vip(), normalItemList=items(self.D['ucretsiz'], False), vipItemList=items(self.D['vip'], True),
                            currentLevel=cur, vipParams=list(self.D.get('vip_parametreler', [])), remainSeconds=seconds_left(now),
                            nextLevelExp=nxt, currentExp=s['puan'] - prev))
 
