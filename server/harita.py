@@ -68,6 +68,8 @@ def _load():
         g = dict(gateId=GATE_ID_BASE + key, key=key, x=int(_snap_x(int(pos.group(1))) * sf), y=int(_snap_y(int(pos.group(2))) * sf),
                  hedef=int(to.group(1)))
         fac, own = re.search(r'<faction>(\w+)</faction>', body), re.search(r'<visibleOwnFaction>(\w+)</visibleOwnFaction>', body)
+        if fac:
+            g['firma'] = FACTIONS.get(fac.group(1))
         if fac and own and own.group(1) == 'true':
             g['yalniz_firma'] = FACTIONS.get(fac.group(1))       # 5-X'te her firmanın kendi portalı (yalnız o firmaya görünür)
         gates.setdefault(ref, []).append(g)
@@ -89,9 +91,13 @@ SPECIAL = {42, 200}              # Cubikon Mezarlığı, LoW: atlama CPU'su list
 # yok, atlama "Jump not possible" diyordu. 10. seviyeden sonra gönderilmez (kullanıcı bildirimi 2026-10-24)
 TUTORIAL_GATE, TUTORIAL_MAX_LEVEL = 150000774, 10
 # sunucunun eklediği portallar (wiki): 5-4'ün portalı 5-2'de (giriş bir Gümüş Booty Key; istemcinin metni
-# msg_hidden_pirate_map_no_silverkey), 5-4'ten 5-2'ye dönüş; LoW'un portalı X-3'te (low.py).
+# msg_hidden_pirate_map_no_silverkey; resmî sunucu kaydı: 5-X'teki gibi her firmanın bir portalı), 5-4'ten 5-2'ye dönüş; LoW'un
+# portalı X-3'te (low.py).
 # (harita, anahtar, x, y, hedef, ek alanlar); portal kimliği GATE_ID_BASE + anahtar (istemcinin anahtarları 920042'ye kadar)
-EXTRA_GATES = [(92, 990001, 18500, 11500, 94, {'ucret': 'gumus_anahtar', 'ipucu': 'ttip_jumpgate_hiddenPirateMap'}),
+_SILVER = {'ucret': 'gumus_anahtar', 'ipucu': 'ttip_jumpgate_hiddenPirateMap'}
+EXTRA_GATES = [(92, 990006, 18500, 11500, 94, dict(_SILVER, firma=1, yalniz_firma=1)),
+               (92, 990001, 18500, 11500, 94, dict(_SILVER, firma=2, yalniz_firma=2)),
+               (92, 990007, 18500, 11500, 94, dict(_SILVER, firma=3, yalniz_firma=3)),
                (94, 990002, 4000, 13000, 92, {}),
                (3, 990003, 10500, 2000, 200, {'low': True}), (7, 990004, 10500, 2000, 200, {'low': True}),
                (11, 990005, 10500, 2000, 200, {'low': True})]
@@ -106,6 +112,17 @@ for _m, _gs in GATES.items():
             _g['x'], _g['y'] = _p
         if _v:
             _g['varis'] = _v
+# korsan haritalarının portalları (resmî sunucu kaydı 2026-10-25): 4-5'ten 5-1'e ve 5-X'te her firmanın portalı tasarım 51, firması süs
+# (decoratorAssetTypes); 5-X'te başka firmanınki mini haritada ve balonsuz görünmez, atlanamaz (gates). Varış hedefte aynı firmanın tek
+# yönlü portalı (tasarım 52, hep görünmez; harita_duzeni.json varis_portallari). 'tasarim': 'designId' yalnız sonradan eklenenlerde
+# (dunya.resend onları yeniden bildirir)
+PIRATE_MAPS = {91, 92, 93}
+ENTRY_DESIGN, ONE_WAY_DESIGN = 51, 52
+ONE_WAY_GATE_BASE = GATE_ID_BASE + 991000        # tek yönlü portalların kimliği: + harita x 10 + firma
+for _m, _gs in GATES.items():
+    for _g in _gs:
+        if _g.get('firma') and (_m in PIRATE_MAPS or _g['hedef'] in PIRATE_MAPS):
+            _g.update(tasarim=ENTRY_DESIGN, susler=[_g['firma']])
 # maps-config 5-X için 1 yazıyor; wiki seviye 12 (belgeler/wiki/maps.md)
 for _m, _n in NAMES.items():
     if _n.startswith('5-'):
@@ -121,20 +138,26 @@ OUTPOST = {46: 47, 48: 49, 50: 51, 53: 54, 55: 56, 57: 58}
 OUTPOST_MAPS = {20, 24, 28}
 TPL_CENTER = (19000, 2000)          # kayıttaki 2-1 istasyonunun merkezi (SpaceStationCommand)
 CORNERS = [(19000, 2000), (2000, 2000), (19000, 11100), (2000, 11100)]
-# istasyonun ve yapının oyundaki yeri (merkez); yazılmayan haritada portallardan en uzak köşe. 2-8: üst orta (oyuncuların
-# bildirdiği resmî sunucu mini haritası: üs simgesi 2-8 104/19, oyuncu 108/32'de üssün hangar bölgesinde: x 10.590-11.010);
-# 1-8 sol, 3-8 sağ kenarın ortası (fandom 1-8/3-8; Kalaazu ve 2009 emülatörü y 6000); 5-2 pazarı ortada (fandom 5-2, darkorbitwiki
-# harita görseli). 5-2'nin korsan istasyonu ve X-BL'nin görev vericisi harita_duzeni.json'da (yapi)
-STATION_POS = {24: (10650, 2000), 20: (2000, 6550), 28: (19000, 6550)}
+# istasyonun ve yapının oyundaki yeri (merkez); yazılmayan haritada portallardan en uzak köşe. 2-8: üst orta (resmî sunucu kaydı
+# 2026-10-25); 1-8 sol, 3-8 sağ kenarın ortası (fandom 1-8/3-8; Kalaazu ve 2009 emülatörü y 6000); 5-2 pazarı ortada (fandom 5-2,
+# darkorbitwiki harita görseli). 5-2'nin korsan istasyonu ve X-BL'nin görev vericisi harita_duzeni.json'da (yapi)
+STATION_POS = {24: (10500, 2000), 20: (2000, 6550), 28: (19000, 6550)}
+# ön karakolun düzeni ana üssünkinin -45 derece dönmüşü (resmî sunucu kaydı: 2-8'in binaları merkezden 763 birim çaprazda, 16 küçük
+# taret 1.800 birimlik çemberde (1800, 0)'dan başlayarak; 2-1'de binalar 1.080 birim dikte). 1-8 ve 3-8 ölçülmedi: aynı
+OUTPOST_TURN = -math.pi / 4
 
 
 def map_world(map_id, tpl):
     """Kayıtta olmayan haritanın dünya mesajları {'giris', 'hazir'} ('_m' anahtarlı): portallar istemcinin spacemap-config.xml'inden.
     İstasyonlu haritalarda kayıttaki 2-1 istasyonu (tpl) oyundaki yerine (STATION_POS), yoksa portallardan en uzak köşeye
-    taşınır; firma, nesne kimlikleri ve bölge adları haritaya göre değişir. Görev verici de taşınır (tasarımı ve adı haritanın
-    firmasına göre: quest_giver)."""
+    taşınır (X-8'in ön karakolu dönerek: OUTPOST_TURN); firma, nesne kimlikleri ve bölge adları haritaya göre değişir. Görev verici de
+    taşınır (tasarımı ve adı haritanın firmasına göre: quest_giver; firması kayıttaki gibi 0). 5-X'te bütün firmaların portalları gider
+    (başkasınınki görünmez) ve tek yönlü varış portalları."""
     gs = gates(map_id)
-    gate_msgs = [dict(jumpgate_create(g)[1], _m='JumpgateCreateCommand') for g in gs]
+    gate_msgs = [dict(jumpgate_create(g, PLAYER_FACTION)[1], _m='JumpgateCreateCommand') for g in GATES.get(int(map_id), [])] + \
+                [dict(jumpgate_create(dict(gateId=ONE_WAY_GATE_BASE + int(map_id) * 10 + f, x=x, y=y, designId=ONE_WAY_DESIGN,
+                                           susler=[f], gorunmez=True))[1], _m='JumpgateCreateCommand')
+                 for x, y, f in HD.one_way_gates(map_id)]
     fac = STATION_MAPS.get(int(map_id))
     if not fac or not tpl:
         giris, hazir = structure(map_id, tpl, gs) if tpl else ([], [])
@@ -145,13 +168,21 @@ def map_world(map_id, tpl):
         return {'giris': giris, 'hazir': hazir + gate_msgs + HD.poi_msgs(map_id)}
     cx, cy = STATION_POS.get(int(map_id)) or max(CORNERS, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
                                                                             default=0))
-    dx, dy = cx - TPL_CENTER[0], cy - TPL_CENTER[1]
+    turn = OUTPOST_TURN if int(map_id) in OUTPOST_MAPS else 0
+    cos, sin = math.cos(turn), math.sin(turn)
+
+    def place(x, y):
+        ox, oy = x - TPL_CENTER[0], y - TPL_CENTER[1]
+        return int(round(cx + ox * cos - oy * sin)), int(round(cy + ox * sin + oy * cos))
+
     base = 151000000 + int(map_id) * 100
     ids, giris, hazir = {}, [], []
     for m in tpl.get('giris', []):
         if m['_m'] == 'AssetCreateCommand':                    # görev verici (34) dahil: görevlere dönüş her ana istasyonda
             ids[m['assetId']] = base + len(ids)
-            a = quest_giver(dict(m, posX=m['posX'] + dx, posY=m['posY'] + dy, factionId=fac, assetId=ids[m['assetId']]), map_id)
+            x, y = place(m['posX'], m['posY'])
+            a = quest_giver(dict(m, posX=x, posY=y, factionId=m['factionId'] if m['type']['typeValue'] == QUEST_GIVER else fac,
+                                 assetId=ids[m['assetId']]), map_id)
             if int(map_id) in OUTPOST_MAPS and a['type']['typeValue'] in OUTPOST:
                 a['type'] = dict(a['type'], typeValue=OUTPOST[a['type']['typeValue']])
             giris.append(a)
@@ -163,17 +194,15 @@ def map_world(map_id, tpl):
             hazir.append(dict(m, posX=cx, posY=cy, type=fac))
         elif m['_m'] == 'MapAddPOICommand':
             pid = m['poiId']
-            if pid.startswith('questGiver_'):
-                continue
-            if pid.startswith('mapAssetRangeZone-'):
-                old = int(pid.split('-')[-1])
+            if pid.startswith(('mapAssetRangeZone-', 'questGiver_')):       # nesnenin yaklaşma bölgesi
+                old = int(re.split('[-_]', pid)[-1])
                 if old not in ids:
                     continue
-                pid = 'mapAssetRangeZone-%d' % ids[old]
+                pid = pid[:-len(str(old))] + str(ids[old])
             else:
                 pid = pid.replace('EIC', FACTION_NAME[fac])
             sc = list(m['shapeCoordinates'])
-            sc[0], sc[1] = sc[0] + dx, sc[1] + dy
+            sc[0], sc[1] = place(sc[0], sc[1])
             hazir.append(dict(m, poiId=pid, shapeCoordinates=sc))
     return {'giris': giris, 'hazir': hazir + gate_msgs}
 
@@ -183,7 +212,7 @@ def map_world(map_id, tpl):
 STRUCTURES = {17: 34, 21: 34, 25: 34, 306: 34, 307: 34, 308: 34, 92: 50}
 # yapının görünümü: rafineri (50) istemcide "refinery_home_<firma>" modeliyle çizilir, firmasız (5-2) hiç görünmüyordu (canlı deneme
 # 2026-10-17). 5-2'nin Trader'ı istemcinin "station_6" korsan istasyonu (lib_assets: "big sausage pirate station", mini haritada
-# minimap_piratestation): SpaceStationCommand type 6, güvenli bölgesi yok; ticaret noktası ORE_TRADE_INVISIBLE (52,
+# minimap_piratestation): SpaceStationCommand type 6 (güvenli bölgesi harita_duzeni.json'da); ticaret noktası ORE_TRADE_INVISIBLE (52,
 # "refinery_invisible_0": modeli yok, tıklama simgesi ve mini harita simgesi var). Süs istasyonu: tamir/doğma yeri değil
 # (game.Sablonlar.station bunu atlar).
 STRUCTURE_STATION = {92: 6}
@@ -204,7 +233,9 @@ def structure(map_id, tpl, gs):
     cx, cy = HD.structure_pos(map_id) or STATION_POS.get(int(map_id)) or max(spots, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
                                                                           default=0))
     aid = 151000000 + int(map_id) * 100 + 90
-    giris = [quest_giver(dict(src, assetId=aid, posX=cx, posY=cy, factionId=src['factionId'] if kind == QUEST_GIVER else company(map_id) or 0),
+    pos, radius = HD.structure_asset(map_id)      # 5-2: ticaret noktası istasyonun yanında
+    ax, ay = pos or (cx, cy)
+    giris = [quest_giver(dict(src, assetId=aid, posX=ax, posY=ay, factionId=src['factionId'] if kind == QUEST_GIVER else company(map_id) or 0),
                          map_id)]
     if int(map_id) in STRUCTURE_ASSET_TYPE:
         giris[0]['type'] = dict(src['type'], typeValue=STRUCTURE_ASSET_TYPE[int(map_id)])
@@ -213,11 +244,11 @@ def structure(map_id, tpl, gs):
         peace = next((r for x, y, r in HD.safe_zones(map_id) if (x, y) == (cx, cy)), 0)
         hazir.append({'_m': 'SpaceStationCommand', 'posX': cx, 'posY': cy, 'peaceRadius': peace, 'id': 0,
                       'type': STRUCTURE_STATION[int(map_id)]})
-    for m in tpl.get('hazir', []):
-        if m['_m'] == 'MapAddPOICommand' and m['poiId'] == 'mapAssetRangeZone-%d' % src['assetId']:
+    for m in tpl.get('hazir', []):                # yaklaşma bölgesi (görev vericininki questGiver_<kimlik>)
+        if m['_m'] == 'MapAddPOICommand' and m['poiId'] in ('mapAssetRangeZone-%d' % src['assetId'], 'questGiver_%d' % src['assetId']):
             sc = list(m['shapeCoordinates'])
-            sc[0], sc[1] = cx, cy
-            hazir.append(dict(m, poiId='mapAssetRangeZone-%d' % aid, shapeCoordinates=sc))
+            sc[0], sc[1], sc[2] = ax, ay, radius or sc[2]
+            hazir.append(dict(m, poiId=m['poiId'].replace(str(src['assetId']), str(aid)), shapeCoordinates=sc))
     return giris, hazir
 
 
@@ -311,10 +342,12 @@ def asset_available(asset_id, tip, near, wild=()):
                                                    additionalInformation={'_': 'AssetInformationModule'}))
 
 
-def jumpgate_create(g):
-    return ('JumpgateCreateCommand', dict(gateId=g['gateId'], factionId=0, designId=g.get('designId', 1), x=g['x'], y=g['y'],
-                                          isVisibleOnMinimap=not g.get('gizli'),         # 4-5'teki gizli solucan deliği
-                                          showBubble=True, decoratorAssetTypes=[]))
+def jumpgate_create(g, faction=None):
+    """faction: oyuncunun firması; 5-X'te başka firmanın portalı görünmez gider (resmî sunucu kaydı: mini haritada yok, balonsuz)."""
+    hidden = g.get('gorunmez') or (g.get('yalniz_firma') and faction not in (None, g['yalniz_firma']))
+    return ('JumpgateCreateCommand', dict(gateId=g['gateId'], factionId=0, designId=g.get('designId', g.get('tasarim', 1)), x=g['x'],
+                                          y=g['y'], isVisibleOnMinimap=not (hidden or g.get('gizli')),   # 4-5'teki gizli solucan deliği
+                                          showBubble=not hidden, decoratorAssetTypes=g.get('susler', [])))
 
 
 # Kapı ipuçları (istemcinin flashres anahtarları). Hedefi 0 olan (pencere açan) kapılarda "%MAP%" boş kalıyordu, labirent

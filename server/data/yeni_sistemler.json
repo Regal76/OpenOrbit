@@ -505,57 +505,57 @@
      false
     ],
     [
-     "equipment_generator_speed_g3n-7900",
-     1,
+     "resource_collectable_axion-beam-regulator",
+     5,
      "sign_normal",
      2,
      false
     ],
     [
-     "equipment_weapon_laser_lf-4-hp",
-     1,
+     "resource_collectable_isochronate",
+     5,
      "sign_normal",
      2,
      false
     ],
     [
-     "equipment_weapon_laser_lf-4-pd",
+     "ammunition_rocket_plt-2021",
+     5,
+     "sign_normal",
+     3,
+     false
+    ],
+    [
+     "ammunition_rocket_plt-3030",
+     5,
+     "sign_normal",
+     3,
+     false
+    ],
+    [
+     "ammunition_rocketlauncher_ubr-100",
+     5,
+     "sign_normal",
+     3,
+     false
+    ],
+    [
+     "ammunition_slug_els-c02",
      1,
      "sign_normal",
      3,
      false
     ],
     [
-     "equipment_weapon_laser_lf-4-unstable",
+     "ammunition_slug_ths-c02",
      1,
      "sign_normal",
      3,
      false
     ],
     [
-     "equipment_weapon_laser_lf-4-md",
+     "ammunition_slug_cos-c02",
      1,
-     "sign_normal",
-     3,
-     false
-    ],
-    [
-     "ammunition_slug_els-d01",
-     500,
-     "sign_normal",
-     3,
-     false
-    ],
-    [
-     "ammunition_slug_ths-d01",
-     500,
-     "sign_normal",
-     3,
-     false
-    ],
-    [
-     "ammunition_slug_cos-d01",
-     500,
      "sign_normal",
      3,
      false
@@ -818,19 +818,19 @@
      "ammunition_laser_ucb-100",
      10,
      10,
-     11.8891
+     12.0001
     ],
     [
      "ammunition_laser_mcb-50",
      10,
      10,
-     11.8891
+     12.0001
     ],
     [
      "ammunition_laser_mcb-25",
      10,
      10,
-     11.8891
+     12.0001
     ],
     [
      "ammunition_laser_sab-50",
@@ -873,36 +873,6 @@
      5,
      5,
      3.044
-    ],
-    [
-     "equipment_generator_speed_g3n-7900",
-     1,
-     1,
-     0.0666
-    ],
-    [
-     "equipment_weapon_laser_lf-4-hp",
-     1,
-     1,
-     0.0666
-    ],
-    [
-     "equipment_weapon_laser_lf-4-pd",
-     1,
-     1,
-     0.0666
-    ],
-    [
-     "equipment_weapon_laser_lf-4-unstable",
-     1,
-     1,
-     0.0666
-    ],
-    [
-     "equipment_weapon_laser_lf-4-md",
-     1,
-     1,
-     0.0666
     ]
    ]
   },

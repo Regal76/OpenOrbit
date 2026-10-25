@@ -80,10 +80,11 @@ def position(aid):
 
 
 def satellite_pos(aid, slot):
-    """Uydu modülünün konumu: merkezin çevresinde (yuva 2-9, 45 derece arayla)."""
+    """Uydu modülünün konumu: merkezin çevresinde sekizgen (yuva 2-9, 22,5 dereceden başlayarak 45 derece arayla; resmî sunucu kaydı:
+    merkezden ±413/±171 ve ±98/±236 birim)."""
     x, y = position(aid)
-    a = (slot - 2) * math.pi / 4
-    return int(x + math.cos(a) * 260), int(y + math.sin(a) * 180)
+    a = (slot - 2) * math.pi / 4 + math.pi / 8
+    return int(x + math.cos(a) * 447), int(y + math.sin(a) * 255)
 
 
 def prime_time(now=None):

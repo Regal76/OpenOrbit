@@ -352,8 +352,9 @@ class Kapilar:
         return out
 
     def info_cmd(self):
-        """GalaxyGateBuilderInfoCommand: kayıttaki şablon (kapı sırası ve olasılık modülleri), değerler profilden; bonusRewardsDay:
-        Pazar GG Double Rewards (takvim.py gg_cift_odul)."""
+        """GalaxyGateBuilderInfoCommand: kayıttaki şablon (kapı sırası ve olasılık modülleri), değerler profilden; galaxyGateDay:
+        Pazar GG Double Rewards (takvim.py gg_cift_odul; resmî sunucu kaydı 2026-10-25 Pazar: galaxyGateDay true, bonusRewardsDay
+        false)."""
         import takvim as TK
         price, sale = self.energy_price()
         t = json.loads(json.dumps(self.info_tpl or {'gates': [], 'spinAmounts': K['cekilis_adetleri'], 'bonusRewardsDay': False,
@@ -371,7 +372,7 @@ class Kapilar:
                                                   boosts=[], state=0, probabilityModules=[], lifePrice=-1, id=0, multiplier=0,
                                                   multiGateProgressModules=[], livesLeft=-1), key))
         t.update(gates=gates, samples=self.d['enerji'], money=self.money(), energy_cost=price, spinOnSale=sale,
-                 spinamount_selected=self.d['cekilis'], spinAmounts=K['cekilis_adetleri'], bonusRewardsDay=TK.is_active('gg_cift_odul'))
+                 spinamount_selected=self.d['cekilis'], spinAmounts=K['cekilis_adetleri'], galaxyGateDay=TK.is_active('gg_cift_odul'))
         return ('GalaxyGateBuilderInfoCommand', t)
 
     def info_request(self):

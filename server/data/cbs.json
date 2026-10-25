@@ -159,8 +159,8 @@
    "kimlik": 20,
    "ad": "Zerpan",
    "harita": 29,
-   "x_yuzde": 28,
-   "y_yuzde": 20,
+   "x_yuzde": 28.65715,
+   "y_yuzde": 21.44275,
    "ad_anahtari": "battleStation_name_20"
   },
   {
@@ -175,8 +175,8 @@
    "kimlik": 22,
    "ad": "Kardlatot",
    "harita": 307,
-   "x_yuzde": 61,
-   "y_yuzde": 62,
+   "x_yuzde": 61.0239,
+   "y_yuzde": 64.4504,
    "ad_anahtari": "battleStation_name_22"
   },
   {

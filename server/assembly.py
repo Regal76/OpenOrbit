@@ -47,7 +47,13 @@ NO_SOURCE = {'resource_collectable_flower-token', 'resource_collectable_opitite'
              'resource_collectable_quadrothrin'}
 CHAMPION = 'resource_collectable_champion-token'                  # aylık ödül (rutbe.py): jetonlu tarifler elde jeton varken
 TEST = 'recipe_recipe-test'
-BOT = {'recipe_blueprint-ss-cpu'}                                 # Saturn Transmitter: Satürn uzaylıları oyuncu sayılır (bot oyuncular)
+BOT = {'recipe_blueprint-ss-cpu'}                                 # Saturn Transmitter: Satürn uzaylıları oyuncu sayılır (bot oyuncular;
+                                                                  # resmî sunucunun listesinde var, burada gizli: botlar yok)
+# resmî sunucu kaydı (2026-10-25): girişte tarif listesinden sonra iki boş liste ve pencerenin üç süzgeci (filterType 2, 1, 0;
+# saklanmamışsa bütün kategoriler)
+FILTER_TYPES = (2, 1, 0)
+ALL_FILTERS = ['ships_and_designs', 'ammunition', 'weapons', 'pet', 'generators', 'drones', 'extras', 'boosters', 'hardware', 'modules',
+               'techs']
 LIST_CHECK_SN = 60                                                # etkinlik başlayınca / bitince tarif listesi
 # seviyeli P.E.T. dişlisi/protokolü veren tarifler 4. seviyeyi verir (istemcinin metni: "Obtain Targeting Protocol X Level 4 for your
 # P.E.T."); takmak P.E.T. seviyesine bağlı (pet.level_need). Seviye 1 veriliyordu: hangarda "Level 0", her P.E.T. takabiliyordu
@@ -76,6 +82,19 @@ def recipe_event(key, now=None):
     import takvim as TKV
     ps = set(T[key]['parcalar'])
     return next((k for k in sorted(TKV.active(now)) if ps & set(TKV.EVENTS[k].get('para', []))), None)
+
+
+def recorded_end(key, now=None):
+    """Resmî sunucuda süreli tarifin bitişi (tarifler.json gecici: "sezon" Season Pass sezonunun sonu, sayı kayıttaki bitiş) ya da
+    None (süresiz, bitişi geçmiş ya da etkinlik parasıyla: onun süresi yerel takvimden, recipe_event)."""
+    import takvim as TKV
+    g = T[key].get('gecici')
+    if g and set(T[key]['parcalar']) & {l for e in TKV.EVENTS.values() for l in e.get('para', [])}:
+        return None
+    if g == 'sezon':
+        import sezon
+        g = sezon.season_end(now)
+    return g if isinstance(g, (int, float)) and g > (now or time.time()) else None
 
 
 def period_of(key, now=None):
@@ -116,7 +135,7 @@ class Assembly:
     def visible(self):
         """Pencerede görünen tarifler, kayıttaki sırayla; sonra depoda olan ONLY_WHEN_OWNED tarifler, koşulla açılanlar, kayıtta
         olmayanlar (event_recipes) ve üretimi süren ya da toplanmamış olanlar (etkinlik bitse de)."""
-        out = sorted((k for k, r in T.items() if 'kayitta' in r), key=lambda k: T[k]['kayitta'])
+        out = sorted((k for k, r in T.items() if 'kayitta' in r and k not in BOT), key=lambda k: T[k]['kayitta'])
         out += sorted(k for k, r in T.items() if 'kayitta' not in r and r['gorunurluk'] == 'ONLY_WHEN_OWNED' and self.p.resource(k) > 0)
         out += [k for k, cond in UNLOCK.items() if k not in out and cond(self.p)]
         seen = set(out)
@@ -170,10 +189,14 @@ class Assembly:
         return self.used_today(key)
 
     def recipe(self, key, now=None):
-        """Etkin etkinliğin parasını isteyen tarif süreli (pencerede kalan süre), öteki tarifler süresiz."""
+        """Etkin etkinliğin parasını isteyen tarif süreli (pencerede kalan süre); resmî sunucuda süreli olan (tarifler.json gecici)
+        Season Pass sezonunun sonuna ya da kayıttaki bitişine kadar süreli; öteki tarifler süresiz."""
         import takvim as TKV
+        now = now or time.time()
         ev = recipe_event(key, now)
+        end = None if ev else recorded_end(key, now)
         typ = (mod('AssemblyRecipeTemporaryTypeModule', remainingTimeMillis=TKV.time_left(ev, now) * 1000) if ev else
+               mod('AssemblyRecipeTemporaryTypeModule', remainingTimeMillis=int((end - now) * 1000)) if end else
                mod('AssemblyRecipeRegularTypeModule'))
         return mod('AssemblyRecipeModule', recipeLootId=key, targetItemId=0, type=typ, status=self.status(key, now))
 
@@ -183,10 +206,16 @@ class Assembly:
         self.shown = set(keys)
         return ('AssemblyRecipeContentModule', {'recipes': [self.recipe(k) for k in keys] + self.up.recipes()})
 
+    def login_msgs(self):
+        """Girişte: tarif listesi, iki boş liste ve süzgeçler (resmî sunucunun sırası)."""
+        return [self.content()] + [('AssemblyRecipeContentModule', {'recipes': []})] * 2 + self.filter_msgs()
+
     def filter_msgs(self):
-        """Pencerenin saklanan süzgeçleri (AssemblySetFilterRequest'in modülü, filterType başına): girişte geri (E10)."""
+        """Pencerenin süzgeçleri (AssemblySetFilterRequest'in modülü, filterType başına; saklanmamışsa bütün kategoriler): girişte
+        geri (E10)."""
         return [('AssemblyWindowSettingsModule', {k: v for k, v in m.items() if k != '_'})
-                for _, m in sorted(self.st['suzgec'].items()) if m]
+                for m in (self.st['suzgec'].get(str(t)) or {'filterType': t, 'assemblyItemFilters': list(ALL_FILTERS)}
+                          for t in FILTER_TYPES)]
 
     def update(self, key, target=0, now=None):
         return ('AssemblyRecipeStatusUpdateCommand', dict(targetItemId=target, status=self.status(key, now), lootId=key))

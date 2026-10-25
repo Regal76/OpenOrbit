@@ -30,7 +30,7 @@ R = json.load(open(os.path.join(HERE, 'data', 'rutbe.json'), encoding='utf8'))
 F = R['formul']
 KAYIT_SINIRI = 500
 DEFTER_SAYFA = 12                  # istemcinin sayfa boyu
-HESAP_SAYFA = 25
+HESAP_SAYFA = 50                   # resmî sunucu kaydı (2026-10-25): sayfa başına 50 satır
 NPC_SAYFA = 250                    # kayıttaki npcPointsDetails sayfaları
 TOP = {'exp': (4, 5, 6, 7), 'onur': (8, 9, 10, 11), 'puan': (0, 1, 2, 3, 16), 'klan': (12, 13, 14, 15, 19)}
 TOP_WEEK, TOP_CLIMB, TOP_MONTH = (2, 6, 10), (3, 7, 11), (16,)

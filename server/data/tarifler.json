@@ -1,5 +1,5 @@
 {
- "_aciklama": "Assembly tarifleri istemcinin kodundan (tools/il2cpp/istemci_verisi.py; DarkOrbit.Recipe$$Initialize): kullanim (UsingStrategy), gorunurluk (Visibility), en_cok (MaxUses; null sınırsız), olcek (CostScalingFactor), yigilir (Stackable), sure_sn (BuildTimeSec), parcalar, sonuc. kayitta: kayıttaki AssemblyRecipeContentModule sırası (o gün açık olanlar), gecici: kayıtta süreli (etkinlik) tarifi.",
+ "_aciklama": "Assembly tarifleri istemcinin kodundan (tools/il2cpp/istemci_verisi.py; DarkOrbit.Recipe$$Initialize): kullanim (UsingStrategy), gorunurluk (Visibility), en_cok (MaxUses; null sınırsız), olcek (CostScalingFactor), yigilir (Stackable), sure_sn (BuildTimeSec), parcalar, sonuc. kayitta: kayıttaki AssemblyRecipeContentModule sırası (o gün açık olanlar), gecici: kayıtta süreli tarifin bitişi (\"sezon\": Season Pass sezonuyla biter; sayı: bitiş anı, Unix saniyesi).",
  "tarifler": {
   "recipe_blueprint-1hbooster-cd": {
    "kullanim": "ALWAYS_USABLE",
@@ -17,7 +17,7 @@
    "sonuc": {
     "booster_cd-b01": 1
    },
-   "kayitta": 184
+   "kayitta": 192
   },
   "recipe_blueprint-1hbooster-dmg": {
    "kullanim": "ALWAYS_USABLE",
@@ -35,7 +35,7 @@
    "sonuc": {
     "booster_dmg-b01": 1
    },
-   "kayitta": 190
+   "kayitta": 198
   },
   "recipe_blueprint-1hbooster-hp": {
    "kullanim": "ALWAYS_USABLE",
@@ -53,7 +53,7 @@
    "sonuc": {
     "booster_hp-b01": 1
    },
-   "kayitta": 202
+   "kayitta": 210
   },
   "recipe_blueprint-1hbooster-res": {
    "kullanim": "ALWAYS_USABLE",
@@ -71,7 +71,7 @@
    "sonuc": {
     "booster_res-b01": 1
    },
-   "kayitta": 72
+   "kayitta": 74
   },
   "recipe_blueprint-1hbooster-shd": {
    "kullanim": "ALWAYS_USABLE",
@@ -89,7 +89,7 @@
    "sonuc": {
     "booster_shd-b01": 1
    },
-   "kayitta": 178
+   "kayitta": 186
   },
   "recipe_blueprint-1hbooster-xp": {
    "kullanim": "ALWAYS_USABLE",
@@ -107,7 +107,7 @@
    "sonuc": {
     "booster_ep-b01": 1
    },
-   "kayitta": 145
+   "kayitta": 150
   },
   "recipe_blueprint-2hbooster-rm-b00": {
    "kullanim": "ALWAYS_USABLE",
@@ -142,7 +142,7 @@
    "sonuc": {
     "ammunition_laser_a-bl": 25000
    },
-   "kayitta": 153
+   "kayitta": 158
   },
   "recipe_blueprint-a-elite-legend": {
    "kullanim": "USABLE_ONCE",
@@ -986,7 +986,9 @@
    },
    "sonuc": {
     "equipment_aiprotocol_ai-aim1": 1
-   }
+   },
+   "kayitta": 179,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-al1": {
    "kullanim": "ALWAYS_USABLE",
@@ -1003,8 +1005,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-al1": 1
    },
-   "kayitta": 67,
-   "gecici": true
+   "kayitta": 69,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-e1": {
    "kullanim": "ALWAYS_USABLE",
@@ -1021,8 +1023,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-e1": 1
    },
-   "kayitta": 20,
-   "gecici": true
+   "kayitta": 21,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-eco1-2": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -1039,8 +1041,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-eco1": 2
    },
-   "kayitta": 59,
-   "gecici": true
+   "kayitta": 61,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-eco1": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -1057,8 +1059,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-eco1": 1
    },
-   "kayitta": 123,
-   "gecici": true
+   "kayitta": 125,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-lm1": {
    "kullanim": "ALWAYS_USABLE",
@@ -1075,8 +1077,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-lm1": 1
    },
-   "kayitta": 29,
-   "gecici": true
+   "kayitta": 31,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-r1": {
    "kullanim": "ALWAYS_USABLE",
@@ -1093,8 +1095,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-r1": 1
    },
-   "kayitta": 162,
-   "gecici": true
+   "kayitta": 167,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-s1": {
    "kullanim": "ALWAYS_USABLE",
@@ -1111,8 +1113,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-s1": 1
    },
-   "kayitta": 163,
-   "gecici": true
+   "kayitta": 168,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ai-sm1": {
    "kullanim": "ALWAYS_USABLE",
@@ -1129,8 +1131,8 @@
    "sonuc": {
     "equipment_aiprotocol_ai-sm1": 1
    },
-   "kayitta": 183,
-   "gecici": true
+   "kayitta": 191,
+   "gecici": 1793660398
   },
   "recipe_blueprint-ajp-01": {
    "kullanim": "ALWAYS_USABLE",
@@ -1149,7 +1151,7 @@
    "sonuc": {
     "equipment_extra_cpu_ajp-01": 1
    },
-   "kayitta": 186
+   "kayitta": 194
   },
   "recipe_blueprint-ancient": {
    "kullanim": "USABLE_ONCE",
@@ -1200,7 +1202,7 @@
    "sonuc": {
     "ammunition_ggportal_astral-cpu": 1
    },
-   "kayitta": 173
+   "kayitta": 181
   },
   "recipe_blueprint-bastion": {
    "kullanim": "USABLE_ONCE",
@@ -1218,7 +1220,7 @@
    "sonuc": {
     "ship_g-bastion": 1
    },
-   "kayitta": 171
+   "kayitta": 178
   },
   "recipe_blueprint-bat-blue": {
    "kullanim": "ALWAYS_USABLE",
@@ -1315,7 +1317,9 @@
    },
    "sonuc": {
     "resource_booty-key-black": 1
-   }
+   },
+   "kayitta": 120,
+   "gecici": "sezon"
   },
   "recipe_blueprint-blacklight-cipher": {
    "kullanim": "ALWAYS_USABLE",
@@ -1337,7 +1341,7 @@
    "sonuc": {
     "resource_booty-key-blacklight-cipher": 1
    },
-   "kayitta": 198
+   "kayitta": 206
   },
   "recipe_blueprint-blacklight-decoder": {
    "kullanim": "ALWAYS_USABLE",
@@ -1357,7 +1361,7 @@
    "sonuc": {
     "resource_booty-key-blacklight-decoder": 1
    },
-   "kayitta": 11
+   "kayitta": 12
   },
   "recipe_blueprint-blaze-enigma": {
    "kullanim": "ALWAYS_USABLE",
@@ -1407,9 +1411,7 @@
    },
    "sonuc": {
     "resource_booty-key-blue": 1
-   },
-   "kayitta": 75,
-   "gecici": true
+   }
   },
   "recipe_blueprint-booty-key-astral-prime": {
    "kullanim": "ALWAYS_USABLE",
@@ -1426,7 +1428,7 @@
    "sonuc": {
     "resource_booty-key-astral-prime": 1
    },
-   "kayitta": 4
+   "kayitta": 5
   },
   "recipe_blueprint-booty-key-astral": {
    "kullanim": "ALWAYS_USABLE",
@@ -1442,7 +1444,7 @@
    "sonuc": {
     "resource_booty-key-astral": 1
    },
-   "kayitta": 3
+   "kayitta": 4
   },
   "recipe_blueprint-booty-key-empyrian-limited": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -1488,7 +1490,7 @@
    "sonuc": {
     "resource_booty-key-silver": 1
    },
-   "kayitta": 85
+   "kayitta": 86
   },
   "recipe_blueprint-booty-key-worldboss": {
    "kullanim": "ALWAYS_USABLE",
@@ -1646,8 +1648,8 @@
    "sonuc": {
     "ship_berserker_design_berserker-phantasm": 1
    },
-   "kayitta": 47,
-   "gecici": true
+   "kayitta": 49,
+   "gecici": 1793660398
   },
   "recipe_blueprint-candy-phantasm-diminisher": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -1665,7 +1667,7 @@
     "ship_diminisher_design_diminisher-phantasm": 1
    },
    "kayitta": 111,
-   "gecici": true
+   "gecici": 1793660398
   },
   "recipe_blueprint-candy-spc-sl01": {
    "kullanim": "ALWAYS_USABLE",
@@ -1695,7 +1697,9 @@
    },
    "sonuc": {
     "captain_captain-gen1-neo": 1
-   }
+   },
+   "kayitta": 172,
+   "gecici": "sezon"
   },
   "recipe_blueprint-captain-gen2-eos-worldboss": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -1760,7 +1764,7 @@
    "sonuc": {
     "equipment_weapon_laser_caucasus": 1
    },
-   "kayitta": 159
+   "kayitta": 164
   },
   "recipe_blueprint-cc-c-12k": {
    "kullanim": "ALWAYS_USABLE",
@@ -1796,7 +1800,7 @@
    "sonuc": {
     "ship_centurion": 1
    },
-   "kayitta": 56
+   "kayitta": 58
   },
   "recipe_blueprint-champion-drone-centurion-harbinger": {
    "kullanim": "ALWAYS_USABLE",
@@ -3023,7 +3027,7 @@
    "sonuc": {
     "equipment_extra_cpu_cl04k-xl": 1
    },
-   "kayitta": 54
+   "kayitta": 56
   },
   "recipe_blueprint-cyborg-psyche": {
    "kullanim": "USABLE_ONCE",
@@ -3058,7 +3062,7 @@
    "sonuc": {
     "ship_cyborg": 1
    },
-   "kayitta": 196
+   "kayitta": 204
   },
   "recipe_blueprint-darksilver-coin-atlas": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -3091,7 +3095,7 @@
    "sonuc": {
     "ammunition_mine_ddm-01": 1
    },
-   "kayitta": 49
+   "kayitta": 51
   },
   "recipe_blueprint-diametrion-empyrian-l": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -3154,7 +3158,7 @@
    "sonuc": {
     "ship_diminisher": 1
    },
-   "kayitta": 12
+   "kayitta": 13
   },
   "recipe_blueprint-dmg-holo-10x": {
    "kullanim": "USABLE_ONCE",
@@ -3217,7 +3221,7 @@
    "sonuc": {
     "equipment_shipupgrade_dmg-x1": 1
    },
-   "kayitta": 142
+   "kayitta": 147
   },
   "recipe_blueprint-dmg-x2": {
    "kullanim": "ALWAYS_USABLE",
@@ -3235,7 +3239,7 @@
    "sonuc": {
     "equipment_shipupgrade_dmg-x2": 1
    },
-   "kayitta": 138
+   "kayitta": 143
   },
   "recipe_blueprint-dmg-xa01-atlas": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -3266,7 +3270,9 @@
    },
    "sonuc": {
     "equipment_shipupgrade_dmg-xh01": 1
-   }
+   },
+   "kayitta": 173,
+   "gecici": 1793660398
   },
   "recipe_blueprint-dmg-xt10-empyrian": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -3407,7 +3413,7 @@
    "sonuc": {
     "equipment_weapon_drive_igd-p": 1
    },
-   "kayitta": 80
+   "kayitta": 81
   },
   "recipe_blueprint-drone-a-elite-ocean": {
    "kullanim": "ALWAYS_USABLE",
@@ -3456,7 +3462,7 @@
    "sonuc": {
     "resource_blueprint_apis-part": 1
    },
-   "kayitta": 86
+   "kayitta": 87
   },
   "recipe_blueprint-drone-apis": {
    "kullanim": "ALWAYS_USABLE",
@@ -3472,7 +3478,7 @@
    "sonuc": {
     "drone_apis": 1
    },
-   "kayitta": 83
+   "kayitta": 84
   },
   "recipe_blueprint-drone-erythros": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -3538,7 +3544,8 @@
    },
    "sonuc": {
     "drone_designs_drone-goliath-x-regular": 1
-   }
+   },
+   "kayitta": 131
   },
   "recipe_blueprint-drone-goliath-x-sandstorm": {
    "kullanim": "ALWAYS_USABLE",
@@ -3652,7 +3659,7 @@
    "sonuc": {
     "drone_designs_drone-pusat-lava": 1
    },
-   "kayitta": 174
+   "kayitta": 182
   },
   "recipe_blueprint-drone-pusat-poison": {
    "kullanim": "ALWAYS_USABLE",
@@ -3751,7 +3758,7 @@
    "sonuc": {
     "resource_blueprint_zeus-part": 1
    },
-   "kayitta": 74
+   "kayitta": 76
   },
   "recipe_blueprint-drone-zeus": {
    "kullanim": "ALWAYS_USABLE",
@@ -3767,7 +3774,7 @@
    "sonuc": {
     "drone_zeus": 1
    },
-   "kayitta": 117
+   "kayitta": 118
   },
   "recipe_blueprint-emaa-20-10k-once": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -3845,7 +3852,7 @@
    "sonuc": {
     "ammunition_specialammo_emp-01": 1
    },
-   "kayitta": 188
+   "kayitta": 196
   },
   "recipe_blueprint-energy-leech-worldboss": {
    "kullanim": "ALWAYS_USABLE",
@@ -3912,7 +3919,7 @@
    "sonuc": {
     "ammunition_ggportal_eternal-blacklight-cpu": 1
    },
-   "kayitta": 151
+   "kayitta": 156
   },
   "recipe_blueprint-extra-energy-500": {
    "kullanim": "ALWAYS_USABLE",
@@ -4068,7 +4075,7 @@
    "sonuc": {
     "drone_formation_f-03-la": 1
    },
-   "kayitta": 193
+   "kayitta": 201
   },
   "recipe_blueprint-flower-token-abr": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -4849,7 +4856,7 @@
    "sonuc": {
     "equipment_generator_shield_fs-03": 1
    },
-   "kayitta": 156
+   "kayitta": 161
   },
   "recipe_blueprint-fwx-com-empyrian": {
    "kullanim": "ALWAYS_USABLE",
@@ -4897,8 +4904,8 @@
    "sonuc": {
     "ammunition_firework_fwx-l": 1
    },
-   "kayitta": 33,
-   "gecici": true
+   "kayitta": 35,
+   "gecici": 1793660398
   },
   "recipe_blueprint-fwx-l-valentine": {
    "kullanim": "ALWAYS_USABLE",
@@ -4931,8 +4938,8 @@
    "sonuc": {
     "ammunition_firework_fwx-m": 1
    },
-   "kayitta": 124,
-   "gecici": true
+   "kayitta": 128,
+   "gecici": 1793660398
   },
   "recipe_blueprint-fwx-m-valentine": {
    "kullanim": "ALWAYS_USABLE",
@@ -4965,8 +4972,8 @@
    "sonuc": {
     "ammunition_firework_fwx-s": 1
    },
-   "kayitta": 17,
-   "gecici": true
+   "kayitta": 18,
+   "gecici": 1793660398
   },
   "recipe_blueprint-fwx-s-valentine": {
    "kullanim": "ALWAYS_USABLE",
@@ -4999,8 +5006,8 @@
    "sonuc": {
     "equipment_petgear_g-bc1": 1
    },
-   "kayitta": 55,
-   "gecici": true
+   "kayitta": 57,
+   "gecici": 1793660398
   },
   "recipe_blueprint-g-bh1": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -5017,8 +5024,8 @@
    "sonuc": {
     "equipment_petgear_g-bh1": 1
    },
-   "kayitta": 62,
-   "gecici": true
+   "kayitta": 64,
+   "gecici": 1793660398
   },
   "recipe_blueprint-g-centaur": {
    "kullanim": "USABLE_ONCE",
@@ -5036,7 +5043,7 @@
    "sonuc": {
     "ship_g-centaur": 1
    },
-   "kayitta": 182
+   "kayitta": 190
   },
   "recipe_blueprint-g-champion": {
    "kullanim": "USABLE_ONCE",
@@ -5070,8 +5077,8 @@
    "sonuc": {
     "equipment_petgear_g-fs1": 1
    },
-   "kayitta": 32,
-   "gecici": true
+   "kayitta": 34,
+   "gecici": 1793660398
   },
   "recipe_blueprint-g-peacemaker": {
    "kullanim": "USABLE_ONCE",
@@ -5089,7 +5096,7 @@
    "sonuc": {
     "ship_g-peacemaker": 1
    },
-   "kayitta": 90
+   "kayitta": 91
   },
   "recipe_blueprint-g-sovereign": {
    "kullanim": "USABLE_ONCE",
@@ -5107,7 +5114,7 @@
    "sonuc": {
     "ship_g-sovereign": 1
    },
-   "kayitta": 170
+   "kayitta": 177
   },
   "recipe_blueprint-g-vanquisher": {
    "kullanim": "USABLE_ONCE",
@@ -5125,7 +5132,7 @@
    "sonuc": {
     "ship_g-vanquisher": 1
    },
-   "kayitta": 31
+   "kayitta": 33
   },
   "recipe_blueprint-ggeu-atlas-m": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -5172,7 +5179,7 @@
    "sonuc": {
     "resource_collectable_ggeu": 1
    },
-   "kayitta": 5
+   "kayitta": 6
   },
   "recipe_blueprint-drive-gl-chron": {
    "kullanim": "ALWAYS_USABLE",
@@ -5188,7 +5195,7 @@
    "sonuc": {
     "equipment_lens_gl-chron": 1
    },
-   "kayitta": 77
+   "kayitta": 78
   },
   "recipe_blueprint-glacial-fragment": {
    "kullanim": "ALWAYS_USABLE",
@@ -5222,8 +5229,8 @@
    "sonuc": {
     "ship_goliath_design_goliath-phantasm": 1
    },
-   "kayitta": 149,
-   "gecici": true
+   "kayitta": 154,
+   "gecici": 1793660398
   },
   "recipe_blueprint-goliath-plus-amor": {
    "kullanim": "USABLE_ONCE",
@@ -5389,7 +5396,7 @@
    "sonuc": {
     "ship_hammerclaw": 1
    },
-   "kayitta": 135
+   "kayitta": 140
   },
   "recipe_blueprint-high-frequency-cable": {
    "kullanim": "ALWAYS_USABLE",
@@ -5406,7 +5413,7 @@
    "sonuc": {
     "resource_high-frequency-cable": 1
    },
-   "kayitta": 92
+   "kayitta": 93
   },
   "recipe_blueprint-hp-bes01": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -5484,7 +5491,7 @@
    "sonuc": {
     "equipment_shipupgrade_hp-x1": 1
    },
-   "kayitta": 51
+   "kayitta": 53
   },
   "recipe_blueprint-hp-x2": {
    "kullanim": "ALWAYS_USABLE",
@@ -5502,7 +5509,7 @@
    "sonuc": {
     "equipment_shipupgrade_hp-x2": 1
    },
-   "kayitta": 50
+   "kayitta": 52
   },
   "recipe_blueprint-hp-xa01-atlas": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -5533,7 +5540,9 @@
    },
    "sonuc": {
     "equipment_shipupgrade_hp-xh01": 1
-   }
+   },
+   "kayitta": 2,
+   "gecici": 1793660398
   },
   "recipe_blueprint-hp-xt10-empyrian-limited": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -5720,7 +5729,7 @@
    "sonuc": {
     "resource_hybrid-processor": 1
    },
-   "kayitta": 68
+   "kayitta": 70
   },
   "recipe_blueprint-hydra": {
    "kullanim": "ALWAYS_USABLE",
@@ -5740,7 +5749,7 @@
    "sonuc": {
     "equipment_weapon_rocketlauncher_hydra": 1
    },
-   "kayitta": 155
+   "kayitta": 160
   },
   "recipe_blueprint-immunizer-cpu": {
    "kullanim": "ALWAYS_USABLE",
@@ -5756,7 +5765,7 @@
    "sonuc": {
     "ammunition_ggportal_quarantine-zone-cpu": 1
    },
-   "kayitta": 167
+   "kayitta": 174
   },
   "recipe_blueprint-indoctrine-accelerator-halloween": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -5774,8 +5783,8 @@
    "sonuc": {
     "resource_collectable_indoctrine-accelerator": 75
    },
-   "kayitta": 122,
-   "gecici": true
+   "kayitta": 124,
+   "gecici": 1793660398
   },
   "recipe_blueprint-indoctrine-accelerator-worldboss": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -5838,8 +5847,8 @@
    "sonuc": {
     "resource_collectable_indoctrineoil": 50
    },
-   "kayitta": 82,
-   "gecici": true
+   "kayitta": 83,
+   "gecici": 1793660398
   },
   "recipe_blueprint-indra-cyborg": {
    "kullanim": "ALWAYS_USABLE",
@@ -5964,7 +5973,7 @@
    "sonuc": {
     "ship_keres": 1
    },
-   "kayitta": 76
+   "kayitta": 77
   },
   "recipe_blueprint-leg-helios": {
    "kullanim": "ALWAYS_USABLE",
@@ -5981,7 +5990,7 @@
    "sonuc": {
     "equipment_weapon_cannon_leg-helios": 1
    },
-   "kayitta": 6
+   "kayitta": 7
   },
   "recipe_blueprint-leg-nidhogg": {
    "kullanim": "ALWAYS_USABLE",
@@ -6015,7 +6024,7 @@
    "sonuc": {
     "ship_leonov": 1
    },
-   "kayitta": 65
+   "kayitta": 67
   },
   "recipe_blueprint-lf-3": {
    "kullanim": "ALWAYS_USABLE",
@@ -6032,7 +6041,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-3": 1
    },
-   "kayitta": 137
+   "kayitta": 142
   },
   "recipe_blueprint-lf-4-hp": {
    "kullanim": "ALWAYS_USABLE",
@@ -6052,8 +6061,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-4-hp": 1
    },
-   "kayitta": 78,
-   "gecici": true
+   "kayitta": 79
   },
   "recipe_blueprint-lf-4-md": {
    "kullanim": "ALWAYS_USABLE",
@@ -6073,8 +6081,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-4-md": 1
    },
-   "kayitta": 88,
-   "gecici": true
+   "kayitta": 89
   },
   "recipe_blueprint-lf-4-pd": {
    "kullanim": "ALWAYS_USABLE",
@@ -6094,8 +6101,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-4-pd": 1
    },
-   "kayitta": 84,
-   "gecici": true
+   "kayitta": 85
   },
   "recipe_blueprint-cnc-lf-5-al": {
    "kullanim": "ALWAYS_USABLE",
@@ -6112,7 +6118,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-5-al": 1
    },
-   "kayitta": 140
+   "kayitta": 145
   },
   "recipe_blueprint-pst-lf-5-al": {
    "kullanim": "ALWAYS_USABLE",
@@ -6129,7 +6135,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-5-al": 1
    },
-   "kayitta": 81
+   "kayitta": 82
   },
   "recipe_blueprint-lf-5-mf": {
    "kullanim": "ALWAYS_USABLE",
@@ -6146,7 +6152,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-5-mf": 1
    },
-   "kayitta": 197
+   "kayitta": 205
   },
   "recipe_blueprint-lf-5": {
    "kullanim": "ALWAYS_USABLE",
@@ -6164,7 +6170,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-5": 1
    },
-   "kayitta": 136
+   "kayitta": 141
   },
   "recipe_blueprint-lf-p01": {
    "kullanim": "ALWAYS_USABLE",
@@ -6217,7 +6223,7 @@
    "sonuc": {
     "ammunition_laser_mcb-50": 1000
    },
-   "kayitta": 46
+   "kayitta": 48
   },
   "recipe_blueprint-micro-trans-empyrian-limited": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -6251,7 +6257,7 @@
    "sonuc": {
     "resource_micro-transistors": 1
    },
-   "kayitta": 93
+   "kayitta": 94
   },
   "recipe_blueprint-mimesis": {
    "kullanim": "USABLE_ONCE",
@@ -6270,7 +6276,7 @@
    "sonuc": {
     "ship_mimesis": 1
    },
-   "kayitta": 61
+   "kayitta": 63
   },
   "recipe_blueprint-mirage-green": {
    "kullanim": "ALWAYS_USABLE",
@@ -6304,7 +6310,7 @@
    "sonuc": {
     "module_dmgm-1": 1
    },
-   "kayitta": 2
+   "kayitta": 3
   },
   "recipe_blueprint-module-deflector": {
    "kullanim": "ALWAYS_USABLE",
@@ -6322,7 +6328,7 @@
    "sonuc": {
     "module_defm-1": 1
    },
-   "kayitta": 150
+   "kayitta": 155
   },
   "recipe_blueprint-module-honor": {
    "kullanim": "ALWAYS_USABLE",
@@ -6357,7 +6363,7 @@
    "sonuc": {
     "module_hulm-1": 1
    },
-   "kayitta": 71
+   "kayitta": 73
   },
   "recipe_blueprint-module-laserhr": {
    "kullanim": "ALWAYS_USABLE",
@@ -6375,7 +6381,7 @@
    "sonuc": {
     "module_ltm-hr": 1
    },
-   "kayitta": 187
+   "kayitta": 195
   },
   "recipe_blueprint-module-laserlr": {
    "kullanim": "ALWAYS_USABLE",
@@ -6392,7 +6398,7 @@
    "sonuc": {
     "module_ltm-lr": 1
    },
-   "kayitta": 168
+   "kayitta": 175
   },
   "recipe_blueprint-module-lasermr": {
    "kullanim": "ALWAYS_USABLE",
@@ -6409,7 +6415,7 @@
    "sonuc": {
     "module_ltm-mr": 1
    },
-   "kayitta": 172
+   "kayitta": 180
   },
   "recipe_blueprint-module-repair": {
    "kullanim": "ALWAYS_USABLE",
@@ -6443,7 +6449,7 @@
    "sonuc": {
     "module_ram-la": 1
    },
-   "kayitta": 16
+   "kayitta": 17
   },
   "recipe_blueprint-module-rocketma": {
    "kullanim": "ALWAYS_USABLE",
@@ -6460,7 +6466,7 @@
    "sonuc": {
     "module_ram-ma": 1
    },
-   "kayitta": 18
+   "kayitta": 19
   },
   "recipe_blueprint-module-xp": {
    "kullanim": "ALWAYS_USABLE",
@@ -6477,7 +6483,7 @@
    "sonuc": {
     "module_xpm-1": 1
    },
-   "kayitta": 194
+   "kayitta": 202
   },
   "recipe_blueprint-n-ambassador-frost": {
    "kullanim": "USABLE_ONCE",
@@ -6511,7 +6517,7 @@
    "sonuc": {
     "resource_nano-case": 1
    },
-   "kayitta": 157
+   "kayitta": 162
   },
   "recipe_blueprint-nano-condenser": {
    "kullanim": "ALWAYS_USABLE",
@@ -6528,7 +6534,7 @@
    "sonuc": {
     "resource_nano-condenser": 1
    },
-   "kayitta": 160
+   "kayitta": 165
   },
   "recipe_blueprint-neptune": {
    "kullanim": "ALWAYS_USABLE",
@@ -6811,7 +6817,7 @@
    "sonuc": {
     "resource_collectable_permit-plus": 1
    },
-   "kayitta": 126
+   "kayitta": 130
   },
   "recipe_blueprint-permit-worldboss": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -6925,7 +6931,8 @@
    },
    "sonuc": {
     "pet_designs_pet-goliath-x-regular": 1
-   }
+   },
+   "kayitta": 126
   },
   "recipe_blueprint-pet-goliath-x-sandstorm": {
    "kullanim": "USABLE_ONCE",
@@ -6960,7 +6967,7 @@
     "pet_designs_pet-phantasm": 1
    },
    "kayitta": 99,
-   "gecici": true
+   "gecici": 1793660398
   },
   "recipe_blueprint-pet-pusat-blaze": {
    "kullanim": "USABLE_ONCE",
@@ -7250,7 +7257,7 @@
    "sonuc": {
     "resource_prismatic-socket": 1
    },
-   "kayitta": 39
+   "kayitta": 41
   },
   "recipe_blueprint-prismatium-empyrian-l": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -7476,9 +7483,7 @@
    },
    "sonuc": {
     "resource_booty-key-red": 1
-   },
-   "kayitta": 94,
-   "gecici": true
+   }
   },
   "recipe_blueprint-rep-4": {
    "kullanim": "ALWAYS_USABLE",
@@ -7495,7 +7500,7 @@
    "sonuc": {
     "equipment_extra_repbot_rep-4": 1
    },
-   "kayitta": 64
+   "kayitta": 66
   },
   "recipe_blueprint-rsb-75-1-worldboss": {
    "kullanim": "ALWAYS_USABLE",
@@ -7561,7 +7566,7 @@
    "sonuc": {
     "ammunition_laser_rsb-75": 15000
    },
-   "kayitta": 191
+   "kayitta": 199
   },
   "recipe_blueprint-sab-50-1-worldboss": {
    "kullanim": "ALWAYS_USABLE",
@@ -7609,7 +7614,7 @@
    "sonuc": {
     "ammunition_laser_sab-50": 1000
    },
-   "kayitta": 63
+   "kayitta": 65
   },
   "recipe_blueprint-salvage-core-empyrian-limited": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -7690,7 +7695,7 @@
    "sonuc": {
     "ammunition_rocketlauncher_sar-02": 1000
    },
-   "kayitta": 48
+   "kayitta": 50
   },
   "recipe_blueprint-schism-empyrian": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -7721,7 +7726,7 @@
    "sonuc": {
     "resource_collectable_scrapium": 10
    },
-   "kayitta": 177
+   "kayitta": 185
   },
   "recipe_blueprint-scrapium-empyrian-m": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -7767,7 +7772,7 @@
    "sonuc": {
     "ship_citadel-plus_design_citadel-plus-samurai": 1
    },
-   "kayitta": 53
+   "kayitta": 55
   },
   "recipe_blueprint-season-citadel-plus-viking": {
    "kullanim": "USABLE_ONCE",
@@ -7783,8 +7788,8 @@
    "sonuc": {
     "ship_citadel-plus_design_citadel-plus-viking": 1
    },
-   "kayitta": 175,
-   "gecici": true
+   "kayitta": 183,
+   "gecici": 2550434398
   },
   "recipe_blueprint-season-cyborg-horus": {
    "kullanim": "USABLE_ONCE",
@@ -7800,7 +7805,7 @@
    "sonuc": {
     "ship_cyborg_design_cyborg-horus": 1
    },
-   "kayitta": 125
+   "kayitta": 129
   },
   "recipe_blueprint-season-diminisher-eldritch": {
    "kullanim": "USABLE_ONCE",
@@ -7816,7 +7821,7 @@
    "sonuc": {
     "ship_diminisher_design_diminisher-eldritch": 1
    },
-   "kayitta": 79
+   "kayitta": 80
   },
   "recipe_blueprint-season-dmg-xsp01": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -7832,8 +7837,8 @@
    "sonuc": {
     "equipment_shipupgrade_dmg-xsp01": 1
    },
-   "kayitta": 164,
-   "gecici": true
+   "kayitta": 169,
+   "gecici": "sezon"
   },
   "recipe_blueprint-season-goliath-plus-dogma": {
    "kullanim": "USABLE_ONCE",
@@ -7849,7 +7854,7 @@
    "sonuc": {
     "ship_goliath-plus_design_goliath-plus-dogma": 1
    },
-   "kayitta": 189
+   "kayitta": 197
   },
   "recipe_blueprint-season-goliath-plus-dreadwing": {
    "kullanim": "USABLE_ONCE",
@@ -7865,7 +7870,7 @@
    "sonuc": {
     "ship_goliath-plus_design_goliath-plus-dreadwing": 1
    },
-   "kayitta": 169
+   "kayitta": 176
   },
   "recipe_blueprint-season-hp-xsp01": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -7881,8 +7886,8 @@
    "sonuc": {
     "equipment_shipupgrade_hp-xsp01": 1
    },
-   "kayitta": 52,
-   "gecici": true
+   "kayitta": 54,
+   "gecici": "sezon"
   },
   "recipe_blueprint-season-hyperion-cerevisia": {
    "kullanim": "USABLE_ONCE",
@@ -7898,8 +7903,8 @@
    "sonuc": {
     "ship_hyperion_design_hyperion-cerevisia": 1
    },
-   "kayitta": 19,
-   "gecici": true
+   "kayitta": 20,
+   "gecici": 2550434398
   },
   "recipe_blueprint-season-orcus-mobius": {
    "kullanim": "USABLE_ONCE",
@@ -7931,8 +7936,8 @@
    "sonuc": {
     "ship_orcus_design_orcus-thornspire": 1
    },
-   "kayitta": 158,
-   "gecici": true
+   "kayitta": 163,
+   "gecici": 2534709598
   },
   "recipe_blueprint-season-orcus-viking": {
    "kullanim": "USABLE_ONCE",
@@ -7964,8 +7969,8 @@
    "sonuc": {
     "ship_paladin_design_paladin-khepri": 1
    },
-   "kayitta": 185,
-   "gecici": true
+   "kayitta": 193,
+   "gecici": 2542485598
   },
   "recipe_blueprint-season-retiarus-plus-wyvern": {
    "kullanim": "USABLE_ONCE",
@@ -7981,8 +7986,8 @@
    "sonuc": {
     "ship_retiarus-plus_design_retiarus-plus-wyvern": 1
    },
-   "kayitta": 147,
-   "gecici": true
+   "kayitta": 152,
+   "gecici": 2550434398
   },
   "recipe_blueprint-season-shd-xsp01": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -7998,8 +8003,8 @@
    "sonuc": {
     "equipment_shipupgrade_shd-xsp01": 1
    },
-   "kayitta": 199,
-   "gecici": true
+   "kayitta": 207,
+   "gecici": "sezon"
   },
   "recipe_blueprint-season-solace-plus-enigma": {
    "kullanim": "USABLE_ONCE",
@@ -8015,7 +8020,7 @@
    "sonuc": {
     "ship_solace-plus_design_solace-plus-enigma": 1
    },
-   "kayitta": 161
+   "kayitta": 166
   },
   "recipe_blueprint-season-solace-plus-striker": {
    "kullanim": "USABLE_ONCE",
@@ -8031,8 +8036,8 @@
    "sonuc": {
     "ship_solace-plus_design_solace-plus-striker": 1
    },
-   "kayitta": 10,
-   "gecici": true
+   "kayitta": 11,
+   "gecici": 2550434398
   },
   "recipe_blueprint-season-spc-xsp01": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -8048,8 +8053,8 @@
    "sonuc": {
     "equipment_shipupgrade_spc-xsp01": 1
    },
-   "kayitta": 116,
-   "gecici": true
+   "kayitta": 117,
+   "gecici": "sezon"
   },
   "recipe_blueprint-sentinel-frost": {
    "kullanim": "USABLE_ONCE",
@@ -8084,7 +8089,7 @@
    "sonuc": {
     "ship_sentinel": 1
    },
-   "kayitta": 13
+   "kayitta": 14
   },
   "recipe_blueprint-seprom-blacklight": {
    "kullanim": "ALWAYS_USABLE",
@@ -8180,8 +8185,8 @@
    "sonuc": {
     "resource_ore_seprom": 10000
    },
-   "kayitta": 120,
-   "gecici": true
+   "kayitta": 122,
+   "gecici": 1793660398
   },
   "recipe_blueprint-seprom": {
    "kullanim": "ALWAYS_USABLE",
@@ -8215,7 +8220,7 @@
    "sonuc": {
     "equipment_generator_shield_sg3n-b00": 1
    },
-   "kayitta": 176
+   "kayitta": 184
   },
   "recipe_blueprint-sg3n-b01": {
    "kullanim": "ALWAYS_USABLE",
@@ -8232,7 +8237,7 @@
    "sonuc": {
     "equipment_generator_shield_sg3n-b01": 1
    },
-   "kayitta": 180
+   "kayitta": 188
   },
   "recipe_blueprint-sg3n-b02": {
    "kullanim": "ALWAYS_USABLE",
@@ -8249,7 +8254,7 @@
    "sonuc": {
     "equipment_generator_shield_sg3n-b02": 1
    },
-   "kayitta": 179
+   "kayitta": 187
   },
   "recipe_blueprint-sg3n-b03": {
    "kullanim": "ALWAYS_USABLE",
@@ -8268,7 +8273,7 @@
    "sonuc": {
     "equipment_generator_shield_sg3n-b03": 1
    },
-   "kayitta": 181
+   "kayitta": 189
   },
   "recipe_blueprint-sg3n-p01": {
    "kullanim": "ALWAYS_USABLE",
@@ -8286,7 +8291,7 @@
    "sonuc": {
     "equipment_generator_shield_sg3n-p01": 1
    },
-   "kayitta": 58
+   "kayitta": 60
   },
   "recipe_blueprint-shd-dim01": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -8335,7 +8340,7 @@
    "sonuc": {
     "equipment_shipupgrade_shd-sk01": 1
    },
-   "kayitta": 87
+   "kayitta": 88
   },
   "recipe_blueprint-shd-x1": {
    "kullanim": "ALWAYS_USABLE",
@@ -8353,7 +8358,7 @@
    "sonuc": {
     "equipment_shipupgrade_shd-x1": 1
    },
-   "kayitta": 25
+   "kayitta": 26
   },
   "recipe_blueprint-shd-x2": {
    "kullanim": "ALWAYS_USABLE",
@@ -8371,7 +8376,7 @@
    "sonuc": {
     "equipment_shipupgrade_shd-x2": 1
    },
-   "kayitta": 26
+   "kayitta": 27
   },
   "recipe_blueprint-shd-xa01-atlas": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -8402,7 +8407,9 @@
    },
    "sonuc": {
     "equipment_shipupgrade_shd-xh01": 1
-   }
+   },
+   "kayitta": 29,
+   "gecici": 1793660398
   },
   "recipe_blueprint-shd-xt10-empyrian-limited": {
    "kullanim": "USABLE_LIMIT_PER_SCHEDULE",
@@ -8543,7 +8550,7 @@
    "sonuc": {
     "ship_citadel-plus": 1
    },
-   "kayitta": 15
+   "kayitta": 16
   },
   "recipe_blueprint-ship-goliath-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8562,7 +8569,7 @@
    "sonuc": {
     "ship_goliath-plus": 1
    },
-   "kayitta": 70
+   "kayitta": 72
   },
   "recipe_blueprint-ship-hammerclaw-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8581,7 +8588,7 @@
    "sonuc": {
     "ship_hammerclaw-plus": 1
    },
-   "kayitta": 121
+   "kayitta": 123
   },
   "recipe_blueprint-ship-hecate-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8600,7 +8607,7 @@
    "sonuc": {
     "ship_hecate-plus": 1
    },
-   "kayitta": 14
+   "kayitta": 15
   },
   "recipe_blueprint-ship-liberator-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8618,7 +8625,7 @@
    "sonuc": {
     "ship_liberator-plus": 1
    },
-   "kayitta": 91
+   "kayitta": 92
   },
   "recipe_blueprint-ship-pusat-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8637,7 +8644,7 @@
    "sonuc": {
     "ship_pusat-plus": 1
    },
-   "kayitta": 21
+   "kayitta": 22
   },
   "recipe_blueprint-ship-retiarus-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8656,7 +8663,7 @@
    "sonuc": {
     "ship_retiarus-plus": 1
    },
-   "kayitta": 119
+   "kayitta": 121
   },
   "recipe_blueprint-ship-solace-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8675,7 +8682,7 @@
    "sonuc": {
     "ship_solace-plus": 1
    },
-   "kayitta": 118
+   "kayitta": 119
   },
   "recipe_blueprint-ship-solaris-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8694,7 +8701,7 @@
    "sonuc": {
     "ship_solaris-plus": 1
    },
-   "kayitta": 195
+   "kayitta": 203
   },
   "recipe_blueprint-ship-spearhead-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8713,7 +8720,7 @@
    "sonuc": {
     "ship_spearhead-plus": 1
    },
-   "kayitta": 154
+   "kayitta": 159
   },
   "recipe_blueprint-ship-spectrum-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8732,7 +8739,7 @@
    "sonuc": {
     "ship_spectrum-plus": 1
    },
-   "kayitta": 73
+   "kayitta": 75
   },
   "recipe_blueprint-ship-tartarus-plus": {
    "kullanim": "USABLE_ONCE",
@@ -8751,7 +8758,7 @@
    "sonuc": {
     "ship_tartarus-plus": 1
    },
-   "kayitta": 22
+   "kayitta": 23
   },
   "recipe_blueprint-sl-02": {
    "kullanim": "ALWAYS_USABLE",
@@ -8768,7 +8775,7 @@
    "sonuc": {
     "equipment_weapon_laser_sl-02": 1
    },
-   "kayitta": 144
+   "kayitta": 149
   },
   "recipe_blueprint-sl-03": {
    "kullanim": "ALWAYS_USABLE",
@@ -8787,7 +8794,7 @@
    "sonuc": {
     "equipment_weapon_laser_sl-03": 1
    },
-   "kayitta": 143
+   "kayitta": 148
   },
   "recipe_blueprint-sle-04": {
    "kullanim": "ALWAYS_USABLE",
@@ -8806,7 +8813,7 @@
    "sonuc": {
     "equipment_extra_cpu_sle-04": 1
    },
-   "kayitta": 200
+   "kayitta": 208
   },
   "recipe_blueprint-sll-03": {
    "kullanim": "ALWAYS_USABLE",
@@ -8823,7 +8830,7 @@
    "sonuc": {
     "equipment_weapon_laser_sll-03": 1
    },
-   "kayitta": 27
+   "kayitta": 28
   },
   "recipe_blueprint-solace-contagion": {
    "kullanim": "USABLE_ONCE",
@@ -8860,7 +8867,7 @@
    "sonuc": {
     "ship_solace": 1
    },
-   "kayitta": 23
+   "kayitta": 24
   },
   "recipe_blueprint-solaris-amor": {
    "kullanim": "USABLE_ONCE",
@@ -8974,7 +8981,7 @@
    "sonuc": {
     "equipment_shipupgrade_spc-spd02": 1
    },
-   "kayitta": 66
+   "kayitta": 68
   },
   "recipe_blueprint-spc-x1": {
    "kullanim": "ALWAYS_USABLE",
@@ -8992,7 +8999,7 @@
    "sonuc": {
     "equipment_shipupgrade_spc-x1": 1
    },
-   "kayitta": 9
+   "kayitta": 10
   },
   "recipe_blueprint-spc-x2": {
    "kullanim": "ALWAYS_USABLE",
@@ -9010,7 +9017,7 @@
    "sonuc": {
     "equipment_shipupgrade_spc-x2": 1
    },
-   "kayitta": 8
+   "kayitta": 9
   },
   "recipe_blueprint-spc-xa01-atlas": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -9041,7 +9048,9 @@
    },
    "sonuc": {
     "equipment_shipupgrade_spc-xh01": 1
-   }
+   },
+   "kayitta": 127,
+   "gecici": 1793660398
   },
   "recipe_blueprint-spc-xt10-empyrian": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -9265,7 +9274,7 @@
    "sonuc": {
     "ship_spectrum": 1
    },
-   "kayitta": 166
+   "kayitta": 171
   },
   "recipe_blueprint-speed-burst-valentine": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -9298,7 +9307,8 @@
    },
    "sonuc": {
     "ammunition_specialammo_ss-cpu": 1
-   }
+   },
+   "kayitta": 116
   },
   "recipe_blueprint-subglacial-cpu": {
    "kullanim": "ALWAYS_USABLE",
@@ -9534,7 +9544,7 @@
    "sonuc": {
     "tech_backup-shields": 1
    },
-   "kayitta": 127
+   "kayitta": 132
   },
   "recipe_blueprint-tech-battlerepairbot-uridium": {
    "kullanim": "ALWAYS_USABLE",
@@ -9568,7 +9578,7 @@
    "sonuc": {
     "tech_battle-repair-bot": 1
    },
-   "kayitta": 201
+   "kayitta": 209
   },
   "recipe_blueprint-tech-chainpulse-uridium": {
    "kullanim": "ALWAYS_USABLE",
@@ -9602,7 +9612,7 @@
    "sonuc": {
     "tech_chain-impulse": 1
    },
-   "kayitta": 69
+   "kayitta": 71
   },
   "recipe_blueprint-tech-energyleech-uridium": {
    "kullanim": "ALWAYS_USABLE",
@@ -9618,7 +9628,7 @@
    "sonuc": {
     "tech_energy-leech": 1
    },
-   "kayitta": 7
+   "kayitta": 8
   },
   "recipe_blueprint-tech-energyleech": {
    "kullanim": "ALWAYS_USABLE",
@@ -9636,7 +9646,7 @@
    "sonuc": {
     "tech_energy-leech": 1
    },
-   "kayitta": 89
+   "kayitta": 90
   },
   "recipe_blueprint-tech-precisiontargeter-uridium": {
    "kullanim": "ALWAYS_USABLE",
@@ -9668,7 +9678,7 @@
    "sonuc": {
     "tech_precision-targeter": 1
    },
-   "kayitta": 192
+   "kayitta": 200
   },
   "recipe_blueprint-triskelion": {
    "kullanim": "ALWAYS_USABLE",
@@ -9688,7 +9698,7 @@
    "sonuc": {
     "equipment_weapon_rocketlauncher_triskelion": 1
    },
-   "kayitta": 57
+   "kayitta": 59
   },
   "recipe_blueprint-u-lf-4-permanent": {
    "kullanim": "ALWAYS_USABLE",
@@ -9707,7 +9717,7 @@
    "sonuc": {
     "equipment_weapon_laser_lf-4-unstable": 1
    },
-   "kayitta": 148
+   "kayitta": 153
   },
   "recipe_blueprint-u-lf-4": {
    "kullanim": "ALWAYS_USABLE",
@@ -9758,7 +9768,7 @@
    "sonuc": {
     "ammunition_rocketlauncher_ubr-100": 1000
    },
-   "kayitta": 141
+   "kayitta": 146
   },
   "recipe_blueprint-ucb-100-5k-valentine": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -9807,7 +9817,7 @@
    "sonuc": {
     "resource_collectable_isochronate": 1
    },
-   "kayitta": 28
+   "kayitta": 30
   },
   "recipe_blueprint-v-lightning-frost": {
    "kullanim": "USABLE_ONCE",
@@ -9841,7 +9851,7 @@
    "sonuc": {
     "ship_v-lightning": 1
    },
-   "kayitta": 60
+   "kayitta": 62
   },
   "recipe_blueprint-vb-142-10k": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",
@@ -9892,7 +9902,7 @@
    "sonuc": {
     "ship_venom": 1
    },
-   "kayitta": 34
+   "kayitta": 36
   },
   "recipe_blueprint-wiz-x-empyrian-l": {
    "kullanim": "USABLE_ONCE_PER_SCHEDULE",

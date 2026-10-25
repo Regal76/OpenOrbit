@@ -201,17 +201,19 @@ class Apotheosis:
         row = rank_row(rank)
         me = mod('ApotheosisRankingEntryModule', userId=self.p.user_id, name=self.p.d['pilot'].get('userName', ''),
                  damage=int(st.get('hasar', 0)), rewards=rewards(row['oduller']) if row else [])
-        cap = len(D['katilim'])
+        cap = D.get('haftalik_sinir', {})                     # resmî sunucu kaydı: katılım 3, yenilgi 3, son vuruş 18
         return ('ApotheosisProgressCommand', dict(
             phase=ph, currentPoints=int(min(st.get('puan', 0), D['hedef_puan'])), totalPoints=int(D['hedef_puan']),
             remainingSeconds=max(0, int(left)), hpPercent=int(round(self.boss_left() * 100)), bossLevel=lv,
             rewardStatusIncluded=True, nextResetTime=week_left(now),
             timeToEventEndSeconds=int(TK.time_left(EVENT, now)) if active(now) else 0,
             participationReward=mod('ApotheosisRewardModule', rewards=probs([r + [100] for r in D['katilim'][lv - 1]]),
-                                    claimedCount=int(st.get('katilim', 0)), weeklyLimit=cap),
-            victoryReward=mod('ApotheosisRewardModule', rewards=probs(D['yenilgi']), claimedCount=int(kills), weeklyLimit=cap),
-            lastHitReward=mod('ApotheosisRewardModule', rewards=probs([r + [100] for r in D['son_vurus']['oduller']]),
-                              claimedCount=int(st.get('son_vurus', 0)), weeklyLimit=cap),
+                                    claimedCount=int(st.get('katilim', 0)), weeklyLimit=cap.get('katilim', 0)),
+            victoryReward=mod('ApotheosisRewardModule', rewards=probs(D['yenilgi']), claimedCount=int(kills),
+                              weeklyLimit=cap.get('yenilgi', 0)),
+            lastHitReward=mod('ApotheosisRewardModule', rewards=probs([r + [100] for r in D['son_vurus']['oduller']]
+                                                                       + [[D['son_vurus']['unvan'], 1, 100]]),     # unvan da (kayıt)
+                              claimedCount=int(st.get('son_vurus', 0)), weeklyLimit=cap.get('son_vurus', 0)),
             weeklyRanking=[me] if st.get('hasar') else []))
 
     def boss_left(self):
@@ -338,17 +340,21 @@ class Apotheosis:
         return msgs
 
     def boss_defeated(self, last_hit=True):
-        """Yenilgi: sayaçlar, ödüller (kutular koşuda), seviye."""
+        """Yenilgi: sayaçlar, ödüller (kutular koşuda; yenilgi ve son vuruş ödülü haftalık sınıra kadar), seviye."""
         st, msgs = self.st, []
         lv = self.level()
+        cap = D.get('haftalik_sinir', {})
         with self.p.lock:
             st['yenilgi'] = st.get('yenilgi', 0) + 1
             st['seviye'] = min(len(D['katilim']), lv + 1)
+            win = st['yenilgi'] <= cap.get('yenilgi', st['yenilgi'])
+            last_hit = last_hit and st.get('son_vurus', 0) < cap.get('son_vurus', st.get('son_vurus', 0) + 1)
             if last_hit:
                 st['son_vurus'] = st.get('son_vurus', 0) + 1
             self.p.dirty = True
         loot, n, _ = random.choices(D['yenilgi'], [r[2] for r in D['yenilgi']])[0]
-        msgs += self.m.prize(loot, n)
+        if win:
+            msgs += self.m.prize(loot, n)
         if last_hit:
             k0 = self.p.resource(KEY)
             for l, k in D['son_vurus']['oduller']:
@@ -356,12 +362,16 @@ class Apotheosis:
             msgs += self.key_msgs(self.p.resource(KEY) - k0)          # panelin ödül çarpanıyla gelen adet
             if self.titles:
                 msgs += self.titles(D['son_vurus']['unvan'])
-        self.log('   Kristallon Apotheosis: patron yenildi (seviye %d), yenilgi ödülü %s x%d' % (lv, loot, n))
+        self.log('   Kristallon Apotheosis: patron yenildi (seviye %d), %s' % (lv, 'yenilgi ödülü %s x%d' % (loot, n) if win else
+                                                                            'yenilgi ödülünün haftalık sınırı doldu'))
         return msgs
 
     def participation(self, lv):
+        """Katılım ödülü (haftalık sınıra kadar)."""
         st, msgs = self.st, []
         with self.p.lock:
+            if st.get('katilim', 0) >= D.get('haftalik_sinir', {}).get('katilim', st.get('katilim', 0) + 1):
+                return msgs
             st['katilim'] = st.get('katilim', 0) + 1
             self.p.dirty = True
         for loot, n in D['katilim'][lv - 1]:

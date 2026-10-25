@@ -819,10 +819,12 @@ class World:
     def fit_gate(self, g):
         """Portal harita sınırları içinde ve başka portalın üstünde değil. Üssün yanına yay üzerinde dizilen portallar (etkinlik
         kapıları, labirent, Voyagers/Trinity/arena) üs köşedeyse harita dışına (radyasyon bölgesine) düşüyordu (canlı test H46:
-        2-1'de Plutus x=21.681, Voyagers y=-1.806)."""
+        2-1'de Plutus x=21.681, Voyagers y=-1.806). Kaydı olan haritada kapı ve mod portalı tasarımına göre resmî sunucudaki yerinde
+        (harita_duzeni.json tasarim_yeri: 2-1, 2-8)."""
         m = self.PORTAL_MARGIN
-        x = min(max(int(g['x']), m), self.map_w - m)
-        y = min(max(int(g['y']), m), self.map_h - m)
+        x, y = HD.design_pos(self.map_id, g.get('designId')) or (g['x'], g['y'])
+        x = min(max(int(x), m), self.map_w - m)
+        y = min(max(int(y), m), self.map_h - m)
         for _ in range(12):
             hit = next((o for o in self.gates if o['gateId'] != g['gateId'] and math.hypot(o['x'] - x, o['y'] - y) < self.PORTAL_GAP), None)
             if not hit:
@@ -1458,7 +1460,10 @@ class World:
     def selection(self, n):
         # dize modelli patronlarda (DREADFYRE_FORTRESS, EMPEROR_KRISTALLON_BOSS_2) shipType istemcinin npcId'si
         stype = int(n.model) if str(n.model).isdigit() else int(n.d.get('npc_kimlik', 0))
-        return ('ShipSelectionCommand', dict(userId=n.id, shipType=stype, shield=int(n.shield), shieldMax=n.d['kalkan'],
+        # resmî sunucu kaydı (2026-10-25): kalkanlı uzaylının azami kalkanı tanımın 1 fazlası (StreuneR 30.000 / 30.001, Curcubitor
+        # 270.000 / 270.001, Boss Curcubitor 5.400.001); dolu kalkan tanımın kendisi
+        return ('ShipSelectionCommand', dict(userId=n.id, shipType=stype, shield=int(n.shield),
+                                             shieldMax=n.d['kalkan'] + 1 if n.d['kalkan'] else 0,
                                              hitpoints=int(n.hp), hitpointsMax=n.d['hp'], nanoHull=0, maxNanoHull=0, shieldSkill=False))
 
     def asset_at(self, uid):

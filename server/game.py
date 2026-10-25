@@ -128,6 +128,8 @@ class Sablonlar:
     def __init__(self):
         self.giris = _load('giris.json', {})
         self.haritalar = _load('haritalar.json', {})
+        for w in self.haritalar.values():
+            w['hazir'] = [m for m in w.get('hazir', []) if not (m['_m'] == 'JumpgateCreateCommand' and m['designId'] in SERVER_GATE_DESIGNS)]
         # yalnız kullanılanlar (E10): ötekilerin hepsini kod karşılıyor; kayıttaki hesabın verisi (başka oyuncuların adları, klan
         # listeleri) bir isteğin yedeğinden pencereye çıkmasın. Dosyada kalırlar: araçların kaynağı (rutbe, pve_modlari, sira_odulleri)
         self.yanitlar = {k: v for k, v in _load('yanitlar.json', {}).items() if k in USED_RESPONSES}
@@ -218,6 +220,9 @@ USED_RESPONSES = {'CommandCenterGetDontShowRequest', 'CommandCenterNewsInfoReque
 # asteroit/enkaz yerine düz gri tarama görünüyordu (kullanıcı bildirimi 2026-10-25). Kayıttaki gibi haritanın hazır demetinden sonra.
 DEAD_TEMPLATE = {'RzoneStatusCommand', 'CTBMatchStateCommand'}
 DEAD_LEGACY = {'0|TR', '0|8'}
+# kayıttaki mod portalları (2-1: Deep Space Echoes 300, Trinity Trials 304): sunucunun kendi portalları (echoes.py, arena.py) aynı yerde
+# ikinci kez gidiyordu (referans karşılaştırması 2026-10-25)
+SERVER_GATE_DESIGNS = {300, 304}
 # gerçek sunucunun da yanıt vermediği istekler (kayıt): günlüğe "yanıtsız" diye düşmesin
 SILENT = {'TrackVariableRequest',
           'CommandCenterNewsClickedRequest', 'PerformanceTrackingSendInfoRequest',
@@ -769,7 +774,7 @@ class Session:
                 continue
             if n == 'AssemblyRecipeContentModule':
                 if not asm:
-                    out += [self.assembly.content()] + self.assembly.filter_msgs()
+                    out += self.assembly.login_msgs()
                     asm = True
                 continue
             out.append((n, f))

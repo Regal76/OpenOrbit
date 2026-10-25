@@ -1,5 +1,5 @@
 {
- "_aciklama": "NPC türleri ve harita doğurma listeleri. tip = istemcideki gemi tipi (ShipCreateCommand.typeId, ShipSelectionCommand.shipType). Değerler darkorbitwiki.com'dan (belgeler/wiki/aliens.md); 'kayit' işaretliler gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md); 'uyarlama' işaretliler tahmindir.",
+ "_aciklama": "NPC türleri ve harita doğurma listeleri. tip = istemcideki gemi tipi (ShipCreateCommand.typeId, ShipSelectionCommand.shipType). Değerler darkorbitwiki.com'dan (belgeler/wiki/aliens.md); 'kayit' işaretliler gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md); 'uyarlama' işaretliler tahmindir. Black Light adları resmî sunucudaki gibi iki ters bölüyle başlar (\\\\ Impulse II //; kayıt 2026-10-25).",
  "tipler": {
   "84": {
    "ad": "-=[ Streuner ]=-",
@@ -669,7 +669,7 @@
    "npc_kimlik": 24
   },
   "213": {
-   "ad": "\\ Impulse II //",
+   "ad": "\\\\ Impulse II //",
    "hp": 1200000,
    "kalkan": 750000,
    "hasar": 12000,
@@ -1327,7 +1327,7 @@
    }
   },
   "217": {
-   "ad": "\\ Attend IX //",
+   "ad": "\\\\ Attend IX //",
    "hp": 9000000,
    "kalkan": 4800000,
    "hasar": 17000,
@@ -1362,7 +1362,7 @@
    "_model_notu": "istemci: npcId 176 = Black Light 2 (217)"
   },
   "221": {
-   "ad": "\\ Invoke XVI //",
+   "ad": "\\\\ Invoke XVI //",
    "hp": 36000000,
    "kalkan": 0,
    "hasar": 30000,
@@ -1419,7 +1419,7 @@
    }
   },
   "225": {
-   "ad": "\\ Mindfire Behemoth //",
+   "ad": "\\\\ Mindfire Behemoth //",
    "hp": 135000000,
    "kalkan": 0,
    "hasar": 145000,
@@ -1494,7 +1494,7 @@
    }
   },
   "214": {
-   "ad": "\\ Purpose XXI //",
+   "ad": "\\\\ Purpose XXI //",
    "hp": 800000,
    "kalkan": 0,
    "hasar": 12000,
@@ -1509,7 +1509,8 @@
    "kargo": {},
    "_kaynak": "wiki (belgeler/wiki/aliens.md: purpose_xxi); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 174,
-   "_model_notu": "istemci: npcId 174 = Unidentified Black Light yellow (214)"
+   "_model_notu": "istemci: npcId 174 = Unidentified Black Light yellow (214); resmî sunucu kaydı (2026-10-25): ShipCreateCommand.typeId 213 (Impulse II modeli)",
+   "model": "213"
   },
   "81": {
    "ad": "-=[ Protegit ]=-",
@@ -1585,7 +1586,7 @@
    "_model_notu": "istemci: Century Falcon (90); LoW sürümü"
   },
   "npc179": {
-   "ad": "\\ Urge IV //",
+   "ad": "\\\\ Urge IV //",
    "hp": 1000000,
    "kalkan": 0,
    "hasar": 15000,
@@ -1605,10 +1606,11 @@
     "resource_collectable_kyhalon": 80,
     "resource_collectable_indoctrineoil": 35
    },
-   "model": "214"
+   "model": "216",
+   "_model_notu": "resmî sunucu kaydı (2026-10-25): ShipCreateCommand.typeId 216"
   },
   "215": {
-   "ad": "\\ Attitude XIII //",
+   "ad": "\\\\ Attitude XIII //",
    "hp": 1000000,
    "kalkan": 0,
    "hasar": 15000,
@@ -1627,7 +1629,7 @@
    "npc_kimlik": 180
   },
   "216": {
-   "ad": "\\ Capital I //",
+   "ad": "\\\\ Capital I //",
    "hp": 2000000,
    "kalkan": 0,
    "hasar": 20000,
@@ -1644,7 +1646,7 @@
    "npc_kimlik": 181
   },
   "218": {
-   "ad": "\\ Regard CXI //",
+   "ad": "\\\\ Regard CXI //",
    "hp": 1000000,
    "kalkan": 0,
    "hasar": 15000,
@@ -1666,7 +1668,7 @@
    }
   },
   "219": {
-   "ad": "\\ Observe X //",
+   "ad": "\\\\ Observe X //",
    "hp": 1000000,
    "kalkan": 0,
    "hasar": 15000,
@@ -1685,7 +1687,7 @@
    "npc_kimlik": 183
   },
   "220": {
-   "ad": "\\ Find VII //",
+   "ad": "\\\\ Find VII //",
    "hp": 2000000,
    "kalkan": 0,
    "hasar": 20000,
@@ -1702,7 +1704,7 @@
    "npc_kimlik": 184
   },
   "npc268": {
-   "ad": "\\ Abide I //",
+   "ad": "\\\\ Abide I //",
    "hp": 600000,
    "kalkan": 0,
    "hasar": 6000,
@@ -1728,7 +1730,7 @@
    "_model_notu": "istemci: npcId 268 = Black Light yellow (214) \"Abide I\""
   },
   "npc269": {
-   "ad": "\\ Steadfast III //",
+   "ad": "\\\\ Steadfast III //",
    "hp": 300000,
    "kalkan": 300000,
    "hasar": 6000,
@@ -2115,7 +2117,7 @@
    "model": "81"
   },
   "320": {
-   "ad": "\\ Strokelight Barrage //",
+   "ad": "\\\\ Strokelight Barrage //",
    "hp": 4500000,
    "kalkan": 500000,
    "hasar": 20000,

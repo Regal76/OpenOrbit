@@ -2,10 +2,11 @@
 
 Engeller istemciye MapAddPOICommand NO_ACCESS dikdörtgenleri olarak gider: istemci gemiyi kenarda durdurur (PoiZoneManager.CheckCollisions,
 'NOA' bölgeleri), haritada tasarımıyla (asteroit/hurda) ve mini haritada taralı çizer. Daire dışındaki şekillerin shapeCoordinates'i
-düz (x, y) çiftleri (MapAddPoiCommandHandler.Handle); dikdörtgen emu-dark'ın sırasıyla dört köşe (x0,y0),(x1,y1),(x0,y1),(x1,y0).
+düz (x, y) çiftleri (MapAddPoiCommandHandler.Handle); dikdörtgen resmî sunucunun sırasıyla dört köşe (x0,y0),(x1,y0),(x1,y1),(x0,y1).
 Sunucu tarafında: doğma, cevher ve mayın yerleri engellerin dışında; dolasma açık haritada (X-BL) uzaylılar engellerin çevresinden
 ızgara üzerinde A* ile dolaşır (korsan haritalarında uzaylılar eskisi gibi düz gider: fandom "aliens ... go through them"); portalların
-yeri ve hedef haritadaki varış yeri; Palladium alanı (sis POI'si); mayın alanları; güvenli bölgeler (5-2 korsan üssü).
+yeri ve hedef haritadaki varış yeri; Palladium alanı (ShieldDamage POI'si); mayın alanları (Mines POI'leri); güvenli bölgeler (5-2 korsan
+üssü).
 """
 import heapq, json, math, os, random
 
@@ -14,8 +15,8 @@ _D = json.load(open(os.path.join(HERE, 'data', 'harita_duzeni.json'), encoding='
 MAPS = {int(k): v for k, v in _D['haritalar'].items()}
 _WALLS = {m: [tuple(e[1:5]) for e in d.get('engeller', [])] for m, d in MAPS.items()}
 MINE = _D['mayin']
-NO_ACCESS, GENERIC = 5, 0                       # POIType
-RECTANGLE = 2                                   # istemcinin ShapeType'ı (CIRCLE 0, POLYGON 1, RECTANGLE 2)
+NO_ACCESS, SHIELD_DAMAGE, MINES = 5, 3, 10     # POIType (resmî sunucu kaydı: Palladium alanı "ShieldDamage", mayın alanı "Mines1")
+POLYGON, RECTANGLE = 1, 2                       # istemcinin ShapeType'ı (CIRCLE 0, POLYGON 1, RECTANGLE 2)
 NEBULA = 5                                      # POIDesign: Palladium alanının sisi
 CELL = 200                                      # dolaşma ızgarasının hücresi
 SHIP_PAD = 150                                  # uzaylının doğarken engelden uzak durduğu pay
@@ -32,20 +33,23 @@ def walls(map_id):
     return _WALLS.get(int(map_id), [])
 
 
-def _poi(pid, ptype, design, rect):
+def _poi(pid, ptype, design, rect, shape=RECTANGLE, coords=None):
     x0, y0, x1, y1 = rect
     return {'_m': 'MapAddPOICommand', 'inverted': False, 'poiTypeSpecification': '',
-            'poiType': {'_': 'POITypeModule', 'typeValue': ptype}, 'shape': RECTANGLE, 'active': True,
+            'poiType': {'_': 'POITypeModule', 'typeValue': ptype}, 'shape': shape, 'active': True,
             'design': {'_': 'POIDesignModule', 'designValue': design}, 'poiId': pid,
-            'shapeCoordinates': [int(x0), int(y0), int(x1), int(y1), int(x0), int(y1), int(x1), int(y0)]}
+            'shapeCoordinates': coords or [int(x0), int(y0), int(x1), int(y0), int(x1), int(y1), int(x0), int(y1)]}
 
 
 def poi_msgs(map_id):
-    """Haritanın hazır demetindeki bölgeler: engeller ve Palladium alanının sisi (harita.map_world)."""
+    """Haritanın hazır demetindeki bölgeler: engeller (çokgenler olduğu gibi), Palladium alanı, mayın alanları ve öteki bölgeler
+    (5-2 istasyonunun Equippable Zone'u) (harita.map_world)."""
     d = of(map_id)
-    out = [_poi(e[0], NO_ACCESS, e[5], e[1:5]) for e in d.get('engeller', [])]
+    out = [_poi(e[0], NO_ACCESS, e[5], e[1:5], *((POLYGON, e[6]) if len(e) > 6 else ())) for e in d.get('engeller', [])]
     if 'palladium' in d:
-        out.append(_poi(d['palladium']['id'], GENERIC, NEBULA, d['palladium']['alan']))
+        out.append(_poi(d['palladium']['id'], SHIELD_DAMAGE, NEBULA, d['palladium']['alan']))
+    out += [_poi('Mines%d' % (i + 1), MINES, 0, r) for i, r in enumerate(d.get('mayin_alanlari', []))]
+    out += [_poi(pid, t, design, (0, 0, 0, 0), shape, coords) for pid, t, shape, design, coords in d.get('bolgeler', [])]
     return out
 
 
@@ -61,9 +65,26 @@ def arrival(map_id, key):
     return tuple(v) if isinstance(v, list) else v
 
 
+def one_way_gates(map_id):
+    """Haritanın tek yönlü varış portalları [(x, y, firma)] (5-X: tasarım 52; harita.map_world)."""
+    return [tuple(v) for v in of(map_id).get('varis_portallari', [])]
+
+
+def design_pos(map_id, design):
+    """Kapı ya da mod portalının bu haritadaki yeri (tasarıma göre; resmî sunucu kaydı: 2-1, 2-8) ya da None (dunya.fit_gate)."""
+    p = of(map_id).get('tasarim_yeri', {}).get(str(design))
+    return tuple(p) if p else None
+
+
 def structure_pos(map_id):
     p = of(map_id).get('yapi')
     return tuple(p) if p else None
+
+
+def structure_asset(map_id):
+    """Yapının varlığının (5-2'nin ticaret noktası) yeri ve yaklaşma bölgesinin yarıçapı -> ((x, y) ya da None, yarıçap ya da None)."""
+    d = of(map_id)
+    return (tuple(d['yapi_varlik']) if 'yapi_varlik' in d else None), d.get('yapi_yaricap')
 
 
 def lairs(map_id):
@@ -210,12 +231,20 @@ def mine_spots(map_id, gates, n=None):
     out = []
     for rect in of(map_id).get('mayin_alanlari', []):
         for _ in range(MINE['adet'] if n is None else n):
-            p = free_spot(map_id, rect, pad=100)
+            p = free_spot(map_id, _in_map(map_id, rect), pad=100)
             if p and all(math.hypot(p[0] - g['x'], p[1] - g['y']) > MINE['portal_uzak'] for g in gates):
                 out.append(p)
     return out
 
 
+def _in_map(map_id, r):
+    """Mayın alanının harita içindeki kısmı (kayıttaki alanlar harita dışına taşıyor: 5-1'de y -1.000..28.000)."""
+    import harita as H
+    w, h = H.map_size(map_id)
+    return max(r[0], 0), max(r[1], 0), min(r[2], w), min(r[3], h)
+
+
 def mine_field_of(map_id, x, y):
-    """(x, y)'yi içeren mayın alanı ya da None (patlayan mayının yenisi aynı alanda)."""
-    return next((r for r in of(map_id).get('mayin_alanlari', []) if r[0] <= x <= r[2] and r[1] <= y <= r[3]), None)
+    """(x, y)'yi içeren mayın alanının harita içindeki kısmı ya da None (patlayan mayının yenisi aynı alanda)."""
+    r = next((r for r in of(map_id).get('mayin_alanlari', []) if r[0] <= x <= r[2] and r[1] <= y <= r[3]), None)
+    return r and _in_map(map_id, r)
