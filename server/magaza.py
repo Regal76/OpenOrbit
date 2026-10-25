@@ -185,6 +185,8 @@ NEDENLER = {
                    'Bir gemiye her türden (hasar, can, kalkan, özel) yalnız bir modül takılabilir.'),
     'qfc_satis': ('Quantum Fluid Cores cannot be sold. You can recycle them in the Hyperforge (Assembly).',
                   "Quantum Fluid Core satılamaz; Hyperforge'da (Assembly) geri dönüştürebilirsin."),
+    'rh_bag_suresi': ('Returnees must bond with an active player within 24 hours of logging in.',
+                      'Dönen oyuncular girişten sonraki 24 saat içinde aktif bir oyuncuya bağlanmalı.'),
 }
 
 

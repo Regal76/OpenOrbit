@@ -21383,40 +21383,41 @@
  ],
  "donus_pass": {
   "takvim": "return_of_hero",
-  "special_id": 2026,
+  "special_id": 16296,
   "puan_bedeli": [
-   90,
-   90,
-   90,
-   90,
-   135,
-   135,
-   135,
-   135,
-   135,
-   195,
-   195,
-   195,
-   195,
-   195,
-   255,
-   255,
-   255,
-   255,
-   255,
-   315,
-   315,
-   315,
-   315,
-   315,
-   390,
-   390,
-   390,
-   390,
-   390,
-   480
+   0,
+   100,
+   100,
+   100,
+   100,
+   200,
+   200,
+   200,
+   200,
+   200,
+   300,
+   300,
+   300,
+   300,
+   300,
+   300,
+   300,
+   300,
+   300,
+   300,
+   320,
+   320,
+   320,
+   320,
+   320,
+   320,
+   320,
+   320,
+   320,
+   320
   ],
   "uridyum_bedeli": [
+   0,
    67500,
    67500,
    67500,
@@ -21445,475 +21446,2385 @@
    292500,
    292500,
    292500,
-   292500,
-   360000
+   292500
   ],
   "seviyeler": [
    [
     1,
     [
-     "ammunition_laser_ucb-100",
-     1000
-    ],
-    [
-     "currency_uridium",
-     1000
-    ],
-    [
-     "currency_uridium",
-     2500
-    ]
-   ],
-   [
-    2,
-    [
-     "resource_extra-energy",
-     10
-    ],
-    [
-     "ammunition_laser_rsb-75",
-     500
-    ],
-    [
-     "ammunition_laser_ucb-100",
-     5000
-    ]
-   ],
-   [
-    3,
-    [
-     "ammunition_specialammo_emp-01",
-     5
-    ],
-    [
      "resource_collectable_axion-beam-regulator",
-     25
-    ],
-    [
-     "ammunition_laser_rsb-75",
-     1000
-    ]
-   ],
-   [
-    4,
-    [
-     "resource_booty-key",
-     5
-    ],
-    [
-     "booster_hon-b01",
-     2
-    ],
-    [
-     "resource_collectable_diametrion",
-     10
-    ]
-   ],
-   [
-    5,
-    [
-     "resource_booty-key-apotheosis",
-     1
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     2
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     5
-    ]
-   ],
-   [
-    6,
-    [
-     "ammunition_laser_ucb-100",
-     1500
-    ],
-    [
-     "ammunition_laser_ucb-100",
-     3000
-    ],
-    [
-     "resource_collectable_horizon-shard",
-     100
-    ]
-   ],
-   [
-    7,
-    [
-     "resource_collectable_bifenon",
-     50
-    ],
-    [
-     "resource_collectable_indoctrine-accelerator",
-     5
-    ],
-    [
-     "ammunition_spool_gsp-75",
-     1000
-    ]
-   ],
-   [
-    8,
-    [
-     "resource_pet-fuel",
-     10000
-    ],
-    [
-     "resource_echo-key-green",
-     5
-    ],
-    [
-     "resource_echo-key-blue",
-     3
-    ]
-   ],
-   [
-    9,
-    [
-     "ammunition_rocketlauncher_hstrm-01",
-     500
-    ],
-    [
-     "resource_collectable_permit",
-     1
-    ],
-    [
-     "resource_collectable_containment-node",
-     3
-    ]
-   ],
-   [
-    10,
-    [
-     "resource_booty-key-apotheosis",
-     2
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     3
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     10
-    ]
-   ],
-   [
-    11,
-    [
-     "ammunition_laser_ucb-100",
-     1500
-    ],
-    [
-     "currency_uridium",
-     1500
-    ],
-    [
-     "currency_uridium",
-     3750
-    ]
-   ],
-   [
-    12,
-    [
-     "resource_extra-energy",
-     15
-    ],
-    [
-     "ammunition_laser_rsb-75",
-     750
-    ],
-    [
-     "ammunition_laser_ucb-100",
-     7500
-    ]
-   ],
-   [
-    13,
-    [
-     "ammunition_specialammo_emp-01",
-     7
-    ],
-    [
-     "resource_collectable_axion-beam-regulator",
-     37
-    ],
-    [
-     "ammunition_laser_rsb-75",
-     1500
-    ]
-   ],
-   [
-    14,
-    [
-     "resource_booty-key",
-     7
-    ],
-    [
-     "booster_hon-b01",
-     3
-    ],
-    [
-     "resource_collectable_diametrion",
-     15
-    ]
-   ],
-   [
-    15,
-    [
-     "resource_booty-key-apotheosis",
-     1
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     3
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     7
-    ]
-   ],
-   [
-    16,
-    [
-     "ammunition_laser_ucb-100",
-     2250
-    ],
-    [
-     "ammunition_laser_ucb-100",
-     4500
-    ],
-    [
-     "resource_collectable_horizon-shard",
-     150
-    ]
-   ],
-   [
-    17,
-    [
-     "resource_collectable_bifenon",
-     75
-    ],
-    [
-     "resource_collectable_indoctrine-accelerator",
-     7
-    ],
-    [
-     "ammunition_spool_gsp-75",
-     1500
-    ]
-   ],
-   [
-    18,
-    [
-     "resource_pet-fuel",
-     15000
-    ],
-    [
-     "resource_echo-key-green",
-     7
-    ],
-    [
-     "resource_echo-key-blue",
-     4
-    ]
-   ],
-   [
-    19,
-    [
-     "ammunition_rocketlauncher_hstrm-01",
-     750
-    ],
-    [
-     "resource_collectable_permit",
-     1
-    ],
-    [
-     "resource_collectable_containment-node",
-     4
-    ]
-   ],
-   [
-    20,
-    [
-     "resource_booty-key-apotheosis",
-     3
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     4
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     15
-    ]
-   ],
-   [
-    21,
-    [
-     "ammunition_laser_ucb-100",
-     2000
-    ],
-    [
-     "currency_uridium",
-     2000
-    ],
-    [
-     "currency_uridium",
-     5000
-    ]
-   ],
-   [
-    22,
-    [
-     "resource_extra-energy",
-     20
-    ],
-    [
-     "ammunition_laser_rsb-75",
-     1000
-    ],
-    [
-     "ammunition_laser_ucb-100",
-     10000
-    ]
-   ],
-   [
-    23,
-    [
-     "ammunition_specialammo_emp-01",
      10
     ],
-    [
-     "resource_collectable_axion-beam-regulator",
-     50
-    ],
-    [
-     "ammunition_laser_rsb-75",
-     2000
-    ]
-   ],
-   [
-    24,
-    [
-     "resource_booty-key",
-     10
-    ],
-    [
-     "booster_hon-b01",
-     4
-    ],
-    [
-     "resource_collectable_diametrion",
-     20
-    ]
-   ],
-   [
-    25,
-    [
-     "resource_booty-key-apotheosis",
-     1
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     4
-    ],
-    [
-     "resource_booty-key-apotheosis",
-     10
-    ]
-   ],
-   [
-    26,
-    [
-     "ammunition_laser_ucb-100",
-     3000
-    ],
-    [
-     "ammunition_laser_ucb-100",
-     6000
-    ],
-    [
-     "resource_collectable_horizon-shard",
-     200
-    ]
-   ],
-   [
-    27,
-    [
-     "resource_collectable_bifenon",
-     100
-    ],
-    [
-     "resource_collectable_indoctrine-accelerator",
-     10
-    ],
-    [
-     "ammunition_spool_gsp-75",
-     2000
-    ]
-   ],
-   [
-    28,
-    [
-     "resource_pet-fuel",
-     20000
-    ],
-    [
-     "resource_echo-key-green",
-     10
-    ],
-    [
-     "resource_echo-key-blue",
-     6
-    ]
-   ],
-   [
-    29,
-    [
-     "ammunition_rocketlauncher_hstrm-01",
-     1000
-    ],
-    [
-     "resource_collectable_permit",
-     1
-    ],
-    [
-     "resource_collectable_containment-node",
-     6
-    ]
-   ],
-   [
-    30,
     [
      "equipment_weapon_laser_lf-4",
-     1
-    ],
-    [
-     "equipment_weapon_laser_lf-4-hp",
      1
     ],
     [
      "equipment_weapon_laser_lf-5",
      1
     ]
+   ],
+   [
+    2,
+    [
+     "resource_pet-fuel",
+     10000
+    ],
+    [
+     "ammunition_slug_ths-d01",
+     1000
+    ],
+    [
+     "resource_collectable_axion-beam-regulator",
+     50
+    ]
+   ],
+   [
+    3,
+    [
+     "ammunition_laser_ucb-100",
+     1000
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "equipment_lens_gl-chron",
+     1
+    ]
+   ],
+   [
+    4,
+    [
+     "resource_key_access-dse",
+     2
+    ],
+    [
+     "equipment_weapon_rocketlauncher_hst-2",
+     1
+    ],
+    [
+     "ammunition_rocketlauncher_ubr-100",
+     1500
+    ]
+   ],
+   [
+    5,
+    [
+     "resource_collectable_plasmatic-equalization-plate",
+     50
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "equipment_weapon_laser_lf-5",
+     1
+    ]
+   ],
+   [
+    6,
+    [
+     "resource_collectable_schism",
+     10
+    ],
+    [
+     "equipment_weapon_cannon_r-helios",
+     1
+    ],
+    [
+     "ammunition_slug_ths-b03",
+     300
+    ]
+   ],
+   [
+    7,
+    [
+     "resource_extra-energy",
+     15
+    ],
+    [
+     "ammunition_spool_gsp-30",
+     1000
+    ],
+    [
+     "equipment_weapon_cannon_ep-helios",
+     1
+    ]
+   ],
+   [
+    8,
+    [
+     "ammunition_specialammo_emp-01",
+     5
+    ],
+    [
+     "resource_collectable_indoctrineoil",
+     20
+    ],
+    [
+     "ammunition_slug_ths-b03",
+     300
+    ]
+   ],
+   [
+    9,
+    [
+     "resource_collectable_axion-beam-regulator",
+     10
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "equipment_cannon_shield_mr-t04",
+     1
+    ]
+   ],
+   [
+    10,
+    [
+     "resource_collectable_indoctrine-accelerator",
+     5
+    ],
+    [
+     "equipment_weapon_drive_igd-l01",
+     1
+    ],
+    [
+     "equipment_weapon_laser_lf-5",
+     1
+    ]
+   ],
+   [
+    11,
+    [
+     "ammunition_laser_ucb-100",
+     5000
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     2
+    ],
+    [
+     "equipment_cannon_shield_mr-t04",
+     1
+    ]
+   ],
+   [
+    12,
+    [
+     "ammunition_laser_ucb-100",
+     5000
+    ],
+    [
+     "resource_collectable_axion-beam-regulator",
+     10
+    ],
+    [
+     "resource_collectable_indoctrine-accelerator",
+     60
+    ]
+   ],
+   [
+    13,
+    [
+     "resource_collectable_indoctrineoil",
+     5
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "resource_collectable_indoctrineoil",
+     20
+    ]
+   ],
+   [
+    14,
+    [
+     "resource_key_access-dse",
+     2
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "ammunition_laser_rsb-75",
+     2000
+    ]
+   ],
+   [
+    15,
+    [
+     "resource_collectable_plasmatic-equalization-plate",
+     100
+    ],
+    [
+     "equipment_lens_gl-chron",
+     1
+    ],
+    [
+     "equipment_weapon_laser_os-l",
+     1
+    ]
+   ],
+   [
+    16,
+    [
+     "resource_collectable_schism",
+     10
+    ],
+    [
+     "resource_collectable_plasmatic-equalization-plate",
+     100
+    ],
+    [
+     "equipment_lens_gl-chron",
+     1
+    ]
+   ],
+   [
+    17,
+    [
+     "resource_extra-energy",
+     15
+    ],
+    [
+     "ammunition_laser_ucb-100",
+     5000
+    ],
+    [
+     "resource_collectable_indoctrineoil",
+     20
+    ]
+   ],
+   [
+    18,
+    [
+     "ammunition_laser_sab-50",
+     5000
+    ],
+    [
+     "equipment_cannon_shield_mr-t03",
+     1
+    ],
+    [
+     "equipment_cannon_shield_mr-t04",
+     1
+    ]
+   ],
+   [
+    19,
+    [
+     "resource_collectable_axion-beam-regulator",
+     15
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "ammunition_laser_rsb-75",
+     4000
+    ]
+   ],
+   [
+    20,
+    [
+     "resource_collectable_indoctrine-accelerator",
+     5
+    ],
+    [
+     "equipment_weapon_laser_am-l",
+     1
+    ],
+    [
+     "equipment_weapon_laser_os-l",
+     1
+    ]
+   ],
+   [
+    21,
+    [
+     "resource_pet-fuel",
+     10000
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "equipment_lens_gl-omega",
+     1
+    ]
+   ],
+   [
+    22,
+    [
+     "ammunition_laser_rsb-75",
+     2000
+    ],
+    [
+     "resource_collectable_indoctrine-accelerator",
+     20
+    ],
+    [
+     "ammunition_spool_gsp-150",
+     2000
+    ]
+   ],
+   [
+    23,
+    [
+     "resource_collectable_indoctrineoil",
+     5
+    ],
+    [
+     "resource_collectable_neptune-alloy",
+     50
+    ],
+    [
+     "resource_collectable_diametrion",
+     10
+    ]
+   ],
+   [
+    24,
+    [
+     "ammunition_rocketlauncher_ubr-100",
+     500
+    ],
+    [
+     "equipment_cannon_shield_mr-t03",
+     1
+    ],
+    [
+     "ammunition_laser_ucb-100",
+     10000
+    ]
+   ],
+   [
+    25,
+    [
+     "resource_collectable_plasmatic-equalization-plate",
+     100
+    ],
+    [
+     "equipment_weapon_laser_am-l",
+     1
+    ],
+    [
+     "equipment_weapon_drive_igd-l02",
+     1
+    ]
+   ],
+   [
+    26,
+    [
+     "resource_collectable_schism",
+     10
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "resource_collectable_axion-beam-regulator",
+     20
+    ]
+   ],
+   [
+    27,
+    [
+     "resource_extra-energy",
+     15
+    ],
+    [
+     "resource_collectable_plasmatic-equalization-plate",
+     100
+    ],
+    [
+     "resource_collectable_horizon-shard",
+     50
+    ]
+   ],
+   [
+    28,
+    [
+     "ammunition_specialammo_emp-01",
+     5
+    ],
+    [
+     "ammunition_laser_sab-50",
+     5000
+    ],
+    [
+     "resource_collectable_containment-node",
+     40
+    ]
+   ],
+   [
+    29,
+    [
+     "resource_collectable_axion-beam-regulator",
+     15
+    ],
+    [
+     "equipment_weapon_laser_lf-4",
+     1
+    ],
+    [
+     "resource_collectable_plasmatic-equalization-plate",
+     500
+    ]
+   ],
+   [
+    30,
+    [
+     "resource_collectable_plasmatic-equalization-plate",
+     50
+    ],
+    [
+     "equipment_weapon_laser_am-l",
+     1
+    ],
+    [
+     "equipment_weapon_laser_lf-5-mf",
+     1
+    ]
    ]
   ],
   "vip": "resource_recall-pass-vip-badge",
-  "gorev_adet": {
-   "gunluk": [
-    3,
-    2
-   ],
-   "haftalik": [
-    5,
-    3
-   ]
-  },
+  "gorevler": [
+   {
+    "kaynak": 701003,
+    "tur": 3,
+    "gold": false,
+    "puan": 35,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1701003,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170100300,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170100301,
+         "matches": [],
+         "type": 12,
+         "displayType": 13,
+         "targetValue": 200000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 702002,
+    "tur": 3,
+    "gold": false,
+    "puan": 40,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1702002,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170200200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170200201,
+         "matches": [],
+         "type": 1,
+         "displayType": 3,
+         "targetValue": 1200000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700042,
+    "tur": 3,
+    "gold": false,
+    "puan": 30,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700042,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170004200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170004201,
+         "matches": [
+          "4"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 10,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170004202,
+         "matches": [
+          "7"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 5,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170004203,
+         "matches": [
+          "10"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 3,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 701007,
+    "tur": 3,
+    "gold": true,
+    "puan": 35,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1701007,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170100700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170100701,
+         "matches": [
+          "1",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 3000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 702005,
+    "tur": 3,
+    "gold": true,
+    "puan": 40,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1702005,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 3
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170200500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170200501,
+         "matches": [],
+         "type": 51,
+         "displayType": 51,
+         "targetValue": 30,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700014,
+    "tur": 6,
+    "gold": false,
+    "puan": 85,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700014,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170001400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170001401,
+         "matches": [
+          "6"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 120,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170001402,
+         "matches": [
+          "12"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 40,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170001403,
+         "matches": [
+          "22"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 15,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700013,
+    "tur": 6,
+    "gold": false,
+    "puan": 85,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700013,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170001300,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170001301,
+         "matches": [
+          "14"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 250,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170001302,
+         "matches": [
+          "9"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 40,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170001303,
+         "matches": [
+          "18"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 10,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700044,
+    "tur": 6,
+    "gold": false,
+    "puan": 110,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700044,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170004400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170004401,
+         "matches": [
+          "resource_collectable_ggeu"
+         ],
+         "type": 89,
+         "displayType": 89,
+         "targetValue": 1,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 702020,
+    "tur": 6,
+    "gold": false,
+    "puan": 125,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1702020,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170202000,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170202001,
+         "matches": [
+          "1",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 40000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 701016,
+    "tur": 6,
+    "gold": false,
+    "puan": 110,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1701016,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170101600,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170101601,
+         "matches": [
+          "4"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 150,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170101602,
+         "matches": [
+          "7"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 50,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       },
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170101603,
+         "matches": [
+          "10"
+         ],
+         "type": 6,
+         "displayType": 6,
+         "targetValue": 25,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 701045,
+    "tur": 6,
+    "gold": true,
+    "puan": 110,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1701045,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170104500,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170104501,
+         "matches": [
+          "resource_collectable_permit"
+         ],
+         "type": 89,
+         "displayType": 89,
+         "targetValue": 5,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 702022,
+    "tur": 6,
+    "gold": true,
+    "puan": 125,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1702022,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170202200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170202201,
+         "matches": [
+          "3",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 30,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 701017,
+    "tur": 6,
+    "gold": true,
+    "puan": 110,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1701017,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 6
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170101700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170101701,
+         "matches": [],
+         "type": 12,
+         "displayType": 13,
+         "targetValue": 1500000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700026,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700026,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170002600,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170002601,
+         "matches": [
+          "5"
+         ],
+         "type": 95,
+         "displayType": 95,
+         "targetValue": 15,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700027,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700027,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170002700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170002701,
+         "matches": [
+          "6"
+         ],
+         "type": 95,
+         "displayType": 95,
+         "targetValue": 10,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700028,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700028,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170002800,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170002801,
+         "matches": [
+          "2"
+         ],
+         "type": 95,
+         "displayType": 95,
+         "targetValue": 5,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700029,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700029,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170002900,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170002901,
+         "matches": [
+          "6",
+          "ALPHA",
+          "BETA",
+          "GAMMA",
+          "DELTA",
+          "ZETA",
+          "KAPPA",
+          "51",
+          "52",
+          "53",
+          "55",
+          "73",
+          "74"
+         ],
+         "type": 80,
+         "displayType": 80,
+         "targetValue": 5,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700030,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700030,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170003000,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170003001,
+         "matches": [],
+         "type": 85,
+         "displayType": 85,
+         "targetValue": 10,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700031,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700031,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170003100,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170003101,
+         "matches": [],
+         "type": 85,
+         "displayType": 85,
+         "targetValue": 20,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700032,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700032,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170003200,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170003201,
+         "matches": [
+          "1",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 100000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700033,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700033,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170003300,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170003301,
+         "matches": [
+          "2",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 10000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700034,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700034,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170003400,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170003401,
+         "matches": [
+          "3",
+          "0"
+         ],
+         "type": 20,
+         "displayType": 22,
+         "targetValue": 100,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700036,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700036,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170003600,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170003601,
+         "matches": [],
+         "type": 12,
+         "displayType": 13,
+         "targetValue": 5000000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700037,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700037,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170003700,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170003701,
+         "matches": [],
+         "type": 51,
+         "displayType": 51,
+         "targetValue": 500,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   },
+   {
+    "kaynak": 700058,
+    "tur": 9,
+    "gold": false,
+    "puan": 350,
+    "tanim": {
+     "_": "QuestDefinitionModule",
+     "id": 1700058,
+     "types": [
+      {
+       "_": "QuestTypeModule",
+       "type": 9
+      }
+     ],
+     "rootCase": {
+      "_": "QuestCaseModule",
+      "id": 170005800,
+      "active": false,
+      "mandatory": true,
+      "ordered": false,
+      "mandatoryCount": 1,
+      "modifier": [
+       {
+        "_": "QuestElementModule",
+        "questCase": {
+         "_": "QuestCaseModule",
+         "id": 0,
+         "active": false,
+         "mandatory": false,
+         "ordered": false,
+         "mandatoryCount": 0,
+         "modifier": []
+        },
+        "condition": {
+         "_": "QuestConditionModule",
+         "id": 170005801,
+         "matches": [],
+         "type": 1,
+         "displayType": 3,
+         "targetValue": 1800000,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": true,
+          "completed": false
+         },
+         "subConditions": [
+          {
+           "_": "QuestConditionModule",
+           "id": 170005802,
+           "matches": [
+            "510",
+            "511",
+            "512",
+            "513",
+            "514",
+            "515",
+            "516",
+            "517",
+            "518",
+            "519"
+           ],
+           "type": 77,
+           "displayType": 77,
+           "targetValue": 0,
+           "mandatory": false,
+           "state": {
+            "_": "QuestConditionStateModule",
+            "currentValue": 0,
+            "active": true,
+            "completed": false
+           },
+           "subConditions": []
+          }
+         ]
+        }
+       }
+      ]
+     },
+     "rewards": [],
+     "icons": [
+      {
+       "_": "QuestIconModule",
+       "icon": 1
+      }
+     ],
+     "textKeyFoundation": "",
+     "portraitId": "",
+     "star": 0
+    }
+   }
+  ],
+  "gorev_surumu": 2,
   "gorev_kimlik_kaydirma": 900000000,
   "yenileme_uridyum": 500,
-  "_kaynak": "istemci 1.1.115 (UIRecallBattlePassSystem: pencere recallBattlePass, VIEW isteği, eşikler birikimli, ödül izleri Free/Return/VIP, VIP düğmesi ödeme sayfası RecallPassVip); tools/surum_115.py",
-  "_uyarlama": "Seviye, ödül ve bedel tablosu kaynakta yok: 30 seviye, bedeller Season Pass'in ilk 30 seviyesininki; görevler Season Pass havuzundan (kimlikleri kaydırılmış: aynı görev iki pencerede ayrı ilerler), Gold görevleri VIP görevi; deneyimi Season Pass puanı. Tek oyunculuda oyuncu dönen kahraman (Return of Hero): Return izi açık."
+  "_kaynak": "istemci 1.1.115 (UIRecallBattlePassSystem: pencere recallBattlePass, VIEW isteği, eşikler birikimli, ödül izleri Free/Return/VIP, VIP düğmesi ödeme sayfası RecallPassVip); seviyeler, bedeller, specialId ve görevler resmî sunucu kaydı (2026-10-25); Return izi Return of Hero görevleriyle: board-en 130459; tools/surum_115.py",
+  "_uyarlama": "Günlük ve haftalık görevler her gün / hafta kayıttakiler (3 + 2 VIP, 5 + 3 VIP); yenilemede yerine gelen Season Pass havuzundan (kimlikleri kaydırılmış: aynı görev iki pencerede ayrı ilerler; Gold görevleri VIP görevi, deneyimi Season Pass puanı). Tek oyunculuda oyuncu dönen kahraman: Return izi Return of Hero'da veterana bağlanınca."
  }
 }

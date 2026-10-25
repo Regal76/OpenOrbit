@@ -12,13 +12,14 @@ süresince birer kez.
   Returnee Login: kayıtta son oturum 14 günden (ve son kampanyadan 60 günden) eskiyse girişte 15 günlük kampanya: hoş geldin ödülü,
       7 günlük giriş takvimi, dönüş paketleri mağazada. Süre bitince istemcinin gizleme isteği kampanyayı kapatır.
   Pre-Prometheus Day Sales (pre_prometheus): alınan farklı Pre-BF paketi sayısı (yalnız bilgi penceresi).
-  Return of Hero (return_of_hero): dönen oyuncu (TRUE / INVITEE); herhangi bir kod sanal bir veterana bağlar; 13 tekrarsız ve günde 5
-      görev (Season Pass havuzundan) Returnee Key verir; Exchange sekmesinde anahtarla takas (BattlePassKeyExchange*, exchangeType 2).
+  Return of Hero (return_of_hero): dönen oyuncu (TRUE / INVITEE); herhangi bir kod sanal bir veterana bağlar, yalnız etkinlikteki ilk
+      girişten 24 saat içinde (SSS); 13 tekrarsız ve günde 5 görev (Season Pass havuzundan) Returnee Key verir; Exchange sekmesinde
+      anahtarla takas (BattlePassKeyExchange*, exchangeType 2; liste SSS'ninki).
   Stellar Pathfinder: paketler mağazada seviye 5'ten başlayarak hesap başına bir kez (pencerenin _claim düğmesi istemci içi: karşılığı
       yok). Oyunda 5-14; tek oyunculuda Solaris'in tek yolu olduğu için üst sınır yok (EP çarpanıyla aralık hızla geçiliyor).
 Profilde 'dukkanlar': mileage {donem, indirim {paket: adım}, alinan []}, vip {donem, paket, takas {ödül: n}}, returnee {baslangic,
-  hosgeldin, gun, son_gun, kapali, son_kampanya}, pre_bf {donem, alinan []}, rehero {donem, bagli, veteran, deger, tamam, alinan,
-  gun_gorevleri, takas}, tek_sefer [paket].
+  hosgeldin, gun, son_gun, kapali, son_kampanya}, pre_bf {donem, alinan []}, rehero {donem, ilk_giris, bagli, veteran, deger, tamam,
+  alinan, gun_gorevleri, takas}, tek_sefer [paket].
 """
 import datetime, json, os, random, time
 
@@ -68,6 +69,10 @@ class Dukkanlar:
         magaza.on_bought.append(self.bought)
         self.prev_seen = self.st.get('son_oturum') # önceki oturumun son anı (Returnee Login; tick yazar)
         self.returnee_check(self.prev_seen)
+        if TK.is_active(RH['takvim']) and 'ilk_giris' not in self.rh():
+            with self.p.lock:                      # Return of Hero'daki ilk giriş: veterana bağlanma süresi buradan
+                self.rh()['ilk_giris'] = time.time()
+                self.p.dirty = True
 
     @property
     def st(self):
@@ -351,7 +356,7 @@ class Dukkanlar:
         nows = time.time() if now is None else now
         from magaza import stack_msg
         return ('EventReturnOfHeroActionCommand', dict(
-            btnEnable=True, returnType=int(rtype), errorMessage=stack_msg(error or 'empty'),
+            btnEnable=True, returnType=int(rtype), errorMessage=error if isinstance(error, dict) else stack_msg(error or 'empty'),
             inviterName=st.get('veteran', '') if bound else '', bootKeyLootId=RH['anahtar'], inviterId=int(st.get('kod', 0)),
             eventReturnOfHeroQuestCommand=mod('EventReturnOfHeroQuestCommand', dailyNextRefreshSecond=int(max(0, tomorrow - nows)),
                                               dailyQuests=[self.rh_quest_module(q, st) for q in daily],
@@ -375,6 +380,8 @@ class Dukkanlar:
         if act == 1:
             if st.get('bagli'):
                 return [self.rh_cmd(0, 'empty')]
+            if time.time() - st.get('ilk_giris', time.time()) > RH['bag_suresi_sn']:     # SSS: girişten 24 saat içinde
+                return [self.rh_cmd(0, self.m.neden('rh_bag_suresi'))]
             with self.p.lock:
                 st.update(bagli=True, kod=int(f.get('id') or 0), veteran=random.choice(RH['veteran_adlari']))
                 self.p.dirty = True

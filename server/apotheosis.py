@@ -1,6 +1,6 @@
 """Kristallon Apotheosis (istemci 1.1.115; veri data/buyuk_icerikler.json 'kristallon_apotheosis' <- tools/surum_115.py).
 
-Takvimde (Return of Hero ile, 21 Ekim - 19 Kasım 2026) pazartesi-cumartesi üç toplama penceresi (08-10, 14-16, 20-22; panelin
+Takvimde (21 Ekim 2026 - 2027 sonu: resmî sunucu kaydı) pazartesi-cumartesi üç toplama penceresi (08-10, 14-16, 20-22; panelin
 "Seanslı etkinlikler hep açık" ayarıyla iki saatlik dilimlerle hep açık): X-2..X-8'de etkinlik uzaylıları (Icy, Kristallon, Boss
 Kristallon kopyaları; harita sınıfına göre puan) öldürülerek hedef puan toplanır. Hedefe ulaşınca uzaylılar çekilir, 1-1 / 2-1 /
 3-1'de portal (tasarım 307) açılır: harita 510'da 5 dk bekleme, sonra Emperor Kristallon (EMPEROR_KRISTALLON_BOSS_2, npcId 518)
@@ -94,11 +94,10 @@ def week_id(now=None):
     return '%d-W%02d' % (y, w)
 
 
-def week_left(now=None):
-    now = time.time() if now is None else now
-    d = datetime.date.fromtimestamp(now)
-    monday = datetime.datetime.combine(d + datetime.timedelta(days=7 - d.weekday()), datetime.time())
-    return max(0, int(monday.timestamp() - now))
+def week_end(now=None):
+    """Haftanın sıfırlandığı an: sonraki pazartesi 00:00."""
+    d = datetime.date.fromtimestamp(time.time() if now is None else now)
+    return datetime.datetime.combine(d + datetime.timedelta(days=7 - d.weekday()), datetime.time()).timestamp()
 
 
 def probs(rows):
@@ -205,7 +204,7 @@ class Apotheosis:
         return ('ApotheosisProgressCommand', dict(
             phase=ph, currentPoints=int(min(st.get('puan', 0), D['hedef_puan'])), totalPoints=int(D['hedef_puan']),
             remainingSeconds=max(0, int(left)), hpPercent=int(round(self.boss_left() * 100)), bossLevel=lv,
-            rewardStatusIncluded=True, nextResetTime=week_left(now),
+            rewardStatusIncluded=True, nextResetTime=int(week_end(now) * 1000),     # sıfırlanma anı, ms (kayıt)
             timeToEventEndSeconds=int(TK.time_left(EVENT, now)) if active(now) else 0,
             participationReward=mod('ApotheosisRewardModule', rewards=probs([r + [100] for r in D['katilim'][lv - 1]]),
                                     claimedCount=int(st.get('katilim', 0)), weeklyLimit=cap.get('katilim', 0)),

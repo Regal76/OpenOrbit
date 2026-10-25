@@ -20,10 +20,12 @@ Return of Hero (takvim return_of_hero) süresince menü öğesi 'recallBattlePas
   VIP         penceredeki "Buy" ödeme sayfasını açar (JavascriptHelper.OpenWebUrl PAY_TYPE RecallPassVip): odeme.py mağazayı açar,
               Return VIP Badge (resource_recall-pass-vip-badge) paketten; the badge is used up as soon as it is bought (bought) or
               found in the inventory (ensure), and the open window gets a fresh view with its last requestId (refresh_msgs)
-Tek oyunculu: oyuncu dönen kahraman (Return of Hero), Return izi açık. Görevler Season Pass havuzundan (kimlikleri kaydırılmış; Gold
-görevleri VIP görevi), deneyimi Season Pass puanı; günlük 3 + 2 VIP her gün, haftalık 5 + 3 VIP pazartesi, sezonluklar dönem boyunca.
-Yenileme günde bir ücretsiz, sonra 500 U (haftalık 500 U).
-Profilde: donus_pass {donem, puan, vip, alinan {0: [], 1: [], 2: []}, gun, gunluk, hafta, haftalik, sezonluk, deger, tamam, yenileme}.
+Seviyeler, bedeller, specialId ve görevler resmî sunucu kaydından (2026-10-25). Tek oyunculu: oyuncu dönen kahraman; Return izi
+Return of Hero'da veterana bağlanınca açılır (SSS: Return of Hero görevleriyle), değilse RETURN_INELIGIBLE. Görevler kayıttakiler:
+günlük 3 + 2 VIP her gün, haftalık 5 + 3 VIP pazartesi, 12 sezonluk dönem boyunca; yenilemede yerine gelen Season Pass havuzundan
+(kimlikleri kaydırılmış; Gold görevleri VIP görevi, deneyimi Season Pass puanı). Yenileme günde bir ücretsiz, sonra 500 U (haftalık 500 U).
+Profilde: donus_pass {donem, surum, puan, vip, alinan {0: [], 1: [], 2: []}, gun, gunluk, hafta, haftalik, sezonluk, deger, tamam,
+yenileme}.
 """
 import datetime, json, os, random, time
 
@@ -61,7 +63,9 @@ def shifted(node):
     return node
 
 
-MISSIONS = {q + OFS: dict(m, tanim=shifted(m['tanim'])) for q, m in SZ.MISSIONS.items()}
+REAL = {m['tanim']['id']: m for m in R['gorevler']}              # kayıttaki görevler (sourceQuestId: 'kaynak')
+MISSIONS = {**{q + OFS: dict(m, tanim=shifted(m['tanim']), kaynak=q + OFS) for q, m in SZ.MISSIONS.items()}, **REAL}
+SURUM = R['gorev_surumu']
 
 
 def thresholds():
@@ -77,11 +81,12 @@ def level_of(points):
 
 
 def pool(qtype, gold):
-    return [q + OFS for q in SZ.pool(qtype, gold)]
+    return [q for q, m in MISSIONS.items() if m['tur'] == qtype and m['gold'] == gold]
 
 
-def pick(qtype, seed, counts, exclude=()):
-    return [q + OFS for q in SZ.pick(qtype, seed, counts, {q - OFS for q in exclude})]
+def listed(qtype):
+    """Dönemin görevleri: kayıttakiler, kayıttaki sırayla."""
+    return [q for q, m in REAL.items() if m['tur'] == qtype]
 
 
 def day_start(now):
@@ -121,12 +126,16 @@ class DonusPass:
             with self.p.lock:
                 st.clear()
                 st.update(donem=key, puan=0, vip=False, alinan={str(t): [] for t in (FREE, RETURN, VIP)}, deger={}, tamam=[],
-                          sezonluk=pool(SZ.SEASON, False) + pool(SZ.SEASON, True), yenileme={'gun': 0, 'hafta': 0})
+                          yenileme={'gun': 0, 'hafta': 0})
                 self.p.dirty = True
+        if st.get('surum') != SURUM:          # yeni dönem ya da görevler değişti (2026-10-25: kayıttakiler): listeler baştan
+            self.reset_list('sezonluk', SZ.SEASON)
+            with self.p.lock:
+                st.update(surum=SURUM, gun=None, hafta=None)
         if st.get('gun') != SZ.day_id(now):
-            self.reset_list('gunluk', SZ.DAILY, R['gorev_adet']['gunluk'], 'gun', SZ.day_id(now))
+            self.reset_list('gunluk', SZ.DAILY, 'gun', SZ.day_id(now))
         if st.get('hafta') != SZ.week_id(now):
-            self.reset_list('haftalik', SZ.WEEKLY, R['gorev_adet']['haftalik'], 'hafta', SZ.week_id(now))
+            self.reset_list('haftalik', SZ.WEEKLY, 'hafta', SZ.week_id(now))
         if not st.get('vip') and self.p.resource(VIP_ITEM) > 0:     # Return VIP Badge (paketten): pass'e
             self.p.add_resource(VIP_ITEM, -1)
             with self.p.lock:
@@ -156,16 +165,17 @@ class DonusPass:
             return []
         return self.refresh_msgs() if self.ensure() else []
 
-    def reset_list(self, key, qtype, counts, stamp_key, stamp):
+    def reset_list(self, key, qtype, stamp_key=None, stamp=None):
         st = self.st
         with self.p.lock:
             for q in st.get(key, []):
                 st['deger'].pop(str(q), None)
                 if q in st['tamam']:
                     st['tamam'].remove(q)
-            st[key] = pick(qtype, 'rbp|%s|%s' % (st['donem'], stamp), counts)
-            st[stamp_key] = stamp
-            st['yenileme'][stamp_key] = 0
+            st[key] = listed(qtype)
+            if stamp_key:
+                st[stamp_key] = stamp
+                st['yenileme'][stamp_key] = 0
             self.p.dirty = True
 
     def level(self):
@@ -183,8 +193,12 @@ class DonusPass:
     def points_cmd(self):
         return ('RecallBattlePassPointsInfoCommand', dict(points=int(self.st.get('puan', 0)), specialId=SPECIAL))
 
+    def eligible(self):
+        """Return izi: Return of Hero'da veterana bağlı (SSS: Return izi Return of Hero görevleriyle açılır)."""
+        return bool(self.hero and self.hero())
+
     def hero_state(self):
-        return 4 if self.hero and self.hero() else 2               # INVITEE (veterana bağlı) / TRUE (dönen kahraman)
+        return 4 if self.eligible() else 2                          # INVITEE (veterana bağlı) / TRUE (dönen kahraman)
 
     def view_cmd(self, rid, now=None):
         al, th = self.st['alinan'], thresholds()
@@ -196,7 +210,7 @@ class DonusPass:
                             returnLootId=rl, returnAmount=rn, returnClaimed=i in al[str(RETURN)],
                             vipLootId=vl, vipAmount=vn, vipClaimed=i in al[str(VIP)]))
         return ('RecallBattlePassViewCommand', dict(
-            requestId=int(rid), specialId=SPECIAL, heroState=self.hero_state(), inviteCount=0, returnEligible=True,
+            requestId=int(rid), specialId=SPECIAL, heroState=self.hero_state(), inviteCount=0, returnEligible=self.eligible(),
             vipOwned=bool(self.st.get('vip')), vipPurchaseEnabled=not self.st.get('vip'), claimsEnabled=True,
             levelPurchaseEnabled=self.level() < MAX_LEVEL, levelPurchaseCap=MAX_LEVEL, pointsCost=list(COST), uridiumCost=list(UCOST),
             timeToEventEnd=int(TK.time_left(EVENT, now)), levels=rows))
@@ -219,14 +233,12 @@ class DonusPass:
     def mission_cmd(self, rid, now=None):
         now = time.time() if now is None else now
         st = self.st
-        end = now + TK.time_left(EVENT, now)
-        per = TK.period(EVENT, now)
         spans = {0: (day_start(now), day_start(now) + 86400), 1: (week_start(now), week_start(now) + 7 * 86400),
-                 2: (per[0] if per else now, end)}
+                 2: (0, 0)}                                         # sezonluk: ikisi de 0 (kayıt)
         items = []
         for q in st.get('gunluk', []) + st.get('haftalik', []) + st.get('sezonluk', []):
             p = PERIOD[MISSIONS[q]['tur']]
-            items.append(mod('RecallBattlePassMissionModule', sourceQuestId=q, period=p, periodStart=int(spans[p][0]),
+            items.append(mod('RecallBattlePassMissionModule', sourceQuestId=MISSIONS[q]['kaynak'], period=p, periodStart=int(spans[p][0]),
                              nextReset=int(spans[p][1]), experience=MISSIONS[q]['puan'],
                              missionStatus=mod('RecallBattlePassMissionStatusModule', type=self.status(q)),
                              questDefinitionModule=GT.with_state(MISSIONS[q]['tanim'], st['deger'].get(str(q), {}), q in st['tamam'])))
@@ -270,12 +282,14 @@ class DonusPass:
         return []
 
     def claim(self, track, lv):
-        """-> (sonuç, mesajlar): 0 SUCCESS, 1 ALREADY_CLAIMED, 4 INVALID_REQUEST, 5 LEVEL_LOCKED, 7 VIP_REQUIRED."""
+        """-> (sonuç, mesajlar): 0 SUCCESS, 1 ALREADY_CLAIMED, 4 INVALID_REQUEST, 5 LEVEL_LOCKED, 6 RETURN_INELIGIBLE, 7 VIP_REQUIRED."""
         st = self.st
         if lv not in LEVELS or track not in (FREE, RETURN, VIP):
             return 4, []
         if lv > self.level():
             return 5, []
+        if track == RETURN and not self.eligible():
+            return 6, []
         if track == VIP and not st.get('vip'):
             return 7, []
         if lv in st['alinan'][str(track)]:
@@ -317,6 +331,8 @@ class DonusPass:
     def refresh(self, f, rid):
         """Günlük ya da haftalık görevin yerine havuzdan başkası: 0 SUCCESS, 3 STALE_MISSION, 7 INSUFFICIENT_URIDIUM, 9 NO_REPLACEMENT."""
         st, q = self.st, int(f.get('questId') or 0)
+        # istemci kaynak kimliğini (sourceQuestId) ya da tanımınkini gönderebilir
+        q = next((x for x in st.get('gunluk', []) + st.get('haftalik', []) if q in (x, MISSIONS[x]['kaynak'])), q)
         key = 'gunluk' if q in st.get('gunluk', []) else 'haftalik' if q in st.get('haftalik', []) else None
         done = lambda code, extra=(): list(extra) + [('RecallBattlePassMissionRefreshResultCommand',
                                                       dict(requestId=rid, specialId=SPECIAL, result=code))]
@@ -366,4 +382,5 @@ class DonusPass:
 
 
 for _q, _m in MISSIONS.items():
-    _m['puan'] = SZ.points_of(_q - OFS)
+    if _q not in REAL:
+        _m['puan'] = SZ.points_of(_q - OFS)

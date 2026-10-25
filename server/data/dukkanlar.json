@@ -3776,90 +3776,27 @@
     "star": 0
    }
   ],
+  "bag_suresi_sn": 86400,
   "takas": [
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 25,
-    "limit": 3,
-    "exchangeReward": "dmg-xv03",
+    "cost": 56,
+    "limit": 1,
+    "exchangeReward": "prometheus-laser",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_dmg-xv03",
+      "lootId": "equipment_weapon_laser_pr-l",
       "amount": 1
      }
     ],
-    "priority": 6,
+    "priority": 1,
     "isSpecial": true,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "pet-fuel-x1000",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_pet-fuel",
-      "amount": 1000
-     }
-    ],
-    "priority": 20,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 3,
-    "limit": 5,
-    "exchangeReward": "plt-2021-x3000",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_rocket_plt-2021",
-      "amount": 3000
-     }
-    ],
-    "priority": 9,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 10,
-    "limit": 5,
-    "exchangeReward": "hp-zpvp02",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_hp-zpvp02",
-      "amount": 1
-     }
-    ],
-    "priority": 17,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 15,
-    "exchangeReward": "sbl-100-x1000",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_laser_sbl-100",
-      "amount": 1000
-     }
-    ],
-    "priority": 25,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 35,
+    "cost": 56,
     "limit": 1,
     "exchangeReward": "asmodeus-laser",
     "listOfloot": [
@@ -3869,67 +3806,179 @@
       "amount": 1
      }
     ],
+    "priority": 2,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 50,
+    "limit": 1,
+    "exchangeReward": "fs-04",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_generator_shield_fs-04",
+      "amount": 1
+     }
+    ],
+    "priority": 3,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 20,
+    "limit": 3,
+    "exchangeReward": "dmg-zpve",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_dmg-zpve",
+      "amount": 1
+     }
+    ],
+    "priority": 4,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 20,
+    "limit": 3,
+    "exchangeReward": "spc-zpve",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_spc-zpve",
+      "amount": 1
+     }
+    ],
     "priority": 5,
     "isSpecial": true,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 16,
-    "limit": 15,
-    "exchangeReward": "r-ic3-x50",
+    "cost": 20,
+    "limit": 3,
+    "exchangeReward": "hp-zpve",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_specialammo_r-ic3",
-      "amount": 50
+      "lootId": "equipment_shipupgrade_hp-zpve",
+      "amount": 1
      }
     ],
-    "priority": 24,
+    "priority": 6,
     "isSpecial": true,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "kyhalon-x75",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_kyhalon",
-      "amount": 75
-     }
-    ],
-    "priority": 18,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "rinusk-x150",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_rinusk",
-      "amount": 150
-     }
-    ],
-    "priority": 22,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 15,
+    "cost": 20,
     "limit": 3,
+    "exchangeReward": "shd-zpve",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_shd-zpve",
+      "amount": 1
+     }
+    ],
+    "priority": 7,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 30,
+    "limit": 5,
+    "exchangeReward": "dmg-xt10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_dmg-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 8,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 30,
+    "limit": 5,
+    "exchangeReward": "spc-xt10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_spc-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 9,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 30,
+    "limit": 5,
     "exchangeReward": "hp-xt10",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
       "lootId": "equipment_shipupgrade_hp-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 10,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 30,
+    "limit": 5,
+    "exchangeReward": "shd-xt10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_shipupgrade_shd-xt10",
+      "amount": 1
+     }
+    ],
+    "priority": 11,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 40,
+    "limit": 1,
+    "exchangeReward": "hyperplasmoid-lf-4",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_weapon_laser_lf-4-hp",
+      "amount": 1
+     }
+    ],
+    "priority": 12,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 40,
+    "limit": 1,
+    "exchangeReward": "magmadrill-lf-4",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "equipment_weapon_laser_lf-4-md",
       "amount": 1
      }
     ],
@@ -3939,24 +3988,56 @@
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 10,
-    "limit": 5,
-    "exchangeReward": "shd-zpvp02",
+    "cost": 40,
+    "limit": 1,
+    "exchangeReward": "paritydrill-lf-4",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_shd-zpvp02",
+      "lootId": "equipment_weapon_laser_lf-4-pd",
       "amount": 1
      }
     ],
-    "priority": 18,
+    "priority": 14,
     "isSpecial": true,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 8,
-    "limit": 5,
+    "cost": 2,
+    "limit": 15,
+    "exchangeReward": "r-ic3-x60",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_specialammo_r-ic3",
+      "amount": 60
+     }
+    ],
+    "priority": 15,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "sp-100x-x75",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_specialammo_sp-100x",
+      "amount": 75
+     }
+    ],
+    "priority": 16,
+    "isSpecial": true,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 16,
+    "limit": 3,
     "exchangeReward": "nova",
     "listOfloot": [
      {
@@ -3965,56 +4046,184 @@
       "amount": 1
      }
     ],
-    "priority": 26,
+    "priority": 17,
     "isSpecial": true,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 8,
-    "exchangeReward": "frost-field",
+    "cost": 10,
+    "limit": 10,
+    "exchangeReward": "iac-x20",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "tech_frost-field",
-      "amount": 1
+      "lootId": "resource_collectable_indoctrine-accelerator",
+      "amount": 20
+     }
+    ],
+    "priority": 18,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 10,
+    "limit": 10,
+    "exchangeReward": "indoctrine-oil-x10",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_indoctrineoil",
+      "amount": 10
      }
     ],
     "priority": 19,
-    "isSpecial": true,
+    "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 7,
-    "exchangeReward": "anti-mine-transmitter",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "abr-x50",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "tech_anti-mine-transmitter",
-      "amount": 1
+      "lootId": "resource_collectable_axion-beam-regulator",
+      "amount": 50
      }
     ],
-    "priority": 22,
-    "isSpecial": true,
+    "priority": 20,
+    "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 3,
-    "limit": 8,
-    "exchangeReward": "anti-ai-emergency-reserves",
+    "cost": 2,
+    "limit": 5,
+    "exchangeReward": "extra-energy-x125",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "tech_anti-ai-emergency-reserves",
-      "amount": 1
+      "lootId": "resource_extra-energy",
+      "amount": 125
      }
     ],
     "priority": 21,
-    "isSpecial": true,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "booty-key-x8",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_booty-key",
+      "amount": 8
+     }
+    ],
+    "priority": 22,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "rsb-75-x3000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_laser_rsb-75",
+      "amount": 3000
+     }
+    ],
+    "priority": 23,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "ucb-100-x4500",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_laser_ucb-100",
+      "amount": 4500
+     }
+    ],
+    "priority": 24,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "plt-3030-x2000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocket_plt-3030",
+      "amount": 2000
+     }
+    ],
+    "priority": 25,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 5,
+    "exchangeReward": "plt-2021-x3000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocket_plt-2021",
+      "amount": 3000
+     }
+    ],
+    "priority": 26,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "ubr-100-x500",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocketlauncher_ubr-100",
+      "amount": 500
+     }
+    ],
+    "priority": 27,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "hstrm-01-x500",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "ammunition_rocketlauncher_hstrm-01",
+      "amount": 500
+     }
+    ],
+    "priority": 28,
+    "isSpecial": false,
     "claimCount": 0
    },
    {
@@ -4029,413 +4238,13 @@
       "amount": 25
      }
     ],
-    "priority": 12,
+    "priority": 29,
     "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "abr-x75",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_axion-beam-regulator",
-      "amount": 75
-     }
-    ],
-    "priority": 3,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "scrapium-x25",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_scrapium",
-      "amount": 25
-     }
-    ],
-    "priority": 15,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "seprom-x1000",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_ore_seprom",
-      "amount": 1000
-     }
-    ],
-    "priority": 14,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 25,
-    "limit": 1,
-    "exchangeReward": "dusklight-solaris-plus-ship-design",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ship_solaris-plus_design_solaris-plus-dusklight",
-      "amount": 1
-     }
-    ],
-    "priority": 3,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 5,
-    "limit": 10,
-    "exchangeReward": "iac-x25",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_indoctrine-accelerator",
-      "amount": 25
-     }
-    ],
-    "priority": 1,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 5,
-    "limit": 10,
-    "exchangeReward": "indoctrine-oil-x15",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_indoctrineoil",
-      "amount": 15
-     }
-    ],
-    "priority": 2,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 25,
-    "limit": 3,
-    "exchangeReward": "spc-xv03",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_spc-xv03",
-      "amount": 1
-     }
-    ],
-    "priority": 7,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "tetrathrin-x100",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_tetrathrin",
-      "amount": 100
-     }
-    ],
-    "priority": 17,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 10,
-    "limit": 10,
-    "exchangeReward": "hstrm-01-x500",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_rocketlauncher_hstrm-01",
-      "amount": 500
-     }
-    ],
-    "priority": 11,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "schism-x5",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_schism",
-      "amount": 5
-     }
-    ],
-    "priority": 23,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 45,
-    "limit": 1,
-    "exchangeReward": "odysseus-laser",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_weapon_laser_os-l",
-      "amount": 1
-     }
-    ],
-    "priority": 4,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 10,
-    "limit": 5,
-    "exchangeReward": "dmg-zpvp02",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_dmg-zpvp02",
-      "amount": 1
-     }
-    ],
-    "priority": 15,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 3,
-    "limit": 8,
-    "exchangeReward": "npc-nuke",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "tech_npc-nuke",
-      "amount": 1
-     }
-    ],
-    "priority": 20,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 25,
-    "limit": 5,
-    "exchangeReward": "fs-04",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_generator_shield_fs-04",
-      "amount": 1
-     }
-    ],
-    "priority": 10,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "bifenon-x150",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_collectable_bifenon",
-      "amount": 150
-     }
-    ],
-    "priority": 16,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 25,
-    "limit": 3,
-    "exchangeReward": "shd-xv03",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_shd-xv03",
-      "amount": 1
-     }
-    ],
-    "priority": 9,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 30,
-    "limit": 1,
-    "exchangeReward": "hammerclaw",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ship_hammerclaw",
-      "amount": 1
-     }
-    ],
-    "priority": 23,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 13,
-    "limit": 10,
-    "exchangeReward": "ucb-100-x4500",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_laser_ucb-100",
-      "amount": 4500
-     }
-    ],
-    "priority": 7,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 15,
-    "limit": 3,
-    "exchangeReward": "spc-xt10",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_spc-xt10",
-      "amount": 1
-     }
-    ],
-    "priority": 12,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "sp-100x-x75",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_specialammo_sp-100x",
-      "amount": 75
-     }
-    ],
-    "priority": 25,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 7,
-    "limit": 10,
-    "exchangeReward": "plt-3030-x2000",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_rocket_plt-3030",
-      "amount": 2000
-     }
-    ],
-    "priority": 8,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
-    "limit": 10,
-    "exchangeReward": "log-disks-x45",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_logfile",
-      "amount": 45
-     }
-    ],
-    "priority": 19,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 25,
-    "limit": 1,
-    "exchangeReward": "dusklight-hammerclaw-plus-ship-design",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ship_hammerclaw-plus_design_hammerclaw-plus-dusklight",
-      "amount": 1
-     }
-    ],
-    "priority": 2,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 10,
-    "limit": 5,
-    "exchangeReward": "spc-zpvp02",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_spc-zpvp02",
-      "amount": 1
-     }
-    ],
-    "priority": 16,
-    "isSpecial": true,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
     "cost": 4,
-    "limit": 5,
-    "exchangeReward": "extra-energy-x125",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_extra-energy",
-      "amount": 125
-     }
-    ],
-    "priority": 4,
-    "isSpecial": false,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
     "limit": 10,
     "exchangeReward": "sr-5-x50",
     "listOfloot": [
@@ -4445,152 +4254,184 @@
       "amount": 50
      }
     ],
-    "priority": 13,
+    "priority": 30,
     "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 4,
+    "cost": 2,
     "limit": 10,
-    "exchangeReward": "rsb-75-x3000",
+    "exchangeReward": "seprom-x1000",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_laser_rsb-75",
-      "amount": 3000
+      "lootId": "resource_ore_seprom",
+      "amount": 1000
      }
     ],
-    "priority": 6,
+    "priority": 31,
     "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 7,
+    "cost": 2,
     "limit": 10,
-    "exchangeReward": "ubr-100-x500",
+    "exchangeReward": "scrapium-x30",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_rocketlauncher_ubr-100",
-      "amount": 500
+      "lootId": "resource_collectable_scrapium",
+      "amount": 30
      }
     ],
-    "priority": 10,
+    "priority": 32,
     "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 215,
-    "limit": 1,
-    "exchangeReward": "lf-5-mortifer",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_weapon_laser_lf-5-mf",
-      "amount": 1
-     }
-    ],
-    "priority": 1,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 15,
-    "limit": 3,
-    "exchangeReward": "dmg-xt10",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_dmg-xt10",
-      "amount": 1
-     }
-    ],
-    "priority": 11,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 4,
+    "cost": 2,
     "limit": 10,
-    "exchangeReward": "booty-key-x4",
+    "exchangeReward": "bifenon-x150",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "resource_booty-key",
-      "amount": 4
+      "lootId": "resource_collectable_bifenon",
+      "amount": 150
      }
     ],
-    "priority": 5,
+    "priority": 33,
     "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "tetrathrin-x100",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_tetrathrin",
+      "amount": 100
+     }
+    ],
+    "priority": 34,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "kyhalon-x75",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_kyhalon",
+      "amount": 75
+     }
+    ],
+    "priority": 35,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "log-disks-x45",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_logfile",
+      "amount": 45
+     }
+    ],
+    "priority": 36,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "pet-fuel-x1000",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_pet-fuel",
+      "amount": 1000
+     }
+    ],
+    "priority": 37,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
     "limit": 5,
-    "exchangeReward": "polychromium-x150",
+    "exchangeReward": "polychromium-x200",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
       "lootId": "resource_collectable_polychromium",
+      "amount": 200
+     }
+    ],
+    "priority": 38,
+    "isSpecial": false,
+    "claimCount": 0
+   },
+   {
+    "_": "BattlePassKeyExchangeRewardModule",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "rinusk-x150",
+    "listOfloot": [
+     {
+      "_": "BattlePassKeyExchangeLootModule",
+      "lootId": "resource_collectable_rinusk",
       "amount": 150
      }
     ],
-    "priority": 21,
+    "priority": 39,
     "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 1,
+    "cost": 2,
     "limit": 10,
-    "exchangeReward": "job-100-x2000",
+    "exchangeReward": "schism-x5",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "ammunition_laser_job-100",
-      "amount": 2000
+      "lootId": "resource_collectable_schism",
+      "amount": 5
      }
     ],
-    "priority": 24,
+    "priority": 40,
     "isSpecial": false,
     "claimCount": 0
    },
    {
     "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 25,
-    "limit": 3,
-    "exchangeReward": "hp-xv03",
+    "cost": 2,
+    "limit": 10,
+    "exchangeReward": "evocation-chip-x125",
     "listOfloot": [
      {
       "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_hp-xv03",
-      "amount": 1
+      "lootId": "resource_collectable_evocation-chip",
+      "amount": 125
      }
     ],
-    "priority": 8,
-    "isSpecial": true,
-    "claimCount": 0
-   },
-   {
-    "_": "BattlePassKeyExchangeRewardModule",
-    "cost": 15,
-    "limit": 3,
-    "exchangeReward": "shd-xt10",
-    "listOfloot": [
-     {
-      "_": "BattlePassKeyExchangeLootModule",
-      "lootId": "equipment_shipupgrade_shd-xt10",
-      "amount": 1
-     }
-    ],
-    "priority": 14,
-    "isSpecial": true,
+    "priority": 41,
+    "isSpecial": false,
     "claimCount": 0
    }
   ],
@@ -4601,7 +4442,8 @@
    "Orion",
    "Vega"
   ],
-  "_uyarlama": "görevler Season Pass havuzundan (13 tekrarsız + günde 5, 7 gün), anahtar ödülü ve takas listesi (Battle Pass anahtar değişimi) uyarlama; veteran sanal (botlar gelince gerçek)"
+  "_kaynak": "takas listesi ve bağlanma süresi (girişten 24 saat): board-en 130459 (FAQ Kristallon Apotheosis)",
+  "_uyarlama": "görevler Season Pass havuzundan (13 tekrarsız + günde 5, 7 gün) ve anahtar ödülü uyarlama; veteran sanal (botlar gelince gerçek)"
  },
  "stellar": {
   "seviye": [

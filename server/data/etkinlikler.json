@@ -5483,10 +5483,10 @@
    "donemler": [
     [
      "2026-10-21",
-     "2026-11-19"
+     "2027-12-31"
     ]
    ],
-   "_kaynak": "board-en 130459 (FAQ Kristallon Apotheosis); Return of Hero 2026 ile aynı dönem (istemcinin haberi bn_kristallonapotheosis2026: sunucu çapında geri çağırma etkinliği); tools/surum_115.py",
+   "_kaynak": "board-en 130459 (FAQ Kristallon Apotheosis); bitiş resmî sunucu kaydı (2026-10-25, ApotheosisProgressCommand.timeToEventEndSeconds: 2027 sonu; istemcinin haberi bn_kristallonapotheosis2026: sunucu çapında geri çağırma etkinliği); tools/surum_115.py",
    "_takvim": "board-en October Sync 2026-10-21 (Kristallon Apotheosis güncellemesi)",
    "haber": [
     "kristallonapotheosis{Y}"
