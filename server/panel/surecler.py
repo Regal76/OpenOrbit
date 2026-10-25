@@ -11,7 +11,8 @@ sonlandırılır. Portu başka süreç tutuyorsa (önceki oturumdan kalan sunucu
 projenin web.py / game.py süreçlerini kapatabilir.
 Linux ve macOS: port tablosu /proc/net/tcp ya da lsof, süreç bilgisi ps; istemci Wine ya da Proton ile kendi süreç grubunda
 (istemci_ac, calistirici.py). Linux 1024'ten küçük portları yalnız root'a açar: istemci web API'sini 80'den bekliyor (istemcinin
-config.txt'si, değiştirilmez), port_80_sorunu kullanıcıya bir kerelik izin komutunu söyler.
+config.txt'si, değiştirilmez), port_80_sorunu kullanıcıya bir kerelik izin komutunu söyler. macOS'ta bir şey gerekmez: düşük portlar
+0.0.0.0'da açılır, yalnız yerel bağlantılar kabul edilir (uyum.py).
 """
 import json, os, signal, socket, subprocess, sys, threading, time
 
@@ -111,13 +112,16 @@ def _lsof_listeners():
 
 def port_80_sorunu():
     """Linux 80 portunu (istemcinin web API'si) bu kullanıcıya açmıyorsa kullanıcıya gösterilecek metin, yoksa None. Port doluysa
-    None: onu başlatmadaki port denetimi söyler."""
+    None: onu başlatmadaki port denetimi söyler. macOS'ta web.py 80'i 0.0.0.0'da açar (uyum.py): denetim de orada."""
     if os.name == 'nt':
         return None
+    mac = sys.platform == 'darwin'
     with socket.socket() as s:
         try:
-            s.bind(('127.0.0.1', 80))
+            s.bind(('0.0.0.0' if mac else '127.0.0.1', 80))
         except PermissionError:
+            if mac:
+                return _('macOS 80 portunu açmaya izin vermedi; oyunun web girişi bu portta (macOS 10.14 ya da daha yenisi gerekir).')
             return _("Linux 80 portunu yalnız root'a açıyor; oyunun web girişi bu portta. Terminalde bir kez çalıştır (kalıcı): %s",
                      PORT_80_KOMUTU)
         except OSError:

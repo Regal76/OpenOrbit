@@ -356,6 +356,7 @@ function renderOynaBody() {
 
   // ---- uyarılar
   const warns = d.uyarilar.map(u => h('div', { class: 'alert ' + (u.tur === 'hata' ? 'hata' : 'uyari') }, icon('alert'), h('div', null, u.metin),
+    u.eylem ? btn(u.eylem.calisiyor ? T('Kuruluyor…') : u.eylem.metin, () => act(() => api(u.eylem.api, {})), 'primary sm', null, { disabled: !!u.eylem.calisiyor }) : null,
     u.sayfa ? btn(T('Git'), () => go(u.sayfa), 'sm') : null));
 
   // ---- özet kartları
@@ -1368,25 +1369,68 @@ function dlWatch(wrap, st, onDone, opts) {
   return id;
 }
 
+// ---- macOS: panelin kurduğu Wine + DXMT ve Rosetta 2 (wine_motoru.py, /api/motor): Wine / Proton kartı ve sihirbazın oyun klasörü adımı
+function motorBox(m, refresh, { motor = true } = {}) {
+  const call = (path, msg) => act(() => api(path, {}), msg).then(x => { if (x) refresh(x); });
+  const pct = m.toplam ? Math.floor(100 * m.alinan / m.toplam) : 0, run = m.calisiyor, ros = m.rosetta;
+  const rosetta = !ros.gerekli ? null : ros.var ? h('div', { class: 'check-list', style: { margin: 0 } }, checkRow(true, T('Rosetta 2 kurulu')))
+    : h('div', { class: 'alert hata' }, icon('alert'), h('div', null, T("Rosetta 2 kurulu değil: oyunu açan Wine Apple Silicon'da onunla çalışır. Kurmak için macOS yönetici şifreni sorar."),
+      ros.hata ? h('div', { class: 'small' }, ros.hata) : null),
+      btn(ros.durum === 'kuruluyor' ? T('Kuruluyor…') : T("Rosetta'yı kur"), () => call('/api/rosetta/kur'), 'primary sm', 'download', { disabled: ros.durum === 'kuruluyor' }));
+  const old = m.macos_eski ? h('div', { class: 'alert uyari' }, icon('alert'), h('div', null, T('DXMT macOS 14 Sonoma ya da daha yenisini ister (bu Mac: {0}); oyun açılmayabilir.', m.macos))) : null;
+  if (!motor) return h('div', { class: 'stack', style: { gap: '10px' } }, rosetta, old);
+  const head = run ? (m.durum === 'kuruluyor' ? T('Wine kuruluyor…') : T('Wine ve DXMT indiriliyor: %{0}', pct))
+    : m.durum === 'kurulu' ? T('Oyunu açacak Wine hazır: {0}', m.ad) : m.durum === 'hata' ? T('Wine kurulamadı.')
+    : m.durum === 'durdu' ? T('Wine indirmesi durduruldu.') : T('Oyunu açacak Wine henüz kurulmadı.');
+  const info = run ? [`${fmtBytes(m.alinan)} / ${fmtBytes(m.toplam)}`, m.hiz ? `${fmtBytes(m.hiz)}/${T('sn')}` : null,
+      m.kalan_sn != null && m.hiz ? T('kalan {0}', fmtDur(m.kalan_sn)) : null].filter(Boolean).join(' · ')
+    : m.durum === 'hata' ? m.hata : m.durum === 'kurulu' ? m.klasor
+    : T("{0} indirilip kurulur (yaklaşık {1}); ilk OYNA'da da kendiliğinden iner.", m.ad, fmtBytes(m.boyut));
+  const btns = run ? [btn(T('Durdur'), () => call('/api/motor/durdur', T('İndirme durduruluyor…')), 'ghost sm', 'stop')]
+    : m.durum === 'kurulu' ? [] : [btn(m.durum === 'hata' || m.durum === 'durdu' ? T('Yeniden dene') : T('İndir ve kur'), () => call('/api/motor/kur'), 'primary sm', 'download')];
+  return h('div', { class: 'stack', style: { gap: '10px' } },
+    h('div', { class: 'dl-box ' + (m.durum === 'hata' ? 'err' : m.durum === 'kurulu' ? 'ok' : '') }, h('b', null, head),
+      run ? h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } }))) : null,
+      info ? h('div', { class: 'small muted dl-info' }, info) : null,
+      btns.length ? h('div', { class: 'row wrap' }, btns) : null),
+    rosetta, old);
+}
+// kutuyu saniyede bir yeniler (sayfadan çıkınca kendiliğinden durur) -> setInterval kimliği
+function motorWatch(wrap, m, opts) {
+  let sig = JSON.stringify(m);
+  const draw = x => { sig = JSON.stringify(x); wrap.replaceChildren(motorBox(x, draw, opts)); };
+  draw(m);
+  const id = setInterval(async () => {
+    if (!wrap.isConnected) { clearInterval(id); return; }
+    let x; try { x = await api('/api/motor'); } catch (e) { return; }
+    if (JSON.stringify(x) !== sig) draw(x);
+  }, 1000);
+  return id;
+}
+
 // ---- Linux ve macOS: istemciyi açan Wine ya da Proton (calistirici.py; /api/istemci 'calistirici', Windows'ta null)
 function runnerCard(c, cfg, saveCfg) {
-  const kinds = [['otomatik', T('Otomatik')], ['wine', 'Wine'], ['proton', 'Proton'], ['ozel', T('Özel komut')]]
-    .filter(([k]) => k !== 'proton' || c.platform !== 'darwin');
+  const mac = c.platform === 'darwin';
+  const kinds = [['otomatik', T('Otomatik')], ['motor', T("Panelin Wine'ı")], ['wine', 'Wine'], ['proton', 'Proton'], ['ozel', T('Özel komut')]]
+    .filter(([k]) => mac ? k !== 'proton' : k !== 'motor');
   const seg = h('div', { class: 'seg' }, kinds.map(([k, t]) =>
     h('button', { class: cfg.calistirici === k ? 'on info' : '', onclick: () => saveCfg({ calistirici: k, calistirici_yolu: '' }) }, t)));
   const used = c.tur === 'proton' ? `${c.ad}${c.umu ? ' (umu-run)' : ''}` : c.tur === 'ozel' ? c.yol : c.ad;
+  const mWrap = mac ? h('div', { class: 'dl-wrap' }) : null;
+  if (mWrap && c.motor) S.timers.push(motorWatch(mWrap, c.motor, { motor: c.tur === 'motor' }));
   const pathIn = h('input', { class: 'input mono', value: cfg.calistirici_yolu, placeholder: cfg.calistirici === 'ozel' ? T('ör. umu-run') : T('Boş: kendiliğinden bulunur'),
     onchange: e => saveCfg({ calistirici_yolu: e.target.value.trim() }) });
   const prefixIn = h('input', { class: 'input mono', value: cfg.wine_onek, placeholder: c.varsayilan_onek[c.tur] || T('Boş: Wine\'ın öntanımlısı'),
     onchange: e => saveCfg({ wine_onek: e.target.value.trim() }) });
   const found = [...c.protonlar.map(p => ['proton', p.yol, p.ad]), ...c.wineler.map(w => ['wine', w, 'Wine'])];
   return h('div', { class: 'card' }, h('h2', null, icon('zap'), 'Wine / Proton'),
-    h('p', { class: 'desc' }, T("Oyun bir Windows programı; Linux ve macOS'ta Wine ya da Proton ile açılır. Otomatik: Linux'ta Steam'in Proton'u (umu-run kuruluysa onunla), yoksa Wine; macOS'ta Wine. İstemci kendi öneğinde çalışır; önek ilk açılışta kurulur (yarım dakika kadar sürebilir).")),
-    c.hata ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, c.hata))
+    h('p', { class: 'desc' }, T("Oyun bir Windows programı; Linux ve macOS'ta Wine ya da Proton ile açılır. Otomatik: Linux'ta Steam'in Proton'u (umu-run kuruluysa onunla), yoksa Wine; macOS'ta panelin kendi kurduğu Wine ve DXMT (macOS'ta düz Wine oyunun Direct3D 11 grafiklerini çizemez). İstemci kendi öneğinde çalışır; önek ilk açılışta kurulur (yarım dakika kadar sürebilir).")),
+    c.hata && !(mac && c.motor && !c.motor.rosetta.var) ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, c.hata))
       : h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Kullanılan: {0}', used))),
+    mWrap ? h('div', { style: { marginTop: '12px' } }, mWrap) : null,
     h('div', { class: 'stack', style: { gap: '14px', marginTop: '12px' } },
       field(T('Çalıştırıcı'), seg),
-      field(cfg.calistirici === 'ozel' ? T('Komut (istemcinin önüne eklenir)') : T('Yol (wine programı ya da Proton klasörü)'), pathIn),
+      c.tur === 'motor' ? null : field(cfg.calistirici === 'ozel' ? T('Komut (istemcinin önüne eklenir)') : T('Yol (wine programı ya da Proton klasörü)'), pathIn),
       field(T('Önek klasörü (WINEPREFIX)'), prefixIn)),
     found.length ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('Bulunanlar')),
       h('div', { class: 'stack', style: { gap: '8px', marginTop: '8px' } }, found.map(([k, yol, ad]) => h('div', { class: 'row' },
@@ -1819,6 +1863,9 @@ const WZ_PAGES = {
     }
     const dlWrap = (!c.gecerli && (none || DL_ACTIVE(dl))) || (c.gecerli && (dl.calisiyor || dl.yarim)) ? h('div', { class: 'dl-wrap' }) : null;
     const bg = !c.gecerli && dl.calisiyor;
+    let m = r.calistirici?.tur === 'motor' ? r.calistirici.motor : null;   // macOS: oyunu açacak Wine da kendiliğinden iner
+    if (m && m.durum === 'yok' && !WZ.motorAuto) { WZ.motorAuto = true; m = await act(() => api('/api/motor/kur', {})) || m; }
+    const mWrap = m ? h('div', { class: 'dl-wrap' }) : null;
     const chosen = x => { if (x) drawWizard(); };
     const use = p => act(() => api('/api/istemci/kullan', { yol: p })).then(chosen);
     const browse = () => act(() => api('/api/istemci/sec', {}), x => x.iptal ? T('İptal edildi.') : T('Oyun klasörü seçildi.')).then(chosen);
@@ -1831,6 +1878,7 @@ const WZ_PAGES = {
         rows.length ? field(T('Bulunan klasörler'), h('div', { class: 'wz-opts' }, rows))
           : c.gecerli ? null : h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Bilgisayarında DarkOrbit bulunamadı, bu yüzden oyun indirilip proje klasörüne kuruluyor. Kurulu bir oyunun varsa klasörünü seç.'))),
         dlWrap,
+        mWrap ? field(T('Oyunu açacak Wine (macOS)'), mWrap) : null,
         bg ? h('div', { class: 'small muted' }, T('İndirme arka planda sürer: bu arada pilotunu oluşturabilirsin.')) : null,
         dlWrap ? null : field(T('Seçili klasör'), h('div', { class: 'path' }, c.yol || T('Seçilmedi'))),
         c.yol ? h('div', { class: 'check-list', style: { margin: 0 } }, checkRow(c.exe, 'DarkOrbit.exe'), checkRow(c.veri, T('DarkOrbit_Data klasörü')),
@@ -1838,7 +1886,10 @@ const WZ_PAGES = {
         c.gecerli && !c.uyumlu ? h('div', { class: 'alert uyari' }, icon('alert'), h('div', null, T('Bu istemci sunucunun protokolünden farklı bir sürüm. Oyun yine açılabilir; sorun olursa İstemci sayfasından yeni istemciyi uyarla.'))) : null,
         h('div', { class: 'row wrap' }, btn(T('Klasör seç…'), browse, rows.length || dlWrap ? '' : 'primary', 'folder'), btn(T('Yeniden ara'), () => drawWizard(), 'ghost', 'search'))],
       next: { disabled: !c.gecerli && !bg }, skip: !c.gecerli && !bg,
-      after: dlWrap ? () => { WZ.timer = dlWatch(dlWrap, dl, () => drawWizard(), { haveClient: c.gecerli }); } : null,
+      after: () => {
+        if (dlWrap) WZ.timer = dlWatch(dlWrap, dl, () => drawWizard(), { haveClient: c.gecerli });
+        if (mWrap) motorWatch(mWrap, m);              // sihirbaz yeniden çizilince kutu kalkar, yenileme kendiliğinden durur
+      },
     };
   },
   // ---- 4. ilk pilot

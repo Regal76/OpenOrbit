@@ -5,7 +5,8 @@ game.py ile aynı olmalı. Verilmezse etkin yuvanınki, yollar.py)
 HTTP: 8090 (gömülü tarayıcı), 80 (unityApi). Bilinmeyen her isteği kaydeder.
 Arkadaş sunucusunun misafiri (panelin "Arkadaşlarınla Oyna"sı, panel/arkadas.py): --uzak=<adres:8081> --sohbet=<adres:7771>
 --oturum=<anahtar> --uid=<kimlik> ile istemci oyuna ve sohbete arkadaşın sunucusunda girer (oturum anahtarı profili orada bulur;
-kimlik sunucunun verdiği). --adres: dinlenen yerel adres (öntanımlı 127.0.0.1).
+kimlik sunucunun verdiği). --adres: dinlenen yerel adres (öntanımlı 127.0.0.1). macOS'ta 80 ve 843 0.0.0.0'da açılır, yalnız bu
+bilgisayardan gelen bağlantılar kabul edilir (uyum.py: macOS root olmayana 1024'ten küçük portu 127.0.0.1'de açmıyor).
 Çoklu istemci (panel/coklu.py): ek istemci http://127.0.0.1:8090/?oturum=<anahtar>#darkorbit:// ile açılır; anahtar oyun sunucusuna
 sorulur (GET /yerel/oturum: kaydın profili ve sunucudaki kimliği), giriş sayfası onu dosid çerezine yazar, istemci login.php'ye
 PHPSESSID çereziyle gelir: kimlik, gemi, harita, dil ve 2D o kaydınki. Bilinmeyen ek anahtar ana oyuncuya düşmez (ana istemci
@@ -16,6 +17,11 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs, quote
 from urllib.request import ProxyHandler, Request, build_opener, urlopen
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)              # -I ile çalışınca betiğin klasörü yolda değil
+import uyum as UY                         # noqa: E402
+UY.sertifikalar()                         # macOS: CDN görselleri (HTTPS) için kök sertifikalar
 log_dir = [a for a in sys.argv[1:] if not a.startswith('--')][0]
 
 
@@ -366,26 +372,38 @@ class H(BaseHTTPRequestHandler):
 
 
 class Sunucu(ThreadingHTTPServer):
+    suz = False                         # macOS'ta 0.0.0.0'da açılan düşük port: yalnız bu bilgisayar (uyum.dinleme_adresi)
+
+    def verify_request(self, request, client_address):
+        return not self.suz or UY.yerel_mi(client_address[0])
+
     def handle_error(self, request, client_address):
         """İstemcinin kopardığı bağlantıda http.server'ın yığın dökümü (stderr) yerine errors.log'a tek satır."""
         log('errors.log', 'http %s: %r' % (client_address[0], sys.exc_info()[1]))
 
 
 def serve_http(port):
+    adres, suz = UY.dinleme_adresi(ADRES, port)
     try:
-        Sunucu((ADRES, port), H).serve_forever()
+        srv = Sunucu((adres, port), H)
+        srv.suz = suz
+        srv.serve_forever()
     except OSError as e:
         log('errors.log', 'http %d: %s' % (port, e))
 
 
 def serve_tcp(port):
+    adres, suz = UY.dinleme_adresi(ADRES, port)
     try:
         s = socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind((ADRES, port)); s.listen(5)
+        s.bind((adres, port)); s.listen(5)
     except OSError as e:
         log('errors.log', 'tcp %d: %s' % (port, e)); return
     while True:
         c, addr = s.accept()
+        if suz and not UY.yerel_mi(addr[0]):
+            c.close()
+            continue
         log('tcp.log', 'tcp %d connect from %s' % (port, addr))
 
         def rd(c=c):

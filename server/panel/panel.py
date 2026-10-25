@@ -15,9 +15,10 @@ oturumlu açılır); ek istemci açıkken sunucuyu yeniden başlatan işler redd
 Güncelleme (guncelleme.py): açılıştan biraz sonra ve GUNCELLEME_SN'de bir GitHub'daki son sürüm denetlenir; panel ayarı 'guncelleme'
 otomatikse ve oyun, sunucular, indirme ya da başka bir iş sürmüyorsa kurulur, ardından panel yeniden başlar (yeni süreç aynı portu
 alır, açık pencere sayfayı yeniler).
-Linux ve macOS: istemci Wine ya da Proton ile açılır (calistirici.py, İstemci sayfasının Wine / Proton kartı); pencere Chrome, Edge,
-Chromium ya da Brave'de; dosya pencereleri Linux'ta tkinter (yoksa zenity), macOS'ta AppleScript (Tk orada yalnız ana iş parçacığında
-çalışır); kısayol Linux'ta .desktop, macOS'ta .command.
+Linux ve macOS: istemci Wine ya da Proton ile açılır (calistirici.py, İstemci sayfasının Wine / Proton kartı); macOS'ta Otomatik
+panelin kendi kurduğu Wine + DXMT'dir (wine_motoru.py: ilk OYNA'da, istemci indirilirken ya da İstemci sayfasından iner; Apple
+Silicon'da Rosetta 2'yi de panel kurdurur). Pencere Chrome, Edge, Chromium ya da Brave'de; dosya pencereleri Linux'ta tkinter (yoksa
+zenity), macOS'ta AppleScript (Tk orada yalnız ana iş parçacığında çalışır); kısayol Linux'ta .desktop, macOS'ta uygulama paketi (.app).
 """
 import datetime, json, os, re, secrets, shlex, shutil, subprocess, sys, threading, time, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -29,6 +30,8 @@ SERVER = os.path.dirname(PANEL_DIR)
 ROOT = os.path.dirname(SERVER)
 sys.path.insert(0, SERVER)
 sys.path.insert(0, PANEL_DIR)
+import uyum                   # noqa: E402
+uyum.sertifikalar()           # macOS: python.org Python'unun kök sertifikası yoksa sistemin paketi (HTTPS'ten önce; sunucular devralır)
 import yollar as YOL          # noqa: E402
 import ayar as AY             # noqa: E402
 import dil as D               # noqa: E402
@@ -54,7 +57,8 @@ TARAYICI_PROFILI = os.path.join(os.environ.get('LOCALAPPDATA') or YOL.SAVE, 'Dar
 GUNLUKLER = ('gs.log', 'http.log', 'client.log', 'oyun_konsol.log', 'web_konsol.log', 'panel.log', 'errors.log', 'unknown.log') + (
     () if os.name == 'nt' else ('wine.log',))      # Linux ve macOS: Wine'ın / Proton'un çıktısı (surecler.istemci_ac)
 EK_GUNLUK = re.compile(r'client_[a-z0-9_]{1,40}\.log')          # çoklu istemcinin ek istemcilerinin günlükleri (coklu.py)
-NABIZ_SN = 180                      # tarayıcı penceresi izlenemiyorsa: bu kadar istek gelmezse pencere kapandı sayılır
+NABIZ_SN = 180                      # tarayıcı penceresi izlenemiyorsa: bu kadar istek gelmezse pencere kapandı sayılır (monotonic:
+                                    # macOS ve Linux'ta uykuda geçen süre sayılmaz)
 DEVIR_SN = 10                       # tarayıcı süreci bundan önce çıkarsa pencereyi açık bir sürece devretmiştir (watch_window)
 GUNCELLEME_SN = 6 * 3600            # GitHub'da yeni sürüm denetimi aralığı (başarısızsa bir saat sonra yeniden)
 ETKINLIK_ACIKLAMA = {
@@ -122,9 +126,11 @@ KAY.in_use = lambda slot: (YON.running() and YON.slot == slot) or ARK.kullanimda
 TEST = Testler(SERVER, SR.python_exe(), log, SR.NO_WINDOW)     # panelden testler (testler.py)
 UYAR = Uyarlayici(ROOT, SR.python_exe(), log, SR.NO_WINDOW)    # yeni istemciye protokol uyarlaması (protokol.py)
 UPD = Guncelleyici(ROOT, YOL.SAVE, log)                          # GitHub'dan güncelleme (guncelleme.py)
+MOT = CAL.motor()                                                # macOS: panelin kurduğu Wine + DXMT (wine_motoru.py)
+MOT.log = log
 TOKEN = secrets.token_hex(16)
 STATE = {'oyna': {'calisiyor': False, 'adimlar': [], 'hata': None, 'bitti': None, 'sadece_sunucu': False},
-         'nabiz': time.time(), 'pencere_kapandi': False, 'pencere_izleniyor': False, 'son_yedek': 0.0, 'kapaniyor': False,
+         'nabiz': time.monotonic(), 'pencere_kapandi': False, 'pencere_izleniyor': False, 'son_yedek': 0.0, 'kapaniyor': False,
          'sonraki_denetim': time.time() + 8, 'guncellendi': '--guncellendi' in sys.argv, 'srv': None, 'acilis': time.time()}
 
 
@@ -374,9 +380,21 @@ def warnings():
                                               ' '.join(c['sorunlar'])), 'sayfa': 'istemci'})
     elif not c['uyumlu']:
         out.append({'tur': 'uyari', 'metin': c['sorunlar'][-1], 'sayfa': 'istemci'})
-    hata = CAL.bul(CFG)['hata']                                      # Linux ve macOS: Wine ya da Proton
+    hata = CAL.bul(CFG)['hata']                                      # Linux ve macOS: Wine ya da Proton (Apple Silicon'da Rosetta)
     if hata:
-        out.append({'tur': 'hata', 'metin': hata, 'sayfa': 'istemci'})
+        w = {'tur': 'hata', 'metin': hata, 'sayfa': 'istemci'}
+        if CAL.rosetta_hatasi():
+            ros = MOT.state()['rosetta']
+            w['eylem'] = {'metin': _("Rosetta'yı kur"), 'api': '/api/rosetta/kur', 'calisiyor': ros['durum'] == 'kuruluyor'}
+            if ros['hata']:
+                w['metin'] += ' ' + ros['hata']
+        out.append(w)
+    m = MOT.state() if sys.platform == 'darwin' else None
+    if m and m['calisiyor']:
+        out.append({'tur': 'uyari', 'metin': _('Wine ve DXMT indiriliyor: %%%d. Bitince oynayabilirsin.',
+                                               int(100 * m['alinan'] / m['toplam']) if m['toplam'] else 0), 'sayfa': 'istemci'})
+    elif m and m['durum'] == 'hata':
+        out.append({'tur': 'hata', 'metin': _("Panelin Wine'ı kurulamadı: %s", m['hata']), 'sayfa': 'istemci'})
     hata = SR.port_80_sorunu()
     if hata:
         out.append({'tur': 'hata', 'metin': hata, 'sayfa': 'sunucu'})
@@ -409,7 +427,8 @@ def warnings():
 
 
 def status():
-    STATE['nabiz'] = time.time()
+    STATE['nabiz'] = time.monotonic()
+    STATE['pencere_kapandi'] = False                  # bir pencere yine soruyor (ikinci başlatmanın açtığı da)
     if STATE.get('tasima_bekliyor'):
         try_migrate()
     slot = KAY.active()
@@ -533,6 +552,10 @@ def launch(sadece_sunucu=False, arkadas=False):
             others = IST.running_clients(COK.pids())                     # panelin ek istemcileri sayılmaz
             if others:
                 raise Hata(_('Başka bir DarkOrbit istemcisi açık (süreç %s). Önce onu kapatın.', ', '.join(map(str, others))))
+            r = CAL.bul(CFG)
+            if r['tur'] == 'motor' and not r['hata'] and not r['yol']:      # macOS: panelin Wine'ı ilk OYNA'da iner (wine_motoru.py)
+                _step(_('Wine ve DXMT indiriliyor'))
+                MOT.bekle(lambda pct: STATE['oyna']['adimlar'][-1].update(metin=_('Wine ve DXMT indiriliyor: %%%d', pct)))
             cmd, env = IST.komut(CFG, folder, os.path.join(YOL.LOGS, 'client.log'))     # Wine / Proton yoksa sunucular açılmadan hata
         prof = KAY.profile(slot)
         same = YON.running() and YON.slot == slot
@@ -622,7 +645,7 @@ def idle(strict=False):
     """Güncelleme kurulabilir mi: oyun, sunucular, başlatma, istemci indirmesi, protokol aracı ve testler durmuş (strict: panelin
     açmadığı DarkOrbit istemcisi de yok; tasklist çalışır)."""
     busy = (YON.running() or YON.client_alive() or STATE['oyna']['calisiyor'] or DL.running() or UYAR.state()['calisiyor']
-            or TEST.calisiyor or ARK.aktif() or COK.canli())
+            or TEST.calisiyor or ARK.aktif() or COK.canli() or MOT.running())
     return not busy and not (strict and IST.running_clients())
 
 
@@ -672,8 +695,12 @@ def ticker():
                 KAY.backup(YON.slot, 'oto', _('Oyun sırasında'))
                 STATE['son_yedek'] = time.time()
             COK.yedekle(iv)                           # ek istemcilerin kayıtları
-            if not STATE['pencere_izleniyor'] and time.time() - STATE['nabiz'] > NABIZ_SN:
+            if not STATE['pencere_izleniyor'] and time.monotonic() - STATE['nabiz'] > NABIZ_SN and not STATE['pencere_kapandi']:
                 STATE['pencere_kapandi'] = True
+                log('panel penceresi kapandı (sayfa artık sormuyor)')
+                if CFG.get('pencere_kapaninca') == 'kapat':
+                    YON.stop_client()
+                    COK.hepsini_kapat(bekle=8)
             if STATE['pencere_kapandi'] and not YON.client_alive() and not COK.canli() and not STATE['oyna']['calisiyor']:
                 shutdown()
         except Exception:
@@ -687,6 +714,7 @@ def shutdown():
     log('panel kapanıyor')
     try:
         DL.cancel()                                   # indirme: açılmış dosyalar kalır, sonra kaldığı yerden
+        MOT.cancel()
         if not YON.client_alive() and not COK.canli():
             ARK.kapanis()                             # arkadaşın sunucusundaysa ayrılınır (son hâl kayda)
             YON.stop_servers()
@@ -730,6 +758,11 @@ def open_window(url):
 
 def watch_window(proc):
     STATE['pencere'] = proc
+    if sys.platform == 'darwin':
+        # macOS'ta pencere kapanınca tarayıcı (öteki uygulamalar gibi) Dock'ta açık kalır: süreç beklenemez. Kapanış sayfanın
+        # kapanış işaretinden ve nabzından anlaşılır (/api/kapandi, ticker; tarayıcıdan çıkılınca da işaret gelir); panel kapanınca
+        # bu süreç de kapanır (shutdown)
+        return
     STATE['pencere_izleniyor'] = True
     t0 = time.time()
     proc.wait()
@@ -737,7 +770,7 @@ def watch_window(proc):
     if time.time() - t0 < DEVIR_SN:
         # aynı profil klasörüyle açık bir tarayıcı süreci varsa yeni süreç pencereyi ona devredip hemen çıkar (18, 20 ve 22 Ekim:
         # panel açılır açılmaz "kapandı" sayılıp kapanıyordu): pencere açık, kapanışı sayfanın nabzından anlaşılır (ticker)
-        STATE['nabiz'] = time.time()
+        STATE['nabiz'] = time.monotonic()
         log('panel penceresi açık bir tarayıcı sürecine devredildi; nabızla izleniyor')
         return
     log('panel penceresi kapandı')
@@ -776,18 +809,68 @@ def old_shortcut():
         return None
 
 
+def mac_shortcut(script):
+    """macOS: masaüstüne OpenOrbit.app (paneli arka planda başlatan küçük uygulama paketi; Terminal penceresi açılmaz, Dock'ta
+    kalmaz; simge panelinki, sips ve iconutil ile) -> yolu. Eski sürümlerin koyduğu OpenOrbit.command kaldırılır."""
+    app = os.path.join(desktop_dir(), 'OpenOrbit.app')
+    if os.path.isdir(app):
+        shutil.rmtree(app)
+    for d in ('MacOS', 'Resources'):
+        os.makedirs(os.path.join(app, 'Contents', d))
+    exe = os.path.join(app, 'Contents', 'MacOS', 'OpenOrbit')
+    with open(exe, 'w', encoding='utf8', newline='\n') as fh:
+        fh.write('#!/bin/sh\ncd %s && nohup %s %s >/dev/null 2>&1 &\n' % (shlex.quote(ROOT), shlex.quote(sys.executable),
+                                                                         shlex.quote(script)))
+    os.chmod(exe, 0o755)
+    icon = _mac_icon(os.path.join(app, 'Contents', 'Resources', 'OpenOrbit.icns'))
+    plist = {'CFBundleName': 'OpenOrbit', 'CFBundleDisplayName': 'OpenOrbit', 'CFBundleIdentifier': 'io.github.kaanumay.openorbit',
+             'CFBundleExecutable': 'OpenOrbit', 'CFBundlePackageType': 'APPL', 'CFBundleShortVersionString': SURUM,
+             'LSUIElement': True}
+    if icon:
+        plist['CFBundleIconFile'] = 'OpenOrbit.icns'
+    import plistlib
+    with open(os.path.join(app, 'Contents', 'Info.plist'), 'wb') as fh:
+        plistlib.dump(plist, fh)
+    old = os.path.join(desktop_dir(), 'OpenOrbit.command')
+    try:
+        with open(old, encoding='utf8') as fh:
+            if shlex.quote(script) in fh.read():
+                os.remove(old)
+    except OSError:
+        pass
+    subprocess.run(['touch', app], capture_output=True)      # Finder simgeyi yenilesin
+    return app
+
+
+def _mac_icon(out):
+    """Panelin simgesi (arayuz/simge.svg) -> .icns; olmazsa None (uygulama genel simgeyle açılır)."""
+    import tempfile
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(ARAYUZ, 'simge.svg'), encoding='utf8') as fh:
+                svg = fh.read().replace('<svg ', '<svg width="1024" height="1024" ', 1)
+            big, iconset = os.path.join(tmp, 'b.png'), os.path.join(tmp, 'OpenOrbit.iconset')
+            with open(os.path.join(tmp, 'b.svg'), 'w', encoding='utf8') as fh:
+                fh.write(svg)
+            run = lambda *a: subprocess.run(list(a), capture_output=True, timeout=30).returncode == 0
+            if not run('sips', '-s', 'format', 'png', os.path.join(tmp, 'b.svg'), '--out', big):
+                return None
+            os.makedirs(iconset)
+            for n in (16, 32, 128, 256, 512):
+                for k, suffix in ((1, ''), (2, '@2x')):
+                    run('sips', '-z', str(n * k), str(n * k), big, '--out', os.path.join(iconset, 'icon_%dx%d%s.png' % (n, n, suffix)))
+            return out if run('iconutil', '-c', 'icns', iconset, '-o', out) else None
+    except (OSError, subprocess.SubprocessError):
+        return None
+
+
 def unix_shortcut():
-    """Linux: masaüstüne ve uygulama menüsüne openorbit.desktop; macOS: masaüstüne OpenOrbit.command (Terminal'de açılıp paneli arka
-    planda başlatır) -> masaüstündekinin yolu."""
+    """Linux: masaüstüne ve uygulama menüsüne openorbit.desktop; macOS: masaüstüne OpenOrbit.app (mac_shortcut) -> masaüstündekinin
+    yolu."""
     script = os.path.join(ROOT, 'OpenOrbit Panel.pyw')
     os.makedirs(desktop_dir(), exist_ok=True)
     if sys.platform == 'darwin':
-        p = os.path.join(desktop_dir(), 'OpenOrbit.command')
-        with open(p, 'w', encoding='utf8', newline='\n') as fh:
-            fh.write('#!/bin/sh\ncd %s && nohup %s %s >/dev/null 2>&1 &\n' % (shlex.quote(ROOT), shlex.quote(sys.executable),
-                                                                             shlex.quote(script)))
-        os.chmod(p, 0o755)
-        return p
+        return mac_shortcut(script)
     text = ('[Desktop Entry]\nType=Application\nName=OpenOrbit\nComment=%s\nExec="%s" "%s"\nPath=%s\nIcon=%s\nTerminal=false\n'
             'Categories=Game;\n' % (_('OpenOrbit yerel sunucu paneli'), sys.executable, script, ROOT, os.path.join(ARAYUZ, 'simge.svg')))
     menu = os.path.join(os.path.expanduser('~'), '.local', 'share', 'applications')
@@ -831,6 +914,17 @@ def create_shortcut():
 
 # ------------------------------------------------------------------ API
 def screen_size():
+    if sys.platform == 'darwin':                      # ana ekranın nokta çözünürlüğü (Wine'ın gösterdiği; Retina'da piksel yarısı)
+        try:
+            r = subprocess.run(['system_profiler', 'SPDisplaysDataType', '-json'], capture_output=True, text=True, timeout=10)
+            for gpu in json.loads(r.stdout).get('SPDisplaysDataType', []):
+                for d in gpu.get('spdisplays_ndrvs', []):
+                    m = re.match(r'\s*(\d+)\s*x\s*(\d+)', d.get('_spdisplays_resolution', ''))
+                    if m and d.get('spdisplays_main') == 'spdisplays_yes':
+                        return [int(m.group(1)), int(m.group(2))]
+        except (OSError, ValueError, subprocess.SubprocessError):
+            pass
+        return None
     try:
         import ctypes
         u = ctypes.windll.user32
@@ -863,7 +957,7 @@ def launch_command():
     if os.name == 'nt':
         return ['DarkOrbit.exe'] + IST.args(CFG, 'logs\\client.log')
     try:
-        return IST.komut(CFG, client_folder() or ROOT, os.path.join(YOL.LOGS, 'client.log'))[0]
+        return IST.komut(CFG, client_folder() or ROOT, os.path.join(YOL.LOGS, 'client.log'), hazirla=False)[0]
     except RuntimeError:
         return [IST.EXE] + IST.args(CFG, 'logs/client.log')
 
@@ -938,6 +1032,8 @@ def h_get(path, q):
         return TEST.state()
     if path == '/api/istemci/indirme':              # istemci indirmenin durumu (indirme.py)
         return DL.state()
+    if path == '/api/motor':                        # macOS: panelin Wine'ı ve Rosetta (wine_motoru.py)
+        return MOT.state()
     if path == '/api/guncelleme':                   # GitHub'dan güncelleme (guncelleme.py)
         return dict(UPD.state(), ayar=CFG.get('guncelleme'), bosta=idle())
     if path == '/api/protokol':                     # protokol uyarlamasının durumu (protokol.py)
@@ -1169,7 +1265,15 @@ def h_post(path, b):
             raise Hata(str(e))
         return h_get('/api/guncelleme', {})
     if path == '/api/istemci/indir':                # oyunu indir ve proje köküne aç (sürer, kaldığı yerden)
+        if CAL.bul(CFG)['tur'] == 'motor':          # macOS: oyunu açacak Wine da birlikte iner
+            MOT.start()
         return DL.start()
+    if path == '/api/motor/kur':
+        return MOT.start()
+    if path == '/api/motor/durdur':
+        return MOT.cancel()
+    if path == '/api/rosetta/kur':                  # macOS'un yönetici penceresi açılır
+        return MOT.rosetta_kur()
     if path == '/api/istemci/indir_durdur':
         return DL.cancel()
     if path == '/api/istemci/indir_sil':            # yarım indirmenin geçici klasörü
@@ -1305,7 +1409,7 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {})
         if u.path == '/api/kapandi':                 # sayfa kapanıyor (sendBeacon): pencere izlenmiyorsa nabız erken düşsün
             if not STATE['pencere_izleniyor']:
-                STATE['nabiz'] = time.time() - NABIZ_SN + 8
+                STATE['nabiz'] = time.monotonic() - NABIZ_SN + 8
             return self._send(200, {})
         try:
             body = json.loads(raw.decode('utf8') or '{}')
@@ -1316,8 +1420,11 @@ class Handler(BaseHTTPRequestHandler):
 
 class Sunucu(ThreadingHTTPServer):
     # HTTPServer SO_REUSEADDR açıyor; Windows'ta bu, dinlenen porta ikinci bir süreci de bağlatıyor: ikinci başlatma açık paneli
-    # görmeden aynı portta ikinci bir panel açıyordu (canlı tur 2). Kapalıyken bağlanamaz, açık panelin penceresini açtırır (main)
-    allow_reuse_address = False
+    # görmeden aynı portta ikinci bir panel açıyordu (canlı tur 2). Kapalıyken bağlanamaz, açık panelin penceresini açtırır (main).
+    # macOS ve Linux'ta SO_REUSEADDR ikinci dinleyiciyi yine reddeder ama o olmadan açık pencerenin isteklerinden kalan TIME_WAIT
+    # bağlantıları portu yarım dakika tutuyor: güncellemeden sonra yeni panel portu alamayıp başka bir porta açılıyordu (pencere onu
+    # bulamaz)
+    allow_reuse_address = os.name != 'nt'
 
 
 def main():

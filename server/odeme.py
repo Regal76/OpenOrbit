@@ -16,6 +16,8 @@ Birden çok istemcide (çoklu istemci, arkadaş sunucusu) tıklayan istemci, ba�
 """
 import os, socket, threading, time
 
+import uyum as UY
+
 PORT = 443
 ARALIK_SN = 2.0              # aynı tıklamanın yeniden denemeleri (TLS) bir sayılır
 PENCERE_SN = 600             # son açılan pencere bu kadar eskiyse ürün tahmin edilmez
@@ -139,17 +141,20 @@ def baglanan_pid(addr, port):
 
 class Dinleyici:
     """127.0.0.1:443: istemcinin ödeme isteği (TLS) bağlanınca on_click(adres) çağrılır, bağlantı kapatılır (aynı tıklamanın
-    denemeleri bir). on_click bağlantı açıkken çağrılır: tıklayan istemcinin süreci TCP tablosunda görünür (baglanan_pid)."""
+    denemeleri bir). on_click bağlantı açıkken çağrılır: tıklayan istemcinin süreci TCP tablosunda görünür (baglanan_pid). macOS'ta
+    0.0.0.0:443, yalnız bu bilgisayardan gelen bağlantılar (uyum.dinleme_adresi)."""
 
     def __init__(self, on_click, log=print, port=PORT):
         self.on_click, self.log, self.port = on_click, log, port
         self.last = 0.0
         self.sock = None
+        self.suz = False
 
     def start(self):
+        adres, self.suz = UY.dinleme_adresi('127.0.0.1', self.port)
         try:
             s = socket.socket()
-            s.bind(('127.0.0.1', self.port))
+            s.bind((adres, self.port))
             s.listen(5)
         except OSError as e:
             self.log('   ödeme düğmeleri: %d dinlenemedi (%s); düğmeler mağazayı açmaz' % (self.port, e))
@@ -164,6 +169,9 @@ class Dinleyici:
                 c, addr = self.sock.accept()
             except OSError:
                 return
+            if self.suz and not UY.yerel_mi(addr[0]):
+                c.close()
+                continue
             now = time.time()
             if now - self.last >= ARALIK_SN:
                 self.last = now

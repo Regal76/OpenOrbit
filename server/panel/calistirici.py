@@ -2,18 +2,20 @@
 macOS'ta Wine ya da Proton ile açılır. Windows'ta komut yalnız exe ve argümanlarıdır.
 
 Panel ayarları (yapilandirma.py):
-  calistirici       otomatik | wine | proton | ozel. otomatik: Linux'ta Proton (umu-run ya da Steam'in Proton'u), yoksa Wine; macOS'ta
-                    Wine (Proton yalnız Linux'ta).
+  calistirici       otomatik | motor | wine | proton | ozel. otomatik: Linux'ta Proton (umu-run ya da Steam'in Proton'u), yoksa Wine;
+                    macOS'ta motor. motor (yalnız macOS): panelin kendi kurduğu Wine + DXMT (wine_motoru.py; ilk OYNA'da ya da İstemci
+                    sayfasından iner): macOS'ta düz Wine oyunun Direct3D 11'ini çizemiyor. Proton yalnız Linux'ta.
   calistirici_yolu  wine: wine programı; proton: Proton klasörü (içinde proton betiği olan); ozel: istemcinin önüne eklenecek komut
                     (ör. CrossOver'ın wine'ı --bottle ile). Boşsa kendiliğinden bulunur (ozel'de gerekli).
   wine_onek         Wine öneki (WINEPREFIX) ya da Proton'un veri klasörü (STEAM_COMPAT_DATA_PATH). Boşsa save/wine ya da save/proton:
                     istemci öteki Wine programlarından ayrı bir önekte; önek ilk açılışta kurulur (yarım dakika kadar sürebilir).
+Apple Silicon'da Wine (x86_64) Rosetta 2 ister: yoksa bul() hata verir, panel kurdurur (wine_motoru.rosetta_kur).
 Proton Steam'siz açılır: umu-run kuruluysa onunla (Steam Linux Runtime kabında; PROTONPATH bulunan Proton, yoksa umu kendi Proton'unu
 indirir), değilse "proton run" ile (STEAM_COMPAT_CLIENT_INSTALL_PATH Steam'in klasörü; Steam yoksa veri klasörü). Fiil "run": ek
 istemciler (coklu.py) aynı önekte birlikte açılır (waitforexitandrun öncekinin kapanmasını beklerdi). Proton'da istemci S:
 sürücüsünden açılır (Steam'deki PROTON_SET_GAME_DRIVE; S: istemci klasörünün üstü): bildirilen, Z:'den açılınca gömülü Chromium
-(Vuplex) çalışmıyor. İstemciye verilen öteki dosya yolları Z: sürücüsünden (Wine ve Proton öneklerinde Unix kökü). Wine'ın çıktısı
-logs/wine.log'a (surecler.istemci_ac).
+(Vuplex) çalışmıyor. Wine'da (motor da) panel önekte S:'yi kendisi bağlar (oyun_surucusu). İstemciye verilen öteki dosya yolları Z:
+sürücüsünden (Wine ve Proton öneklerinde Unix kökü). Wine'ın çıktısı logs/wine.log'a (surecler.istemci_ac).
 """
 import functools, glob, os, re, shlex, shutil, subprocess, sys
 
@@ -23,14 +25,57 @@ WINDOWS, LINUX, MAC = os.name == 'nt', sys.platform.startswith('linux'), sys.pla
 
 
 def varsayilan_onek(tur):
-    """save/wine ya da save/proton (yollar burada içe aktarılır: istemci.py'yi yalnız panel/ yoluyla içe aktaranlar var)."""
+    """save/wine ya da save/proton (motor da save/wine'ı kullanır; yollar burada içe aktarılır: istemci.py'yi yalnız panel/ yoluyla
+    içe aktaranlar var)."""
     import yollar
-    return os.path.join(yollar.SAVE, tur)
+    return os.path.join(yollar.SAVE, 'wine' if tur == 'motor' else tur)
+
+
+_motor = None
+
+
+def motor():
+    """Panelin Wine motoru (wine_motoru.WineMotoru; panel ve çalıştırıcı aynı nesneyi kullanır)."""
+    global _motor
+    if _motor is None:
+        import yollar
+        from wine_motoru import WineMotoru
+        _motor = WineMotoru(yollar.SAVE)
+    return _motor
 
 
 def win_yolu(p):
     """Wine'daki Windows programına verilecek dosya yolu (Z: Unix kökü); Windows'ta aynen."""
     return p if WINDOWS else 'Z:' + os.path.abspath(p).replace('/', '\\')
+
+
+OYUN_SURUCUSU = 's:'
+
+
+def oyun_surucusu(onek, exe, kur=True):
+    """Wine öneğinde S: istemci klasörünün üstüne bağlanır (Proton'un PROTON_SET_GAME_DRIVE'ı gibi; yoldaki boşluklar da kalkar) ->
+    istemcinin Windows yolu (S:\\<klasör>\\DarkOrbit.exe). kur: bağı kur (yoksa yalnız yol). Yeni önekte dosdevices Wine'ın kurduğu
+    gibi açılır (Wine onu yalnız yoksa doldurur: c: -> ../drive_c, z: -> /). S: başka bir şeyse Z: yolu."""
+    oyun = os.path.dirname(os.path.abspath(exe))
+    yol = '%s\\%s\\%s' % (OYUN_SURUCUSU.upper(), os.path.basename(oyun), os.path.basename(exe))
+    if not kur:
+        return yol
+    dev = os.path.join(onek, 'dosdevices')
+    s = os.path.join(dev, OYUN_SURUCUSU)
+    hedef = os.path.dirname(oyun)
+    try:
+        if not os.path.isdir(dev):
+            os.makedirs(os.path.join(onek, 'drive_c'), exist_ok=True)
+            os.makedirs(dev)
+            os.symlink('../drive_c', os.path.join(dev, 'c:'))
+            os.symlink('/', os.path.join(dev, 'z:'))
+        if os.path.islink(s) and os.readlink(s) != hedef:
+            os.remove(s)
+        if not os.path.lexists(s):
+            os.symlink(hedef, s)
+        return yol if os.path.islink(s) else win_yolu(exe)
+    except OSError:
+        return win_yolu(exe)
 
 
 def steam_klasorleri():
@@ -80,7 +125,8 @@ def wineler():
     """Bulunan wine programları: PATH ve bilinen yerler (macOS'ta Wine uygulamaları ve Homebrew; Finder'dan açılınca PATH kısa)."""
     cands = [shutil.which('wine')]
     if MAC:
-        cands += ['/Applications/Wine %s.app/Contents/Resources/wine/bin/wine' % k for k in ('Stable', 'Devel', 'Staging')]
+        for apps in ('/Applications', os.path.expanduser('~/Applications')):
+            cands += ['%s/Wine %s.app/Contents/Resources/wine/bin/wine' % (apps, k) for k in ('Stable', 'Devel', 'Staging', 'Crossover')]
         cands += ['/opt/homebrew/bin/wine', '/usr/local/bin/wine']
     seen, out = set(), []
     for c in cands:
@@ -98,16 +144,25 @@ def wine_surumu(wine):
         return None
 
 
+def rosetta_hatasi():
+    """Apple Silicon'da Rosetta 2 yoksa kullanıcıya gösterilecek metin (Wine x86_64), yoksa None."""
+    from wine_motoru import rosetta_var
+    if not MAC or rosetta_var():
+        return None
+    return _("Rosetta 2 kurulu değil: oyunu açan Wine Apple Silicon'da onunla çalışır. İstemci sayfasından kur (yönetici şifresi "
+             "sorulur).")
+
+
 def bul(cfg):
-    """Kullanılacak çalıştırıcı -> {'tur': yerel|wine|proton|ozel, 'yol', 'ad', 'onek', 'umu', 'steam', 'hata'}. yol: wine programı,
-    Proton klasörü ya da özel komut; hata: istemci açılamaz (kullanıcıya gösterilir)."""
+    """Kullanılacak çalıştırıcı -> {'tur': yerel|motor|wine|proton|ozel, 'yol', 'ad', 'onek', 'umu', 'steam', 'hata'}. yol: wine
+    programı, Proton klasörü ya da özel komut (motor kurulmadıysa None: OYNA kurar); hata: istemci açılamaz (kullanıcıya gösterilir)."""
     r = {'tur': 'yerel', 'yol': None, 'ad': None, 'onek': None, 'umu': None, 'steam': None, 'hata': None}
     if WINDOWS:
         return r
     secim, yol, onek = cfg.get('calistirici'), cfg.get('calistirici_yolu').strip(), cfg.get('wine_onek').strip()
     umu = shutil.which('umu-run') if LINUX else None
     if secim == 'otomatik':
-        secim = 'proton' if LINUX and (umu or protonlar()) else 'wine'
+        secim = 'motor' if MAC else 'proton' if LINUX and (umu or protonlar()) else 'wine'
     r['tur'] = secim
     if secim == 'ozel':
         r.update(yol=yol, onek=os.path.expanduser(onek) if onek else None)
@@ -115,6 +170,13 @@ def bul(cfg):
             r['hata'] = _('Özel komut boş: İstemci sayfasında Wine / Proton kartından yaz.')
         return r
     r['onek'] = os.path.expanduser(onek) if onek else varsayilan_onek(secim)
+    if secim == 'motor':
+        if not MAC:
+            r['hata'] = _("Panelin Wine'ı yalnız macOS'ta: Otomatik'i ya da Wine'ı seç.")
+            return r
+        m = motor()
+        r.update(yol=m.wine(), ad=m.ad(), hata=rosetta_hatasi())
+        return r
     if secim == 'proton':
         if not LINUX:
             r['hata'] = _("Proton yalnız Linux'ta çalışır: Wine'ı seç.")
@@ -139,19 +201,20 @@ def bul(cfg):
         if yol:
             r['hata'] = _('Wine bulunamadı: %s', yol)
         elif not LINUX:
-            r['hata'] = _('Wine bulunamadı: Wine kur (ör. brew install --cask wine-stable).')
+            r['hata'] = _("Wine bulunamadı: Otomatik'i seç (panel oyunu açacak Wine'ı kendisi kurar) ya da wine programının yolunu yaz.")
         elif cfg.get('calistirici') == 'otomatik':
             r['hata'] = _("Wine ya da Proton bulunamadı: Steam'de bir Proton sürümü kur (Kütüphane > Araçlar) ya da Wine kur (ör. sudo apt "
                           "install wine).")
         else:
             r['hata'] = _("Wine bulunamadı: Wine kur (ör. sudo apt install wine) ya da Proton'u seç.")
         return r
-    r.update(yol=w, ad=wine_surumu(w) or 'wine')
+    r.update(yol=w, ad=wine_surumu(w) or 'wine', hata=rosetta_hatasi())
     return r
 
 
-def komut(cfg, exe, args):
-    """İstemcinin başlatma komutu ve ortamı -> (komut, ortam); ortam None: panelinki. Çalıştırıcı yoksa RuntimeError."""
+def komut(cfg, exe, args, hazirla=True):
+    """İstemcinin başlatma komutu ve ortamı -> (komut, ortam); ortam None: panelinki. Çalıştırıcı yoksa (motor kurulmadıysa da)
+    RuntimeError. hazirla: önekte S: sürücüsünü kur (gösterilecek komutta False)."""
     r = bul(cfg)
     if r['tur'] == 'yerel':
         return [exe] + args, None
@@ -162,11 +225,13 @@ def komut(cfg, exe, args):
         if r['onek']:
             env['WINEPREFIX'] = r['onek']
         return shlex.split(r['yol']) + [exe] + args, env
-    if r['tur'] == 'wine':
+    if r['tur'] in ('wine', 'motor'):
+        if not r['yol']:
+            raise RuntimeError(_("Panelin Wine'ı henüz kurulmadı: OYNA'ya bas ya da İstemci sayfasından kur."))
         env['WINEPREFIX'] = r['onek']
         env.setdefault('WINEDLLOVERRIDES', 'mscoree,mshtml=')     # yeni önekte Mono/Gecko kurulum pencereleri çıkmasın (istemci kullanmaz)
         env.setdefault('WINEDEBUG', 'fixme-all')                 # wine.log yalnız hatalar
-        return [r['yol'], exe] + args, env
+        return [r['yol'], oyun_surucusu(r['onek'], exe, hazirla)] + args, env
     oyun = os.path.dirname(os.path.abspath(exe))     # Proton S:'yi bunlardan kurar (umu da geçirir); Steam'siz panel verir
     env.update(PROTON_SET_GAME_DRIVE='1', STEAM_COMPAT_INSTALL_PATH=oyun, STEAM_COMPAT_LIBRARY_PATHS=os.path.dirname(oyun))
     if r['umu']:
@@ -183,4 +248,4 @@ def ozet(cfg):
     if WINDOWS:
         return None
     return dict(bul(cfg), platform='darwin' if MAC else sys.platform, protonlar=protonlar(), wineler=wineler(),
-                varsayilan_onek={k: varsayilan_onek(k) for k in ('wine', 'proton')})
+                varsayilan_onek={k: varsayilan_onek(k) for k in ('wine', 'proton', 'motor')}, motor=motor().state() if MAC else None)

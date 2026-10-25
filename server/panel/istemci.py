@@ -137,13 +137,14 @@ def args(cfg, log_file, oturum=None, pencere=False):
     return a
 
 
-def komut(cfg, folder, log_file, oturum=None, pencere=False):
+def komut(cfg, folder, log_file, oturum=None, pencere=False, hazirla=True):
     """İstemcinin başlatma komutu ve ortamı -> (komut, ortam): Windows'ta DarkOrbit.exe doğrudan, Linux ve macOS'ta Wine ya da Proton
-    ile (calistirici.py). Çalıştırıcı bulunamazsa RuntimeError."""
-    return CAL.komut(cfg, os.path.join(folder, EXE), args(cfg, CAL.win_yolu(log_file), oturum, pencere))
+    ile (calistirici.py; hazirla: önekte istemcinin sürücüsünü kur). Çalıştırıcı bulunamazsa RuntimeError."""
+    return CAL.komut(cfg, os.path.join(folder, EXE), args(cfg, CAL.win_yolu(log_file), oturum, pencere), hazirla)
 
 
-# Wine sürecinin komut satırı Windows yolu: Z:\...\DarkOrbit.exe … (Wine'ı ya da Proton'u açan komutlar, steam.exe değil)
+# Wine sürecinin komut satırı Windows yolu: Z:\...\DarkOrbit.exe ya da S:\<klasör>\DarkOrbit.exe … (Wine'ı ya da Proton'u açan
+# komutlar, steam.exe değil)
 WINE_ISTEMCI = re.compile(r'"?[a-z]:\\(?:(?!\.exe).)*\\%s\b' % re.escape(EXE.lower()))
 
 
