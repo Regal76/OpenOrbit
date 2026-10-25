@@ -340,14 +340,15 @@ class Yetenekler:
     def singularity(self, n, now):
         """The Stinger'ın tekilliği başlar: oyuncunun üzerinde saniyede hasar (dot_tick)."""
         t = n.davranis['tekillik']
-        if not n.engaged or now < n.ab.get('tekillik', 0) or not self.hero_open(now) or self.dist(n, now) > t['menzil']:
+        rng = t['menzil'] * AY.carpan('npc_menzil')       # panel: alien firing range
+        if not n.engaged or now < n.ab.get('tekillik', 0) or not self.hero_open(now) or self.dist(n, now) > rng:
             return
         n.ab['tekillik'] = now + t['bekleme_sn']
         gorsel = t.get('gorsel', True)                     # Reflector Mimesis'in radyasyonu: girdap yok
         if gorsel and not any(d_.get('gorsel') for d_ in self.hero_dots):
             self.w.send([self.singularity_visual(True)])    # canlı test H30: hasar vardı, görsel yoktu
         self.hero_dots.append(dict(npc=n.id, bitis=now + t['sure_sn'], kalan=t['azami'], sn_hasar=t['sn_hasar'], sonraki=now + 1.0,
-                                   menzil=t['menzil'], gorsel=gorsel))
+                                   menzil=rng, gorsel=gorsel))
         self.w.log('   %s tekilliği başladı' % n.d['ad'])
 
     def kamikaze(self, n, now):

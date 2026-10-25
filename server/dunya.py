@@ -1948,7 +1948,8 @@ class World:
     @staticmethod
     def npc_range(n):
         """NPC'nin ateş menzili: türün kendi değeri; hareketsizler oyuncunun menzilinden uzun (yoksa karşılık veremez)."""
-        return n.d.get('menzil') or (SAVAS['npc_menzil_sabit'] if n.d['hiz'] <= 0 else SAVAS['npc_menzil'])
+        r = n.d.get('menzil') or (SAVAS['npc_menzil_sabit'] if n.d['hiz'] <= 0 else SAVAS['npc_menzil'])
+        return r * AY.carpan('npc_menzil')          # panel: alien firing range (laser, rockets, sticky bomb, guards)
 
     def grant_loot(self, loot, n, kaynak='kutu'):
         """Kutudan ödül: para EP/onur/kredi/uridyum hesaba (Uridium Bank'a sayılır), gerisi mağazanın ödül işleviyle. kaynak:
@@ -3329,7 +3330,8 @@ class World:
             circle = bool(post) and dist <= 450
             if (dist > 450 or post) and now >= n.next_think and n.speed() > 0:
                 a = math.atan2(ny - hy, nx - hx) + (random.choice((-1, 1)) * random.uniform(0.6, 1.3) if circle else n.spread)
-                tx, ty = spot or (hx + math.cos(a) * n.keep, hy + math.sin(a) * n.keep)
+                keep = n.keep * min(1.0, AY.carpan('npc_menzil'))   # shorter firing range: close in so the alien can still shoot
+                tx, ty = spot or (hx + math.cos(a) * keep, hy + math.sin(a) * keep)
                 # harita içinde: oyuncu kenarda ya da sınırın dışındayken (radyasyon) uzaylı haritadan çıkmasın
                 tx = min(max(tx, 300), self.map_w - 300)
                 ty = min(max(ty, 300), self.map_h - 300)
