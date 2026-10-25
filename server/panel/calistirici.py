@@ -16,8 +16,11 @@ istemciler (coklu.py) aynı önekte birlikte açılır (waitforexitandrun öncek
 sürücüsünden açılır (Steam'deki PROTON_SET_GAME_DRIVE; S: istemci klasörünün üstü): bildirilen, Z:'den açılınca gömülü Chromium
 (Vuplex) çalışmıyor. Wine'da (motor da) panel önekte S:'yi kendisi bağlar (oyun_surucusu). İstemciye verilen öteki dosya yolları Z:
 sürücüsünden (Wine ve Proton öneklerinde Unix kökü). Wine'ın çıktısı logs/wine.log'a (surecler.istemci_ac).
+Proton'un DXVK'sı 32 bitlik istemcide Direct3D 11'i 32 bitlik Vulkan'la açar: bilgisayarda o yoksa (vulkan32) istemci "d3d11: failed
+to create factory" ile çöküyordu (bildirilen, Steam'siz Proton 11; Steam'in kabı yükleyiciyi kendisi getirir). O zaman Proton yeni
+WoW64 kipinde açılır (PROTON_USE_WOW64=1, Proton 10 ve sonrası): 32 bitlik istemci 64 bitlik Vulkan'ı kullanır.
 """
-import functools, glob, os, re, shlex, shutil, subprocess, sys
+import functools, glob, json, os, re, shlex, shutil, subprocess, sys
 
 from dil import t as _
 
@@ -144,6 +147,35 @@ def wine_surumu(wine):
         return None
 
 
+LIB32 = ('/usr/lib32', '/usr/lib/i386-linux-gnu', '/usr/lib', '/lib32', '/lib/i386-linux-gnu')     # Arch, Debian, Fedora …
+ICD_KLASORLERI = ('/etc/vulkan/icd.d', '/usr/share/vulkan/icd.d', '/usr/local/share/vulkan/icd.d')
+
+
+def _elf32(p):
+    try:
+        with open(p, 'rb') as fh:
+            return fh.read(5) == b'\x7fELF\x01'
+    except OSError:
+        return False
+
+
+def vulkan32():
+    """Bilgisayarda 32 bitlik Vulkan var mı: yükleyici (libvulkan.so.1) ve kütüphanesi 32 bitlik bir sürücü (icd.d'deki json'ın
+    library_path'i: tam yol ya da LIB32'de aranan ad)."""
+    if not any(_elf32(os.path.join(d, 'libvulkan.so.1')) for d in LIB32):
+        return False
+    for j in sorted(f for d in ICD_KLASORLERI for f in glob.glob(os.path.join(d, '*.json'))):
+        try:
+            with open(j, encoding='utf8') as fh:
+                lib = json.load(fh)['ICD']['library_path']
+            yollar = [lib] if os.path.isabs(lib) else [os.path.join(d, lib) for d in LIB32]
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+        if any(_elf32(p) for p in yollar):
+            return True
+    return False
+
+
 def rosetta_hatasi():
     """Apple Silicon'da Rosetta 2 yoksa kullanıcıya gösterilecek metin (Wine x86_64), yoksa None."""
     from wine_motoru import rosetta_var
@@ -234,6 +266,8 @@ def komut(cfg, exe, args, hazirla=True):
         return [r['yol'], oyun_surucusu(r['onek'], exe, hazirla)] + args, env
     oyun = os.path.dirname(os.path.abspath(exe))     # Proton S:'yi bunlardan kurar (umu da geçirir); Steam'siz panel verir
     env.update(PROTON_SET_GAME_DRIVE='1', STEAM_COMPAT_INSTALL_PATH=oyun, STEAM_COMPAT_LIBRARY_PATHS=os.path.dirname(oyun))
+    if not vulkan32():
+        env.setdefault('PROTON_USE_WOW64', '1')
     if r['umu']:
         env.update(WINEPREFIX=r['onek'], PROTON_VERB='run')
         if r['yol']:

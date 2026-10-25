@@ -208,7 +208,8 @@ def istemci_ac(folder, cmd, env, logs):
         if env and env.get(k):
             os.makedirs(env[k], exist_ok=True)
     with open(os.path.join(logs, 'wine.log'), 'a', encoding='utf8') as fh:
-        fh.write('\n==== %s %s\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), ' '.join(cmd)))
+        wow64 = 'PROTON_USE_WOW64=%s ' % env['PROTON_USE_WOW64'] if env and env.get('PROTON_USE_WOW64') else ''
+        fh.write('\n==== %s %s%s\n' % (time.strftime('%Y-%m-%d %H:%M:%S'), wow64, ' '.join(cmd)))
         fh.flush()
         return subprocess.Popen(cmd, cwd=folder, env=env, stdin=subprocess.DEVNULL, stdout=fh, stderr=subprocess.STDOUT,
                                 start_new_session=True)
