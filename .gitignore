@@ -34,3 +34,6 @@ __pycache__/
 *.pkl
 .vs/
 .vscode/
+
+# Local compatibility fixtures and acceptance recordings
+_trial/
