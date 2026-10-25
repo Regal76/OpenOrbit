@@ -3526,10 +3526,11 @@ class World:
             # oyuncu tasmanın dışına çıkınca peşini bırakır (yukarıda). Önceden 450 birimden yakında kıpırdamıyordu, Cubikon'un dibinde
             # doğan sürü tek noktada kalıyordu (kullanıcı bildirimi 2026-10-24)
             spot = self.guard_spot(n, post, hx, hy, now) if post and now >= n.next_think else None
-            circle = bool(post) and dist <= 450
-            if (dist > 450 or post) and now >= n.next_think and n.speed() > 0:
+            near = 450 * min(1.0, AY.carpan('npc_menzil'))   # shorter firing range: close in so the alien can still shoot
+            circle = bool(post) and dist <= near
+            if (dist > near or post) and now >= n.next_think and n.speed() > 0:
                 a = math.atan2(ny - hy, nx - hx) + (random.choice((-1, 1)) * random.uniform(0.6, 1.3) if circle else n.spread)
-                keep = n.keep * min(1.0, AY.carpan('npc_menzil'))   # shorter firing range: close in so the alien can still shoot
+                keep = n.keep * min(1.0, AY.carpan('npc_menzil'))
                 tx, ty = spot or (hx + math.cos(a) * keep, hy + math.sin(a) * keep)
                 # harita içinde: oyuncu kenarda ya da sınırın dışındayken (radyasyon) uzaylı haritadan çıkmasın
                 tx = min(max(tx, 300), self.map_w - 300)
