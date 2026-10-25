@@ -37,6 +37,8 @@ class PveModlari:
         self.trinity = AR.Trinity(profil, log)
         for a in (self.voyagers, self.trinity):
             a.m = magaza
+        if magaza is not None:
+            magaza.on_bought.append(self.bought)
         self.astral = AS.Astral(profil, magaza, log)
         self.echoes = EC.Echoes(profil, magaza, log)
         self.ebl = EB.Ebl(profil, magaza, log) if EB else None
@@ -52,6 +54,13 @@ class PveModlari:
         self.maps.update({m: self.echoes for m in [EC.D['salon']] + EC.D['haritalar']})
         if self.ebl:
             self.maps.update({m: self.ebl for m in self.ebl.maps()})
+
+    def bought(self, loot, amount):
+        """Shop purchase (magaza.on_bought): a package with a mode's VIP badge unlocks that pass's VIP track at once,
+        so the open window gets the refreshed pass (the client does not ask for it again)."""
+        got = {g for g, n in (self.m.contents(loot, amount) or [])}
+        return [a.gecis.cmd(cmd) for a, cmd in ((self.voyagers, 'VoyagersPassCommand'), (self.trinity, 'TrinityTrialsPassCommand'))
+                if a.D.get('vip') in got]
 
     # ------------------------------------------------------------ dünya
     def portals(self, map_id, station):

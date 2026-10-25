@@ -49,7 +49,7 @@ class Arena:
         self.m = None                       # mağaza (ödüller)
         self.send = None                    # oturuma mesaj
         self.run = None                     # sürmekte olan koşu: {zorluk, giris (X-1/X-8), ucretsiz, bas}
-        self.gecis = GC.Gecis(profil, self.key, self.D['gecis'])
+        self.gecis = GC.Gecis(profil, self.key, self.D['gecis'], badge=self.D.get('vip'))
 
     @property
     def st(self):

@@ -2695,7 +2695,7 @@
    "eski": 6900,
    "kaynak": "ek_magaza:market_dengesi"
   },
-  "resource_voyagers-vip-badge": {
+  "package_event-deal-voyagers-vip-badge": {
    "deger": 150000,
    "kural": "tek",
    "para": "U",

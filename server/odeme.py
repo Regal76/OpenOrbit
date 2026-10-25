@@ -26,7 +26,7 @@ PENCERE_SN = 600             # son açılan pencere bu kadar eskiyse ürün tahm
 URUNLER = {
     'battle_pass': ('Battle Pass', ['resource_battle-pass']),
     'quests': ('Battle Pass', ['resource_battle-pass']),
-    'voyagers': ("Voyagers' Ascent VIP Badge", ['resource_voyagers-vip-badge']),
+    'voyagers': ("Voyagers' Ascent VIP Badge", ['package_event-deal-voyagers-vip-badge']),
     'trinityTrials': ('Trinity Trials VIP', ['package_event-deal-trinity-vip-discount']),
     'seasonPass': ('Gold Pass (Season Pass)', ['package_event-deal-goldpass-premium', 'resource_gold-pass']),
     'monthly_deluxe': ('Monthly Deluxe', ['package_event-deal-month-deluxe']),

@@ -18,7 +18,8 @@ Return of Hero (takvim return_of_hero) süresince menü öğesi 'recallBattlePas
               5 VIP_LOCKED_COMPLETE}, experience}]}; RecallBattlePassMissionRefreshRequest -> MissionRefreshResultCommand {result 0
               SUCCESS, 5 NO_FREE_REFRESH, 7 INSUFFICIENT_URIDIUM}; istemci listeyi yeniden ister
   VIP         penceredeki "Buy" ödeme sayfasını açar (JavascriptHelper.OpenWebUrl PAY_TYPE RecallPassVip): odeme.py mağazayı açar,
-              Return VIP Badge (resource_recall-pass-vip-badge) paketten; envanterdeki rozet bir sonraki açılışta etkinleşir
+              Return VIP Badge (resource_recall-pass-vip-badge) paketten; the badge is used up as soon as it is bought (bought) or
+              found in the inventory (ensure), and the open window gets a fresh view with its last requestId (refresh_msgs)
 Tek oyunculu: oyuncu dönen kahraman (Return of Hero), Return izi açık. Görevler Season Pass havuzundan (kimlikleri kaydırılmış; Gold
 görevleri VIP görevi), deneyimi Season Pass puanı; günlük 3 + 2 VIP her gün, haftalık 5 + 3 VIP pazartesi, sezonluklar dönem boyunca.
 Yenileme günde bir ücretsiz, sonra 500 U (haftalık 500 U).
@@ -100,6 +101,9 @@ class DonusPass:
         self.p, self.m, self.log = profil, magaza, log
         self.hero = None                 # oturum bağlar: Return of Hero'da veterana bağlı mı (dukkanlar.py)
         self.open = False                # pencere açıldı mı (puan değişince PointsInfoCommand)
+        self.rid = {'view': 0, 'mission': None}   # last requestIds of the open window (pushed refreshes reuse them)
+        if magaza is not None:
+            magaza.on_bought.append(self.bought)
 
     @property
     def st(self):
@@ -131,6 +135,26 @@ class DonusPass:
             pend = sum(MISSIONS[q]['puan'] for q in st['tamam'] if MISSIONS[q]['gold'])
             self.add_points(pend)                                 # VIP görevlerinin bekleyen deneyimi
             self.log('   Recall Battle Pass: VIP etkin (%d bekleyen puan)' % pend)
+            return True
+        return False
+
+    def refresh_msgs(self):
+        """Fresh view, points and missions for the window that is already open. The client only asks for the view when the
+        window is first opened, and accepts a pushed view only with its last requestId (UIRecallBattlePassSystem.OnViewCommand
+        compares it), so reuse the ids of its last requests."""
+        if not self.open:
+            return []
+        msgs = [self.view_cmd(self.rid['view']), self.points_cmd()]
+        if self.rid.get('mission') is not None:
+            msgs.append(self.mission_cmd(self.rid['mission']))
+        return msgs
+
+    def bought(self, loot, amount):
+        """Shop purchase (magaza.on_bought): a package with the Return VIP Badge turns VIP on right away and refreshes the open
+        window (before this, the badge waited for the next request and the window kept its "Buy" button)."""
+        if not self.active() or VIP_ITEM not in {g for g, n in (self.m.contents(loot, amount) or [])}:
+            return []
+        return self.refresh_msgs() if self.ensure() else []
 
     def reset_list(self, key, qtype, counts, stamp_key, stamp):
         st = self.st
@@ -219,6 +243,7 @@ class DonusPass:
         self.ensure()
         if name == 'RecallBattlePassActionRequest':
             self.open = True
+            self.rid['view'] = rid
             return [self.view_cmd(rid), self.points_cmd()]
         if name == 'RecallBattlePassRewardClaimRequest':
             t = int((f.get('track') or {}).get('type') or 0)
@@ -238,6 +263,7 @@ class DonusPass:
         if name == 'RecallBattlePassLevelPurchaseRequest':
             return self.purchase(f, rid)
         if name == 'RecallBattlePassMissionRequest':
+            self.rid['mission'] = rid
             return [self.mission_cmd(rid)]
         if name == 'RecallBattlePassMissionRefreshRequest':
             return self.refresh(f, rid)
@@ -318,8 +344,8 @@ class DonusPass:
     def event(self, kind, kw):
         if not self.p.d.get('donus_pass') or not self.active():
             return []
-        self.ensure()
-        st, msgs, done = self.st, [], []
+        st, done = self.st, []
+        msgs = self.refresh_msgs() if self.ensure() else []      # badge picked up here: show VIP in the open window
         for q in st.get('gunluk', []) + st.get('haftalik', []) + st.get('sezonluk', []):
             if q in st['tamam']:
                 continue
