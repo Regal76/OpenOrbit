@@ -1313,9 +1313,8 @@ class Pet:
         return msgs
 
     def refresh(self):
-        """Hangarda P.E.T. donanımı değişti: uzaydaysa dişliler, durum ve görünüm (tasarım) yeniden. Görünüm PetLevelUpdateCommand'la
-        gidiyor; istemci onu seviye atlama efektiyle ve üstte seviye yazısıyla gösteriyor: yalnız görünüm değişince (2026-10-19,
-        kullanıcı bildirimi: hangarda her eşya değişince efekt çıkıyordu)."""
+        """P.E.T. equipment changed in the hangar: if it is in space, resend gears, status and look (design). The look is applied
+        by recreating the unit (respawn_msgs), only when it changes: no level-up effect on each hangar move (2026-10-19)."""
         if not self.active:
             return []
         hp, sh = self.hp_max(), self.shield_max()
@@ -1326,10 +1325,19 @@ class Pet:
             self.d['disli'] = GUARD
         look = []
         if self.ship_type() != self.look:
-            self.look = self.ship_type()
-            look = [('PetLevelUpdateCommand', dict(petLevel=self.d['seviye'], petExperiencePointsUntilNextLevel=self.next_xp(),
-                                                   designId=self.look, expansionStage=1))]
-        return [('PetGearResetCommand', {}), self.status_msg()] + look + self.gear_msgs()
+            look = self.respawn_msgs(time.time())
+        return look + [('PetGearResetCommand', {}), self.status_msg()] + self.gear_msgs()
+
+    def respawn_msgs(self, now):
+        """Recreate the P.E.T. unit in place so a new design shows at once. The client's PetLevelUpdateCommand handler
+        (PetPetLevelUpdate.Run) reloads the model before it stores the new ship pattern, so the old model stays until the P.E.T.
+        is launched again; only PetHeroActivationCommand.shipType applies the design (user report 2026-10-25)."""
+        (x, y), m = self.pos(now), self.mover
+        msgs = self.abort_msgs() if self.shooting else []
+        msgs += [('ShipRemoveCommand', {'userId': self.pid}), self.activation_msg(x, y)]     # activation_msg updates self.look
+        if m.t1 > now:
+            msgs.append(('MoveCommand', dict(userId=self.pid, x=int(m.x1), y=int(m.y1), timeToTarget=m.ms_left(now))))
+        return msgs
 
 
 ORE_DELAY = ESYA['cevherler']['toplama_sn']
