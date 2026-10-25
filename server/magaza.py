@@ -273,6 +273,7 @@ class Magaza:
         self.yeni = None         # Aşama 9'un sistemleri (yeni_sistemler.py): N.O.V.A. ve QFC ödülleri onlara gider
         self.chromin = None      # Chromin Rush (chromin.py; oturum bağlar): Chromin girişi sınırla
         self.hitac = None        # Hitac Word Puzzle (hitac_piyango.py; oturum bağlar): kutudaki harf
+        self.world = lambda: None  # current World (the session sets it): drone formation wait (formation_wait)
         self.lists, self.catalog = {}, {}
         self.payment = {}        # tek oyunculu: gerçek parayla satılan ("Payment") eşya -> uridyum fiyatı
         self.extra_entry = {}    # ek_magaza satırı (takvim / bir_kez: Ö7 dükkânlarının paketleri)
@@ -1673,6 +1674,22 @@ class Magaza:
         import envanter as INV
         return [self.inv_item(self.item_id(l), l, INV.client_count(self.p, l)) for l in sorted(set(loots)) if l in ASM.INGREDIENTS]
 
+    def formation_wait(self, loot, now=None):
+        """Wait between two formation changes (esyalar.json savas_esyalari.formasyon; client CooldownType DRONE_FORMATION).
+        Returns None while the wait runs, else the messages that start it: the shortcut-bar countdown of group 47. The world's
+        Esyalar keeps the end in the profile and sends the reset when it ends. Without a world nothing is started."""
+        import savas_esya as SE
+        now = now or time.time()
+        group = SE.item_cooldown(loot)[0]
+        if now < SE.ready_at(self.p, group):
+            return None
+        w = self.world()
+        items = getattr(w, 'items', None)
+        if items is None:
+            return []
+        with w.lock:
+            return [items.cooldown(loot, now)]
+
     def change_formation(self, loot):
         """Kısayol çubuğundan formasyon (MenuActionRequest drone_formation_*): DroneFormationChangeCommand, çubukta seçili öğe,
         uzaydaki dizilim ve formasyonun bonuslarıyla hız/kalkan/can."""
@@ -1683,10 +1700,14 @@ class Magaza:
         new = FORMS[loot]['id']
         if old == new:
             return []
+        wait = self.formation_wait(loot)
+        if wait is None:
+            self.log('   formation change refused: still cooling down (%s)' % loot)
+            return []
         with self.p.lock:
             self.p.d['formasyon'] = new
             self.p.dirty = True
-        msgs = [('DroneFormationChangeCommand', {'uid': self.p.user_id, 'selectedFormationId': new})]
+        msgs = [('DroneFormationChangeCommand', {'uid': self.p.user_id, 'selectedFormationId': new})] + wait
         for k, v in FORMS.items():
             if v['id'] in (old, new):
                 st = self.p.menu_status(k)
