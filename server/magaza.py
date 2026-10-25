@@ -563,6 +563,21 @@ class Magaza:
     def drone_room(self, loot):
         return self.drone_slots(loot) > 0
 
+    def owned_unique(self, loot):
+        """Unique item the player already has: ship, ship design, drone formation, unique drone, P.E.T. The official shop
+        stops listing these once bought."""
+        if loot == PET_LOOT:
+            return self.pet.owned
+        if loot.startswith('ship_'):
+            if design_base(loot):
+                return any(loot in s.get('tasarimlar', []) for s in self.p.d['gemiler'].values())
+            return any(s['lootId'] == loot for s in self.p.d['gemiler'].values())
+        if loot in FORMS:
+            return loot == 'drone_formation_default' or loot in self.p.d['formasyonlar']
+        if loot in DRONES and DRONES[loot].get('tek'):
+            return self.drone_slots(loot) == 0
+        return False
+
     def package_fit(self, grants, owned):
         """Paket içeriğinden şimdi verilebilenler: sahip olunan gemi, P.E.T. ve formasyon atlanır, dronlar boş yer kadar verilir
         -> (verilecekler, [(lootId, atlanan adet, hata anahtarı)])."""
@@ -643,10 +658,10 @@ class Magaza:
             return None
         t = copy(t)
         t['currentShipLootId'] = self.p.ship()['lootId']
-        if self.pet.owned:              # P.E.T. bir tane olur
-            t['itemList'] = [it for it in t['itemList'] if it['lootId'] != PET_LOOT]
-        else:                           # yakıt P.E.T.'le
+        if not self.pet.owned:          # yakıt P.E.T.'le
             t['itemList'] = [it for it in t['itemList'] if it['lootId'] != PET_FUEL]
+        # unique items already owned are not listed (official shop): the list sent after a purchase drops the item at once
+        t['itemList'] = [it for it in t['itemList'] if not self.owned_unique(it['lootId'])]
         # sunucuda karşılığı olmayanlar (Assembly parçaları, anahtarlar, içeriği tanımlanmamış paketler …) gösterilmez
         t['itemList'] = [it for it in t['itemList'] if self.contents(it['lootId'], 1) is not None and self.gate_ok(it['lootId'])]
         if category == 'shipdesign':
