@@ -594,7 +594,7 @@ class WbKosu:
             self.next['ram'] = now + sal['carpma']['aralik_sn']
             w.send(w.hurt_hero(int(maxhp * sal['carpma']['hasar_azami_hp_orani']), f, atype=0))
         if self.phase in (2, 3, 4):
-            if now >= self.next['rocket'] and math.hypot(hx - fx, hy - fy) <= sal['roket']['menzil']:
+            if now >= self.next['rocket'] and math.hypot(hx - fx, hy - fy) <= sal['roket']['menzil'] * AY.carpan('npc_menzil'):
                 self.next['rocket'] = now + sal['roket']['aralik_sn']
                 w.send([legacy('0|v|%d|%d|H|1|0|0' % (f.id, w.hid))])
                 dmg = sal['roket']['hasar']
@@ -667,7 +667,7 @@ class WbKosu:
         s = D['saldirilar']['gudumlu']
         hx, hy = w.hero_pos(now)
         gx, gy = g.mover.pos(now)
-        if math.hypot(hx - gx, hy - gy) > s['menzil']:
+        if math.hypot(hx - gx, hy - gy) > s['menzil'] * AY.carpan('npc_menzil'):      # panel: alien firing range
             return
         w.send([('VisualModifierCommand', dict(userId=g.id, modifier=TELEGRAPH, attribute=0,
                                                additionalAttribute='(%d,%d,0)' % (hx, hy), count=1, activated=True))])

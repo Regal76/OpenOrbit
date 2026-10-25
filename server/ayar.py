@@ -68,6 +68,8 @@ SCHEMA = [
     _b('dokunulmaz', 'Dokunulmaz gemi', 'gemi', 'Uzaylıların atışları görünür ama gemin can ve kalkan kaybetmez.'),
     _b('sonsuz_cephane', 'Sonsuz cephane', 'gemi', 'Lazer cephanesi, roketler, fırlatıcı cephanesi ve mayınlar harcanmaz (en az '
        'bir tane olmalı).'),
+    _b('sonsuz_teknoloji', 'Sonsuz teknoloji', 'gemi', 'Teknoloji eşyaları (Energy Leech, Battle Repair Bot, Speed Burst …) '
+       'kullanılınca harcanmaz (en az bir tane olmalı). Bekleme süreleri yine geçerli.'),
     _b('kendi_mayin', 'Kendi mayınların sana zarar verir', 'gemi', 'Kendi bıraktığın mayının patlaması gemine de hasar verir '
        '(oyundaki gibi). Kapatılırsa yalnız uzaylılara.', varsayilan=True),
     _n('yerinde_can', 'Yerinde onarımda can', 'gemi', 'Gemi yok edildikten sonra bulunduğun yerde onarılınca gelen can (oyunun '
@@ -92,6 +94,8 @@ SCHEMA = [
          aciklama='Uzaylıların seni kendiliğinden kovalayıp kovalamadığı (kapı ve mod dalgalarındakiler dahil).'),
     _c('npc_fark', 'Uzaylıların fark etme mesafesi', 'savas', 'Saldırgan uzaylıların seni fark edip kovalamaya başladığı uzaklık '
        '(oyunun değeri 1.000 birim).', lo=0.1, hi=3.0, sinir=20.0),
+    _c('npc_menzil', 'Uzaylıların ateş menzili', 'savas', 'Uzaylıların sana lazer, roket ve bomba atabildiği uzaklık (oyunun '
+       'değeri çoğunda 600, hareketsizlerde 1.000 birim; dünya patronlarının saldırıları dahil).', lo=0.1, hi=3.0, sinir=20.0),
     _b('yavaslatan_atis', 'Yavaşlatan uzaylı atışları', 'savas', 'Barb, The Stinger, Saboteur ve Mindfire Behemoth gibi '
        'uzaylıların atışları gemini yavaşlatır. Kapatılırsa yalnız hasar verirler.', varsayilan=True),
     _c('radyasyon', 'Radyasyon hasarı', 'savas', 'Harita sınırının dışındaki radyasyonun gövdeye verdiği hasar. 0: radyasyon '
@@ -302,7 +306,7 @@ HAZIR = {
                            'tamir_ucreti': 2.0, 'muzayede_rakip': 4, 'npc_isabet': 1.25, 'npc_saldirganlik': 1,
                            'kalkan_yenilenme': 0.5}},
     'yaratici': {'ad': 'Yaratıcı', 'aciklama': 'Gemin yok edilmez, cephane bitmez, mağaza ve hizmetler bedava, bekleme yok.',
-                 'degerler': {'dokunulmaz': True, 'sonsuz_cephane': True, 'magaza_fiyat': 0.0, 'hizmet_fiyat': 0.0,
+                 'degerler': {'dokunulmaz': True, 'sonsuz_cephane': True, 'sonsuz_teknoloji': True, 'magaza_fiyat': 0.0, 'hizmet_fiyat': 0.0,
                               'kapi_fiyat': 0.0, 'tamir_ucreti': 0.0, 'bekleme': 0.0, 'seviye_kisiti_yok': True,
                               'sonsuz_can': True, 'giris_siniri_yok': True, 'pet_yakit': 0.0}},
 }
