@@ -1747,6 +1747,12 @@
     1
    ]
   ],
+  "package_event-deal-voyagers-vip-badge": [
+   [
+    "resource_voyagers-vip-badge",
+    1
+   ]
+  ],
   "package_event-deal-tt-ammo-2604": [
    [
     "resource_trinity-vip-badge",
@@ -7472,9 +7478,9 @@
     "_arac": "pve_modlari"
    },
    {
-    "lootId": "resource_voyagers-vip-badge",
+    "lootId": "package_event-deal-voyagers-vip-badge",
     "uridyum": 150000,
-    "sablon": "package_event-deal-trinity-token",
+    "sablon": "package_event-deal-trinity-vip-discount",
     "_arac": "pve_modlari"
    },
    {
