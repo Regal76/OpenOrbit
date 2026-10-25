@@ -38,6 +38,7 @@ LAUNCHER_AMMO = S['fircatici_cephane']
 SALVO_GAP = S['fircatici']['roket_aralik_sn']
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
 ALIEN_CPUS = S['uzayli_cpu']                  # Chaos Alien CPU'ları, Cubi Portal -> harita sınıfları, doğan türler
+FORMATIONS = _E['formasyonlar']               # drone formation menu items: one shared wait between two changes (S['formasyon'])
 TOGGLE_DEFAULT = {'nisan': False}             # Xenomit harcar: kendiliğinden açılmaz; ötekiler takılınca açık
 XENOMIT = 3
 TIMERS = 'bekleme_gruplari'                   # profilde: {grup: [bitiş, azami ms]}
@@ -108,6 +109,8 @@ def item_cooldown(loot):
         return m.get('bekleme_grubu', S['mayin']['bekleme_grubu']), m.get('bekleme_sn', S['mayin']['bekleme_sn'])
     if loot in ALIEN_CPUS:
         return ALIEN_CPUS[loot]['bekleme_grubu'], ALIEN_CPUS[loot]['bekleme_sn']
+    if loot in FORMATIONS:
+        return S['formasyon']['bekleme_grubu'], S['formasyon']['bekleme_sn']
     for key in ('akilli_bomba', 'aninda_kalkan', 'emp', 'hayalet'):
         if loot == S[key]['menu']:
             return S[key]['bekleme_grubu'], S[key]['bekleme_sn']

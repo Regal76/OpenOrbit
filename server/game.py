@@ -367,6 +367,7 @@ class Session:
         self.profil.mode_mods = lambda: self.pve.ebl.mods(self.profil.d['konum']['mapId']) if self.pve.ebl else {}
         self.yeni = YS.YeniSistemler(self.profil, self.magaza, log)     # Aşama 9: N.O.V.A., Armory Unlock, QFC/Hyperforge, otomatik pilot
         self.magaza.yeni = self.yeni
+        self.magaza.world = lambda: getattr(self, 'world', None)    # drone formation wait (magaza.formation_wait)
         self.profil.nova_mods = lambda: self.yeni.mods(self.profil.d['konum']['mapId'])
         self.profil.captain_energy = self.yeni.nova.hud
         self.sosyal = SO.Sosyal(self.profil, self.magaza, log, SOHBET)   # Aşama 10: sohbet, posta, klan, müzayede, gemi ışınlama

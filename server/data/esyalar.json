@@ -11017,6 +11017,11 @@
    "bekleme_grubu": 53,
    "bekleme_sn": 60,
    "_not": "istemci: \"Make your ship ghostly for a minute!\"; VisualModifier GHOST_EFFECT (26), CooldownType VISUAL_PERK_GHOST_EFFECT (53); bekleme süresi uyarlama"
+  },
+  "formasyon": {
+   "bekleme_grubu": 47,
+   "bekleme_sn": 2.0,
+   "_not": "Wait between two drone formation changes. Group = client CooldownType DRONE_FORMATION (47), the cooldownGroup of every drone_formation_* menu item. 2 s: board-fr.darkorbit.com \"Lexique 2.0 [Drones & Formations de Drones]\" #12 (Team DarkOrbit, 2025-02-05)."
   }
  },
  "teknoloji": {
