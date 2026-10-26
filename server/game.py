@@ -356,6 +356,7 @@ class Session:
         self.gorev = Gorevler(self.profil, log)
         self.gorev.grant = self.quest_reward
         self.gorev.send = lambda m: self.send(m, 'görev süresi')
+        self.gorev.state = lambda: self.world.quest_state() if self.world else {}      # MISCELLANEOUS alt koşulları (gizli, radyasyon, az can)
         self.magaza.quest = self.gorev.event                        # toplama görevleri: rafineride üretilen cevher
         self.gunluk = Gunluk(self.profil, self.magaza, log)      # günlük giriş takvimi
         self.profil.daily_fields = self.gunluk.fields
@@ -418,6 +419,7 @@ class Session:
         self.ek = EKE.EkEtkinlikler(self.profil, self.magaza, self.ekapilar, log)   # Ö3'ün etkinlikleri (Chromin Rush …)
         if self.ek.fiesta:
             self.ek.fiesta.change_map = self.change_map
+            self.ek.fiesta.titles = self.ek.unvan.grant_title           # Epoch Lit (Tranquil)
             self.pve.extra_windows['fiesta'] = self.ek.fiesta.portal_window
         self.cbs = CBS.Cbs(self.profil, self.magaza, log)                     # Clan Battle Station (Ö5)
         self.ek.add(self.cbs)
@@ -434,6 +436,8 @@ class Session:
             self.pve.extra_windows[kind] = s.portal_window
         self.ek.send = lambda m: self.send(m, 'etkinlik')
         self.ek.unvan.base_title = lambda: self.basarim.title_msgs()
+        self.kapilar.titles = self.ek.unvan.grant_title           # kapı tamamlama unvanı (wiki: All-Star, Boss Of Bosses, Emperor Of Hades Gate)
+        self.pve.echoes.titles = self.ek.unvan.grant_title        # Deep Space Echoes dönem sonu sıralama unvanı (Cosmic Tyrant)
         self.ek_next = 0.0
         self.profil.hint = self.ipucu.show
         self.magaza.rescue_depot()   # görünmez depoya düşmüş ödüller (dron tasarımı, P.E.T. protokolü, Season Pass rezervi) yerine
@@ -533,6 +537,8 @@ class Session:
         msgs = self.gorev.event('slot_bar', **self.profil.slot_bar_state(tpl['slotBars'] if tpl else []))
         for key, lv in self.skylab.levels().items():
             msgs += self.gorev.event('skylab', modul=key, seviye=lv)
+        if self.profil.d.get('klan'):
+            msgs += self.gorev.event('clan')                 # IN_CLAN: klanda olmak
         return msgs
 
     def pass_event(self, kind, **kw):
@@ -829,8 +835,10 @@ class Session:
         return self.magaza.prize(loot, n, 'gorev')         # eşya ödülü: panelin mod/görev ödülü çarpanı
 
     def respawn_home(self):
-        """İstasyonsuz haritada istasyonda tamir: firmanın ana haritasında (X-1) istasyonda doğ (gerçek oyundaki gibi)."""
-        dest = HOME_MAP.get(self.profil.d['pilot'].get('factionId'), 5)
+        """İstasyonsuz haritada istasyonda tamir: firmanın ana haritasında (X-1) istasyonda doğ (gerçek oyundaki gibi); seviye 12+ ve
+        üst haritada (X-5 … X-8, 4-4, 4-5) firmanın X-8'inde (harita.x8_home)."""
+        pl = self.profil.d['pilot']
+        dest = H.x8_home(pl.get('factionId'), pl.get('level', 1), self.profil.d['konum']['mapId']) or HOME_MAP.get(pl.get('factionId'), 5)
         st = SABLON.station(dest)
         self.change_map(dest, None, pos=(st['posX'], st['posY']) if st else None)
 
@@ -843,7 +851,8 @@ class Session:
         k = self.profil.d['konum']
         st = SABLON.station(k['mapId'])
         if not st or st.get('type') != self.profil.d['pilot'].get('factionId'):        # düşman üssünde tamir yok: kendi ana haritası
-            k['mapId'] = HOME_MAP.get(self.profil.d['pilot'].get('factionId'), 5)
+            pl = self.profil.d['pilot']
+            k['mapId'] = H.x8_home(pl.get('factionId'), pl.get('level', 1), k['mapId']) or HOME_MAP.get(pl.get('factionId'), 5)
             st = SABLON.station(k['mapId'])
         if st:
             k.update(x=st['posX'], y=st['posY'])
@@ -867,10 +876,10 @@ class Session:
                 self.world.stop()
                 self.world = None
             self.pet.attach(None)        # etkinse yeni haritada yeniden çıkar
-            if pos == 'istasyon':                        # atlama CPU'su: hedefin istasyonuna (yoksa portalın yanına)
+            pos = pos or (gate or {}).get('varis')      # kapı portalları: kapı haritasının ortasına / X-1'de kapının yanına
+            if pos == 'istasyon':                        # atlama CPU'su ve kapıdan eve dönüş: hedefin istasyonuna (yoksa portalın yanına)
                 st = SABLON.station(dest)
                 pos = (st['posX'], st['posY']) if st else None
-            pos = pos or (gate or {}).get('varis')      # kapı portalları: kapı haritasının ortasına / X-1'de kapının yanına
             if pos == 'rastgele':                       # 5-3'ün çıkışları 4-4'te rastgele yere (harita_duzeni.json)
                 pos = H.random_arrival(dest)
             x, y = pos or H.arrival(old, dest, self.profil.d['pilot'].get('factionId'))
@@ -1055,6 +1064,7 @@ class Session:
             msgs, changed = self.magaza.activate(f, in_station=w.in_station() if w else True)
             self.send(msgs, 'hangar: gemi etkinleştirme')
             if changed and w:
+                w.items.reveal()      # üste gemi değiştirmek gizlenme CPU'sunu bitirir (fandom Cloak; Ship Warp hariç: isinlama.py)
                 w.reload_ship()
         elif name == 'HangarShipChangeShipModelRequest':
             msgs, reload = self.magaza.change_model(f)

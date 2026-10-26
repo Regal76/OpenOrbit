@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<battlePass>
+    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py, wiki verisi: tools/biletler_wiki.json; resmî dosya değil) -->
+    <objectiveList>
+        <!-- Traveller -->
+        <objective questId="500655">
+            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Tiny Treasure -->
+        <objective questId="500659">
+            <questReward packageid="package_battlepass_questReward-500659" packageItemIds="resource_extra-energy,resource_collectable_polychromium" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500659"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Inspection -->
+        <objective questId="500663">
+            <questReward lootid="ammunition_rocket_plt-2021" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Key Crafter -->
+        <objective questId="500666">
+            <questReward lootid="ammunition_specialammo_sr-5" amount="100"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Scanner -->
+        <objective questId="500669">
+            <questReward lootid="ammunition_laser_idb-125" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Leap -->
+        <objective questId="500672">
+            <questReward packageid="package_battlepass_questReward-500672" packageItemIds="ammunition_laser_ucb-100,resource_collectable_polychromium" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500672"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Battle Champion -->
+        <objective questId="500675">
+            <questReward lootid="equipment_shipupgrade_dmg-xa01" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Bold Adventurer -->
+        <objective questId="500656">
+            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Petite Prize -->
+        <objective questId="500660">
+            <questReward lootid="ammunition_rocket_plt-2021" amount="6000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Discovery -->
+        <objective questId="500664">
+            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Key Smith -->
+        <objective questId="500667">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Surveyor -->
+        <objective questId="500670">
+            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="500"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Lift-Off -->
+        <objective questId="500673">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Gallivanter -->
+        <objective questId="500657">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Breakthrough -->
+        <objective questId="500665">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Key Master -->
+        <objective questId="500668">
+            <questReward lootid="ammunition_laser_spacecup_group-c" amount="4000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- CNavigator -->
+        <objective questId="500671">
+            <questReward lootid="equipment_shipupgrade_spc-xa01" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Ascension -->
+        <objective questId="500674">
+            <questReward lootid="equipment_shipupgrade_shd-xa01" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Globetrotter -->
+        <objective questId="500658">
+            <questReward lootid="tech_burning-trail" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="10"/>
+        </objective>
+        <!-- Brilliant Trove -->
+        <objective questId="500661">
+            <questReward lootid="equipment_shipupgrade_hp-xa01" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="10"/>
+        </objective>
+        <!-- Into The Deep -->
+        <objective questId="500680">
+            <questReward lootid="resource_collectable_indoctrine-accelerator" amount="25"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Radiant Fortune -->
+        <objective questId="500662">
+            <questReward lootid="tech_battle-repair-bot2" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Undending Riches -->
+        <objective questId="500678">
+            <questReward lootid="tech_battle-repair-bot2" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Pioneer -->
+        <objective questId="500679">
+            <questReward lootid="tech_shield-backup2" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Key To Victory -->
+        <objective questId="500677">
+            <questReward lootid="tech_explosive-charging-blob" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Transcension -->
+        <objective questId="500676">
+            <questReward lootid="tech_npc-nuke" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+    </objectiveList>
+    <flvDisplayLootId>resource_battle-pass-key</flvDisplayLootId>
+    <titleKeyBeforePurchase>window_objectives_bp_title</titleKeyBeforePurchase>
+    <descriptionKeyBeforePurchase>window_objectives_bp_promo_desc-astral202206</descriptionKeyBeforePurchase>
+    <descriptionKeyCollect>window_objectives_bp_collect_desc</descriptionKeyCollect>
+    <titleKeyAfterPurchase>window_objectives_bp_highlight_title-astral202206</titleKeyAfterPurchase>
+    <descriptionKeyAfterPurchase>window_objectives_bp_highlight_desc-astral202206</descriptionKeyAfterPurchase>
+</battlePass>

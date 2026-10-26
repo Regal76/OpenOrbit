@@ -2716,22 +2716,22 @@
      "5": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 42
      },
      "10": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 42
      },
      "15": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 43
      },
      "20": {
       "qp": 21,
-      "xy": 2,
-      "puan": 0
+      "xy": 3,
+      "puan": 43
      }
     },
     "dusme": [
@@ -3296,22 +3296,22 @@
      "5": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 43
      },
      "10": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 43
      },
      "15": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 44
      },
      "20": {
       "qp": 21,
-      "xy": 2,
-      "puan": 0
+      "xy": 3,
+      "puan": 45
      }
     },
     "dusme": [
@@ -3876,22 +3876,22 @@
      "5": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 44
      },
      "10": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 45
      },
      "15": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 45
      },
      "20": {
       "qp": 21,
-      "xy": 2,
-      "puan": 0
+      "xy": 3,
+      "puan": 46
      }
     },
     "dusme": [
@@ -4460,22 +4460,22 @@
      "5": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 46
      },
      "10": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 47
      },
      "15": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 48
      },
      "20": {
       "qp": 21,
-      "xy": 2,
-      "puan": 0
+      "xy": 3,
+      "puan": 49
      }
     },
     "dusme": [
@@ -5044,22 +5044,22 @@
      "5": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 49
      },
      "10": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 50
      },
      "15": {
       "qp": 21,
       "xy": 2,
-      "puan": 0
+      "puan": 50
      },
      "20": {
       "qp": 21,
-      "xy": 2,
-      "puan": 0
+      "xy": 3,
+      "puan": 51
      }
     },
     "dusme": [
@@ -10827,7 +10827,12 @@
       ]
      }
     ],
-    "ilk": [],
+    "ilk": [
+     [
+      "ammunition_laser_spacecup_group-c",
+      7000
+     ]
+    ],
     "sure_sn": null,
     "guc": 1.5,
     "_uyarlama": "kaynakta yok: 34. seviyenin dalgaları"
@@ -11188,7 +11193,12 @@
       ]
      }
     ],
-    "ilk": [],
+    "ilk": [
+     [
+      "ammunition_laser_spacecup_group-c",
+      9000
+     ]
+    ],
     "sure_sn": null,
     "guc": 1.5,
     "_uyarlama": "kaynakta yok: 39. seviyenin dalgaları"
@@ -11274,7 +11284,8 @@
       "resource_collectable_ggeu",
       2
      ]
-    ]
+    ],
+    "unvan": "title_expedition_202505_03"
    },
    {
     "den": 51,
@@ -11340,7 +11351,8 @@
       "resource_collectable_ggeu",
       10
      ]
-    ]
+    ],
+    "unvan": "title_expedition_202505_01"
    },
    {
     "den": 11,
@@ -11392,7 +11404,8 @@
       "resource_collectable_ggeu",
       8
      ]
-    ]
+    ],
+    "unvan": "title_expedition_202505_02"
    },
    {
     "den": 26,
@@ -11436,7 +11449,8 @@
       "resource_collectable_ggeu",
       4
      ]
-    ]
+    ],
+    "unvan": "title_expedition_202505_03"
    },
    {
     "den": 2,
@@ -11466,7 +11480,8 @@
       "resource_collectable_ggeu",
       8
      ]
-    ]
+    ],
+    "unvan": "title_expedition_202505_02"
    }
   ],
   "kosullar": {
@@ -12664,7 +12679,11 @@
     "kredi": 256,
     "uridyum": 1
    },
-   "kargo": {}
+   "kargo": {
+    "0": 4,
+    "2": 4,
+    "1": 4
+   }
   },
   "pm_pyrospire_easy": {
    "ad": "-=[ Pyrospire ]=-",
@@ -12681,7 +12700,11 @@
     "kredi": 1536,
     "uridyum": 1
    },
-   "kargo": {},
+   "kargo": {
+    "0": 4,
+    "2": 4,
+    "1": 4
+   },
    "davranis": {
     "yavaslatan_atis": {
      "oran": 0.3,
@@ -12704,7 +12727,11 @@
     "kredi": 256,
     "uridyum": 1
    },
-   "kargo": {}
+   "kargo": {
+    "0": 4,
+    "2": 4,
+    "1": 4
+   }
   },
   "pm_vinespire_easy": {
    "ad": "-=[ Vinespire ]=-",
@@ -12721,7 +12748,11 @@
     "kredi": 1536,
     "uridyum": 1
    },
-   "kargo": {}
+   "kargo": {
+    "0": 4,
+    "2": 4,
+    "1": 4
+   }
   },
   "pm_magmastalker_normal": {
    "ad": "-=[ Magma Stalker ]=-",
@@ -12738,7 +12769,11 @@
     "kredi": 192,
     "uridyum": 0
    },
-   "kargo": {}
+   "kargo": {
+    "0": 2,
+    "2": 2,
+    "1": 2
+   }
   },
   "pm_pyrospire_normal": {
    "ad": "-=[ Pyrospire ]=-",
@@ -12755,7 +12790,13 @@
     "kredi": 2560,
     "uridyum": 1
    },
-   "kargo": {},
+   "kargo": {
+    "0": 6,
+    "2": 6,
+    "1": 6,
+    "4": 1,
+    "5": 1
+   },
    "davranis": {
     "yavaslatan_atis": {
      "oran": 0.3,
@@ -12778,7 +12819,11 @@
     "kredi": 269,
     "uridyum": 1
    },
-   "kargo": {}
+   "kargo": {
+    "0": 2,
+    "2": 2,
+    "1": 2
+   }
   },
   "pm_vinespire_normal": {
    "ad": "-=[ Vinespire ]=-",
@@ -12795,7 +12840,13 @@
     "kredi": 3584,
     "uridyum": 2
    },
-   "kargo": {}
+   "kargo": {
+    "0": 6,
+    "2": 6,
+    "1": 6,
+    "4": 1,
+    "5": 1
+   }
   },
   "pm_magmastalker_hard": {
    "ad": "-=[ Magma Stalker ]=-",
@@ -12812,7 +12863,11 @@
     "kredi": 384,
     "uridyum": 1
    },
-   "kargo": {}
+   "kargo": {
+    "0": 6,
+    "2": 6,
+    "1": 6
+   }
   },
   "pm_pyrospire_hard": {
    "ad": "-=[ Pyrospire ]=-",
@@ -12829,7 +12884,13 @@
     "kredi": 2560,
     "uridyum": 1
    },
-   "kargo": {},
+   "kargo": {
+    "0": 6,
+    "2": 6,
+    "1": 6,
+    "4": 1,
+    "5": 1
+   },
    "davranis": {
     "yavaslatan_atis": {
      "oran": 0.3,
@@ -12852,7 +12913,13 @@
     "kredi": 614,
     "uridyum": 2
    },
-   "kargo": {}
+   "kargo": {
+    "0": 8,
+    "2": 8,
+    "1": 8,
+    "4": 1,
+    "5": 1
+   }
   },
   "pm_vinespire_hard": {
    "ad": "-=[ Vinespire ]=-",
@@ -12869,7 +12936,13 @@
     "kredi": 4096,
     "uridyum": 2
    },
-   "kargo": {}
+   "kargo": {
+    "0": 8,
+    "2": 8,
+    "1": 8,
+    "4": 1,
+    "5": 1
+   }
   },
   "pm_magmastalker_expert": {
    "ad": "-=[ Magma Stalker ]=-",
@@ -12886,7 +12959,13 @@
     "kredi": 1037,
     "uridyum": 3
    },
-   "kargo": {}
+   "kargo": {
+    "0": 16,
+    "2": 16,
+    "1": 16,
+    "4": 2,
+    "5": 2
+   }
   },
   "pm_pyrospire_expert": {
    "ad": "-=[ Pyrospire ]=-",
@@ -12903,7 +12982,13 @@
     "kredi": 1659,
     "uridyum": 1
    },
-   "kargo": {},
+   "kargo": {
+    "0": 22,
+    "2": 22,
+    "1": 22,
+    "4": 3,
+    "5": 3
+   },
    "davranis": {
     "yavaslatan_atis": {
      "oran": 0.3,
@@ -12926,7 +13011,13 @@
     "kredi": 1037,
     "uridyum": 3
    },
-   "kargo": {}
+   "kargo": {
+    "0": 16,
+    "2": 16,
+    "1": 16,
+    "4": 2,
+    "5": 2
+   }
   },
   "pm_vinespire_expert": {
    "ad": "-=[ Vinespire ]=-",
@@ -12943,7 +13034,13 @@
     "kredi": 1659,
     "uridyum": 1
    },
-   "kargo": {}
+   "kargo": {
+    "0": 22,
+    "2": 22,
+    "1": 22,
+    "4": 3,
+    "5": 3
+   }
   },
   "pm_magmastalker_nightmare": {
    "ad": "-=[ Magma Stalker ]=-",
@@ -12960,7 +13057,13 @@
     "kredi": 1152,
     "uridyum": 3
    },
-   "kargo": {}
+   "kargo": {
+    "0": 33,
+    "2": 33,
+    "1": 33,
+    "4": 4,
+    "5": 4
+   }
   },
   "pm_pyrospire_nightmare": {
    "ad": "-=[ Pyrospire ]=-",
@@ -12977,7 +13080,14 @@
     "kredi": 7680,
     "uridyum": 4
    },
-   "kargo": {},
+   "kargo": {
+    "0": 34,
+    "2": 34,
+    "1": 34,
+    "4": 5,
+    "5": 5,
+    "6": 1
+   },
    "davranis": {
     "yavaslatan_atis": {
      "oran": 0.3,
@@ -13000,7 +13110,13 @@
     "kredi": 2074,
     "uridyum": 5
    },
-   "kargo": {}
+   "kargo": {
+    "0": 33,
+    "2": 33,
+    "1": 33,
+    "4": 4,
+    "5": 4
+   }
   },
   "pm_vinespire_nightmare": {
    "ad": "-=[ Vinespire ]=-",
@@ -13017,7 +13133,14 @@
     "kredi": 13824,
     "uridyum": 6
    },
-   "kargo": {}
+   "kargo": {
+    "0": 34,
+    "2": 34,
+    "1": 34,
+    "4": 5,
+    "5": 5,
+    "6": 1
+   }
   },
   "pm_petraider": {
    "ad": "-=[ P.E.T. Raider ]=-",
@@ -13065,12 +13188,18 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 5330,
-    "onur": 53,
-    "kredi": 5343,
-    "uridyum": 11
+    "ep": 1600,
+    "onur": 16,
+    "kredi": 3200,
+    "uridyum": 12
    },
-   "kargo": {}
+   "kargo": {
+    "0": 75,
+    "2": 75,
+    "1": 75,
+    "4": 50,
+    "5": 50
+   }
   },
   "pm_saturnyamato": {
    "ad": "-=[ Saturn Yamato ]=-",
@@ -13082,12 +13211,18 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 2407,
-    "onur": 24,
-    "kredi": 2413,
-    "uridyum": 5
+    "ep": 200,
+    "onur": 2,
+    "kredi": 800,
+    "uridyum": 7
    },
-   "kargo": {}
+   "kargo": {
+    "0": 45,
+    "2": 45,
+    "1": 45,
+    "4": 20,
+    "5": 20
+   }
   },
   "pm_saturnliberator": {
    "ad": "-=[ Saturn Liberator ]=-",
@@ -13099,12 +13234,18 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 3955,
-    "onur": 39,
-    "kredi": 3965,
-    "uridyum": 8
+    "ep": 200,
+    "onur": 2,
+    "kredi": 800,
+    "uridyum": 7
    },
-   "kargo": {}
+   "kargo": {
+    "0": 75,
+    "2": 75,
+    "1": 75,
+    "4": 50,
+    "5": 50
+   }
   },
   "pm_coweringcyborg": {
    "ad": "-=[ Cowering Cyborg ]=-",
@@ -13134,12 +13275,19 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 18913,
-    "onur": 187,
-    "kredi": 18961,
-    "uridyum": 39
+    "ep": 7500,
+    "onur": 75,
+    "kredi": 20000,
+    "uridyum": 20
    },
-   "kargo": {}
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 75,
+    "5": 75,
+    "6": 8
+   }
   },
   "pm_saturnlightning": {
    "ad": "-=[ Saturn Lightning ]=-",
@@ -13151,12 +13299,19 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 24071,
-    "onur": 238,
-    "kredi": 24132,
-    "uridyum": 50
+    "ep": 12800,
+    "onur": 128,
+    "kredi": 25600,
+    "uridyum": 28
    },
-   "kargo": {}
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 75,
+    "5": 75,
+    "6": 8
+   }
   },
   "pm_saturnbigboy": {
    "ad": "-=[ Saturn Bigboy ]=-",
@@ -13168,12 +13323,19 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 23899,
-    "onur": 236,
-    "kredi": 23959,
-    "uridyum": 50
+    "ep": 25600,
+    "onur": 256,
+    "kredi": 12800,
+    "uridyum": 56
    },
-   "kargo": {}
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   }
   },
   "pm_saturnavenger": {
    "ad": "-=[ Saturn Avenger ]=-",
@@ -13185,12 +13347,19 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 32668,
-    "onur": 323,
-    "kredi": 32750,
-    "uridyum": 68
+    "ep": 12800,
+    "onur": 128,
+    "kredi": 25600,
+    "uridyum": 28
    },
-   "kargo": {}
+   "kargo": {
+    "0": 100,
+    "2": 100,
+    "1": 100,
+    "4": 75,
+    "5": 75,
+    "6": 8
+   }
   },
   "pm_saturnpiranha": {
    "ad": "-=[ Saturn Piranha ]=-",
@@ -13202,12 +13371,18 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 12379,
-    "onur": 122,
-    "kredi": 12411,
-    "uridyum": 26
+    "ep": 6400,
+    "onur": 64,
+    "kredi": 6400,
+    "uridyum": 15
    },
-   "kargo": {}
+   "kargo": {
+    "0": 75,
+    "2": 75,
+    "1": 75,
+    "4": 50,
+    "5": 50
+   }
   },
   "pm_saturnnostromo": {
    "ad": "-=[ Saturn Nostromo ]=-",
@@ -13219,12 +13394,18 @@
    "hiz": 300,
    "saldirgan": true,
    "odul": {
-    "ep": 12379,
-    "onur": 122,
-    "kredi": 12411,
-    "uridyum": 26
+    "ep": 6400,
+    "onur": 64,
+    "kredi": 6400,
+    "uridyum": 18
    },
-   "kargo": {}
+   "kargo": {
+    "0": 75,
+    "2": 75,
+    "1": 75,
+    "4": 50,
+    "5": 50
+   }
   },
   "pm_gygerthrall": {
    "ad": "-=[ Gygerthrall ]=-",
@@ -13295,7 +13476,15 @@
     "kredi": 4096000,
     "uridyum": 1250
    },
-   "kargo": {}
+   "kargo": {
+    "0": 4000,
+    "1": 4000,
+    "2": 4000,
+    "4": 2048,
+    "5": 2048,
+    "6": 64,
+    "3": 128
+   }
   },
   "pm_missilestorm": {
    "ad": "-=[ Missile Storm ]=-",
@@ -13325,19 +13514,19 @@
    "hiz": 180,
    "saldirgan": true,
    "odul": {
-    "ep": 819200,
-    "onur": 4096,
-    "kredi": 13017200,
+    "ep": 204800,
+    "onur": 1024,
+    "kredi": 3276800,
     "uridyum": 2048
    },
    "kargo": {
-    "0": 4800,
-    "2": 4800,
-    "1": 4800,
-    "4": 2048,
-    "5": 2048,
-    "6": 256,
-    "3": 1024
+    "0": 1200,
+    "2": 1200,
+    "1": 1200,
+    "4": 512,
+    "5": 512,
+    "6": 64,
+    "3": 128
    }
   },
   "pm_emperorsibelon": {
@@ -13380,7 +13569,15 @@
     "kredi": 128000,
     "uridyum": 100
    },
-   "kargo": {}
+   "kargo": {
+    "0": 400,
+    "1": 400,
+    "2": 400,
+    "4": 64,
+    "5": 64,
+    "6": 4,
+    "3": 8
+   }
   },
   "pm_gygerimoverlord": {
    "ad": "-=[ Gygerim Overlord ]=-",

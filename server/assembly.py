@@ -41,10 +41,10 @@ UNLOCK = {'recipe_blueprint-spartan': lambda p: ((p.d.get('kapilar') or {}).get(
           'recipe_blueprint-immunizer-cpu': lambda p: True}        # Quarantine Zone tek oyunculuda kalıcı (Aşama 8)
 SKIP_U_PER_MIN = 1                                                # uyarlama: kalan dakikası 1 uridyum
 NO_LIMIT = 'ALWAYS_USABLE'
-# kaynağı henüz olmayan malzemeler (yol haritası E8: Flower kutu avı, Plutus' Experiments, Permafrost Fissure): tarifleri gizli
-NO_SOURCE = {'resource_collectable_flower-token', 'resource_collectable_opitite', 'resource_collectable_tarnom',
-             'resource_collectable_proxium', 'resource_collectable_duothrin', 'resource_collectable_trittothrin',
-             'resource_collectable_quadrothrin'}
+# kaynağı henüz olmayan malzemeler (yol haritası E8: Flower kutu avı): tarifleri gizli. Proxium (Permafrost Fissure'ın UFO ve Ufonit
+# kutuları: etkinlik_kapilari.json 'permafrost') ve ondan çıkan Duothrin, Trittothrin, Quadrothrin'in kaynağı artık var; Opitite ve
+# Tarnom'unki de (Plutus' Experiments: plutus_deney.py)
+NO_SOURCE = {'resource_collectable_flower-token'}
 CHAMPION = 'resource_collectable_champion-token'                  # aylık ödül (rutbe.py): jetonlu tarifler elde jeton varken
 TEST = 'recipe_recipe-test'
 BOT = {'recipe_blueprint-ss-cpu'}                                 # Saturn Transmitter: Satürn uzaylıları oyuncu sayılır (bot oyuncular;

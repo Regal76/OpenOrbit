@@ -5,9 +5,9 @@ PIRATE_BOOTY_SILVER | UNSTABLE_BLACKLIGHT_CACHE | BLACKLIGHT-CRYPT | ASTRAL_BOOT
 (Apocalypse) | PERSEUS_BLESSING_BOOTY_BOX | PROMETHEUS_BOOTY_BOX | LAUREL_BOX (son ikisi E8'in etkinliklerinde) | etkinlik kutuları};
 toplarken (CollectBoxRequest) türün anahtarı yoksa kutu yerinde
 kalır ve istemcinin metni gelir (0|A|STM|msg_loot_failed_no_booty-key-…); varsa bir anahtar harcanır, HUD sayacı güncellenir
-("0|A|<kod>|<kalan>"), içerikten bir ödül çekilir (ağırlıkla; sahip olunan gemi/tasarım/dron çekilmez) ve mağazanın ödül işleviyle
-verilir. Black Light Cache'teki tasarıma zaten sahipse 10.000 uridyum (wiki). Yeşil anahtar yoksa ve ayarlarda otomatik alım açıksa
-(autoBuyGreenBootyKeys) mağaza fiyatıyla bir anahtar alınır.
+("0|A|<kod>|<kalan>"), içerikten bir ödül çekilir (ağırlıkla; sahip olunan gemi/tasarım/dron çekilmez; Epic paketi çıkarsa
+parçalarının hepsi) ve mağazanın ödül işleviyle verilir. Black Light Cache'teki tasarıma zaten sahipse 10.000 uridyum (wiki).
+Yeşil anahtar yoksa ve ayarlarda otomatik alım açıksa (autoBuyGreenBootyKeys) mağaza fiyatıyla bir anahtar alınır.
 Haritalar: X-2..X-8 (1-2 … 3-8), X-1..X-8 (Perseus, Laurel), 4-X, 5-X (5-1..5-3), 5-4 (gümüş), BL (BL-1..3). Altın kutular iki
 haftada bir cuma (wiki).
 """
@@ -18,8 +18,9 @@ import etkinlik_gorunumleri as EG
 HERE = os.path.dirname(os.path.abspath(__file__))
 K = json.load(open(os.path.join(HERE, 'data', 'kutular.json'), encoding='utf8'))
 BOXES = K['kutular']
-for _k, _b in BOXES.items():                 # etkinlik görünümleri: kutunun tasarımları (etkinlik_gorunumleri.box_rows)
-    _b['odul'] += EG.box_rows(_k)
+for _k, _b in BOXES.items():                 # etkinlik görünümleri: kutunun yerel tasarım satırları (wiki tablosunun dışında; pick_all)
+    _b['yerel'] = EG.box_rows(_k)
+PAKET = 'paket'                               # Epic paketi satırı: ['paket', [[lootId, adet], ...], ağırlık]; açılışta parçaların hepsi
 MAPS = {k: re.compile(v) for k, v in K['haritalar'].items()}
 GREEN_KEY = 'resource_booty-key'
 ACMA_SN = 3                                   # açılış süresi (tam saniye: istemcinin sayacı): resmî ~5 sn, kullanıcının kararı 3 sn
@@ -72,20 +73,45 @@ def unique(loot):
     return loot.startswith(tuple(K['tekil'])) or '_design_' in loot
 
 
-def pick(p, kind, rng=random):
-    """İçerikten bir ödül -> (lootId, adet). Sahip olunan tekil ödüller (gemi, tasarım, dron) çekilmez; 'odul_etkinlik'li kutuda
-    (Battle Pass Box) süren etkinliğin satırları."""
-    rows = BOXES[kind]['odul'] or BOXES[kind].get('odul_etkinlik', {}).get(box_event(kind)) or []
+def design(r):
+    """Tasarım kovasındaki satır: tekil ödül (gemi, tasarım, dron) ya da Epic paketi."""
+    return r[0] == PAKET or unique(r[0])
+
+
+def gone(p, r):
+    """Satır çekilemez mi: sahip olunan tekil ödül ya da parçalarının hepsine sahip olunan paket."""
+    return all(owned(p, l) for l, _ in r[1]) if r[0] == PAKET else unique(r[0]) and owned(p, r[0])
+
+
+def pick_all(p, kind, rng=random):
+    """İçerikten ödül -> [(lootId, adet)]: bir satır; Epic paketi çıkarsa sahip olunmayan parçalarının hepsi. Sahip olunan tekil
+    ödüller çekilmez; 'odul_etkinlik'li kutuda (Battle Pass Box) süren etkinliğin satırları. Yerel tasarım satırları ('yerel': kutu_ek
+    ve etkinlik görünümleri; wiki tablosunda yok) tasarım çekilişini tablonun tasarımlarıyla paylaşır: tasarımların toplam şansı
+    wiki'deki gibi kalır, yalnız aralarında bölüşülür; tablonun öteki satırlarının şansı bozulmaz."""
+    box = BOXES[kind]
+    rows = box['odul'] or box.get('odul_etkinlik', {}).get(box_event(kind)) or []
     if not rows:                             # etkinlik bitmişken toplanan Battle Pass Box: anahtar geri
-        return BOXES[kind]['anahtar'], 1
+        return [(box['anahtar'], 1)]
     if kind == BL_CACHE:                     # wiki: tasarım rastgele, zaten varsa 10.000 uridyum
         loot = rng.choice(rows)[0]
-        return ('currency_uridium', K['bl_tekrar_uridyum']) if owned(p, loot) else (loot, 1)
-    pool = [r for r in rows if not (unique(r[0]) and owned(p, r[0]))] or [r for r in rows if not unique(r[0])]
-    loot, amount, _ = rng.choices(pool, [r[2] for r in pool])[0]
+        return [('currency_uridium', K['bl_tekrar_uridyum']) if owned(p, loot) else (loot, 1)]
+    pool = [r for r in rows if not gone(p, r)] or [r for r in rows if not design(r)]
+    local = [r for r in box['yerel'] if not owned(p, r[0])]
+    wd, wl = sum(r[2] for r in pool if design(r)), sum(r[2] for r in local)
+    k = wd / (wd + wl) if wd else 1.0
+    pool += local
+    row = rng.choices(pool, [r[2] * k if design(r) else r[2] for r in pool])[0]
+    if row[0] == PAKET:
+        return [(l, n) for l, n in row[1] if not (unique(l) and owned(p, l))]
+    loot, amount = row[0], row[1]
     if isinstance(amount, list):
         amount = rng.randint(amount[0], amount[1])
-    return loot, int(amount)
+    return [(loot, int(amount))]
+
+
+def pick(p, kind, rng=random):
+    """pick_all'un ilk ödülü -> (lootId, adet) (paketsiz kutularda tek ödül)."""
+    return pick_all(p, kind, rng)[0]
 
 
 def key_line(p, kind):

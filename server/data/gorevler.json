@@ -2,7 +2,6 @@
  "_aciklama": "server/data/gorevler.json: oynanabilen görevlerin listesi ve tanımları; npc.json türlerine istemcinin NPC kimliği (npc_kimlik). Üreten: tools/gorevler.py.",
  "_atlananlar": {
   "Good Advice": "istemcide başlığı yok",
-  "Preemptive Strike Force": "event",
   "Uncovering History": "konum R-Zone",
   "Dangerous Times": "konum R-Zone",
   "Temporal Trouble": "konum R-Zone",
@@ -16,7 +15,6 @@
   "The Martian Accords": "konum R-Zone",
   "To the Ends of the Earth": "konum R-Zone",
   "Cease-fire Chaos": "konum R-Zone",
-  "Audacity": "konum X-1",
   "Now is the Time": "konum R-Zone",
   "Change for Changes Sake": "konum R-Zone",
   "The Letter of the Law": "hedefsiz",
@@ -1360,6 +1358,10 @@
     [
      "equipment_weapon_laser_lf-3",
      1
+    ],
+    [
+     "resource_jumpvoucher",
+     2
     ]
    ]
   },
@@ -1525,6 +1527,94 @@
     ]
    ]
   },
+  "20012": {
+   "ad": "Preemptive Strike Force",
+   "seviye": 0,
+   "oncelik": 0,
+   "turler": [
+    2
+   ],
+   "simge": 0,
+   "onceki": [
+    471
+   ],
+   "kaynak": "wiki",
+   "pvp": false,
+   "kok": {
+    "_": "QuestCaseModule",
+    "id": 2001200,
+    "active": false,
+    "mandatory": true,
+    "ordered": true,
+    "mandatoryCount": 2,
+    "modifier": [
+     {
+      "_": "QuestElementModule",
+      "questCase": {
+       "_": "QuestCaseModule",
+       "id": 0,
+       "active": false,
+       "mandatory": false,
+       "ordered": false,
+       "mandatoryCount": 0,
+       "modifier": []
+      },
+      "condition": {
+       "_": "QuestConditionModule",
+       "id": 2001202,
+       "matches": [],
+       "type": 68,
+       "displayType": 68,
+       "targetValue": 1,
+       "mandatory": true,
+       "state": {
+        "_": "QuestConditionStateModule",
+        "currentValue": 0,
+        "active": true,
+        "completed": false
+       },
+       "subConditions": []
+      }
+     },
+     {
+      "_": "QuestElementModule",
+      "questCase": {
+       "_": "QuestCaseModule",
+       "id": 0,
+       "active": false,
+       "mandatory": false,
+       "ordered": false,
+       "mandatoryCount": 0,
+       "modifier": []
+      },
+      "condition": {
+       "_": "QuestConditionModule",
+       "id": 2001203,
+       "matches": [
+        "HOME"
+       ],
+       "type": 62,
+       "displayType": 62,
+       "targetValue": 1,
+       "mandatory": true,
+       "state": {
+        "_": "QuestConditionStateModule",
+        "currentValue": 0,
+        "active": true,
+        "completed": false
+       },
+       "subConditions": []
+      }
+     }
+    ]
+   },
+   "oduller": [
+    [
+     "resource_extra-energy",
+     100
+    ]
+   ]
+  },
   "20014": {
    "ad": "New Company Policy",
    "seviye": 0,
@@ -1590,6 +1680,10 @@
      15000
     ],
     [
+     "resource_extra-energy",
+     100
+    ],
+    [
      "ship_piranha",
      1
     ],
@@ -1642,12 +1736,24 @@
      100
     ],
     [
+     "resource_logfile",
+     2
+    ],
+    [
      "equipment_extra_repbot_rep-2",
      1
     ],
     [
      "equipment_extra_cpu_jp-01",
      1
+    ],
+    [
+     "resource_jumpvoucher",
+     2
+    ],
+    [
+     "resource_repairvoucher",
+     20
     ]
    ]
   },
@@ -2397,7 +2503,7 @@
   },
   "105010": {
    "ad": "A Wild Streuner Appears!",
-   "seviye": 5,
+   "seviye": 0,
    "oncelik": 0,
    "turler": [
     2
@@ -2463,7 +2569,7 @@
   },
   "105011": {
    "ad": "Streuner Metammorphosis",
-   "seviye": 5,
+   "seviye": 0,
    "oncelik": 0,
    "turler": [
     2
@@ -8514,6 +8620,10 @@
     [
      "currency_uridium",
      50
+    ],
+    [
+     "equipment_extra_cpu_nc-awr-x",
+     1
     ]
    ]
   },
@@ -27127,6 +27237,246 @@
     [
      "currency_uridium",
      20000
+    ]
+   ]
+  },
+  "120027": {
+   "ad": "Audacity",
+   "seviye": 20,
+   "oncelik": 0,
+   "turler": [
+    2
+   ],
+   "simge": 2,
+   "onceki": [],
+   "kaynak": "wiki",
+   "pvp": false,
+   "kok": {
+    "_": "QuestCaseModule",
+    "id": 12002700,
+    "active": false,
+    "mandatory": true,
+    "ordered": true,
+    "mandatoryCount": 4,
+    "modifier": [
+     {
+      "_": "QuestElementModule",
+      "questCase": {
+       "_": "QuestCaseModule",
+       "id": 0,
+       "active": false,
+       "mandatory": false,
+       "ordered": false,
+       "mandatoryCount": 0,
+       "modifier": []
+      },
+      "condition": {
+       "_": "QuestConditionModule",
+       "id": 12002702,
+       "matches": [
+        "@enemy X-1"
+       ],
+       "type": 34,
+       "displayType": 34,
+       "targetValue": 1,
+       "mandatory": true,
+       "state": {
+        "_": "QuestConditionStateModule",
+        "currentValue": 0,
+        "active": true,
+        "completed": false
+       },
+       "subConditions": [
+        {
+         "_": "QuestConditionModule",
+         "id": 0,
+         "matches": [
+          "10000",
+          "7000",
+          "500"
+         ],
+         "type": 11,
+         "displayType": 11,
+         "targetValue": 0,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": false,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       ]
+      }
+     },
+     {
+      "_": "QuestElementModule",
+      "questCase": {
+       "_": "QuestCaseModule",
+       "id": 0,
+       "active": false,
+       "mandatory": false,
+       "ordered": false,
+       "mandatoryCount": 0,
+       "modifier": []
+      },
+      "condition": {
+       "_": "QuestConditionModule",
+       "id": 12002703,
+       "matches": [],
+       "type": 3,
+       "displayType": 3,
+       "targetValue": 300000,
+       "mandatory": true,
+       "state": {
+        "_": "QuestConditionStateModule",
+        "currentValue": 0,
+        "active": true,
+        "completed": false
+       },
+       "subConditions": [
+        {
+         "_": "QuestConditionModule",
+         "id": 0,
+         "matches": [
+          "@enemy X-1"
+         ],
+         "type": 77,
+         "displayType": 77,
+         "targetValue": 0,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": false,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       ]
+      }
+     },
+     {
+      "_": "QuestElementModule",
+      "questCase": {
+       "_": "QuestCaseModule",
+       "id": 0,
+       "active": false,
+       "mandatory": false,
+       "ordered": false,
+       "mandatoryCount": 0,
+       "modifier": []
+      },
+      "condition": {
+       "_": "QuestConditionModule",
+       "id": 12002704,
+       "matches": [
+        "@enemy X-8"
+       ],
+       "type": 34,
+       "displayType": 34,
+       "targetValue": 1,
+       "mandatory": true,
+       "state": {
+        "_": "QuestConditionStateModule",
+        "currentValue": 0,
+        "active": true,
+        "completed": false
+       },
+       "subConditions": [
+        {
+         "_": "QuestConditionModule",
+         "id": 0,
+         "matches": [
+          "10000",
+          "7000",
+          "500"
+         ],
+         "type": 11,
+         "displayType": 11,
+         "targetValue": 0,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": false,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       ]
+      }
+     },
+     {
+      "_": "QuestElementModule",
+      "questCase": {
+       "_": "QuestCaseModule",
+       "id": 0,
+       "active": false,
+       "mandatory": false,
+       "ordered": false,
+       "mandatoryCount": 0,
+       "modifier": []
+      },
+      "condition": {
+       "_": "QuestConditionModule",
+       "id": 12002705,
+       "matches": [],
+       "type": 3,
+       "displayType": 3,
+       "targetValue": 300000,
+       "mandatory": true,
+       "state": {
+        "_": "QuestConditionStateModule",
+        "currentValue": 0,
+        "active": true,
+        "completed": false
+       },
+       "subConditions": [
+        {
+         "_": "QuestConditionModule",
+         "id": 0,
+         "matches": [
+          "@enemy X-8"
+         ],
+         "type": 77,
+         "displayType": 77,
+         "targetValue": 0,
+         "mandatory": true,
+         "state": {
+          "_": "QuestConditionStateModule",
+          "currentValue": 0,
+          "active": false,
+          "completed": false
+         },
+         "subConditions": []
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "oduller": [
+    [
+     "currency_experience",
+     75000000
+    ],
+    [
+     "currency_honour",
+     10000
+    ],
+    [
+     "currency_credits",
+     1000000
+    ],
+    [
+     "currency_uridium",
+     15000
+    ],
+    [
+     "resource_logfile",
+     20
     ]
    ]
   },

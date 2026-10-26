@@ -15,14 +15,18 @@ gerekir ama bitti (puanı Gold Pass alınınca gelir).
 Tek oyunculu uyarlamalar: ödül sırası ve görevler kayıttaki sezonun (her sezon aynı); yalnız sezon tasarımları (dron ve P.E.T.;
 2024-2025 sezonlarında Gold sırasının sonunda gemi tasarımı) sezonun sırasından: 2023-05 Mobius … 2026-08 Cerevisia (kayıttaki),
 sonra baştan (etkinlik_gorunumleri.season_track; geçmiş sezonların tasarımları başka yoldan alınamıyordu).
-Sezonlar gerçek oyunun ayları: şubat, mayıs, ağustos, kasım başı (season_id "2026-08").
+Sezonlar gerçek oyunun ayları: şubat, mayıs, ağustos, kasım başı (season_id "2026-08"); bilinen sezonların gerçek tarihleri
+data/biletler.json "sezon.takvim"de (wiki: XIV 01.08.2026 - 25.10.2026 = 86 gün, kayıttaki timeToEventEnd 25.10 23:59'a denk; XV
+26.10.2026'dan, kaynak çıkana dek uyarlama), tabloda olmayanlar ay kuralıyla.
 Sezon bitince alınmamış ödüller verilir (istemcinin metni: "Any unclaimed rewards from the previous season has been booked to you");
 N.O.V.A. kaptanları bekler: sezon sonu penceresi SeasonPassRewardUnclaimedInfoCommand {captainPending, captainOwned, captainLimit,
 captainWarning} (istemcinin ShowEndView'ı; girişte bekleyen varken yine), düğmesi SeasonPassRewardClaimAllRequest. Kadroda yer yoksa
 kaptan ödülü alınmaz, SeasonPassCaptainLimitCommand ("Your N.O.V.A. roster is already full!"); bekleyenler sonraki sezon sonunda yanar.
-Günlük görevler (3 + 2 Gold) her gün, haftalıklar (5 + 3 Gold) pazartesi havuzdan çekilir; sezonluklar sezon boyunca. Yenileme: günde
-1 ücretsiz, sonra 500 U; haftalık 500 U (kayıttaki refreshInfo). Gold Pass mağazada (resource_gold-pass 400.000 U) ya da paketten;
-Extra Gold Pass Gold Pass'ten sonra.
+Günlük görevler (3 + 2 Gold) her gün, haftalıklar (5 + 3 Gold) pazartesi havuzdan çekilir (wiki havuzu: 48 günlük, 51 haftalık görev;
+"Complete 1 of the following tasks" satırları çok koşullu görev); sezonluklar sezon boyunca. Yenileme: günde 1 ücretsiz, sonra
+satın alınanlar 1-4. 500 U, 5-7. 1.000 U, 8-10. 2.000 U, 11+. 4.000 U (wiki; günlük ve haftalık ayrı sayılır, gün ve hafta başında
+sıfırlanır; kayıttaki refreshInfo sıradaki fiyatı bildirir). Seviye azami olunca satın alınan fazla puan 1 puan = 10 Onur. Gold Pass
+mağazada (resource_gold-pass 400.000 U) ya da paketten; Extra Gold Pass Gold Pass'ten sonra.
 Profilde: sezon {donem, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, deger, tamam, yenileme, bekleyen [[kaptan, adet]]}.
 """
 import datetime, json, os, random, threading, time
@@ -40,7 +44,8 @@ MAX_LEVEL = len(COST) - 1
 MISSIONS = {int(k): v for k, v in S['gorevler'].items()}
 DAILY, WEEKLY, SEASON = 3, 6, 9
 DAILY_N, WEEKLY_N = (3, 2), (5, 3)            # (normal, Gold) (kayıt)
-REFRESH_U = 500
+REFRESH_LADDER = [tuple(x) for x in S['yenileme_basamak']]        # (bu sıraya dek yenileme ya da None, bedel U)
+OVERFLOW_HONOR = 10                           # azami seviyenin üstündeki satın alınan puan: 1 puan = 10 Onur (wiki)
 DONE_TEXT = {DAILY: 'sp_daily-mission-completed', WEEKLY: 'sp_weekly-mission-completed', SEASON: 'sp_season-mission-completed'}
 TRACKS = (('ucretsiz', False, False), ('gold', True, False), ('ext', False, True))
 GOLD_ITEM, EXT_ITEM, POINT_ITEM = 'resource_gold-pass', 'resource_ext-gold-pass', 'resource_season-pass-point'
@@ -79,10 +84,35 @@ def mod(name, **f):
     return f
 
 
+def _day(text, plus=0):
+    return (datetime.datetime.strptime(text, '%Y-%m-%d') + datetime.timedelta(days=plus)).timestamp()
+
+
+# gerçek tarihleri bilinen sezonlar: ((yıl, ay), başlangıç, bitiş ya da None = ay kuralının sonu); bitiş günü dahil
+WINDOWS = [(tuple(int(x) for x in w['id'].split('-')), _day(w['baslangic']), _day(w['bitis'], 1) if w.get('bitis') else None)
+           for w in S.get('takvim', [])]
+
+
+def formula_end(y, m):
+    """Ay kuralına göre (y, m) sezonunun bitişi: üç ay sonra ayın ilk günü."""
+    return datetime.datetime(y + (m == 11), (m + 2) % 12 + 1, 1).timestamp()
+
+
+def season_span(now=None):
+    """Zamandaki sezon: ((yıl, ay), bitiş zamanı). Gerçek oyunun sezonları şubat, mayıs, ağustos ve kasım başında
+    (achievement_seasonpass_202608); tablodaki sezonun tarihleri (sezon.takvim) kuralı geçersiz kılar."""
+    now = time.time() if now is None else now
+    t = datetime.datetime.fromtimestamp(now)
+    rule = t.year - (t.month < 2), (t.month - 2) % 12 // 3 * 3 + 2
+    for ym, a, b in WINDOWS:
+        if a <= now and (now < b if b else rule <= ym):          # bitişsiz sezon, ay kuralı bir sonrakine geçene dek sürer
+            return ym, b or formula_end(*ym)
+    return rule, formula_end(*rule)
+
+
 def season_start(now=None):
-    """Sezonun başladığı (yıl, ay): gerçek oyunun sezonları şubat, mayıs, ağustos ve kasım başında (achievement_seasonpass_202608)."""
-    t = datetime.datetime.fromtimestamp(time.time() if now is None else now)
-    return t.year - (t.month < 2), (t.month - 2) % 12 // 3 * 3 + 2
+    """Sezonun başladığı (yıl, ay)."""
+    return season_span(now)[0]
 
 
 def season_id(now=None):
@@ -90,8 +120,7 @@ def season_id(now=None):
 
 
 def season_end(now=None):
-    y, m = season_start(now)
-    return datetime.datetime(y + (m == 11), (m + 2) % 12 + 1, 1).timestamp()
+    return season_span(now)[1]
 
 
 def achievement_group(now=None):
@@ -146,6 +175,13 @@ def pick(qtype, seed, counts, exclude=()):
     return out
 
 
+def refresh_price(n):
+    """Görev yenilemenin bedeli (U): n yenileme satın alınmışken sıradaki (wiki: 1-4. 500, 5-7. 1.000, 8-10. 2.000, sonrası 4.000)."""
+    for last, cost in REFRESH_LADDER:
+        if last is None or n < last:
+            return cost
+
+
 def points_of(qid):
     return sum(r['amount'] for r in MISSIONS[qid]['tanim']['rewards'] if r['lootId'] == POINT_ITEM)
 
@@ -189,6 +225,11 @@ class Sezon:
                           sezonluk=pool(SEASON, False) + pool(SEASON, True), yenileme={'gun': 0, 'hafta': 0}, bekleyen=wait)
                 self.p.dirty = True
             msgs += self.activate_items()
+        # havuzdan kalkmış görev kimlikleri (havuz wiki'ye göre yenilendi): liste yeniden çekilir, eski ilerleme silinir
+        if any(q not in MISSIONS for q in st.get('gunluk', [])):
+            st['gun'] = None
+        if any(q not in MISSIONS for q in st.get('haftalik', [])):
+            st['hafta'] = None
         if st.get('gun') != day_id(now):
             self.reset_list('gunluk', DAILY, DAILY_N, 'gun', day_id(now))
         if st.get('hafta') != week_id(now):
@@ -242,8 +283,13 @@ class Sezon:
     def refresh_info(self):
         y = self.st['yenileme']
         free_left = max(0, 1 - y.get('gun', 0))
-        return mod('RefreshQuestInfo', nextDailyUridium=-1 if free_left else REFRESH_U, weeklyCount=0, dailyLeft=free_left, dailyCount=1,
-                   nextWeeklyUridium=REFRESH_U, weeklyLeft=0)
+        return mod('RefreshQuestInfo', nextDailyUridium=-1 if free_left else refresh_price(self.paid_refreshes('gunluk')), weeklyCount=0,
+                   dailyLeft=free_left, dailyCount=1, nextWeeklyUridium=refresh_price(self.paid_refreshes('haftalik')), weeklyLeft=0)
+
+    def paid_refreshes(self, key):
+        """Bu gün (günlük) ya da hafta (haftalık) satın alınmış yenileme sayısı (günlüğün ilki ücretsiz)."""
+        y = self.st['yenileme']
+        return max(0, y.get('gun', 0) - 1) if key == 'gunluk' else y.get('hafta', 0)
 
     def mission_cmd(self):
         st = self.st
@@ -284,16 +330,27 @@ class Sezon:
                                                               spcId=0, marketingImage=S['gorsel'], seasonName=S['ad']))]
 
     # ------------------------------------------------------------ puan ve Gold Pass
-    def add_points(self, n):
+    def add_points(self, n, bought=False):
+        """Puan ekler. bought: puan paketinden; azami seviyenin üstüne taşan kısmı 1 puan = 10 Onur olur (wiki)."""
         old = self.level()
         with self.p.lock:
-            self.st['puan'] = self.st.get('puan', 0) + n
+            total = self.st.get('puan', 0) + n
+            excess = min(n, max(0, total - threshold(MAX_LEVEL))) if bought else 0
+            self.st['puan'] = total - excess
             self.p.dirty = True
+        msgs = []
+        if excess:
+            honor = excess * OVERFLOW_HONOR
+            if self.m:
+                msgs += self.m.reward('currency_honour', honor)
+            else:
+                self.p.gain(onur=honor)
+            self.log('   Season Pass puanı azami seviyeyi aştı: %d puan -> %d Onur' % (excess, honor))
         if self.level() > old:
             self.log('   Season Pass seviyesi %d (%d puan)' % (self.level(), self.st['puan']))
             self.level_event()
-            return [self.points_cmd(), self.reward_cmd()]       # ızgara yalnız ödül listesiyle açılır (canlı test H44)
-        return [self.points_cmd()]
+            return msgs + [self.points_cmd(), self.reward_cmd()]       # ızgara yalnız ödül listesiyle açılır (canlı test H44)
+        return msgs + [self.points_cmd()]
 
     def level_event(self):
         """Başarım: Gold Season Pass'in seviyesi (LevelAbsolute; Gold Pass yoksa 0)."""
@@ -325,7 +382,7 @@ class Sezon:
         """Mağaza ödülü: Season Pass puanı ya da Gold/Extra Gold Pass -> mesajlar."""
         self.ensure()
         if loot == POINT_ITEM:
-            return self.add_points(n)
+            return self.add_points(n, bought=True)
         self.p.add_resource(loot, n)
         msgs = self.activate_items()
         return msgs + [self.status_cmd(), self.mission_cmd(), self.reward_cmd(), self.points_cmd()]
@@ -469,21 +526,22 @@ class Sezon:
             return [self.mission_cmd()]
         stamp = 'gun' if key == 'gunluk' else 'hafta'
         free = key == 'gunluk' and st['yenileme'].get('gun', 0) < 1
-        if not free:
-            if self.p.d['pilot'].get('uridium', 0) < REFRESH_U:
-                return [legacy('0|A|STM|not_enough_uridium'), self.mission_cmd()]
-            self.p.gain(uridyum=-REFRESH_U, neden='buy_SPECIAL', detay='season_pass_refresh')
+        cost = 0 if free else refresh_price(self.paid_refreshes(key))
         qt, gold = MISSIONS[qid]['tur'], MISSIONS[qid]['gold']
         cands = [q for q in pool(qt, gold) if q not in st[key]]
-        if not cands:
+        if not cands:                                              # değişecek görev yok: bedel alınmaz
             return [self.mission_cmd()]
+        if cost:
+            if self.p.d['pilot'].get('uridium', 0) < cost:
+                return [legacy('0|A|STM|not_enough_uridium'), self.mission_cmd()]
+            self.p.gain(uridyum=-cost, neden='buy_SPECIAL', detay='season_pass_refresh')
         new = random.choice(cands)
         with self.p.lock:
             st[key][st[key].index(qid)] = new
             st['deger'].pop(str(qid), None)
             st['yenileme'][stamp] = st['yenileme'].get(stamp, 0) + 1
             self.p.dirty = True
-        self.log('   Season Pass görevi yenilendi: %d -> %d%s' % (qid, new, '' if free else ' (%d U)' % REFRESH_U))
+        self.log('   Season Pass görevi yenilendi: %d -> %d%s' % (qid, new, '' if free else ' (%d U)' % cost))
         return [self.mission_cmd()] + ([] if free or not self.m else self.m.money_msgs())
 
     def close_season(self):

@@ -8,7 +8,7 @@
   - SpaceSearchRequest {id, action, count}: 0 pencere -> SpaceSearchInfoCommand {planetIndex, planetPct, quantity, lootId, cost};
     1 keşif (count 1/5/10) -> SpaceSearchEventsCommand {rewards [RewardModule], eventIds [EventCommand {eventId, planetId}], planets
     [PlanetCommand {planetId, planetPct, increase}]}; 2 ödül sekmesi -> SpaceSearchSectorRewardsCommand {rewards
-    [SpaceSearchSectorRewards {unlock, count, range, received}]}; 3 ödülü al (id = from); 4 görevler -> SpaceSearchMissionListCommand
+    [SpaceSearchSectorRewards {unlock, count, range, received}]}; 3 ödülü al (count = from; id 0); 4 görevler -> SpaceSearchMissionListCommand
     {missions [EventQuestDefinitionModule {module, completed, claimed}]}. UpdateSpaceSearchKeyCommand {quantity} anahtar sayısı.
 Kurallar (resmî SSS, darkorbitwiki): 40 gezegen (8 bölge); her keşif 1 FTL Key (resource_ftl-key); olay Simple %50 (+%3), Moderate %30
 (+%5), Difficult %20 (+%9) ve türünün ödül paketi (sabit + alt paket çekilişi); gezegen %100 olunca sıradaki açılır; 13 ödül basamağı
@@ -180,7 +180,7 @@ class GalaxyTrek:
         if action == 2:
             return [self.sector_cmd()]
         if action == 3:
-            return self.claim(int(f.get('id') or 0))
+            return self.claim(int(f.get('count') or 0))      # istemci: {action 3, id 0, count = range from}
         if action == 4:
             return [self.missions_cmd()]
         return []
@@ -233,7 +233,7 @@ class GalaxyTrek:
 
     def claim(self, tier):
         st = self.st
-        t = next((t for t in D.get('basamaklar', []) if t['gereken'] == tier), None)     # al isteğinin id'si = range from
+        t = next((t for t in D.get('basamaklar', []) if t['gereken'] == tier), None)     # al isteğinin count'u = range from
         if not t or t['kimlik'] in st['alinan'] or st['tamam'] < t['gereken']:
             return [self.sector_cmd()]
         tier = t['kimlik']

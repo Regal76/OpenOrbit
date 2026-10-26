@@ -1,106 +1,171 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <battlePass>
-    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py; resmî dosya değil, uyarlama) -->
+    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py, wiki verisi: tools/biletler_wiki.json; resmî dosya değil) -->
     <objectiveList>
+        <!-- Ice Cubes -->
         <objective questId="500385">
-            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+            <questReward lootid="ammunition_laser_ucb-100" amount="1000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
+        <!-- Frozen Caps -->
         <objective questId="500388">
-            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+            <questReward lootid="resource_collectable_scrapium" amount="25"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
+        <!-- Clear Out A Path -->
         <objective questId="500391">
-            <questReward lootid="resource_booty-key" amount="5"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+            <questReward lootid="booster_dmg-dlb" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
-        <objective questId="500394">
-            <questReward lootid="ammunition_rocket_plt-3030" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        <!-- Alpha Loop -->
+        <objective questId="500562">
+            <questReward lootid="ammunition_specialammo_pld-8" amount="250"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
+        <!-- Avalanche -->
         <objective questId="500397">
-            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+            <questReward lootid="ammunition_laser_idb-125" amount="1000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
-        <objective questId="500400">
-            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        <!-- Mind Cleansing -->
+        <objective questId="500579">
+            <questReward lootid="tech_battle-repair-bot2" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
+        <!-- Getting Chilly -->
         <objective questId="500403">
-            <questReward lootid="resource_booty-key" amount="5"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+            <questReward packageid="package_battlepass_questReward-500403" packageItemIds="ammunition_rocketlauncher_ubr-100,resource_extra-energy" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500403"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
-        <objective questId="500406">
-            <questReward lootid="ammunition_rocket_plt-3030" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
+        <!-- Exploration -->
+        <objective questId="500400">
+            <questReward packageid="package_battlepass_questReward-500400" packageItemIds="ammunition_laser_ucb-100,ammunition_specialammo_wiz-x" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500400"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
+        <!-- Thawing Gates -->
+        <objective questId="500394">
+            <questReward packageid="package_battlepass_questReward-500394" packageItemIds="ammunition_laser_ucb-100,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500394"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Making Slush -->
         <objective questId="500386">
-            <questReward lootid="resource_collectable_polychromium" amount="350"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+            <questReward lootid="ammunition_laser_rsb-75" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
+        <!-- Ice Field -->
         <objective questId="500389">
-            <questReward lootid="resource_collectable_evocation-chip" amount="180"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+            <questReward lootid="ammunition_rocketlauncher_cbr" amount="400"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
+        <!-- Piercing Cold -->
         <objective questId="500392">
-            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+            <questReward lootid="ammunition_laser_idb-125" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
-        <objective questId="500395">
-            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="600"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+        <!-- Double Dare -->
+        <objective questId="500563">
+            <questReward lootid="tech_speed-burst" amount="3"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
+        <!-- Glacial Mass -->
         <objective questId="500398">
-            <questReward lootid="ammunition_laser_vb-142" amount="6000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
-        <objective questId="500401">
-            <questReward lootid="resource_collectable_polychromium" amount="350"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+        <!-- Large Scale Purge -->
+        <objective questId="500580">
+            <questReward lootid="ammunition_rocket_plt-2021" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
+        <!-- Fractured -->
         <objective questId="500404">
-            <questReward lootid="resource_collectable_evocation-chip" amount="180"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+            <questReward lootid="booster_shd-dlb" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
-        <objective questId="500407">
-            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
+        <!-- Ice Box -->
+        <objective questId="500401">
+            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="500"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
+        <!-- Decipher -->
+        <objective questId="500395">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="15"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Numb -->
         <objective questId="500387">
-            <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+            <questReward lootid="tech_shield-backup2" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
+        <!-- Broken Chunks -->
         <objective questId="500390">
-            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
+        <!-- Below Zero -->
         <objective questId="500393">
-            <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+            <questReward lootid="ammunition_rocketlauncher_ubr-100" amount="1000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
-        <objective questId="500396">
-            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+        <!-- Triple Trip -->
+        <objective questId="500564">
+            <questReward lootid="resource_collectable_indoctrine-accelerator" amount="25"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
+        <!-- Glittery Pieces -->
         <objective questId="500399">
-            <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+            <questReward lootid="ammunition_specialammo_r-ic3" amount="100"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
-        <objective questId="500402">
-            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+        <!-- Dark Riddance -->
+        <objective questId="500581">
+            <questReward lootid="equipment_shipupgrade_dmg-xu02" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
+        <!-- Frostbite -->
         <objective questId="500405">
-            <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="100"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
-        <objective questId="500408">
-            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
-            <bpReward lootid="resource_battle-pass-key" amount="13"/>
+        <!-- Expedition -->
+        <objective questId="500402">
+            <questReward lootid="tech_shield-backup2" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
         </objective>
-        <objective questId="500409">
+        <!-- Key Stash -->
+        <objective questId="500396">
+            <questReward lootid="equipment_shipupgrade_shd-xt10" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Quadruple Quest -->
+        <objective questId="500565">
+            <questReward lootid="equipment_shipupgrade_spc-xt10" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="10"/>
+        </objective>
+        <!-- Eternally Encircling -->
+        <objective questId="500585">
             <questReward lootid="resource_collectable_indoctrine-accelerator" amount="50"/>
-            <bpReward lootid="resource_battle-pass-key" amount="24"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Crushed Ice -->
+        <objective questId="500411">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="35"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Sextuple Sovereign -->
+        <objective questId="500583">
+            <questReward lootid="resource_collectable_diametrion" amount="15"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Frozen Labyrinth (20 objectives) -->
+        <objective questId="500409">
+            <questReward lootid="equipment_shipupgrade_spc-xu02" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Frozen Labyrinth (25 objectives) -->
+        <objective questId="500410">
+            <questReward lootid="equipment_shipupgrade_dmg-xu03" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
         </objective>
     </objectiveList>
     <flvDisplayLootId>resource_battle-pass-key</flvDisplayLootId>

@@ -95,12 +95,14 @@ TUTORIAL_GATE, TUTORIAL_MAX_LEVEL = 150000774, 10
 # portalı X-3'te (low.py).
 # (harita, anahtar, x, y, hedef, ek alanlar); portal kimliği GATE_ID_BASE + anahtar (istemcinin anahtarları 920042'ye kadar)
 _SILVER = {'ucret': 'gumus_anahtar', 'ipucu': 'ttip_jumpgate_hiddenPirateMap'}
+LOW_START = (1000, 11800)       # LoW'a girişin varış yeri: haritanın sol alt köşesi (wiki "lower left corner"; emu-dark LowPortal.cs)
 EXTRA_GATES = [(92, 990006, 18500, 11500, 94, dict(_SILVER, firma=1, yalniz_firma=1)),
                (92, 990001, 18500, 11500, 94, dict(_SILVER, firma=2, yalniz_firma=2)),
                (92, 990007, 18500, 11500, 94, dict(_SILVER, firma=3, yalniz_firma=3)),
                (94, 990002, 4000, 13000, 92, {}),
-               (3, 990003, 10500, 2000, 200, {'low': True}), (7, 990004, 10500, 2000, 200, {'low': True}),
-               (11, 990005, 10500, 2000, 200, {'low': True})]
+               (3, 990003, 10500, 2000, 200, {'low': True, 'varis': LOW_START}),
+               (7, 990004, 10500, 2000, 200, {'low': True, 'varis': LOW_START}),
+               (11, 990005, 10500, 2000, 200, {'low': True, 'varis': LOW_START})]
 for _m, _k, _x, _y, _to, _extra in EXTRA_GATES:
     GATES.setdefault(_m, []).append(dict(gateId=GATE_ID_BASE + _k, key=_k, x=_x, y=_y, hedef=_to, **_extra))
 # korsan ve Black Light haritalarının portalları düzendeki yerlerinde (ipucu ızgarasına oturtulan yer kabaca); varış yeri portala
@@ -132,6 +134,10 @@ for _m, _n in NAMES.items():
 # istasyonlu haritalar -> firma: X-1 (istemcinin maps-config.xml'inde home="n") ve X-8 (wiki: Home Base)
 STATION_MAPS = {1: 1, 5: 2, 9: 3, 20: 1, 24: 2, 28: 3}
 FACTION_NAME = {1: 'MMO', 2: 'EIC', 3: 'VRU'}
+# istasyonsuz haritada ölünce doğulan yer: seviye 12+ ve üst haritalarda (X-5 … X-8, 4-4, 4-5) firmanın X-8'i (VRU için 3-8), yoksa X-1
+# (fandom 4-4, Base, Uppers: "level 12 or higher ... respawn on X-8"; 5-2'nin korsan üssüne hiç doğulmaz)
+X8_HOME = {1: 20, 2: 24, 3: 28}
+UPPERS = ('X-5', 'X-6', 'X-7', 'X-8', '4-4', '4-5')
 # X-8'in üssü ön karakol: istemcinin AssetType'ı COMPANY_HQ_OUTPOST 47, HANGAR_OUTPOST 49, ORE_TRADE_OUTPOST 51, INSTANT_REPAIR_OUTPOST
 # 54, STATION_TURRET_*_OUTPOST 56/58 (lib_assets *_outpost_<firma>, metinler "Corporate Outpost", "Outpost Hangar" …; kayıtta X-8 yok)
 OUTPOST = {46: 47, 48: 49, 50: 51, 53: 54, 55: 56, 57: 58}
@@ -217,7 +223,7 @@ STRUCTURES = {17: 34, 21: 34, 25: 34, 306: 34, 307: 34, 308: 34, 92: 50}
 # (game.Sablonlar.station bunu atlar).
 STRUCTURE_STATION = {92: 6}
 STRUCTURE_ASSET_TYPE = {92: 52}
-# LoW'un ortasındaki korsan HQ'su (low.json: etkin röleler ortada onarımı hızlandırır): istemcinin "station_4" LoW istasyonu
+# LoW'un ortasındaki korsan HQ'su (low.json: ilk röleden sonra çevresinde iyileştirme bölgesi, boss burada doğar): istemcinin "station_4" LoW istasyonu
 # (SpaceStationCommand type 4, mini haritada healthStation). Süs istasyonu: güvenli bölgesi yok, tamir/doğma yeri değil.
 LOW_STATION = {200: 4}
 DECOR_STATION_TYPES = set(STRUCTURE_STATION.values()) | set(LOW_STATION.values())
@@ -317,6 +323,11 @@ def map_class(map_id):
     """Şirket haritaları için X-n (1-3 ve 2-3 -> X-3), diğerleri kendi adı."""
     n = name(map_id)
     return 'X-' + n[2:] if len(n) == 3 and n[0] in '123' and n[1] == '-' and n[2].isdigit() else n
+
+
+def x8_home(faction, level, map_id):
+    """Ölünen harita istasyonsuzsa doğulacak firmanın X-8 haritası; seviye 12'nin altında ya da üst harita değilse None (X-1)."""
+    return X8_HOME.get(faction) if level >= 12 and map_class(map_id) in UPPERS else None
 
 
 # istasyon nesneleri: yaklaşınca tıklanabilir olur (kayıt: ~500 birimde MapAssetActionAvailableCommand state 0, uzaklaşınca 1)

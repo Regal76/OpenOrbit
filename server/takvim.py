@@ -8,7 +8,8 @@ belli günlerinde ve saatlerinde etkindir; saatler yerel saatle. Dönem ucu:
   - "paskalya+N", "cin_yeni_yili-N", "sukran_gunu+N": o yılın bayramından N gün sonra / önce (Kasım'ın 4. perşembesi)
 Dönemin üçüncü öğesi o günlerin saatleri ([[başlangıç, bitiş]]; 24'ü aşan bitiş ertesi güne taşar). Haftalık: 'gunler'
 (0=pazartesi), 'saatler', 'ay_haftasi' (ayın kaçıncı o günü: [1, 3] = ayın 1. ve 3. cuması), 'hafta_dongu' [n, i] (n haftalık
-döngünün i. haftası, HAFTA_BASI'ndan sayılır), 'birlikte' (yalnız bu etkinliklerden biri sürerken). Harita bölümlerinin de kendi 'donemler'i ve doğuş saatleri ('saatler',
+döngünün i. haftası, HAFTA_BASI'ndan sayılır), 'birlikte' (yalnız bu etkinliklerden biri sürerken), 'sayilir' (başka bir etkinliğin
+adı: bu etkinlik sürerken o da etkin sayılır; Şükran Günü'nde GG Double Rewards). Harita bölümlerinin de kendi 'donemler'i ve doğuş saatleri ('saatler',
 'saatler_hafta_sonu') olabilir (window; panelin seans_hep_acik ayarı saatleri kaldırır, zorla açılan etkinlikte ikisi de yok).
 Etkin etkinlikler:
   - istemciye EventUpdateCommand {timestamp, activeCommands [EventModule {type, id, timeLeft, lang}], utcTimeOffset}: süresiz
@@ -31,6 +32,10 @@ D = json.load(open(os.path.join(HERE, 'data', 'etkinlikler.json'), encoding='utf
 EVENTS = D['etkinlikler']
 EG.apply(EVENTS)                        # etkinlik görünümleri: GG hafta sonu kapılarının ve harita kutularının tasarımları
 ALWAYS = D['surekli']['turler']
+SAYILIR = {}                            # etkinlik -> yerine de sayılan etkinlikler ('sayilir': Şükran Günü'nde gg_cift_odul)
+for _k, _e in EVENTS.items():
+    if _e.get('sayilir'):
+        SAYILIR.setdefault(_e['sayilir'], []).append(_k)
 FORCED, MODE = set(), 'takvim'          # takvim | hepsi | yok (yıllıklar için)
 # hafta döngüleri ('hafta_dongu') bu pazartesiden sayılır; ISO hafta paritesi 53 haftalık yılda (2026) üç haftalık ara bırakıyordu
 HAFTA_BASI = datetime.date(2024, 1, 8)
@@ -148,7 +153,9 @@ def period(key, now=None):
         p = _span_at(e['donemler'], t)
     else:
         p = _hours(t, lambda d: e.get('saatler', [[0, 24]]) if _week_day(e, d) else [])
-    return p and (p[0].timestamp(), p[1].timestamp())
+    if p:
+        return p[0].timestamp(), p[1].timestamp()
+    return next(filter(None, (period(k, now) for k in SAYILIR.get(key, ()))), None)      # 'sayilir': yerine sayılan etkinliğin dönemi
 
 
 def window(s, now=None):
@@ -240,6 +247,7 @@ def intervals(key, a, b):
         iv = _span_windows(e['donemler'], a, b)
     else:
         iv = _daily(a, b, lambda d: e.get('saatler', [[0, 24]]) if _week_day(e, d) else [])
+    iv = _merge(iv + [x for k in SAYILIR.get(key, ()) for x in intervals(k, a, b)])      # 'sayilir': yerine sayılan etkinlikler
     if e.get('birlikte'):
         iv = _intersect(iv, _merge([x for k in e['birlikte'] for x in intervals(k, a, b)]))
     return iv
@@ -290,20 +298,22 @@ def time_left(key, now=None):
 
 
 def gate_rewards(key, now=None):
-    """Etkin etkinliklerin Galaksi Kapısı ödülleri ('kapi_odulu'): [(lootId, adet, olasılık)] (Empyrian / Prosperous Fragment …)."""
-    return [tuple(r) for k in sorted(active(now)) for s in EVENTS[k].get('kapi_odulu', []) if key in s['kapilar']
+    """Etkin etkinliklerin Galaksi Kapısı ödülleri ('kapi_odulu'): [(lootId, adet, olasılık)] (Empyrian / Prosperous Fragment …);
+    paketin kalemleri hariç (gate_bundles)."""
+    return [tuple(r) for k in sorted(active(now)) for s in EVENTS[k].get('kapi_odulu', []) if key in s['kapilar'] and not s.get('paket')
             for r in s.get('esyalar', [])]
 
 
 def gate_choices(key, now=None):
-    """Etkin etkinliklerin bu kapıdaki seçimli ödülleri ('kapi_odulu' satırının 'secim'i: 'olasilik'la [[lootId, adet]]'ten biri;
+    """Etkin etkinliklerin bu kapıdaki seçimli ödülleri ('kapi_odulu' satırının 'secim'i: 'olasilik'la [[lootId, adet(, ağırlık)]]'ten biri, ağırlık yoksa eşit;
     'yinelenmez': sahip olunan tasarım çıkmaz): GG Special Rewards Weekend paketleri, LF-4 günü."""
     return [s for k in sorted(active(now)) for s in EVENTS[k].get('kapi_odulu', []) if key in s['kapilar'] and s.get('secim')]
 
 
-def gate_packages(key, now=None):
-    """Etkin etkinliklerin bu kapıdaki ödül paketleri ('kapi_odulu' satırının 'paket'i): başarımın CollectPackage koşulu için."""
-    return [s['paket'] for k in sorted(active(now)) for s in EVENTS[k].get('kapi_odulu', []) if key in s['kapilar'] and s.get('paket')]
+def gate_bundles(key, now=None):
+    """Etkin etkinliklerin bu kapıdaki ödül paketleri ('kapi_odulu' satırı 'paket' adıyla: 'olasilik'la düşer, 'esyalar' kalemleri
+    [lootId, adet, olasılık] kendi olasılıklarıyla; Prosperous Package): düşünce başarımın CollectPackage koşulu da (kapi.finish)."""
+    return [s for k in sorted(active(now)) for s in EVENTS[k].get('kapi_odulu', []) if key in s['kapilar'] and s.get('paket')]
 
 
 def achievement_groups(now=None):

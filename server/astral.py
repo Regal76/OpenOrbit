@@ -201,6 +201,8 @@ class Astral:
         for loot, n in give:
             msgs += self.m.prize(loot, n)
             got.append('%s x%d' % (loot, n))
+            if loot == 'resource_collectable_astralite':
+                p.ach('loot', loot=loot, amount=n)                  # Astral Ascension Pass: "Astralite topla" (savas_bileti.py)
         self.log('   Astral bitti: rift %d, puan %d; %s' % (reached, r['puan'], ', '.join(got)))
         msgs.append(KAPI.screen('Astral Ascension ended at rift %d. Score: %d' % (min(reached, 15), r['puan']), big=True))
         return msgs + [self.info_cmd(), self.rank_cmd()]
@@ -389,7 +391,7 @@ class Astral:
     def exit_portal(self, world):
         home = KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5)
         return dict(gateId=PORTAL + 50, x=world.map_w // 2, y=world.map_h // 2 + 1500, hedef=home, designId=1, kapi='astral', cikis=True,
-                    astral_cikis=True)
+                    astral_cikis=True, varis='istasyon')
 
     def choose_gate(self, g):
         """Ödül kapısına atlandı: sonraki rift o türle -> hedef harita."""

@@ -1375,13 +1375,16 @@ class Cbs:
                 continue
             nx, ny = n.mover.pos(now)
             if math.hypot(nx - x, ny - y) > 700 and math.hypot(n.mover.x1 - x, n.mover.y1 - y) > 700:   # oyuncudan kopan: istasyona döner
+                w.alien_ceasefire(n)                    # istasyona ateş ediyorsa istemcide lazer durumu kapanır (AttackAbortLaserCommand)
                 n.next_think = now + 10 ** 6
                 tx, ty = x + random.randint(-300, 300), y + random.randint(-200, 200)
                 ms = n.mover.go(tx, ty, max(150, n.d.get('hiz', 300)), now)
                 w.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
                 continue
             if math.hypot(nx - x, ny - y) > 700 or not targets:
+                w.alien_ceasefire(n)                    # menzil dışı ya da hedef kalmadı: lazer bitti
                 continue
+            n.firing = True                             # istasyona lazer açtı: bırakınca alien_ceasefire AttackAbortLaserCommand yollar
             self.next_shot[n.id] = now + dunya.SAVAS['npc_saldiri_aralik_sn']
             sats = [s for s in targets if s > DEFLECTOR]
             slot = random.choice(sats) if sats else HULL

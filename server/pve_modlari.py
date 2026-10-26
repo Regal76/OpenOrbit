@@ -5,7 +5,7 @@ Modlar: Voyagers' Ascent ve Trinity Trials (arena.py), Astral Ascension (astral.
 Light (ebl.py). Quarantine Zone ve Compromising Invasion etkinlik kapısı biçiminde (etkinlik_kapi.py, takvimsiz).
 Pencereli portal (portalın 'pencere'si): atlayınca (J) dünya gate_window'u çağırır; mod penceresini gönderir ya da kendisi harita
 değiştirir. Kapı CPU'ları (ammunition_ggportal_*): kısayol çubuğundan; Eternal CPU X-BL'de, Astral CPU X-1'de, Immunizer CPU
-X-7'de kendi kapısını açar.
+X-7'de, Subglacial CPU X-1'de kendi kapısını açar (etkinlik kapılarının kural.cpu'su: gate_cpu; Subglacial açık kapıya 2 can ekler).
 """
 import arena as AR
 import astral as AS
@@ -27,7 +27,6 @@ REQUESTS = {
     'ExpeditionInfoRequest', 'ExpeditionShipListRequest', 'ExpeditionSelectShipRequest', 'ExpeditionActivateShipRequest',
     'ExpeditionBuyTicketRequest', 'ExpeditionJumpTargetLevelRequest', 'ExpeditionResetRequest', 'ExpeditionBackRequest',
     'EternalBlacklightChooseOptionRequest'}
-QUARANTINE_CPU = 'ammunition_ggportal_quarantine-zone-cpu'
 
 
 class PveModlari:
@@ -97,27 +96,37 @@ class PveModlari:
             if msgs:
                 for g in self.ebl.portals(w.map_id):
                     w.add_gate(g)
-        elif item == QUARANTINE_CPU and 'karantina' in EKP.GATES:
-            msgs = self.quarantine_cpu(w)
+        else:
+            key = next((k for k, g in EKP.GATES.items() if g.get('kural', {}).get('cpu') == item), None)
+            if key:
+                msgs = self.gate_cpu(w, key)
         if msgs is None:
             w.log('   kapı CPU\'su kullanılamaz: %s (%s)' % (item, H.name(w.map_id)))
             msgs = [KAPI.screen('This CPU cannot be used here.')]
         st = self.p.menu_status(item)
         w.send(msgs + ([('MenuItemStatusCommand', st)] if st else []))
 
-    def quarantine_cpu(self, w):
-        """Immunizer CPU: X-7'de Quarantine Zone kapısı (etkinlik kapısı biçimi, tek can)."""
-        g = EKP.GATES['karantina']
-        if H.map_class(w.map_id) != g['giris'] or self.k.gate('karantina').get('hazir'):
+    def gate_cpu(self, w, key):
+        """Etkinlik kapısının CPU'su (kapının kural.cpu'su): kapının giriş haritasında kapı kurulur ve portalı açılır (Immunizer CPU: X-7'de
+        Quarantine Zone, tek can; Subglacial CPU: X-1'de Permafrost Fissure). Kapı açıkken CPU yalnız cpu_can varsa kullanılır: o kadar
+        can ekler (Subglacial +2; istemci metni "If it is already open, adds 2 lives")."""
+        g, G, item = EKP.GATES[key], self.k.gate(key), EKP.GATES[key]['kural']['cpu']
+        if not self.k.here(g['giris'], w.map_id) or (G.get('hazir') and not g['kural'].get('cpu_can')):
             return None
-        if self.p.use_ammo(QUARANTINE_CPU) is None:
+        if self.p.use_ammo(item) is None:
             return None
-        self.k.enter('karantina')
+        if G.get('hazir'):
+            with self.p.lock:
+                G['can'] += g['kural']['cpu_can']
+                self.p.dirty = True
+            self.log('   %s: +%d can (%d)' % (g['ad'], g['kural']['cpu_can'], G['can']))
+            return [KAPI.screen('%s: %d lives added.' % (g['ad'], g['kural']['cpu_can']), big=True)]
+        self.k.enter(key)
         for x in self.k.entry_portals(w.map_id, w.station):
-            if x['kapi'] == 'karantina':
+            if x['kapi'] == key:
                 w.add_gate(x)
-        self.log('   Immunizer CPU: Quarantine Zone kapısı')
-        return [KAPI.screen('The Quarantine Zone gate has opened.', big=True)]
+        self.log('   %s: %s kapısı' % (item, g['ad']))
+        return [KAPI.screen('The %s gate has opened.' % g['ad'], big=True)]
 
     # ------------------------------------------------------------ pencereli portallar
     def window(self, g):
@@ -208,7 +217,7 @@ class PveModlari:
         if name == 'ExpeditionResetRequest':
             return e.reset()
         if name == 'ExpeditionBackRequest':
-            return self.jump(KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5))
+            return self.jump(KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5), 'istasyon')       # Echoes'tan eve: istasyona
         if name == 'EternalBlacklightChooseOptionRequest' and self.ebl:
             return self.ebl.choose(f)
         return []

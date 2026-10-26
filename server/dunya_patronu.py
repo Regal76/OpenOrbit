@@ -264,6 +264,8 @@ class DunyaPatronu:
             row = D['kademe'][k - 1]
             for loot, n in row['oduller']:
                 msgs += self.m.prize(loot, n)
+                if loot == D.get('parca', 'resource_collectable_infiltrator-fragment'):
+                    self.p.ach('loot', loot=loot, amount=n)         # Treacherous Domain Pass: "Infiltrator Fragment topla" (savas_bileti.py)
             if row.get('unvan') and self.titles:
                 msgs += self.titles(row['unvan'])
             msgs += legacy_line('log_msg_worldboss_tier_increase', BOSSNAME='Dreadfyre Fortress', TIER=k)
@@ -354,7 +356,7 @@ class WbKosu:
         w = self.w
         msgs = [poi(POI_HEAL, self.cx, self.cy, D['sifa_feneri']['yaricap'], ptype=4, design=6)]
         w.add_gate(dict(gateId=EXIT_ID, x=self.cx - 2600, y=self.cy + 2200, hedef=self.m.k.home() if self.m.k else 5, designId=1,
-                        kapi=self.key, cikis=True))
+                        kapi=self.key, cikis=True, varis='istasyon'))
         r = self.restore
         if r:
             self.dealt, self.paid, self.mines_done = r['dealt'], set(r['paid']), set(r['mines'])

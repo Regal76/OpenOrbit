@@ -7,11 +7,13 @@ Takvimde etkin bir etkinliğin harita bölümü bu haritanın sınıfını (X-2 
     doğar; süresinde öldürülmezse kaçarlar (istemcinin metni: msg_curcubitor_ran_away / npc_event_boss_ran_away)
   - gösterge ('bilgi'): NpcEventInfoCommand / AgatusEventInfoCommand {textKey (istemcinin metinleri: curcubitor, agatusbreach,
     npc_valentine, npc_chaos-protegit), npcID, bossInfo {bossCount, leftToKill}, timeInfo {timeToNextSpawn, timeToEndSpawn sn}}
-  - düşmeler ('dusme': tür -> {lootId: [en az, en çok]}; etkinlik parası kaynak deposuna, ganimet günlüğünde) ve Curcubitor'un
+  - düşmeler ('dusme': tür -> {lootId: [en az, en çok]}, harita sürümü etk_x_x5 varsa o, yoksa taban tür; etkinlik parası kaynak
+    deposuna, ganimet günlüğünde) ve Curcubitor'un
     "Trick or Treat"i: ölünce ya Trick ('hile': olasılık; toplanamayan DDM-01 uzaylı mayını, kurulunca yakındaysan canın %20'si) ya da
     Treat (kutu_dusme'deki sandık), ikisi birden değil. 2026-10-18'e dek ikisi bağımsızdı: mayın sandığın altında kalıyor, sandığı
     toplarken patlıyordu (kullanıcı bildirimi)
   - kargo kutusu olmayan uzaylılar ('kargo_yok': temel türler; Curcubitor ve Boss Curcubitor yalnız sandıklarını düşürür) -> no_cargo
+  - kargo kutusunun görünümü ('kargo_tur': istemcinin kutu türü, içerik aynı; Thanksgiving'de TURKEY_CARGO) -> cargo_kind
   - çağıranlar ('cagir' ya da patronun 'cagir'ı): canlıyken aralıkla yanına uzaylı çağırır (Agatus -> Spinel, Ice Meteoroid -> Icy)
   - av kutuları ('kutular': istemcinin kutu türü, adet, içerik, yeniden doğma) ve uzaylının düşürdüğü kutular ('kutu_dusme': tür ->
     {kutu türü, olasılık, içerik}; etkinlik türleri ve haritanın sıradan uzaylıları, ör. Empyrian'da Luminium); anahtarsız, P.E.T. de
@@ -51,18 +53,25 @@ def specs(now=None):
     return out
 
 
-def roll(spec):
-    """Kutu içeriği -> [(lootId, adet)]: 'kesin' satırların hepsi, 'icerik'ten 'mod'a göre."""
+PROXIUM = 'resource_collectable_proxium'
+
+
+def roll(spec, mods=None):
+    """Kutu içeriği -> [(lootId, adet)]: 'kesin' satırların hepsi, 'icerik'ten 'mod'a göre. mods: oyuncunun bonusları (profil.mods());
+    kutu 'proxium' ise (Permafrost Fissure'ın UFO ve Ufonit kutuları) Proxium satırının olasılığı Proxium Drop Booster'ın puanı kadar
+    (proxium_sans: %10 -> %35), adedi Proxium Doubler'ın oranı kadar (proxium: x2) artar."""
     rows = spec.get('icerik', [])
-    amount = lambda a: random.randint(*a) if isinstance(a, list) else a
-    out = [(l, amount(a)) for l, a, *c in spec.get('kesin', [])]
+    bonus = mods if spec.get('proxium') and mods else {}
+    amount = lambda a, l=None: int((random.randint(*a) if isinstance(a, list) else a) * (1 + bonus.get('proxium', 0) if l == PROXIUM else 1))
+    pct = lambda l, c: c + bonus.get('proxium_sans', 0) * 100 if l == PROXIUM else c
+    out = [(l, amount(a, l)) for l, a, *c in spec.get('kesin', [])]
     if spec.get('mod', 'biri') == 'hepsi':
-        return out + [(l, amount(a)) for l, a, *c in rows if random.random() * 100 < (c[0] if c and c[0] is not None else 100)]
-    weights = [(c[0] if c and c[0] is not None else 1) for l, a, *c in rows]
+        return out + [(l, amount(a, l)) for l, a, *c in rows if random.random() * 100 < pct(l, c[0] if c and c[0] is not None else 100)]
+    weights = [pct(l, c[0] if c and c[0] is not None else 1) for l, a, *c in rows]
     if not rows or sum(weights) <= 0:
         return out
     l, a, *c = random.choices(rows, weights)[0]
-    return out + [(l, amount(a))]
+    return out + [(l, amount(a, l))]
 
 
 ROVER = {}                         # gezgin (rovers) -> rotasının başlangıcı (öldürülünce bekleme sonrası)
@@ -115,6 +124,10 @@ class HaritaEtkinlik:
 
     def minion_types(self, s):
         return [fmt(u['tur'], self.mc) for u in s.get('uzaylilar', [])]
+
+    def cargo_kind(self, now=None):
+        """Uzaylının kargo kutusunun etkinlik görünümü (bölümün 'kargo_tur'u: Thanksgiving'de TURKEY_CARGO; içerik aynı) ya da None."""
+        return next((s['kargo_tur'] for k, s in self.here(now) if s.get('kargo_tur')), None)
 
     def active_type(self, tip, now=None):
         """Bu etkinlik türü şu an doğabilir mi (etkinlik sürüyor ve bu haritada)."""
@@ -195,12 +208,13 @@ class HaritaEtkinlik:
                 v.boxes[h]['etk'] = kt
         now = time.time() if now is None else now
         b, msgs = base(n.tip), []
+        by_tip = lambda tab: tab.get(n.tip, tab.get(b))       # haritaya özgü sürüm (etk_chaos_protegit_x5) önce, yoksa taban tür
         trick = (n.tip.startswith('etk_') and w.items is not None
                  and random.random() < max([s.get('hile', {}).get(b, 0) for k, s in self.here(now)] or [0]))
         if trick:                                                       # Trick: sandık yerine toplanamayan mayın
             w.items.alien_mine(TRICK_MINE, x, y, n.id, now)
         for k, s in self.here(now):
-            kd = s.get('kutu_dusme', {}).get(b)
+            kd = by_tip(s.get('kutu_dusme', {}))
             for v in pay if kd and not trick else ():
                 if random.random() < AY.chance('dusme', kd.get('olasilik', 1.0), 'etkinlik'):    # uzaylının kutusu (Treat …)
                     h = v.drop_box(kd['tur'], x, y, None, kd.get('omur_sn', 300), sahip(v))
@@ -214,7 +228,7 @@ class HaritaEtkinlik:
             return msgs
         for k, s in self.here(now):
             st = self.state(k)
-            drops = s.get('dusme', {}).get(b)
+            drops = by_tip(s.get('dusme', {}))
             if drops:
                 msgs += w.extra_loot(n, drops)
                 for v in pay:

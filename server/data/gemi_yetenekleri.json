@@ -1,6 +1,6 @@
 {
  "_kaynak": "Süre, bekleme ve etkiler belgeler/wiki/ships.md (darkorbitwiki). Menü öğeleri istemcinin kısayol menüsünden (kayıttaki MenuInitializationCommand, 'ship_abilities' kategorisi, 65 öğe). Görseller istemcinin kodundan: AbilityEffectActivationCommand.selectedAbilityId = istemcinin beceri kodu (EventAssemblySkills: 1 Solace, 2 Diminisher, 3 Spectrum, 4 Sentinel, 5 Venom, 6 hız efekti 'speed-buff-effect'), AbilityStartCommand: 102 Draw Fire, 106 Target Marker (MarkedByRecon), 110 EMP görseli, 111 mini harita (AddDoubleMinimapRevealEffect), 101 Aegis HP Repair ve 104 Shield Repair (istemci bu kimliklerde abilitySounds 90 aegisHPRepair ve 91 aegisShieldRecharge seslerini çalar; belgeler/istemci/gorseller.md). Repair Pod haritaya HEALING_POD (AssetType 33) nesnesi koyar ('varlik'; canlı deneme 2026-10-17). Fortify ve Protection gemi görünümü ('gorunum': istemcinin VisualModifier'ı, VisualModifierCommand; 8 FORTIFY zırh, 9 PROTECT_OWNER kırmızı halka; canlı deneme 2026-10-17). Ultimate Cloak'un görseli kesinleşmedi.",
- "_etkiler": "can_yuzde: anında azami canın oranı; can_onar / kalkan_onar: süre boyunca toplam (saniyede eşit); mods: süre boyunca profil bonusları (hiz, lazer, alinan_hasar, alinan_lazer, kalkan_hasari; sabit_hiz: gösterilen hız bu değere ayarlanır, 0 = kıpırdamaz); hedef_kalkan_sil: hedefin o anki kalkanından oran (başta ve sonda), hedef_kalkan_emme: hedefin kalkanının emme çarpanı; zehir: hedefin gövdesine saniyede bir vuruş (ilk, artis, en_cok, toplam); hedef_hasar: işaretli hedefe hasar bonusu; ates_cek: menzildeki uzaylılar saldırır; gizlen: uzaylılar görmez (saldırınca, kutu toplayınca, atlayınca biter); gorus: görüş mesafesi çarpanı; roket_bekleme_ms: roket bekleme süresi. E5: hedef_kalkan_kapat: hedefin kalkanından oran süre boyunca kapanır, bitince geri (Shield Disarray); hedef_atis_araligi: hedefin lazer beklemesi [en az, en çok] sn (DDoL); yuk {kaynak: oldurme | zincir, azami, menzil (etkin değilken yük başına lazer menzili), mods (harcanan yük başına), artan (her yük bir öncekinden bu kadar fazla), azami_hiz}: yük biriktiren yetenek, yüksüz basılmaz, etkinleşince yükler harcanır (Momentum, Stockpile, Volt Discharge); ters_cevir: takılı modüllerin eksi nitelikleri artıya, eksi yoksa bu bonuslar (Self Reversal); dolum {saniyede, azami, bol_yaricap}: hedefe dolan vuruş, dolunca / süre bitince / hedef menzilden çıkınca (Charge Shot); kalkan_erit: saniyede azami kalkanın oranı kadar erime, sifirda_kapan: 0'da yetenek biter (Scramble, Supercharge Plus); ucgen_patlama {hasar, yaricap, uzaklik}: hedefin arkasında üçgen üç patlama (Triple Barrage); sonraki_gsp: bir sonraki Singularity Drive atışına bir kez (Quantum Amplifier); lazer_yansit: alinan_lazer'in azalttığı hasar saldırana döner (Prismatic Reflecting); olumsuz: can 1'de kalınca bu kadar sn dokunulmaz ve yetenek biter (Volt Back-up); fircatici_hasar, top, top_bekleme: mods anahtarları (fırlatıcı hasarı, Particle Cannon hasarı ve beklemesi).",
+ "_etkiler": "can_yuzde: anında azami canın oranı; can_onar / kalkan_onar: süre boyunca toplam (saniyede eşit); mods: süre boyunca profil bonusları (hiz, lazer, alinan_hasar, alinan_lazer, kalkan_hasari; sabit_hiz: gösterilen hız bu değere ayarlanır, 0 = kıpırdamaz); hedef_kalkan_hasari: hedefin kalkanına giden hasar çarpanı süre boyunca (1,5 = kalkan emdiği payın 1,5 katı erir, gövde payı değişmez; Weaken Shields), kalkan_kaybi: etki bitince KENDİ kalkanından oran gider (Weaken Shields); yansit: alınan hasarın bu oranı (indirimden önceki ham hasar) saldırana döner, mods.alinan_hasar ile birlikte (Revenge); hedefe_isinla: hedefin konumuna ışınlan (Sleight; menzil sınırı yok, hedef_yavaslat ile hedef yavaşlar); zehir: hedefin gövdesine saniyede bir vuruş (ilk, artis, en_cok, toplam); hedef_hasar: işaretli hedefe hasar bonusu; ates_cek: menzildeki uzaylılar saldırır; gizlen: uzaylılar görmez (saldırınca, kutu toplayınca, atlayınca biter); gorus: görüş mesafesi çarpanı; roket_bekleme_ms: roket bekleme süresi. E5: hedef_kalkan_kapat: hedefin kalkanından oran süre boyunca kapanır, bitince geri (Shield Disarray); hedef_atis_araligi: hedefin lazer beklemesi [en az, en çok] sn (DDoL); yuk {kaynak: oldurme | zincir, azami, menzil (etkin değilken yük başına lazer menzili), mods (harcanan yük başına), artan (her yük bir öncekinden bu kadar fazla), azami_hiz}: yük biriktiren yetenek, yüksüz basılmaz, etkinleşince yükler harcanır (Momentum, Stockpile, Volt Discharge); ters_cevir: takılı modüllerin eksi nitelikleri artıya, eksi yoksa bu bonuslar (Self Reversal); dolum {saniyede, azami, bol_yaricap}: hedefe dolan vuruş, dolunca / süre bitince / hedef menzilden çıkınca (Charge Shot); kalkan_erit: saniyede azami kalkanın oranı kadar erime, sifirda_kapan: 0'da yetenek biter (Scramble, Supercharge Plus); ucgen_patlama {hasar, yaricap, uzaklik}: hedefin arkasında üçgen üç patlama (Triple Barrage); sonraki_gsp: bir sonraki Singularity Drive atışına bir kez (Quantum Amplifier); lazer_yansit: alinan_lazer'in azalttığı hasar saldırana döner (Prismatic Reflecting); olumsuz: can 1'de kalınca bu kadar sn dokunulmaz ve yetenek biter (Volt Back-up); fircatici_hasar, top, top_bekleme: mods anahtarları (fırlatıcı hasarı, Particle Cannon hasarı ve beklemesi).",
  "yetenekler": {
   "ability_solace": {
    "ad": "Nano-Cluster Repairer",
@@ -21,11 +21,12 @@
    "ad": "Weaken Shields",
    "sure_sn": 15,
    "bekleme_sn": 90,
-   "hedefli": true,
    "etki": {
-    "hedef_kalkan_sil": 0.3,
-    "hedef_kalkan_emme": 0.5
+    "hedef_kalkan_hasari": 1.5,
+    "kalkan_kaybi": 0.3
    },
+   "hedefli": true,
+   "_not": "istemci: düşmanın kalkanına giden hasar +%50 (kalkan, emdiği payın 1,5 katı erir, gövdeye geçen pay aynı); etki bitince KENDİ kalkanının %30'u gider",
    "gorsel": {
     "etki": 2
    },
@@ -324,10 +325,11 @@
    "etki": {
     "yansit": 1.0,
     "mods": {
-     "hiz": -0.05
+     "hiz": -0.05,
+     "alinan_hasar": -0.95
     }
    },
-   "_not": "alınan hasar saldırana döner",
+   "_not": "istemci: alınan hasarın %100'ü doğrudan saldırana döner, oyuncu hasarın yalnız %5'ini alır, gemi yavaşlar; yansıyan miktar indirimden önceki ham hasardır",
    "metin": [
     "msg_revenge_activated",
     "msg_revenge_stopped"
@@ -403,7 +405,7 @@
    "sure_sn": 0,
    "bekleme_sn": 60,
    "etki": {},
-   "_not": "grup üyeleri arasında: bot oyuncularla",
+   "_not": "istemci/wiki: süre boyunca GRUP ÜYELERİNİN verdiği hasarın %20'si bitişte 700 birim içindeki grup üyelerine eşit HP olarak dağılır; tek başına oynayanın grubu yok: bot oyuncularla (Aşama 11)",
    "metin": [
     "msg_reallocate_activated",
     "msg_reallocate_stopped"
@@ -524,8 +526,12 @@
    "ad": "Sleight",
    "sure_sn": 0,
    "bekleme_sn": 60,
-   "etki": {},
-   "_not": "yalnız oyunculara etki eder: bot oyuncularla (Aşama 11)",
+   "etki": {
+    "hedefe_isinla": true,
+    "hedef_yavaslat": 0.6
+   },
+   "hedefli": true,
+   "_not": "istemci: hedeflenen gemiye ışınlan, sonra hedefin hızı süre boyunca %60 düşer (metin yalnız oyuncularla sınırlamıyor: uzaylıya da; Spread'den farkı); hedef seçili olması yeter (menzil sınırı yok)",
    "metin": [
     "msg_sleight_activated",
     "msg_sleight_stopped"
@@ -949,7 +955,10 @@
     },
     "ability_aegis_repair-pod": {
      "sure_sn": 15.0,
-     "bekleme_sn": 120.0
+     "bekleme_sn": 120.0,
+     "etki": {
+      "can_onar": 270000
+     }
     }
    }
   },

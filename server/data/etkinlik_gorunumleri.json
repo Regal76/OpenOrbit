@@ -1,5 +1,5 @@
 {
- "_aciklama": "Etkinlik görünümleri: mağazadaki kaynaksız tasarımların (E11 'kozmetik', E4 Holo) gerçek oyundaki kaynağı ve tek oyunculudaki\nkazanma yolları -> server/data/etkinlik_gorunumleri.json (sunucu: etkinlik_gorunumleri.py).\n\nGirdi belgeler/wiki/tasarim_kaynaklari.json: darkorbitwiki'nin gemi, dron ve P.E.T. sayfalarındaki \"OBTAINING\" etiketleri, etkinlik\nsayfalarının ödül satırları ve kutu içerikleri, tasarım başına ('etkinlikler': etiketlerden çıkan etkinlik adları).\nYalnız mağaza etiketli olanlar (SHOP PAYMENTS, HOURLY AUCTION; etkinlik adı yok) etkinlik görünümü sayılmaz, hep mağazadadır. Ötekiler\netkinlik görünümü: panelin \"Etkinlik görünümleri mağazada\" ayarı kapalıyken mağazada görünmez ve satılmaz; ayardan bağımsız buradaki\nyollarla kazanılır:\n  degisim  Battle Pass'li etkinliğin anahtar değişimi (savas_bileti.py): gemi ve P.E.T. tasarımı 25 anahtar, bir kez; dron tasarımı\n           15 anahtar, 10 kez (wiki: Galactic Strife 2026'nın değişimi)\n  kutu     anahtarlı ganimet kutusu (ganimet.py; kutular.json türü; sahip olunan tasarım çekilmez)\n  kapi     GG Special Rewards Weekend'de Zeta ve Kappa kapısının seçimli ödülü (wiki: Delta, Epsilon, Zeta, Kappa; %50, sahip olunan\n           çekilmez)\n  harita   etkinliğin harita kutusu (etkinlik_harita.py): Goal Rush'ın futbol kutusu, Aralık'ın hediye kutusu\n  sezon    Season Pass'in sezon tasarımları (sezon.py): 14 sezonun dron ve P.E.T. tasarımı sezon sırasıyla, 2026-08'den sonra baştan\nEtkinlik seçimi: wiki etiketlerindeki etkinlikler (sunucudaki adıyla); etiketi olmayanlarda ya da yalnız \"BOXES\" / \"–\" olanlarda\ntasarımın teması (aynı temanın etiketli tasarımlarının etkinliği: Arios ve Neikos Galactic Strife, Dusklight ve Phantasm Trial of\nTerrors, Inferno Protegit, Epion / Osiris / Smite üçlüleri GG hafta sonu kapıları …), o da yoksa temanın genel kutusu: gemi Obsidian,\ndron Apocalypse, P.E.T. Red Box (Argon, Lava, Legend, Carbonite, Sandstorm … tasarımları bu kutularda).\nWiki'de sayfası olmayan, bir kez koşmuş geçmiş etkinlikler en yakın etkinliğe (uyarlama): Battle Arena -> Galactic Strife (sıralama\nödülü), Plague Mutation -> Prosperous Mutation, Astral Discovery -> Empyrian March (tasarımı orada da), Blacklight Surge'ün Tyrannos'u\nMimesis Mutiny'ye; SpaceCup'ınkiler halefi Goal Rush'a; Saimon Rebellion, Project Nano, Razer haftası, özel görev temalarıyla.\nÜreten: tools/etkinlik_gorunumleri.py.",
+ "_aciklama": "Etkinlik görünümleri: mağazadaki kaynaksız tasarımların (E11 'kozmetik', E4 Holo) gerçek oyundaki kaynağı ve tek oyunculudaki\nkazanma yolları -> server/data/etkinlik_gorunumleri.json (sunucu: etkinlik_gorunumleri.py).\n\nGirdi belgeler/wiki/tasarim_kaynaklari.json: darkorbitwiki'nin gemi, dron ve P.E.T. sayfalarındaki \"OBTAINING\" etiketleri, etkinlik\nsayfalarının ödül satırları ve kutu içerikleri, tasarım başına ('etkinlikler': etiketlerden çıkan etkinlik adları).\nYalnız mağaza etiketli olanlar (SHOP PAYMENTS, HOURLY AUCTION; etkinlik adı yok) etkinlik görünümü sayılmaz, hep mağazadadır. Ötekiler\netkinlik görünümü: panelin \"Etkinlik görünümleri mağazada\" ayarı kapalıyken mağazada görünmez ve satılmaz; ayardan bağımsız buradaki\nyollarla kazanılır:\n  degisim  Battle Pass'li etkinliğin anahtar değişimi (savas_bileti.py): gemi ve P.E.T. tasarımı 25 anahtar, bir kez; dron tasarımı\n           15 anahtar, 10 kez (wiki: Galactic Strife 2026'nın değişimi)\n  kutu     anahtarlı ganimet kutusu (ganimet.py; kutular.json türü; sahip olunan tasarım çekilmez). Kutunun wiki tablosunda (Epic paketleri\n           dahil) zaten olan tasarımın yolu \"tablo\": true (ek satır eklenmez); Red Box'ın tasarımları Blue Box'a da girer. Bu yollar\n           wiki tablosunun dışında, kutunun tasarım çekilişine katılan \"yerel\" satırlardır (ganimet.pick). Üst anahtar \"kutu_ek\": güncel\n           Red / Blue sayfasından (2026-10-25) çıkan, başka kazanma yolu olmayan 15 eski P.E.T. tasarımı (yolsuz kalmasınlar)\n  kapi     GG Special Rewards Weekend'de Zeta ve Kappa kapısının seçimli ödülü (wiki: Delta, Epsilon, Zeta, Kappa; %50, sahip olunan\n           çekilmez)\n  harita   etkinliğin harita kutusu (etkinlik_harita.py): Goal Rush'ın futbol kutusu, Aralık'ın hediye kutusu\n  sezon    Season Pass'in sezon tasarımları (sezon.py): 14 sezonun dron ve P.E.T. tasarımı sezon sırasıyla, 2026-08'den sonra baştan\nEtkinlik seçimi: wiki etiketlerindeki etkinlikler (sunucudaki adıyla); etiketi olmayanlarda ya da yalnız \"BOXES\" / \"–\" olanlarda\ntasarımın teması (aynı temanın etiketli tasarımlarının etkinliği: Arios ve Neikos Galactic Strife, Dusklight ve Phantasm Trial of\nTerrors, Inferno Protegit, Epion / Osiris / Smite üçlüleri GG hafta sonu kapıları …), o da yoksa temanın genel kutusu: gemi Obsidian,\ndron Apocalypse, P.E.T. Red Box (Argon, Lava, Legend, Carbonite, Sandstorm … tasarımları bu kutularda).\nWiki'de sayfası olmayan, bir kez koşmuş geçmiş etkinlikler en yakın etkinliğe (uyarlama): Battle Arena -> Galactic Strife (sıralama\nödülü), Plague Mutation -> Prosperous Mutation, Astral Discovery -> Empyrian March (tasarımı orada da), Blacklight Surge'ün Tyrannos'u\nMimesis Mutiny'ye; SpaceCup'ınkiler halefi Goal Rush'a; Saimon Rebellion, Project Nano, Razer haftası, özel görev temalarıyla.\nÜreten: tools/etkinlik_gorunumleri.py.",
  "ayar": "etkinlik_gorunumleri_magazada",
  "sezonlar": [
   {
@@ -184,7 +184,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH 2025"
@@ -226,7 +226,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Astral Discovery Event (2022) | EVENT Empyrian March: Galaxy Gate 'Empyrian Reward Package' (5% per Alpha/Beta/Gamma completion; not available via Dispatch) 25% within package"
@@ -545,6 +545,7 @@
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -571,7 +572,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH EVENT 2025"
@@ -814,7 +815,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH EVENT 2024"
@@ -833,7 +834,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Prometheus Day Event (2020) / SHOP PAYMENTS / Astral Discovery Event (2022) | EVENT Astral Discovery: Galaxy Gate special additional reward for completing Alpha, Beta, Gamma gates (drop table of ship "
@@ -846,6 +847,7 @@
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -940,7 +942,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "SHOP PAYMENTS | EVENT Empyrian March: Empyrian Box - EPIC DESIGNS PACKAGE (0.1%) package 1 of 4 (25% each); package contents: Argon G-Champion Ship Design; Argon Diminisher P.E.T. Design; Argon Sentin"
@@ -1226,7 +1229,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH 2026"
@@ -1382,7 +1385,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN BOX | EVENT Empyrian March: Galaxy Gate 'Empyrian Reward Package' (5% per Alpha/Beta/Gamma completion; not available via Dispatch) 15% within package"
@@ -1741,7 +1744,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN BOX | EVENT Empyrian March: Galaxy Gate 'Empyrian Reward Package' (5% per Alpha/Beta/Gamma completion; not available via Dispatch) 5% within package"
@@ -1908,7 +1911,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES"
@@ -1999,7 +2002,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Empyrian March Event 2023"
@@ -2038,7 +2041,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH 2026"
@@ -2145,7 +2148,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH EVENT 2023"
@@ -2164,12 +2167,13 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     },
     {
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -2189,7 +2193,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "OBSIDIAN BOX | EVENT Empyrian March: Empyrian Box - EPIC DESIGNS PACKAGE (0.1%) package 2 of 4 (25% each); package contents: Lava Sentinel Ship Design; Lava Cyborg P.E.T. Design; 2x Inferno Drone Desi"
@@ -2252,7 +2257,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH 2025"
@@ -2382,7 +2387,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EVENT Empyrian March: Galaxy Gate 'Empyrian Reward Package' (5% per Alpha/Beta/Gamma completion; not available via Dispatch) 25% within package"
@@ -2499,7 +2504,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Empyrian March Event 2024"
@@ -2632,7 +2637,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPYRIAN MARCH EVENT 2024"
@@ -2745,7 +2750,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES"
@@ -2810,7 +2815,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES / Empyrian March Event (2023)"
@@ -2829,6 +2834,7 @@
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -2881,7 +2887,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "EMPRYRIAN MARCH EVENT 2024"
@@ -3007,7 +3013,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Empyrian March Event 2023"
@@ -3085,7 +3091,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Empyrian March Event"
@@ -3241,6 +3247,7 @@
      "yol": "kutu",
      "etkinlik": "bahar",
      "kutu": "LUCENT_ALIEN_EGG_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -3321,18 +3328,21 @@
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     },
     {
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     },
     {
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -3409,7 +3419,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES | BOX Empyrian Box: EPIC DESIGNS PACKAGE (0.1%) / package 3 (25%)"
@@ -3422,7 +3433,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES | BOXES"
@@ -3454,7 +3466,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Prometheus Day Event (2020) / SHOP PAYMENTS / Astral Discovery Event (2022)"
@@ -3523,6 +3535,7 @@
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -3575,6 +3588,7 @@
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -3640,13 +3654,15 @@
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     },
     {
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES | EVENT Prosperous Mutation Event: Prosperous Box - EPIC DESIGNS (0.1%) package 2 of 4 (25% each); package contents: Inferno Orcus Ship Design; Inferno Sentinel Ship Design; Inferno Drone Design"
@@ -3761,7 +3777,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "OBSIDIAN BOX | EVENT Empyrian March: Empyrian Box - EPIC DESIGNS PACKAGE (0.1%) package 1 of 4 (25% each); package contents: Argon G-Champion Ship Design; Argon Diminisher P.E.T. Design; Argon Sentine"
@@ -3793,7 +3810,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "OBSIDIAN BOX / Astral Discovery Event (2022)"
@@ -3871,6 +3888,7 @@
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -3897,6 +3915,7 @@
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -3960,7 +3979,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "Berserker Ace | DAILY REWARD 2021"
@@ -3986,7 +4011,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4025,7 +4056,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "Hammerclaw Argon | BOXES"
@@ -4051,12 +4088,14 @@
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     },
     {
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -4070,7 +4109,7 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Empyrian March Event 2022"
@@ -4096,6 +4135,7 @@
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -4109,7 +4149,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4122,7 +4168,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "Berserker Borealis | BOXES"
@@ -4161,7 +4213,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4252,7 +4310,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "Cyborg Lava | BOXES"
@@ -4265,7 +4324,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES | EVENT Empyrian March: Empyrian Box - EPIC DESIGNS PACKAGE (0.1%) package 1 of 4 (25% each); package contents: Argon G-Champion Ship Design; Argon Diminisher P.E.T. Design; Argon Sentinel Drone"
@@ -4278,7 +4338,8 @@
      "yol": "kutu",
      "etkinlik": "empyrian",
      "kutu": "EMPYRIAN_BOOTY_BOX",
-     "agirlik": 0.429
+     "tablo": true,
+     "agirlik": 0.5
     }
    ],
    "kaynak": "BOXES | EVENT Empyrian March: Empyrian Box - EPIC DESIGNS PACKAGE (0.1%) package 4 of 4 (25% each); package contents: Carbonite Cyborg Plus Ship Design; Carbonite Diminisher P.E.T. Design; Carbonite E"
@@ -4291,6 +4352,7 @@
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -4304,7 +4366,15 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "tablo": true,
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "tablo": true,
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4354,7 +4424,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4380,7 +4456,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4434,7 +4516,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4460,7 +4548,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "Goliath-X Lava | BOXES"
@@ -4473,7 +4567,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "ASSEMBLY: / 450 / 30 / 20 / 15"
@@ -4486,7 +4586,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4512,6 +4618,7 @@
      "yol": "kutu",
      "etkinlik": "prometheus",
      "kutu": "PROMETHEUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -4525,7 +4632,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4551,7 +4664,15 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "tablo": true,
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "tablo": true,
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4564,6 +4685,7 @@
      "yol": "kutu",
      "etkinlik": "prosperous",
      "kutu": "PROSPEROUS_BOOTY_BOX",
+     "tablo": true,
      "agirlik": 0.5
     }
    ],
@@ -4577,7 +4699,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "Mirage Poison | BOXES"
@@ -4603,7 +4731,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4678,7 +4812,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "Nano Project Event"
@@ -4704,7 +4844,13 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
@@ -4850,10 +4996,174 @@
      "yol": "kutu",
      "etkinlik": "rb_booty",
      "kutu": "PIRATE_BOOTY_RED",
-     "agirlik": 0.5
+     "tablo": true,
+     "agirlik": 0.469
+    },
+    {
+     "yol": "kutu",
+     "etkinlik": "rb_booty",
+     "kutu": "PIRATE_BOOTY_BLUE",
+     "tablo": true,
+     "agirlik": 0.469
     }
    ],
    "kaynak": "BOXES"
   }
+ },
+ "kutu_ek": {
+  "PIRATE_BOOTY_RED": [
+   [
+    "pet_designs_pet-a-elite-blaze",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-cyborg",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-a-elite-ocean",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-pusat-ocean",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-a-elite-sandstorm",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-g-champion-silver",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_mirage-red",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-spectrum-ocean",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-citadel-phantasm",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-sentinel-argon",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-cyborg-carbonite",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-berserker-lava",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-goliath-x-legend",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-berserker-legend",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-cyborg-legend",
+    1,
+    0.469
+   ]
+  ],
+  "PIRATE_BOOTY_BLUE": [
+   [
+    "pet_designs_pet-a-elite-blaze",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-cyborg",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-a-elite-ocean",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-pusat-ocean",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-a-elite-sandstorm",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-g-champion-silver",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_mirage-red",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-spectrum-ocean",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-citadel-phantasm",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-sentinel-argon",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-cyborg-carbonite",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-berserker-lava",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-goliath-x-legend",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-berserker-legend",
+    1,
+    0.469
+   ],
+   [
+    "pet_designs_pet-cyborg-legend",
+    1,
+    0.469
+   ]
+  ]
  }
 }

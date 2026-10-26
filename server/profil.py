@@ -62,6 +62,7 @@ import yetenek as YETENEK
 import gemi_yetenek as GY
 import lazer as LAZER
 import savas_esya as SE
+import ekstra as EK
 import rutbe as RT
 import teknoloji as TK
 import banka as BANK
@@ -119,6 +120,19 @@ def esya():
     return _ESYA
 
 
+_ETKINLIK_ACIK = {}          # takvim anahtarı -> (sorgu zamanı, açık mı)
+
+
+def event_on(key, now=None):
+    """Takvim etkinliği şimdi açık mı. mods()'un sıcak yolunda çağrıldığından (takvim sorgusu ~60 µs) sonuç 30 sn saklanır."""
+    now = now or time.time()
+    t = _ETKINLIK_ACIK.get(key)
+    if not t or now - t[0] > 30 or now < t[0]:
+        import takvim as TKV
+        t = _ETKINLIK_ACIK[key] = (now, TKV.is_active(key, now))
+    return t[1]
+
+
 def _layout_ok(v):
     """İstemcinin gönderdiği düzen sırası geçerli mi (0-5; istemci sırayı diziden okur, dışı IndexOutOfRange)."""
     return isinstance(v, (str, int)) and str(v).isdigit() and int(v) < LAYOUT_COUNT
@@ -136,6 +150,11 @@ def formation_id(loot_id):
     """Formasyon lootId'si -> istemcinin formasyon kimliği (data/esyalar.json formasyonlar; game.xml <formations>)."""
     f = _formations().get(loot_id)
     return f['id'] if f else None
+
+
+def formation_drones_ok(p, loot_id):
+    """Formasyon için yeterli dron var mı (Arrow ve Dome 4, Heart ve Pincer 6: formasyonlar.asgari_dron; wiki)."""
+    return len(p.d['dronlar']) >= esya()['formasyon_kurallari'].get(loot_id, {}).get('asgari_dron', 0)
 
 
 def formation_loot(fid):
@@ -317,6 +336,14 @@ class Profil:
             v = q['qualityExplosion']
             q['qualityExplosion'] = (v >> 8 & 0xFF) | (v << 8 & 0xFF00)
             self.dirty = True
+        if q and not q.get('notSet') and q.get('qualityPresetting') == 3 and not any(
+                q.get(k) for k in ('qualityShip', 'qualityEngine', 'qualityExplosion', 'qualityCollectables')):
+            # H229'dan önce yeni profilin kalite modülü notSet gidiyordu: istemci atlayıp kendi öntanımlısıyla (ön ayar 3, gemi/motor/patlama/
+            # toplanabilir 0) kaldı, Display'de Save'e basınca onu yolladı ve kaydedildi: motor izi hiç görünmüyordu, H229 yalnız notSet'e
+            # bakıyordu (kullanıcı bildirimi 2026-10-26). Ön ayar 3 iken dördünün birden 0 olması arayüzden oluşmaz (Düşük ön ayar hepsini
+            # ve ön ayarı 0 yapar): istemcinin öntanımlısının imzası, onarılır.
+            q.update(qualityShip=3, qualityEngine=3, qualityExplosion=3, qualityCollectables=3)
+            self.dirty = True
         if self.d['gemi'].pop('galaxyGatesDone', None) is not None:     # eski kapı sayacı: halkalar artık kapılardan (kapi.rings)
             self.dirty = True
         self.add_windows()
@@ -398,7 +425,7 @@ class Profil:
 
     def beacon(self, station=None, near_gate=False, pos=None, repairing=False, gate_peace=False, radiation=False):
         b = dict(self.tohum.get('BeaconCommand') or {})
-        rep = next((e for e in self.d.get('ekipman', {}).get('extra', []) if e.startswith('equipment_extra_repbot_')), None)
+        rep = next((e for e in EK.equipped(self) if e.startswith('equipment_extra_repbot_')), None)      # dronda takılı robot da sayılır
         b['repairRobotActive'] = repairing
         b['repairBotSkilled'] = YETENEK.maxed(self, '13')       # Engineering 5/5: mavi tamir robotu (resmî SSS)
         if rep:
@@ -764,7 +791,8 @@ class Profil:
     def design_mods(self, cid=None, sid=None):
         """Bir config'in (varsayılan: etkin gemi, etkin config) dron tasarımlarının bonusları: dron başına olanlar toplanır; sahip
         olunan bütün dronlar aynı tasarımı taşıyorsa takım bonusu da (istemci metinleri: Havoc +%10 dron lazeri (dron_lazer), Hercules
-        +%20 can …; Havoc: "If all of the drones are equipped")."""
+        +%20 can …; Havoc: "If all of the drones are equipped"). Görünüm yuvasındaki etkinlik tasarımları (Champion/Eostra: Goal Rush,
+        Apocalypse Booty Box) etkinlik sürerken takılı başına geçici NPC lazer hasarı verir (etkinlik_basina)."""
         designs = esya()['dron_tasarimlari']
         looks = [self.drone_design(x, 'design', cid, sid) for x in self.d.get('dronlar', [])]
         out = {}
@@ -774,6 +802,10 @@ class Profil:
         if looks and looks[0] and len(set(looks)) == 1:
             for k, v in designs.get(looks[0], {}).get('takim', {}).items():
                 out[k] = out.get(k, 0) + v
+        for x in self.d.get('dronlar', []):          # görünüm tasarımının etkinlikteki geçici bonusu (Goal Rush, Apocalypse: NPC lazer)
+            e = designs.get(self.drone_design(x, 'visual', cid, sid) or '', {}).get('etkinlik_basina')
+            if e and event_on(e['etkinlik']):
+                out['npc_lazer'] = out.get('npc_lazer', 0) + e['npc_lazer']
         return out
 
     def mods(self):
@@ -885,11 +917,14 @@ class Profil:
             # kayıtta: standart görünür ve seçili; sahip olunmayanlar görünmez, ipucunda ttip_item_not_owned
             owned = menu_id == 'drone_formation_default' or menu_id in self.d.get('formasyonlar', [])
             sel = formation_id(menu_id) == self.d.get('formasyon', 0)
-            st.update(visible=owned, available=owned, activatable=owned, selected=owned and sel)
+            enough = formation_drones_ok(self, menu_id)
+            st.update(visible=owned, available=owned and enough, activatable=owned and enough, selected=owned and sel)
             for tip in ('toolTipSlotBar', 'toolTipItemBar'):
                 lines = (st.get(tip) or {}).get('commandList')
                 if owned and lines:
                     lines[:] = [l for l in lines if l.get('baseKey') != 'ttip_item_not_owned']
+            if owned and not enough:             # Arrow/Dome 4, Heart/Pincer 6 dron ister (wiki; istemci ttip_inactive_not_enough_drones)
+                SE._tips(st, [SE._line('ttip_inactive_not_enough_drones')])
             return st
         if menu_id.startswith('ability_'):
             return GY.menu_status(self, menu_id, st)          # yalnız etkin geminin yetenekleri (gemi_yetenek.py)

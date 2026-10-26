@@ -24,10 +24,12 @@ X = E.get('ekstralar', {})
 
 
 def equipped(p, sid=None):
-    """Etkin (ya da verilen) geminin etkin config'indeki ekstraların lootId'leri."""
+    """Etkin (ya da verilen) geminin etkin config'indeki ekstraların lootId'leri; dronlara takılı ekstralar (CPU'lar) da sayılır."""
     if sid is None or str(sid) == str(p.d['aktif_gemi']):
-        return list(p.d.get('ekipman', {}).get('extra', []))
-    return p.loadout(sid).get('extra', [])
+        own, drones = list(p.d.get('ekipman', {}).get('extra', [])), p.d.get('dron_ekipman', [])
+    else:
+        own, drones = p.loadout(sid).get('extra', []), [(x, loots) for x, loots in p.drone_loadout(sid)]
+    return own + [l for _, loots in drones for l in loots if l.startswith('equipment_extra_')]
 
 
 def props(p, key, sid=None):
@@ -64,8 +66,20 @@ def mine_factor(p):
     return 1 + min((v for l, v in props(p, 'mayin_bekleme')), default=0.0)
 
 
+SINIRSIZ = 10 ** 6
+
+
+def unlimited(p, loot):
+    """Hakkı sınırsız mı: HM-7 için Goliath'ın Amber, Jade ya da Sapphire tasarımına sahip olanlar (wiki: eski kural; istemci
+    items_equipment_extra_hmd-07_hint_unlimited "You already have an unlimited trade drone")."""
+    designs = X.get(loot, {}).get('sinirsiz_tasarim')
+    return bool(designs) and any(d in s.get('tasarimlar', []) for s in p.d['gemiler'].values() for d in designs)
+
+
 def uses(p, loot):
     """Kullanım sınırlı ekstranın kalan hakkı (HM-7 satış, Jump CPU atlama, gizlenme): profilde, ilk takılışta tam."""
+    if unlimited(p, loot):
+        return SINIRSIZ
     st = p.d.setdefault('ekstra_haklari', {})
     if loot not in st:
         st[loot] = X.get(loot, {}).get('hak', 0)
@@ -88,6 +102,8 @@ def attached(p, loot):
 
 
 def use(p, loot, n=1):
+    if unlimited(p, loot):
+        return SINIRSIZ
     with p.lock:
         left = uses(p, loot) - n
         p.d['ekstra_haklari'][loot] = max(0, left)

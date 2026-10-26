@@ -607,6 +607,35 @@
       "esya": "ship_pusat_design_pusat-sandstorm",
       "adet": 1,
       "olasilik": 0.1
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    },
@@ -1218,6 +1247,35 @@
       "esya": "ship_pusat_design_pusat-sandstorm",
       "adet": 1,
       "olasilik": 0.1
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    },
@@ -1829,6 +1887,35 @@
       "esya": "ship_pusat_design_pusat-sandstorm",
       "adet": 1,
       "olasilik": 0.1
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    },
@@ -2091,7 +2178,8 @@
         "2": 80,
         "1": 80,
         "4": 4,
-        "5": 4
+        "5": 4,
+        "6": 2
        },
        "_odul_kaynagi": "wiki kapı"
       }
@@ -2126,20 +2214,21 @@
        "ad": "Lordakia",
        "gorunen_ad": "-=[ Lordakia ]=-",
        "adet": 12,
-       "hp": 4000,
-       "kalkan": 4000,
-       "hasar": 160,
+       "hp": 8000,
+       "kalkan": 8000,
+       "hasar": 240,
        "hiz": 242,
        "npc_kimlik": 2,
        "odul": {
-        "ep": 1600,
-        "onur": 8,
-        "kredi": 1600,
-        "uridyum": 4
+        "ep": 3200,
+        "onur": 16,
+        "kredi": 3200,
+        "uridyum": 8
        },
        "kargo": {
-        "0": 40,
-        "2": 40
+        "0": 80,
+        "2": 80,
+        "1": 80
        },
        "_odul_kaynagi": "wiki kapı"
       },
@@ -2392,24 +2481,24 @@
        "ad": "Kristallin",
        "gorunen_ad": "-=[ Kristallin ]=-",
        "adet": 10,
-       "hp": 100000,
-       "kalkan": 80000,
-       "hasar": 3300,
+       "hp": 150000,
+       "kalkan": 120000,
+       "hasar": 4950,
        "hiz": 300,
        "npc_kimlik": 9,
        "odul": {
-        "ep": 12800,
-        "onur": 64,
-        "kredi": 25600,
-        "uridyum": 32
+        "ep": 19200,
+        "onur": 96,
+        "kredi": 38400,
+        "uridyum": 48
        },
        "kargo": {
-        "0": 200,
-        "2": 200,
-        "1": 200,
-        "4": 32,
-        "5": 32,
-        "6": 2
+        "0": 300,
+        "2": 300,
+        "1": 300,
+        "4": 48,
+        "5": 48,
+        "6": 3
        },
        "_odul_kaynagi": "wiki kapı"
       },
@@ -2470,24 +2559,24 @@
        "ad": "Kristallin",
        "gorunen_ad": "-=[ Kristallin ]=-",
        "adet": 10,
-       "hp": 100000,
-       "kalkan": 80000,
-       "hasar": 3300,
+       "hp": 150000,
+       "kalkan": 120000,
+       "hasar": 4950,
        "hiz": 300,
        "npc_kimlik": 9,
        "odul": {
-        "ep": 12800,
-        "onur": 64,
-        "kredi": 25600,
-        "uridyum": 32
+        "ep": 19200,
+        "onur": 96,
+        "kredi": 38400,
+        "uridyum": 48
        },
        "kargo": {
-        "0": 200,
-        "2": 200,
-        "1": 200,
-        "4": 32,
-        "5": 32,
-        "6": 2
+        "0": 300,
+        "2": 300,
+        "1": 300,
+        "4": 48,
+        "5": 48,
+        "6": 3
        },
        "_odul_kaynagi": "wiki kapı"
       },
@@ -2668,6 +2757,35 @@
       "esya": "drone_designs_hermes",
       "adet": 1,
       "olasilik": 0.1
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    }
@@ -3580,6 +3698,35 @@
       "esya": "equipment_weapon_laser_lf-4",
       "adet": 1,
       "olasilik": 0.25
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    }
@@ -4305,16 +4452,16 @@
        "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
-        "ep": 400,
-        "onur": 2,
-        "kredi": 400,
-        "uridyum": 1
+        "ep": 800,
+        "onur": 4,
+        "kredi": 800,
+        "uridyum": 2
        },
        "kargo": {
-        "0": 10,
-        "2": 10
+        "0": 20,
+        "2": 20
        },
-       "_odul_kaynagi": "aliens.md streuner"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "85",
@@ -4327,21 +4474,20 @@
        "hiz": 300,
        "npc_kimlik": 11,
        "odul": {
-        "ep": 6000,
-        "onur": 30,
-        "kredi": 12000,
-        "uridyum": 15
+        "ep": 3200,
+        "onur": 16,
+        "kredi": 6400,
+        "uridyum": 8
        },
        "kargo": {
-        "0": 160,
-        "2": 160,
-        "1": 160,
-        "4": 15,
-        "5": 15,
-        "6": 1,
-        "3": 4
+        "0": 80,
+        "2": 80,
+        "1": 80,
+        "4": 8,
+        "5": 8,
+        "6": 8
        },
-       "_odul_kaynagi": "aliens.md streuner_r"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "23",
@@ -4402,21 +4548,21 @@
        "hiz": 280,
        "npc_kimlik": 38,
        "odul": {
-        "ep": 48000,
-        "onur": 240,
-        "kredi": 96000,
-        "uridyum": 120
+        "ep": 25600,
+        "onur": 128,
+        "kredi": 51200,
+        "uridyum": 64
        },
        "kargo": {
-        "0": 1200,
-        "2": 1200,
-        "1": 1200,
-        "4": 230,
-        "5": 120,
+        "0": 640,
+        "2": 640,
+        "1": 640,
+        "4": 64,
+        "5": 64,
         "6": 8,
-        "3": 16
+        "3": 8
        },
-       "_odul_kaynagi": "aliens.md uber_streuner_r"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "71",
@@ -4479,7 +4625,7 @@
        "npc_kimlik": 29,
        "odul": {
         "ep": 6400,
-        "onur": 128,
+        "onur": 32,
         "kredi": 6400,
         "uridyum": 16
        },
@@ -4492,7 +4638,7 @@
         "6": 2,
         "3": 2
        },
-       "_odul_kaynagi": "aliens.md uber_lordakia"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "75",
@@ -4863,6 +5009,35 @@
       "esya": "drone_designs_havoc",
       "adet": 1,
       "olasilik": 0.45
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    }
@@ -4895,19 +5070,16 @@
        "hiz": 172,
        "npc_kimlik": 1,
        "odul": {
-        "ep": 125,
-        "onur": 1,
-        "kredi": 1248,
-        "uridyum": 1
+        "ep": 800,
+        "onur": 8,
+        "kredi": 800,
+        "uridyum": 2
        },
        "kargo": {
-        "0": 10,
-        "2": 10
+        "0": 20,
+        "2": 20
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "94",
@@ -4920,10 +5092,10 @@
        "hiz": 300,
        "npc_kimlik": 42,
        "odul": {
-        "ep": 4170,
-        "onur": 27,
-        "kredi": 41597,
-        "uridyum": 19
+        "ep": 4000,
+        "onur": 4,
+        "kredi": 15000,
+        "uridyum": 8
        },
        "kargo": {
         "0": 50,
@@ -4933,10 +5105,7 @@
         "5": 4,
         "3": 1
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "100",
@@ -4949,10 +5118,10 @@
        "hiz": 320,
        "npc_kimlik": 63,
        "odul": {
-        "ep": 5733,
-        "onur": 37,
-        "kredi": 57195,
-        "uridyum": 26
+        "ep": 8000,
+        "onur": 4,
+        "kredi": 25000,
+        "uridyum": 16
        },
        "kargo": {
         "0": 100,
@@ -4963,10 +5132,7 @@
         "6": 2,
         "7": 1
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5005,10 +5171,10 @@
        "hiz": 300,
        "npc_kimlik": 43,
        "odul": {
-        "ep": 7297,
-        "onur": 47,
-        "kredi": 72794,
-        "uridyum": 34
+        "ep": 8000,
+        "onur": 4,
+        "kredi": 30000,
+        "uridyum": 16
        },
        "kargo": {
         "0": 75,
@@ -5018,10 +5184,7 @@
         "5": 8,
         "3": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "99",
@@ -5034,10 +5197,10 @@
        "hiz": 280,
        "npc_kimlik": 64,
        "odul": {
-        "ep": 20848,
-        "onur": 135,
-        "kredi": 207983,
-        "uridyum": 96
+        "ep": 16500,
+        "onur": 8,
+        "kredi": 150000,
+        "uridyum": 32
        },
        "kargo": {
         "0": 200,
@@ -5048,10 +5211,7 @@
         "6": 4,
         "7": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "31",
@@ -5064,10 +5224,10 @@
        "hiz": 180,
        "npc_kimlik": 16,
        "odul": {
-        "ep": 6254,
-        "onur": 40,
-        "kredi": 62395,
-        "uridyum": 29
+        "ep": 12800,
+        "onur": 64,
+        "kredi": 25600,
+        "uridyum": 32
        },
        "kargo": {
         "0": 320,
@@ -5075,13 +5235,10 @@
         "1": 320,
         "4": 32,
         "5": 32,
-        "6": 8,
+        "6": 10,
         "3": 8
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5120,10 +5277,10 @@
        "hiz": 280,
        "npc_kimlik": 44,
        "odul": {
-        "ep": 11988,
-        "onur": 78,
-        "kredi": 119590,
-        "uridyum": 55
+        "ep": 9000,
+        "onur": 12,
+        "kredi": 50000,
+        "uridyum": 24
        },
        "kargo": {
         "0": 100,
@@ -5131,14 +5288,9 @@
         "1": 100,
         "4": 16,
         "5": 16,
-        "6": 1,
-        "7": 1,
-        "3": 4
+        "3": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "72",
@@ -5151,10 +5303,10 @@
        "hiz": 150,
        "npc_kimlik": 3,
        "odul": {
-        "ep": 10424,
-        "onur": 67,
-        "kredi": 103991,
-        "uridyum": 48
+        "ep": 6400,
+        "onur": 32,
+        "kredi": 51200,
+        "uridyum": 16
        },
        "kargo": {
         "0": 100,
@@ -5164,10 +5316,7 @@
         "5": 16,
         "6": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "103",
@@ -5180,10 +5329,10 @@
        "hiz": 250,
        "npc_kimlik": 56,
        "odul": {
-        "ep": 9382,
-        "onur": 61,
-        "kredi": 93592,
-        "uridyum": 43
+        "ep": 6400,
+        "onur": 32,
+        "kredi": 12800,
+        "uridyum": 16
        },
        "kargo": {
         "0": 100,
@@ -5193,10 +5342,7 @@
         "5": 16,
         "6": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5235,10 +5381,10 @@
        "hiz": 280,
        "npc_kimlik": 19,
        "odul": {
-        "ep": 16678,
-        "onur": 108,
-        "kredi": 166386,
-        "uridyum": 77
+        "ep": 12800,
+        "onur": 64,
+        "kredi": 102400,
+        "uridyum": 48
        },
        "kargo": {
         "0": 400,
@@ -5249,10 +5395,7 @@
         "6": 4,
         "3": 8
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "91",
@@ -5265,10 +5408,10 @@
        "hiz": 300,
        "npc_kimlik": 45,
        "odul": {
-        "ep": 16678,
-        "onur": 108,
-        "kredi": 166386,
-        "uridyum": 77
+        "ep": 15000,
+        "onur": 16,
+        "kredi": 80000,
+        "uridyum": 16
        },
        "kargo": {
         "0": 150,
@@ -5280,10 +5423,7 @@
         "7": 2,
         "3": 8
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "99",
@@ -5296,10 +5436,10 @@
        "hiz": 280,
        "npc_kimlik": 64,
        "odul": {
-        "ep": 20848,
-        "onur": 135,
-        "kredi": 207983,
-        "uridyum": 96
+        "ep": 16500,
+        "onur": 8,
+        "kredi": 150000,
+        "uridyum": 32
        },
        "kargo": {
         "0": 200,
@@ -5310,10 +5450,7 @@
         "6": 4,
         "7": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5352,10 +5489,10 @@
        "hiz": 280,
        "npc_kimlik": 46,
        "odul": {
-        "ep": 23454,
-        "onur": 152,
-        "kredi": 233981,
-        "uridyum": 108
+        "ep": 20000,
+        "onur": 32,
+        "kredi": 125000,
+        "uridyum": 64
        },
        "kargo": {
         "0": 200,
@@ -5367,10 +5504,7 @@
         "7": 4,
         "3": 12
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "78",
@@ -5383,10 +5517,10 @@
        "hiz": 300,
        "npc_kimlik": 9,
        "odul": {
-        "ep": 4691,
-        "onur": 30,
-        "kredi": 46796,
-        "uridyum": 22
+        "ep": 6400,
+        "onur": 32,
+        "kredi": 12800,
+        "uridyum": 16
        },
        "kargo": {
         "0": 100,
@@ -5396,10 +5530,7 @@
         "5": 16,
         "6": 1
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "102",
@@ -5412,10 +5543,10 @@
        "hiz": 240,
        "npc_kimlik": 65,
        "odul": {
-        "ep": 36484,
-        "onur": 236,
-        "kredi": 363970,
-        "uridyum": 169
+        "ep": 55000,
+        "onur": 12,
+        "kredi": 400000,
+        "uridyum": 256
        },
        "kargo": {
         "0": 300,
@@ -5426,10 +5557,7 @@
         "6": 16,
         "7": 8
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5468,10 +5596,10 @@
        "hiz": 320,
        "npc_kimlik": 58,
        "odul": {
-        "ep": 5212,
-        "onur": 34,
-        "kredi": 51996,
-        "uridyum": 24
+        "ep": 7500,
+        "onur": 40,
+        "kredi": 25500,
+        "uridyum": 20
        },
        "kargo": {
         "0": 100,
@@ -5481,10 +5609,7 @@
         "5": 18,
         "6": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "112",
@@ -5497,10 +5622,10 @@
        "hiz": 280,
        "npc_kimlik": 59,
        "odul": {
-        "ep": 14594,
-        "onur": 94,
-        "kredi": 145588,
-        "uridyum": 67
+        "ep": 15000,
+        "onur": 56,
+        "kredi": 90000,
+        "uridyum": 25
        },
        "kargo": {
         "0": 200,
@@ -5510,10 +5635,7 @@
         "5": 24,
         "6": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ],
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "kamikaze_esik": null
        }
@@ -5529,10 +5651,10 @@
        "hiz": 240,
        "npc_kimlik": 61,
        "odul": {
-        "ep": 26060,
-        "onur": 169,
-        "kredi": 259979,
-        "uridyum": 120
+        "ep": 75000,
+        "onur": 128,
+        "kredi": 250000,
+        "uridyum": 65
        },
        "kargo": {
         "0": 300,
@@ -5541,15 +5663,12 @@
         "4": 48,
         "5": 48,
         "6": 12,
-        "3": 3
+        "3": 12
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": null
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -5588,10 +5707,10 @@
        "hiz": 180,
        "npc_kimlik": 21,
        "odul": {
-        "ep": 104240,
-        "onur": 674,
-        "kredi": 1039915,
-        "uridyum": 482
+        "ep": 102400,
+        "onur": 512,
+        "kredi": 819200,
+        "uridyum": 256
        },
        "kargo": {
         "0": 1200,
@@ -5602,10 +5721,7 @@
         "6": 32,
         "3": 32
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "81",
@@ -5618,10 +5734,10 @@
        "hiz": 300,
        "npc_kimlik": 12,
        "odul": {
-        "ep": 4691,
-        "onur": 30,
-        "kredi": 46796,
-        "uridyum": 22
+        "ep": 6400,
+        "onur": 32,
+        "kredi": 12800,
+        "uridyum": 16
        },
        "kargo": {
         "0": 100,
@@ -5631,10 +5747,7 @@
         "5": 16,
         "6": 2
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "46",
@@ -5647,10 +5760,10 @@
        "hiz": 140,
        "npc_kimlik": 20,
        "odul": {
-        "ep": 83392,
-        "onur": 539,
-        "kredi": 831932,
-        "uridyum": 385
+        "ep": 51000,
+        "onur": 256,
+        "kredi": 409600,
+        "uridyum": 128
        },
        "kargo": {
         "0": 800,
@@ -5661,10 +5774,7 @@
         "6": 16,
         "3": 32
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5703,24 +5813,21 @@
        "hiz": 200,
        "npc_kimlik": 40,
        "odul": {
-        "ep": 72968,
-        "onur": 472,
-        "kredi": 727940,
-        "uridyum": 337
+        "ep": 102400,
+        "onur": 512,
+        "kredi": 1638400,
+        "uridyum": 512
        },
        "kargo": {
-        "0": 1200,
-        "2": 1200,
-        "1": 1200,
-        "4": 512,
-        "5": 512,
-        "6": 64,
-        "3": 256
+        "0": 600,
+        "2": 600,
+        "1": 600,
+        "4": 256,
+        "5": 256,
+        "6": 32,
+        "3": 64
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "38",
@@ -5733,10 +5840,10 @@
        "hiz": 250,
        "npc_kimlik": 31,
        "odul": {
-        "ep": 3753,
-        "onur": 24,
-        "kredi": 37437,
-        "uridyum": 17
+        "ep": 12800,
+        "onur": 64,
+        "kredi": 12800,
+        "uridyum": 16
        },
        "kargo": {
         "0": 320,
@@ -5747,10 +5854,7 @@
         "6": 2,
         "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5789,10 +5893,10 @@
        "hiz": 260,
        "npc_kimlik": 48,
        "odul": {
-        "ep": 31272,
-        "onur": 202,
-        "kredi": 311974,
-        "uridyum": 145
+        "ep": 30000,
+        "onur": 100,
+        "kredi": 220000,
+        "uridyum": 150
        },
        "kargo": {
         "0": 400,
@@ -5804,10 +5908,7 @@
         "7": 16,
         "3": 24
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "29",
@@ -5820,10 +5921,10 @@
        "hiz": 280,
        "npc_kimlik": 22,
        "odul": {
-        "ep": 18763,
-        "onur": 121,
-        "kredi": 187185,
-        "uridyum": 87
+        "ep": 25600,
+        "onur": 128,
+        "kredi": 51200,
+        "uridyum": 64
        },
        "kargo": {
         "0": 400,
@@ -5834,10 +5935,7 @@
         "6": 4,
         "3": 6
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "11",
@@ -5855,8 +5953,16 @@
         "kredi": 409600,
         "uridyum": 256
        },
-       "kargo": {},
-       "_odul_kaynagi": "düzeltme (tools/kapilar.py ODUL_DUZELTME)"
+       "kargo": {
+        "0": 300,
+        "2": 300,
+        "1": 300,
+        "4": 126,
+        "5": 126,
+        "6": 44,
+        "3": 22
+       },
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5895,24 +6001,21 @@
        "hiz": 180,
        "npc_kimlik": 41,
        "odul": {
-        "ep": 72968,
-        "onur": 472,
-        "kredi": 727940,
-        "uridyum": 337
+        "ep": 204800,
+        "onur": 1024,
+        "kredi": 3276800,
+        "uridyum": 2048
        },
        "kargo": {
-        "0": 4800,
-        "2": 4800,
-        "1": 4800,
-        "4": 2048,
-        "5": 2048,
-        "6": 256,
-        "3": 1024
+        "0": 1200,
+        "2": 1200,
+        "1": 1200,
+        "4": 512,
+        "5": 512,
+        "6": 64,
+        "3": 128
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5939,10 +6042,10 @@
        "hiz": 250,
        "npc_kimlik": 49,
        "odul": {
-        "ep": 72968,
-        "onur": 472,
-        "kredi": 727940,
-        "uridyum": 337
+        "ep": 1000000,
+        "onur": 5000,
+        "kredi": 1000000,
+        "uridyum": 5000
        },
        "kargo": {
         "0": 1,
@@ -5953,10 +6056,7 @@
         "6": 1,
         "3": 1
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -5994,9 +6094,44 @@
       "esya": "equipment_weapon_laser_lf-4",
       "adet": 1,
       "olasilik": 0.25
+     },
+     {
+      "esya": "booster_kappa-b01",
+      "adet": 5,
+      "olasilik": 0.25
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
-   }
+   },
+   "unvan": "title_204"
   },
   "lambda": {
    "kimlik": 8,
@@ -6580,8 +6715,39 @@
      "abr": 4
     },
     "parca": 1,
-    "sans": []
-   }
+    "sans": [
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
+     }
+    ]
+   },
+   "unvan": "title_205"
   },
   "kronos": {
    "kimlik": 12,
@@ -6611,22 +6777,25 @@
        "hiz": 300,
        "npc_kimlik": 77,
        "odul": {
-        "ep": 1204,
-        "onur": 12,
-        "kredi": 1207,
-        "uridyum": 3
+        "ep": 100,
+        "onur": 1,
+        "kredi": 400,
+        "uridyum": 5
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 45,
+        "2": 45,
+        "1": 45,
+        "4": 20,
+        "5": 20
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_yamato",
@@ -6639,22 +6808,25 @@
        "hiz": 300,
        "npc_kimlik": 78,
        "odul": {
-        "ep": 2407,
-        "onur": 24,
-        "kredi": 2413,
-        "uridyum": 5
+        "ep": 200,
+        "onur": 2,
+        "kredi": 800,
+        "uridyum": 7
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 45,
+        "2": 45,
+        "1": 45,
+        "4": 20,
+        "5": 20
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1500,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -6693,22 +6865,25 @@
        "hiz": 300,
        "npc_kimlik": 79,
        "odul": {
-        "ep": 5330,
-        "onur": 53,
-        "kredi": 5343,
-        "uridyum": 11
+        "ep": 1600,
+        "onur": 16,
+        "kredi": 3200,
+        "uridyum": 12
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 75,
+        "2": 75,
+        "1": 75,
+        "4": 50,
+        "5": 50
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1500,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_liberator",
@@ -6721,22 +6896,25 @@
        "hiz": 300,
        "npc_kimlik": 80,
        "odul": {
-        "ep": 3955,
-        "onur": 39,
-        "kredi": 3965,
-        "uridyum": 8
+        "ep": 200,
+        "onur": 2,
+        "kredi": 800,
+        "uridyum": 7
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 75,
+        "2": 75,
+        "1": 75,
+        "4": 50,
+        "5": 50
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1500,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -6781,22 +6959,25 @@
        "hiz": 300,
        "npc_kimlik": 81,
        "odul": {
-        "ep": 12379,
-        "onur": 122,
-        "kredi": 12411,
-        "uridyum": 26
+        "ep": 6400,
+        "onur": 64,
+        "kredi": 6400,
+        "uridyum": 18
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 75,
+        "2": 75,
+        "1": 75,
+        "4": 50,
+        "5": 50
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1500,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_piranha",
@@ -6809,22 +6990,25 @@
        "hiz": 300,
        "npc_kimlik": 82,
        "odul": {
-        "ep": 12379,
-        "onur": 122,
-        "kredi": 12411,
-        "uridyum": 26
+        "ep": 6400,
+        "onur": 64,
+        "kredi": 6400,
+        "uridyum": 15
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 75,
+        "2": 75,
+        "1": 75,
+        "4": 50,
+        "5": 50
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1500,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -6869,22 +7053,26 @@
        "hiz": 300,
        "npc_kimlik": 83,
        "odul": {
-        "ep": 23899,
-        "onur": 236,
-        "kredi": 23959,
-        "uridyum": 50
+        "ep": 25600,
+        "onur": 256,
+        "kredi": 12800,
+        "uridyum": 56
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -6929,22 +7117,26 @@
        "hiz": 300,
        "npc_kimlik": 84,
        "odul": {
-        "ep": 24071,
-        "onur": 238,
-        "kredi": 24132,
-        "uridyum": 50
+        "ep": 12800,
+        "onur": 128,
+        "kredi": 25600,
+        "uridyum": 28
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 75,
+        "5": 75,
+        "6": 8
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_g-saturn",
@@ -6957,22 +7149,26 @@
        "hiz": 300,
        "npc_kimlik": 85,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7017,22 +7213,26 @@
        "hiz": 300,
        "npc_kimlik": 86,
        "odul": {
-        "ep": 18913,
-        "onur": 187,
-        "kredi": 18961,
-        "uridyum": 39
+        "ep": 12800,
+        "onur": 65,
+        "kredi": 25600,
+        "uridyum": 25
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 75,
+        "5": 75,
+        "6": 8
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7077,22 +7277,26 @@
        "hiz": 300,
        "npc_kimlik": 87,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_sentinel",
@@ -7105,22 +7309,26 @@
        "hiz": 300,
        "npc_kimlik": 88,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_spectrum",
@@ -7133,22 +7341,26 @@
        "hiz": 300,
        "npc_kimlik": 89,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_diminisher",
@@ -7161,22 +7373,26 @@
        "hiz": 300,
        "npc_kimlik": 90,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_solace",
@@ -7189,22 +7405,26 @@
        "hiz": 300,
        "npc_kimlik": 91,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7255,22 +7475,26 @@
        "hiz": 300,
        "npc_kimlik": 92,
        "odul": {
-        "ep": 24071,
-        "onur": 238,
-        "kredi": 24132,
-        "uridyum": 50
+        "ep": 12800,
+        "onur": 128,
+        "kredi": 25600,
+        "uridyum": 28
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 75,
+        "5": 75,
+        "6": 8
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_g-enforcer",
@@ -7283,22 +7507,26 @@
        "hiz": 300,
        "npc_kimlik": 96,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7349,22 +7577,26 @@
        "hiz": 300,
        "npc_kimlik": 93,
        "odul": {
-        "ep": 24071,
-        "onur": 238,
-        "kredi": 24132,
-        "uridyum": 50
+        "ep": 12800,
+        "onur": 128,
+        "kredi": 25600,
+        "uridyum": 28
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 75,
+        "5": 75,
+        "6": 8
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_v-avenger",
@@ -7377,22 +7609,26 @@
        "hiz": 300,
        "npc_kimlik": 94,
        "odul": {
-        "ep": 32668,
-        "onur": 323,
-        "kredi": 32750,
-        "uridyum": 68
+        "ep": 12800,
+        "onur": 128,
+        "kredi": 25600,
+        "uridyum": 28
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 75,
+        "5": 75,
+        "6": 8
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7443,22 +7679,26 @@
        "hiz": 300,
        "npc_kimlik": 95,
        "odul": {
-        "ep": 43500,
-        "onur": 429,
-        "kredi": 43610,
-        "uridyum": 90
+        "ep": 12800,
+        "onur": 128,
+        "kredi": 25600,
+        "uridyum": 28
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 75,
+        "5": 75,
+        "6": 8
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_g-enforcer",
@@ -7471,22 +7711,26 @@
        "hiz": 300,
        "npc_kimlik": 96,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7525,22 +7769,26 @@
        "hiz": 300,
        "npc_kimlik": 97,
        "odul": {
-        "ep": 18913,
-        "onur": 187,
-        "kredi": 18961,
-        "uridyum": 39
+        "ep": 7500,
+        "onur": 75,
+        "kredi": 20000,
+        "uridyum": 20
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 75,
+        "5": 75,
+        "6": 8
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_citadel",
@@ -7553,22 +7801,26 @@
        "hiz": 300,
        "npc_kimlik": 98,
        "odul": {
-        "ep": 64477,
-        "onur": 637,
-        "kredi": 64639,
-        "uridyum": 134
+        "ep": 120000,
+        "onur": 1200,
+        "kredi": 80000,
+        "uridyum": 175
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 300,
+        "2": 300,
+        "1": 300,
+        "4": 200,
+        "5": 200,
+        "6": 20
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_aegis",
@@ -7581,22 +7833,26 @@
        "hiz": 300,
        "npc_kimlik": 99,
        "odul": {
-        "ep": 36537,
-        "onur": 361,
-        "kredi": 36629,
-        "uridyum": 76
+        "ep": 25000,
+        "onur": 250,
+        "kredi": 50000,
+        "uridyum": 56
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_g-saturn",
@@ -7609,22 +7865,26 @@
        "hiz": 300,
        "npc_kimlik": 85,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7669,22 +7929,26 @@
        "hiz": 300,
        "npc_kimlik": 100,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_goliath_design_jade",
@@ -7697,22 +7961,26 @@
        "hiz": 300,
        "npc_kimlik": 101,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "ship_goliath_design_sapphire",
@@ -7725,22 +7993,26 @@
        "hiz": 300,
        "npc_kimlik": 102,
        "odul": {
-        "ep": 34903,
-        "onur": 345,
-        "kredi": 34991,
-        "uridyum": 73
+        "ep": 51200,
+        "onur": 512,
+        "kredi": 45000,
+        "uridyum": 100
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 150,
+        "2": 150,
+        "1": 150,
+        "4": 100,
+        "5": 100,
+        "6": 12
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       }
      ],
      "gruplar": [
@@ -7779,22 +8051,26 @@
        "hiz": 320,
        "npc_kimlik": 103,
        "odul": {
-        "ep": 107461,
-        "onur": 1061,
-        "kredi": 107731,
-        "uridyum": 223
+        "ep": 250000,
+        "onur": 2000,
+        "kredi": 150000,
+        "uridyum": 500
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {
+        "0": 400,
+        "2": 400,
+        "1": 400,
+        "4": 200,
+        "5": 200,
+        "6": 25
+       },
+       "_odul_kaynagi": "wiki kapı",
        "davranis": {
         "roket": {
          "hasar": 1000,
          "bekleme_sn": 6
         }
-       },
-       "_tahmin": [
-        "ödül"
-       ]
+       }
       },
       {
        "tur": "108",
@@ -7807,16 +8083,20 @@
        "hiz": 380,
        "npc_kimlik": 104,
        "odul": {
-        "ep": 9457,
-        "onur": 93,
-        "kredi": 9480,
-        "uridyum": 20
+        "ep": 6400,
+        "onur": 32,
+        "kredi": 12800,
+        "uridyum": 16
        },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "kargo": {
+        "0": 100,
+        "2": 100,
+        "1": 100,
+        "4": 16,
+        "5": 16,
+        "6": 2
+       },
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -7864,6 +8144,35 @@
       "esya": "ship_g-saturn",
       "adet": 1,
       "olasilik": 0.25
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    },
@@ -8337,7 +8646,8 @@
       "olasilik": 0.25
      }
     ]
-   }
+   },
+   "unvan": "title_event_gg-hades"
   },
   "streuner": {
    "kimlik": 19,
@@ -8382,10 +8692,9 @@
         "1": 160,
         "4": 15,
         "5": 15,
-        "6": 1,
-        "3": 4
+        "6": 1
        },
-       "_odul_kaynagi": "aliens.md streuner_r"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -8394,34 +8703,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       }
      ],
@@ -8471,11 +8765,11 @@
         "2": 1200,
         "1": 1200,
         "4": 230,
-        "5": 120,
+        "5": 230,
         "6": 8,
         "3": 16
        },
-       "_odul_kaynagi": "aliens.md uber_streuner_r"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "25",
@@ -8502,7 +8796,7 @@
         "6": 1,
         "3": 2
        },
-       "_odul_kaynagi": "aliens.md boss_saimon"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -8511,34 +8805,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -8552,24 +8831,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -8583,19 +8861,19 @@
        "hiz": 280,
        "npc_kimlik": 6,
        "odul": {
-        "ep": 1600,
-        "onur": 8,
-        "kredi": 1600,
-        "uridyum": 4
+        "ep": 3200,
+        "onur": 16,
+        "kredi": 3200,
+        "uridyum": 8
        },
        "kargo": {
-        "0": 40,
-        "2": 40,
-        "1": 40,
-        "4": 2,
-        "5": 2
+        "0": 80,
+        "2": 80,
+        "1": 80,
+        "4": 4,
+        "5": 4
        },
-       "_odul_kaynagi": "aliens.md saimon"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "150",
@@ -8608,24 +8886,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       }
      ],
@@ -8683,24 +8960,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -8714,16 +8990,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "150",
@@ -8736,24 +9009,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -8763,34 +9035,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -8818,7 +9075,7 @@
         "6": 16,
         "3": 32
        },
-       "_odul_kaynagi": "aliens.md boss_sibelon"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "150",
@@ -8831,24 +9088,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -8862,16 +9118,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "150",
@@ -8884,24 +9137,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -8915,16 +9167,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -8933,34 +9182,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       }
      ],
@@ -9042,24 +9276,15 @@
        "hiz": 0,
        "npc_kimlik": 148,
        "odul": {
-        "ep": 19708,
-        "onur": 67,
-        "kredi": 168218,
-        "uridyum": 209
+        "ep": 18000,
+        "onur": 50,
+        "kredi": 180000,
+        "uridyum": 100
        },
-       "kargo": {
-        "0": 914,
-        "2": 914,
-        "1": 914,
-        "4": 86,
-        "5": 86,
-        "6": 6,
-        "3": 23
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9073,24 +9298,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9104,16 +9328,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -9122,34 +9343,19 @@
        "adet": 2,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9177,7 +9383,7 @@
         "6": 64,
         "3": 64
        },
-       "_odul_kaynagi": "aliens.md uber_sibelon"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "150",
@@ -9190,24 +9396,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9221,16 +9426,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -9239,34 +9441,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9280,24 +9467,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9311,16 +9497,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "150",
@@ -9333,24 +9516,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9364,16 +9546,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -9382,34 +9561,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9423,24 +9587,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9454,16 +9617,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       }
      ],
      "gruplar": [
@@ -9588,34 +9748,19 @@
        "adet": 9,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9629,24 +9774,15 @@
        "hiz": 220,
        "npc_kimlik": 147,
        "odul": {
-        "ep": 172444,
-        "onur": 584,
-        "kredi": 1471909,
-        "uridyum": 1829
+        "ep": 300000,
+        "onur": 150,
+        "kredi": 400000,
+        "uridyum": 6000
        },
-       "kargo": {
-        "0": 8000,
-        "2": 8000,
-        "1": 8000,
-        "4": 750,
-        "5": 750,
-        "6": 50,
-        "3": 200
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9660,24 +9796,15 @@
        "hiz": 0,
        "npc_kimlik": 148,
        "odul": {
-        "ep": 19708,
-        "onur": 67,
-        "kredi": 168218,
-        "uridyum": 209
+        "ep": 18000,
+        "onur": 50,
+        "kredi": 180000,
+        "uridyum": 100
        },
-       "kargo": {
-        "0": 914,
-        "2": 914,
-        "1": 914,
-        "4": 86,
-        "5": 86,
-        "6": 6,
-        "3": 23
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9691,24 +9818,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9722,16 +9848,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -9740,34 +9863,19 @@
        "adet": 2,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9795,7 +9903,7 @@
         "6": 64,
         "3": 64
        },
-       "_odul_kaynagi": "aliens.md uber_sibelon"
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "150",
@@ -9808,24 +9916,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9839,16 +9946,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -9857,34 +9961,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9898,24 +9987,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9929,16 +10017,13 @@
        "hiz": 280,
        "npc_kimlik": 149,
        "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
+        "ep": 20000,
+        "onur": 70,
+        "kredi": 200000,
+        "uridyum": 200
        },
        "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
-       ]
+       "_odul_kaynagi": "wiki kapı"
       },
       {
        "tur": "158",
@@ -9947,34 +10032,19 @@
        "adet": 1,
        "hp": 120000,
        "kalkan": 80000,
-       "hasar": 3500,
+       "hasar": 0,
        "hiz": 260,
        "npc_kimlik": 158,
        "odul": {
-        "ep": 9854,
-        "onur": 33,
-        "kredi": 84109,
-        "uridyum": 105
+        "ep": 3200,
+        "onur": 6,
+        "kredi": 6400,
+        "uridyum": 10
        },
-       "kargo": {
-        "0": 457,
-        "2": 457,
-        "1": 457,
-        "4": 43,
-        "5": 43,
-        "6": 3,
-        "3": 11
-       },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "davranis": {
-        "roket": {
-         "hasar": 3000,
-         "bekleme_sn": 6
-        }
-       },
+       "kargo": {},
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
+        "can/kalkan/hasar"
        ]
       },
       {
@@ -9988,46 +10058,23 @@
        "hiz": 300,
        "npc_kimlik": 150,
        "odul": {
-        "ep": 6898,
-        "onur": 23,
-        "kredi": 58876,
-        "uridyum": 73
+        "ep": 12000,
+        "onur": 40,
+        "kredi": 100000,
+        "uridyum": 80
        },
        "kargo": {
-        "0": 320,
-        "2": 320,
-        "1": 320,
-        "4": 30,
-        "5": 30,
-        "6": 2,
-        "3": 8
+        "0": 166,
+        "2": 166,
+        "1": 166,
+        "4": 16,
+        "5": 16,
+        "6": 1,
+        "3": 4
        },
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
+       "_odul_kaynagi": "wiki kapı",
        "_tahmin": [
-        "can/kalkan/hasar",
-        "ödül"
-       ]
-      },
-      {
-       "tur": "149",
-       "ad": "Streuner Specialist",
-       "gorunen_ad": "-=[ Streuner Specialist ]=-",
-       "adet": 2,
-       "hp": 300000,
-       "kalkan": 300000,
-       "hasar": 5000,
-       "hiz": 280,
-       "npc_kimlik": 149,
-       "odul": {
-        "ep": 29562,
-        "onur": 100,
-        "kredi": 252327,
-        "uridyum": 314
-       },
-       "kargo": {},
-       "_odul_kaynagi": "wiki toplamı (alienKillTotals) can+kalkan oranında",
-       "_tahmin": [
-        "ödül"
+        "can/kalkan/hasar"
        ]
       }
      ],
@@ -10127,12 +10174,6 @@
         13,
         10
        ]
-      ],
-      [
-       [
-        14,
-        2
-       ]
       ]
      ]
     }
@@ -10165,6 +10206,35 @@
       "adet": 1,
       "yoksa_uridyum": 10000,
       "olasilik": 0.25
+     },
+     {
+      "esya": "resource_collectable_diametrion",
+      "adet": 70,
+      "adet_en_cok": 80,
+      "olasilik": 0.01,
+      "birlikte": [
+       [
+        "resource_collectable_kyhalon",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        [
+         8,
+         14
+        ]
+       ],
+       [
+        "resource_collectable_bifenon",
+        [
+         6,
+         10
+        ]
+       ]
+      ]
      }
     ]
    }
@@ -10390,8 +10460,8 @@
   }
  },
  "bonus": {
-  "_kaynak": "Kaydın GalaxyGateBuilderInfoCommand'ı: üç kapıda bonus (bonusGGRewardModules {claimed, countdown sn, lootId, amount}: Delta LF-4 HP, Epsilon 1.050.000 onur, Kappa P.E.T. G-Champion Lava; geri sayım 22.002 sn) ve istemci (GateVo.ParseBonusGReward: kapının ilk bonusu, geri sayımı kendisi işletir; metinler title_bonus_gg_reward, msg_bonus_gg_reward_info / _time_left / _collected).",
-  "_uyarlama": "Kayıttaki bonuslar sabit kalıntıydı (süre hep 22.002 sn, ödül verilmiyordu). Sunucu her dönemde (panel: kapi_bonus_saat, varsayılan 24 saat, gece yarısına hizalı) kapılardan kapi_bonus_adet kadarını ve ödüllerini rastgele seçer (dönem içinde sabit); kapı dönem bitmeden tamamlanınca (Dispatch'in kapı gönderimi dahil) ödül bir kez verilir. Havuz kayıttaki üç ödül ve kapı ödüllerine benzer eşyalar; miktarlı ödüller panelin kapi_bonus_carpan'ıyla (tek eşyalar bir tane).",
+  "_kaynak": "Kaydın GalaxyGateBuilderInfoCommand'ı: üç kapıda bonus (bonusGGRewardModules {claimed, countdown sn, lootId, amount}: Delta LF-4 HP, Epsilon 1.050.000 onur, Kappa P.E.T. G-Champion Lava; geri sayım 22.002 sn), istemci (GateVo.ParseBonusGReward: kapının ilk bonusu, geri sayımı kendisi işletir; metinler title_bonus_gg_reward, msg_bonus_gg_reward_info / _time_left / _collected) ve darkorbitwiki Galaxy Gates Events \"Bonus Rewards For The First Completing\" (ödül havuzu ve gemi şansı).",
+  "_uyarlama": "Kayıttaki bonuslar sabit kalıntıydı (süre hep 22.002 sn, ödül verilmiyordu); kayıt Pazar günü alındı ve bonus açıktı, bu yüzden wiki'nin 'her Salı' takvimi yerine her dönem. Sunucu her dönemde (panel: kapi_bonus_saat, varsayılan 24 saat, gece yarısına hizalı) kapılardan kapi_bonus_adet kadarını ve ödüllerini rastgele seçer (dönem içinde sabit; aralıklı ödüller de, dönemin tohumuyla); kapı dönem bitmeden tamamlanınca (Dispatch'in kapı gönderimi dahil) ödül bir kez verilir. Havuz wiki'nin listesi (kayıttaki üç ödül bunun içinde); miktarlı ödüller panelin kapi_bonus_carpan'ıyla (tek eşyalar bir tane). gemi_sansi: istemci metni 'There's also a chance to get a Cyborg, Hammerclaw, or Mimesis ship' ve wiki (sahip olunan gemi yerine 10.000 uridyum); olasılık wiki'de yok (uyarlama, VARSAYILAN_SANS).",
   "kapilar": [
    "alpha",
    "beta",
@@ -10407,45 +10477,136 @@
   ],
   "oduller": [
    [
+    "currency_experience",
+    [
+     14580000,
+     16200000
+    ]
+   ],
+   [
+    "currency_honour",
+    [
+     900000,
+     1500000
+    ]
+   ],
+   [
+    "resource_collectable_rinusk",
+    3000
+   ],
+   [
+    "resource_collectable_indoctrineoil",
+    45
+   ],
+   [
+    "resource_ore_seprom",
+    10000
+   ],
+   [
+    "ammunition_laser_rsb-75",
+    15000
+   ],
+   [
+    "ammunition_laser_ucb-100",
+    100000
+   ],
+   [
+    "equipment_weapon_laser_lf-4",
+    3
+   ],
+   [
     "equipment_weapon_laser_lf-4-hp",
     1
    ],
    [
-    "currency_honour",
-    1050000
+    "equipment_weapon_laser_lf-4-md",
+    1
+   ],
+   [
+    "equipment_weapon_laser_lf-4-pd",
+    1
+   ],
+   [
+    "equipment_weapon_laser_lf-p01",
+    1
+   ],
+   [
+    "equipment_weapon_laser_lf-px01",
+    1
+   ],
+   [
+    "equipment_generator_shield_sg3n-p01",
+    1
+   ],
+   [
+    "equipment_generator_shield_sg3n-px01",
+    1
+   ],
+   [
+    "equipment_shipupgrade_hp-vp01",
+    1
+   ],
+   [
+    "equipment_shipupgrade_dmg-vp01",
+    1
+   ],
+   [
+    "equipment_shipupgrade_dmg-t01",
+    1
+   ],
+   [
+    "equipment_shipupgrade_dmg-t02",
+    1
+   ],
+   [
+    "equipment_shipupgrade_spc-spd01",
+    1
+   ],
+   [
+    "pet_designs_pet-berserker-borealis",
+    1
+   ],
+   [
+    "pet_designs_pet-phoenix",
+    1
    ],
    [
     "pet_designs_pet-g-champion-lava",
     1
    ],
    [
-    "equipment_weapon_laser_lf-4",
+    "pet_designs_pet-diminisher-lava",
     1
    ],
    [
-    "currency_uridium",
-    50000
+    "pet_designs_pet-sentinel-lava",
+    1
    ],
    [
-    "ammunition_laser_ucb-100",
-    50000
+    "ship_v-lightning_design_v-lightning-expo2016",
+    1
    ],
    [
-    "ammunition_laser_rsb-75",
-    10000
+    "ship_pusat_design_pusat-expo2016",
+    1
    ],
    [
-    "resource_logfile",
-    50
+    "ship_sentinel_design_sentinel-expo2016",
+    1
    ],
    [
-    "resource_booty-key",
-    10
-   ],
-   [
-    "resource_collectable_axion-beam-regulator",
-    10
+    "pet_designs_green",
+    1
    ]
-  ]
+  ],
+  "gemi_sansi": {
+   "olasilik": 0.25,
+   "gemiler": [
+    "ship_cyborg",
+    "ship_hammerclaw",
+    "ship_mimesis"
+   ],
+   "yoksa_uridyum": 10000
+  }
  }
 }

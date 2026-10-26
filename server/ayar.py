@@ -59,7 +59,7 @@ SCHEMA = [
     _c('gemi_hiz', 'Geminin hızı', 'gemi', 'Geminin uçuş hızı (hız jeneratörleri ve bonuslarla birlikte). Yavaşlatma ve Fortify '
        'gibi etkiler yine geçerli.', lo=0.25, hi=3.0, sinir=10.0),
     _c('kalkan_yenilenme', 'Kalkanın dolma hızı', 'gemi', 'Savaş dışında kalkanın kendiliğinden dolması (oyunun değeri saniyede '
-       '%5). 0: kalkan kendiliğinden dolmaz.', sinir=100.0),
+       '%4). 0: kalkan kendiliğinden dolmaz.', sinir=100.0),
     _c('onarim_hizi', 'Onarım robotu hızı', 'gemi', 'Onarım robotunun (REP) gövdeyi onarma hızı.', lo=0.1, sinir=1000.0),
     _c('oyuncu_isabet', 'İsabet şansın', 'gemi', "Lazerlerinin, roketlerinin ve P.E.T.'inin isabet olasılığı (oyunun değeri %80, "
        'en çok %100). x1,25: her atış isabet eder.', lo=0.1, hi=2.0, sinir=100.0),
@@ -145,6 +145,8 @@ SCHEMA = [
        'edilmez.', lo=1, hi=10, varsayilan=5, birim='görev', sinir=100),
     _b('atlama_sapma', "Atlama CPU'su ara sıra sapar", 'dunya', "Atlama CPU'su küçük bir olasılıkla (%2) seni Cubikon "
        'Mezarlığına götürür (oyundaki gibi). Kapatılırsa hep seçtiğin haritaya.', varsayilan=True),
+    _b('klan_bekleme', 'Klan 48 saat kuralları', 'dunya', 'Klandan ayrılınca 48 saat yeni klan kurulamaz ya da klana katılınamaz; klan '
+       'adı/etiketi iki değişim arası 48 saat bekler. Kapalıyken bekleme yok.', varsayilan=True),
     # ---------------------------------------------------------------- kapılar ve modlar
     _c('kapi_parca', 'Kapı parçası şansı', 'kapi', 'Galaksi Kapısı üreticisinde bir enerjiyle kapı parçası çıkma olasılığı '
        '(oyunun değeri %13; pencerenin olasılık listesi de değişir).', lo=0.1, hi=7.0, sinir=1000.0),

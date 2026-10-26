@@ -243,6 +243,9 @@ def gate_rewards_xml():
         for s in R.get('sans', []):
             opts = s.get('secenekler') if s.get('esya') == 'tasarim_secimi' else [s.get('esya')]
             rows += [(loot, s.get('adet', 1), s.get('olasilik', 0) / max(1, len(opts))) for loot in opts or []]
+            # Diametrion'la birlikte gelen üç kaynaktan biri (kapi.finish 'birlikte'): rehberin "min" alanı en az miktar (70-80 ve 8-14 gibi
+            # aralıklar yazılamaz), şans sınıfı üçe bölünmüş olasılıktan
+            rows += [(loot, n[0] if isinstance(n, list) else n, s.get('olasilik', 0) / len(s['birlikte'])) for loot, n in s.get('birlikte', [])]
         items = ''.join('<item id=%s chance="%d" min="%d"/>' % (quoteattr(loot), chance_class(p), n) for loot, n, p in rows
                         if loot and n)
         out.append('<gate name=%s>%s</gate>' % (quoteattr(key), items))

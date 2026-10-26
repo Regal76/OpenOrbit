@@ -1,5 +1,5 @@
 {
- "_aciklama": "belgeler/wiki/boxes.md (darkorbitwiki: kutular) -> server/data/kutular.json: haritalardaki anahtarlı ganimet kutuları.\n\nKutu türleri istemcinin kendi adları (AddBoxCommand.boxType; çeviri dosyasında PIRATE_BOOTY = Green Booty Box …), anahtarlar\nistemcinin eşya kimlikleri (resource_booty-key …), anahtarsız toplama metni istemcinin msg_loot_failed_no_booty-key-* anahtarları,\nseyir defterine \"booty_key_<tür>_used\", HUD'daki anahtar sayacı eski protokolün \"0|A|<kod>|<adet>\" satırı (SetAttributeAssemblyHelper.AssembleBootyKeysUpdate: BKP yeşil,\nBKR kırmızı, BKB mavi, BKS gümüş, BKBB obsidiyen, BKBLC / BKBLD Black Light Cipher / Decoder).\nİçerikler wiki'den: kırmızı, mavi ve obsidiyen kutuların grup ve grup içi olasılıkları ve adetleri aynen; yeşil, altın ve gümüş\nkutularda wiki adet ve olasılık vermiyor (adet ADET tablosu, ağırlık AGIRLIK tablosu: uyarlama). Black Light Cache: bir Centurion\ntasarımı (sahipse 10.000 uridyum, wiki); Black Light Crypt: X1 / X2 gemi modülleri (wiki'nin \"?\" satırları atlanır).\nKutu sayıları, yeniden doğma süreleri uyarlama; altın kutular ayın 2. ve 4. cuması; E8: Obsidian, R&B ve Apocalypse haftalık\nrotasyonda (takvim.py obsidian_booty, rb_booty, apocalypse_booty; gerçek oyunun bp-calendar'ı), Perseus' Blessing Perseus' Grace'te,\nBattle Pass Box Battle Pass'li etkinliklerde (içerik etkinliğin grubu: 'odul_etkinlik').\nE7: Astral (BKA), Prime Astral (BKAP), Apocalypse (MASQUE_BOOTY_BOX, BKM), Prometheus (HUD kodu yok), Perseus' Blessing (BKPG) ve\nLaurel (BKLL) kutuları; kodlar kayıttaki girişin \"0|A|BK…|0\" satırlarından adla eşlendi. Wiki adet vermeyenlerde adet ADET_E7\n(uyarlama); istemcide olmayan eşyalar (Prime Coupon, XHV02 modülleri, CC-C, paketler …) atlanır. Prometheus ve Laurel'in anahtarının\nkaynağı yok: takvimleri E8'in etkinlikleri (prometheus, athena), o güne dek doğmazlar.\nÜreten: tools/kutular.py.",
+ "_aciklama": "belgeler/wiki/boxes.md (darkorbitwiki: kutular) -> server/data/kutular.json: haritalardaki anahtarlı ganimet kutuları.\n\nKutu türleri istemcinin kendi adları (AddBoxCommand.boxType; çeviri dosyasında PIRATE_BOOTY = Green Booty Box …), anahtarlar\nistemcinin eşya kimlikleri (resource_booty-key …), anahtarsız toplama metni istemcinin msg_loot_failed_no_booty-key-* anahtarları,\nseyir defterine \"booty_key_<tür>_used\", HUD'daki anahtar sayacı eski protokolün \"0|A|<kod>|<adet>\" satırı (SetAttributeAssemblyHelper.AssembleBootyKeysUpdate: BK yeşil,\nBKR kırmızı, BKB mavi, BKS gümüş, BKBB obsidiyen, BKBLC / BKBLD Black Light Cipher / Decoder).\nİçerikler wiki'den: kırmızı, mavi ve obsidiyen kutuların grup ve grup içi olasılıkları ve adetleri aynen; yeşil, altın ve gümüş\nkutularda wiki adet ve olasılık vermiyor (adet ADET tablosu, ağırlık AGIRLIK tablosu: uyarlama). Black Light Cache: bir Centurion\ntasarımı (sahipse 10.000 uridyum, wiki); Black Light Crypt: X1 / X2 gemi modülleri (wiki'nin \"?\" satırları atlanır).\nKutu sayıları, yeniden doğma süreleri uyarlama; altın kutular ayın 2. ve 4. cuması; E8: Obsidian, R&B ve Apocalypse haftalık\nrotasyonda (takvim.py obsidian_booty, rb_booty, apocalypse_booty; gerçek oyunun bp-calendar'ı), Perseus' Blessing Perseus' Grace'te,\nBattle Pass Box Battle Pass'li etkinliklerde (içerik etkinliğin grubu: 'odul_etkinlik').\nE7: Astral (BKA), Prime Astral (BKAP), Apocalypse (MASQUE_BOOTY_BOX, BKM), Prometheus (BKPR), Perseus' Blessing (BKPG) ve\nLaurel (BKLL) kutuları; kodlar kayıttaki girişin \"0|A|BK…|0\" satırlarından adla eşlendi. Wiki adet vermeyenlerde adet ADET_E7\n(uyarlama); wiki'nin yazım hatalı ya da istemcide başka adla geçen satırları E7_NAMES'te (XHV02 = XV02, HP-XHU2 = HP-XU02, CC-A / CC-C =\nCosmic Class A / C, Prime Coupon = PrimeCoupon, Travel Permit = Deep Space Echoes bileti; Booster Package: damage booster'ın 10 saati,\nuyarlama). \"Package:\" satırları Epic tasarım paketidir: ['paket', [[lootId, adet] …], ağırlık], açılışta paketin hepsi verilir\n(ganimet.pick_all; sahip olunan tasarım paketten atlanır). Prometheus ve Laurel'in anahtarının kaynağı yok: takvimleri E8'in\netkinlikleri (prometheus, athena), o güne dek doğmazlar.\nModül kaynakları (uyarlama): ek mağazada satılan, wiki'ye göre bir etkinlikle kazanılan modüller o etkinliğin Battle Pass Box\nsütununa çok düşük ağırlıkla (BP_EK); Battle Pass'i olmayan Chromin Rush ve Eternal Gate'in modülleri o etkinliklerin araçlarına bırakıldı.\nÜreten: tools/kutular.py.",
  "haritalar": {
   "X-2..X-8": "^[123]-[2-8]$",
   "4-X": "^4-\\d$",
@@ -704,77 +704,77 @@
      4.2
     ],
     [
-     "pet_designs_pet-a-elite-blaze",
+     "pet_designs_chimera-red",
      1,
      2.5
     ],
     [
-     "pet_designs_pet-cyborg",
+     "pet_designs_red",
      1,
      2.5
     ],
     [
-     "pet_designs_pet-a-elite-ocean",
+     "pet_designs_mirage-green",
      1,
      2.5
     ],
     [
-     "pet_designs_pet-pusat-ocean",
+     "pet_designs_pet-goliath-x-sandstorm",
      1,
      2.5
     ],
     [
-     "pet_designs_pet-a-elite-sandstorm",
+     "pet_designs_pet-spectrum-poison",
      1,
      2.5
     ],
     [
-     "pet_designs_pet-g-champion-silver",
+     "pet_designs_pet-a-elite-poison",
      1,
      2.5
     ],
     [
-     "pet_designs_mirage-red",
+     "pet_designs_chimera-ocean",
      1,
      2.5
     ],
     [
-     "pet_designs_pet-spectrum-ocean",
+     "pet_designs_pet-spectrum-blaze",
      1,
      2.5
     ],
     [
-     "pet_designs_pet-citadel-phantasm",
+     "pet_designs_chimera-argon",
      1,
      1.75
     ],
     [
-     "pet_designs_pet-sentinel-argon",
+     "pet_designs_pet-diminisher-carbonite",
      1,
      1.75
     ],
     [
-     "pet_designs_pet-cyborg-carbonite",
+     "pet_designs_pet-hammerclaw-poison",
      1,
      1.75
     ],
     [
-     "pet_designs_pet-berserker-lava",
+     "pet_designs_pet-diminisher-phantasm",
      1,
      1.75
     ],
     [
-     "pet_designs_pet-goliath-x-legend",
+     "pet_designs_pet-a-elite-dusklight",
      1,
      1.02
     ],
     [
-     "pet_designs_pet-berserker-legend",
+     "pet_designs_pet-diminisher-legend",
      1,
      0.99
     ],
     [
-     "pet_designs_pet-cyborg-legend",
+     "pet_designs_mirage-legend",
      1,
      0.99
     ]
@@ -884,77 +884,77 @@
      3.6
     ],
     [
-     "pet_designs_pet-a-elite-blaze",
+     "pet_designs_chimera-red",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-cyborg",
+     "pet_designs_red",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-a-elite-ocean",
+     "pet_designs_mirage-green",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-pusat-ocean",
+     "pet_designs_pet-goliath-x-sandstorm",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-a-elite-sandstorm",
+     "pet_designs_pet-spectrum-poison",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-g-champion-silver",
+     "pet_designs_pet-a-elite-poison",
      1,
      3.0
     ],
     [
-     "pet_designs_mirage-red",
+     "pet_designs_chimera-ocean",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-spectrum-ocean",
+     "pet_designs_pet-spectrum-blaze",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-citadel-phantasm",
+     "pet_designs_chimera-argon",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-sentinel-argon",
+     "pet_designs_pet-diminisher-carbonite",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-cyborg-carbonite",
+     "pet_designs_pet-hammerclaw-poison",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-berserker-lava",
+     "pet_designs_pet-diminisher-phantasm",
      1,
      3.0
     ],
     [
-     "pet_designs_pet-goliath-x-legend",
+     "pet_designs_pet-a-elite-dusklight",
      1,
      1.36
     ],
     [
-     "pet_designs_pet-berserker-legend",
+     "pet_designs_pet-diminisher-legend",
      1,
      1.32
     ],
     [
-     "pet_designs_pet-cyborg-legend",
+     "pet_designs_mirage-legend",
      1,
      1.32
     ]
@@ -1722,6 +1722,11 @@
      6
     ],
     [
+     "resource_collectable_quickcoupon",
+     1,
+     1
+    ],
+    [
      "resource_extra-energy",
      30,
      3
@@ -2169,6 +2174,90 @@
      "ship_mimesis_design_mimesis-prometheus",
      1,
      0.3545
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_spectrum_design_spectrum-inferno",
+       1
+      ],
+      [
+       "pet_designs_pet-hammerclaw-inferno",
+       1
+      ],
+      [
+       "drone_designs_drone-inferno",
+       2
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_spectrum_design_spectrum-ocean",
+       1
+      ],
+      [
+       "pet_designs_pet-pusat-ocean",
+       1
+      ],
+      [
+       "drone_designs_phantom-ocean",
+       1
+      ],
+      [
+       "drone_designs_drone-spectrum-ocean",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_goliath-plus_design_goliath-plus-carbonite",
+       1
+      ],
+      [
+       "pet_designs_mirage-carbonite",
+       1
+      ],
+      [
+       "drone_designs_drone-hammerclaw-carbonite",
+       1
+      ],
+      [
+       "drone_designs_drone-cyborg-carbonite",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_diminisher_design_diminisher-lava",
+       1
+      ],
+      [
+       "pet_designs_pet-diminisher-lava",
+       1
+      ],
+      [
+       "drone_designs_drone-a-elite-lava",
+       1
+      ],
+      [
+       "drone_designs_drone-goliath-x-lava",
+       1
+      ]
+     ],
+     0.025
     ]
    ]
   },
@@ -2222,6 +2311,11 @@
      "resource_collectable_permit",
      1,
      6
+    ],
+    [
+     "resource_key_access-dse",
+     1,
+     2
     ],
     [
      "equipment_weapon_laser_lf-5",
@@ -2285,6 +2379,26 @@
     ],
     [
      "equipment_shipupgrade_shd-xhd01",
+     1,
+     2
+    ],
+    [
+     "equipment_shipupgrade_dmg-xv02",
+     1,
+     2
+    ],
+    [
+     "equipment_shipupgrade_spc-xv02",
+     1,
+     2
+    ],
+    [
+     "equipment_shipupgrade_hp-xv02",
+     1,
+     2
+    ],
+    [
+     "equipment_shipupgrade_shd-xv02",
      1,
      2
     ],
@@ -2380,6 +2494,11 @@
      10
     ],
     [
+     "ammunition_laser_spacecup_group-c",
+     1000,
+     10
+    ],
+    [
      "resource_ore_seprom",
      100,
      3
@@ -2420,6 +2539,11 @@
      2
     ],
     [
+     "booster_dmg-b01",
+     10,
+     1.5
+    ],
+    [
      "resource_extra-energy",
      30,
      3
@@ -2447,6 +2571,7 @@
     1200
    ],
    "takvim": [
+    "astral_ascension",
     "galactic_strife",
     "halloween",
     "hitac",
@@ -2455,6 +2580,7 @@
     "mimesis_mutiny",
     "plutus",
     "protegit",
+    "spacecup",
     "world_boss"
    ],
    "defter": "booty_key_battle-pass-key_used",
@@ -2565,6 +2691,26 @@
       "equipment_shipupgrade_shd-xv03",
       1,
       0.5
+     ],
+     [
+      "equipment_shipupgrade_dmg-gp01",
+      1,
+      0.4
+     ],
+     [
+      "equipment_shipupgrade_dmg-kd01",
+      1,
+      0.4
+     ],
+     [
+      "equipment_shipupgrade_hp-d01",
+      1,
+      0.4
+     ],
+     [
+      "equipment_shipupgrade_spc-vp01",
+      1,
+      0.4
      ]
     ],
     "mimesis_mutiny": [
@@ -2657,6 +2803,11 @@
       "equipment_shipupgrade_shd-zpve",
       1,
       1.2
+     ],
+     [
+      "equipment_generator_shield_fs-04",
+      1,
+      0.25
      ]
     ],
     "protegit": [
@@ -2754,6 +2905,16 @@
       "equipment_weapon_laser_am-l",
       1,
       0.2
+     ],
+     [
+      "equipment_shipupgrade_dmg-st01",
+      1,
+      0.4
+     ],
+     [
+      "equipment_shipupgrade_shd-gol01",
+      1,
+      0.4
      ]
     ],
     "world_boss": [
@@ -2965,6 +3126,11 @@
       0.15
      ],
      [
+      "equipment_lens_gl-chron",
+      1,
+      0.15
+     ],
+     [
       "equipment_shipupgrade_dmg-xhd01",
       1,
       1.2
@@ -2983,6 +3149,21 @@
       "equipment_shipupgrade_shd-xhd01",
       1,
       1.2
+     ],
+     [
+      "equipment_shipupgrade_dmg-nos01",
+      1,
+      0.4
+     ],
+     [
+      "equipment_shipupgrade_shd-sen01",
+      1,
+      0.4
+     ],
+     [
+      "equipment_shipupgrade_spc-tar01",
+      1,
+      0.4
      ]
     ],
     "hitac": [
@@ -2990,6 +3171,11 @@
       "ammunition_laser_a-bl",
       800,
       16.6
+     ],
+     [
+      "ammunition_laser_spacecup_group-c",
+      1000,
+      8
      ],
      [
       "resource_extra-energy",
@@ -3067,9 +3253,34 @@
       0.2
      ],
      [
+      "equipment_weapon_laser_lf-5-mf",
+      1,
+      0.1
+     ],
+     [
       "equipment_generator_shield_fs-04",
       1,
       0.9
+     ],
+     [
+      "ship_solaris-plus_design_solaris-plus-epion",
+      1,
+      1
+     ],
+     [
+      "ship_citadel-plus_design_citadel-plus-epion",
+      1,
+      1
+     ],
+     [
+      "ship_solace-plus_design_solace-plus-epion",
+      1,
+      1
+     ],
+     [
+      "equipment_shipupgrade_dmg-a01",
+      1,
+      0.4
      ]
     ],
     "halloween": [
@@ -3077,6 +3288,11 @@
       "ammunition_laser_a-bl",
       800,
       15
+     ],
+     [
+      "ammunition_laser_spacecup_group-a",
+      1000,
+      5
      ],
      [
       "ammunition_laser_sbl-100",
@@ -3096,7 +3312,7 @@
      [
       "resource_booty-key",
       5,
-      17.5
+      16.55
      ],
      [
       "resource_collectable_eternal-fragment",
@@ -3124,6 +3340,11 @@
       0.4
      ],
      [
+      "ammunition_specialammo_emote_alien-cry",
+      20,
+      0.5
+     ],
+     [
       "ammunition_specialammo_emote_pumpkin-smile",
       20,
       1.25
@@ -3144,29 +3365,59 @@
       1.25
      ],
      [
-      "equipment_shipupgrade_dmg-xh01",
+      "equipment_shipupgrade_dmg-xv03",
       1,
-      1.2
+      0.5
      ],
      [
-      "equipment_shipupgrade_spc-xh01",
+      "equipment_shipupgrade_spc-xv03",
       1,
-      1.2
+      0.5
      ],
      [
-      "equipment_shipupgrade_hp-xh01",
+      "equipment_shipupgrade_hp-xv03",
       1,
-      1.2
+      0.5
      ],
      [
-      "equipment_shipupgrade_shd-xh01",
+      "equipment_shipupgrade_shd-xv03",
       1,
-      1.2
+      0.5
+     ],
+     [
+      "equipment_shipupgrade_dmg-zpvp02",
+      1,
+      1
+     ],
+     [
+      "equipment_shipupgrade_spc-zpvp02",
+      1,
+      1
+     ],
+     [
+      "equipment_shipupgrade_hp-zpvp02",
+      1,
+      1
+     ],
+     [
+      "equipment_shipupgrade_shd-zpvp02",
+      1,
+      1
+     ],
+     [
+      "equipment_weapon_laser_pr-l",
+      1,
+      0.15
      ],
      [
       "equipment_weapon_laser_am-l",
       1,
-      0.5
+      0.15
+     ],
+     [
+      "equipment_weapon_laser_os-l",
+      1,
+      0.15
      ]
     ],
     "labirent": [
@@ -3251,6 +3502,11 @@
       1
      ],
      [
+      "equipment_shipupgrade_hp-xu02",
+      1,
+      1
+     ],
+     [
       "equipment_shipupgrade_shd-xu02",
       1,
       1
@@ -3266,9 +3522,34 @@
       1
      ],
      [
+      "equipment_shipupgrade_hp-xu03",
+      1,
+      1
+     ],
+     [
       "equipment_shipupgrade_shd-xu03",
       1,
       1
+     ],
+     [
+      "equipment_shipupgrade_dmg-xw01",
+      1,
+      0.1
+     ],
+     [
+      "equipment_shipupgrade_hp-xw01",
+      1,
+      0.1
+     ],
+     [
+      "equipment_shipupgrade_shd-xw01",
+      1,
+      0.1
+     ],
+     [
+      "equipment_shipupgrade_spc-xw01",
+      1,
+      0.1
      ]
     ],
     "immortal_union": [
@@ -3348,12 +3629,22 @@
       0.4
      ],
      [
+      "ammunition_specialammo_emote_alien-cry",
+      20,
+      0.5
+     ],
+     [
       "ammunition_specialammo_emote_pumpkin-smile",
       20,
       0.5
      ],
      [
       "ammunition_specialammo_spray_watchingyou",
+      20,
+      0.5
+     ],
+     [
+      "ammunition_specialammo_spray_ko",
       20,
       0.5
      ],
@@ -3396,6 +3687,250 @@
       "equipment_shipupgrade_shd-xv02",
       1,
       1.2
+     ],
+     [
+      "equipment_shipupgrade_dmg-sdz01",
+      1,
+      0.4
+     ]
+    ],
+    "astral_ascension": [
+     [
+      "ammunition_laser_ucb-100",
+      500,
+      5.0
+     ],
+     [
+      "ammunition_laser_a-bl",
+      800,
+      5.0
+     ],
+     [
+      "ammunition_laser_spacecup_group-c",
+      1000,
+      5.0
+     ],
+     [
+      "resource_extra-energy",
+      50,
+      15.0
+     ],
+     [
+      "resource_logfile",
+      5,
+      18.0
+     ],
+     [
+      "resource_booty-key",
+      5,
+      18.0
+     ],
+     [
+      "resource_collectable_eternal-fragment",
+      100,
+      5.0
+     ],
+     [
+      "resource_collectable_polychromium",
+      100,
+      6.8
+     ],
+     [
+      "resource_collectable_scrapium",
+      50,
+      6.7
+     ],
+     [
+      "resource_collectable_mucosum",
+      100,
+      6.7
+     ],
+     [
+      "resource_collectable_bifenon",
+      200,
+      0.5
+     ],
+     [
+      "resource_collectable_tetrathrin",
+      200,
+      0.5
+     ],
+     [
+      "resource_collectable_kyhalon",
+      20,
+      0.5
+     ],
+     [
+      "ammunition_specialammo_emote_alien-cry",
+      20,
+      0.5
+     ],
+     [
+      "ammunition_specialammo_emote_alien-sorry",
+      20,
+      0.5
+     ],
+     [
+      "ammunition_specialammo_emote_alien-cool",
+      20,
+      0.5
+     ],
+     [
+      "ammunition_specialammo_spray_watchingyou",
+      20,
+      0.5
+     ],
+     [
+      "ammunition_specialammo_spray_like",
+      20,
+      0.5
+     ],
+     [
+      "ammunition_specialammo_spray_ko",
+      20,
+      0.5
+     ],
+     [
+      "equipment_shipupgrade_dmg-xa01",
+      1,
+      1.25
+     ],
+     [
+      "equipment_shipupgrade_spc-xa01",
+      1,
+      1.25
+     ],
+     [
+      "equipment_shipupgrade_hp-xa01",
+      1,
+      1.25
+     ],
+     [
+      "equipment_shipupgrade_shd-xa01",
+      1,
+      1.25
+     ]
+    ],
+    "spacecup": [
+     [
+      "ammunition_laser_a-bl",
+      800,
+      15
+     ],
+     [
+      "ammunition_laser_spacecup_group-a",
+      1000,
+      0.625
+     ],
+     [
+      "ammunition_laser_spacecup_group-b",
+      1000,
+      0.625
+     ],
+     [
+      "ammunition_laser_spacecup_group-c",
+      1000,
+      0.625
+     ],
+     [
+      "ammunition_laser_spacecup_group-d",
+      1000,
+      0.625
+     ],
+     [
+      "ammunition_laser_spacecup_group-e",
+      1000,
+      0.625
+     ],
+     [
+      "ammunition_laser_spacecup_group-f",
+      1000,
+      0.625
+     ],
+     [
+      "ammunition_laser_spacecup_group-g",
+      1000,
+      0.625
+     ],
+     [
+      "ammunition_laser_spacecup_group-h",
+      1000,
+      0.625
+     ],
+     [
+      "resource_extra-energy",
+      50,
+      18
+     ],
+     [
+      "resource_logfile",
+      5,
+      18
+     ],
+     [
+      "resource_booty-key",
+      5,
+      18
+     ],
+     [
+      "resource_collectable_eternal-fragment",
+      100,
+      7
+     ],
+     [
+      "resource_collectable_scrapium",
+      50,
+      6.7
+     ],
+     [
+      "resource_collectable_scrapium",
+      70,
+      5.5
+     ],
+     [
+      "equipment_shipupgrade_dmg-xof02",
+      1,
+      1.2
+     ],
+     [
+      "equipment_shipupgrade_spc-xof02",
+      1,
+      1.2
+     ],
+     [
+      "equipment_shipupgrade_hp-xof02",
+      1,
+      1.2
+     ],
+     [
+      "equipment_shipupgrade_shd-xof02",
+      1,
+      1.2
+     ],
+     [
+      "ship_cyborg_design_cyborg-firestar",
+      1,
+      0.4
+     ],
+     [
+      "ship_cyborg_design_cyborg-starscream",
+      1,
+      0.4
+     ],
+     [
+      "ship_cyborg_design_cyborg-celestial",
+      1,
+      0.4
+     ],
+     [
+      "ship_cyborg_design_cyborg-maelstrom",
+      1,
+      0.4
+     ],
+     [
+      "ship_cyborg_design_cyborg-sunstorm",
+      1,
+      0.4
      ]
     ]
    }
@@ -3514,6 +4049,11 @@
      2.808
     ],
     [
+     "pet_designs_mirage-green",
+     1,
+     2.808
+    ],
+    [
      "pet_designs_pet-pusat-ocean",
      1,
      2.808
@@ -3572,9 +4112,89 @@
      "ship_goliath-plus_design_goliath-plus-empyrian",
      1,
      1.2999
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_g-champion_design_g-champion-argon",
+       1
+      ],
+      [
+       "pet_designs_pet-diminisher-argon",
+       1
+      ],
+      [
+       "drone_designs_drone-sentinel-argon",
+       1
+      ],
+      [
+       "drone_designs_drone-diminisher-argon",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_sentinel_design_sentinel-lava",
+       1
+      ],
+      [
+       "pet_designs_pet-cyborg-lava",
+       1
+      ],
+      [
+       "drone_designs_drone-inferno",
+       2
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_berserker_design_berserker-sandstorm",
+       1
+      ],
+      [
+       "drone_designs_drone-cyborg-sandstorm",
+       2
+      ],
+      [
+       "pet_designs_mirage-orange",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_cyborg_design_cyborg-carbonite",
+       1
+      ],
+      [
+       "pet_designs_pet-diminisher-carbonite",
+       1
+      ],
+      [
+       "drone_designs_drone-enigma-carbonite",
+       1
+      ],
+      [
+       "drone_designs_drone-cyborg-carbonite",
+       1
+      ]
+     ],
+     0.025
     ]
    ],
-   "_kaynak": "wiki: aşama ve eşya olasılıkları (paketler atlandı)"
+   "_kaynak": "wiki: aşama ve eşya olasılıkları, Epic tasarım paketleri"
   },
   "PROSPEROUS_BOOTY_BOX": {
    "ad": "Prosperous Box",
@@ -3705,6 +4325,11 @@
      3.24
     ],
     [
+     "drone_designs_phantom-red",
+     1,
+     3.24
+    ],
+    [
      "drone_designs_phantom-poison",
      1,
      3.24
@@ -3726,6 +4351,11 @@
     ],
     [
      "ship_c-elite_design_c-elite-frost",
+     1,
+     2.4
+    ],
+    [
+     "ship_berserker_design_berserker-lava",
      1,
      2.4
     ],
@@ -3768,9 +4398,94 @@
      "ship_pusat-plus_design_pusat-plus-prosperous",
      1,
      0.39
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_venom_design_venom-argon",
+       1
+      ],
+      [
+       "pet_designs_pet-berserker-argon",
+       1
+      ],
+      [
+       "drone_designs_enigma-argon",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_orcus_design_orcus-inferno",
+       1
+      ],
+      [
+       "ship_sentinel_design_sentinel-inferno",
+       1
+      ],
+      [
+       "drone_designs_drone-inferno",
+       1
+      ],
+      [
+       "pet_designs_pet-inferno",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "ship_cyborg_design_cyborg-carbonite",
+       1
+      ],
+      [
+       "drone_designs_drone-goliath-x-carbonite",
+       1
+      ],
+      [
+       "drone_designs_drone-cyborg-carbonite",
+       1
+      ],
+      [
+       "pet_designs_mirage-carbonite",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "paket",
+     [
+      [
+       "drone_designs_skull-red",
+       1
+      ],
+      [
+       "drone_designs_reaper-red",
+       1
+      ],
+      [
+       "drone_designs_drone-spectrum-blaze",
+       1
+      ]
+     ],
+     0.025
+    ],
+    [
+     "equipment_shipupgrade_dmg-ven01",
+     1,
+     0.4
     ]
    ],
-   "_kaynak": "wiki: aşama ve eşya olasılıkları (paketler atlandı)"
+   "_kaynak": "wiki: aşama ve eşya olasılıkları, Epic tasarım paketleri; DMG-VEN01 (wiki: Plague Mutation ödülü, Prosperous'a eşlenir) %0,4 ağırlıkla (uyarlama)"
   },
   "LUCENT_ALIEN_EGG_BOOTY_BOX": {
    "ad": "Lucent Egg",
@@ -4008,6 +4723,11 @@
     ],
     [
      "drone_designs_drone-eostra",
+     1,
+     0.5
+    ],
+    [
+     "drone_designs_drone-champion-eostrana",
      1,
      0.5
     ],

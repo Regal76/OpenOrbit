@@ -60,7 +60,7 @@
    },
    "depo": {
     "ham": 1194728,
-    "prometid_duranium": 59763,
+    "prometid_duranium": 59736,
     "promerium": 5974,
     "seprom": 543
    }
@@ -124,7 +124,7 @@
    },
    "depo": {
     "ham": 4018569,
-    "prometid_duranium": 200925,
+    "prometid_duranium": 200928,
     "promerium": 20093,
     "seprom": 1827
    }
@@ -285,7 +285,7 @@
    "depo": {
     "ham": 16610810,
     "prometid_duranium": 830540,
-    "promerium": 80054,
+    "promerium": 83054,
     "seprom": 7550
    }
   },
@@ -379,7 +379,7 @@
     "kaynak": 136688
    },
    {
-    "sure_sn": 54900,
+    "sure_sn": 57060,
     "uridyum": 11114,
     "kredi": 122257,
     "kaynak": 197642
@@ -392,7 +392,7 @@
    },
    {
     "sure_sn": 71040,
-    "uridyum": 13595,
+    "uridyum": 13959,
     "kredi": 153550,
     "kaynak": 374123
    },
@@ -466,7 +466,7 @@
    },
    {
     "sure_sn": 19020,
-    "uridyum": 2825,
+    "uridyum": 2828,
     "kredi": 31113,
     "kaynak": 6400
    },
@@ -474,7 +474,7 @@
     "sure_sn": 24840,
     "uridyum": 3738,
     "kredi": 41122,
-    "kaynak": 13978
+    "kaynak": 13975
    },
    {
     "sure_sn": 30900,
@@ -496,12 +496,12 @@
    },
    {
     "sure_sn": 50280,
-    "uridyum": 8894,
+    "uridyum": 7794,
     "kredi": 85737,
     "kaynak": 109350
    },
    {
-    "sure_sn": 54900,
+    "sure_sn": 57060,
     "uridyum": 8891,
     "kredi": 97805,
     "kaynak": 158114
@@ -551,8 +551,8 @@
    {
     "sure_sn": 115500,
     "uridyum": 18538,
-    "kredi": 203914,
-    "kaynak": 1235154
+    "kredi": 203917,
+    "kaynak": 1237154
    },
    {
     "sure_sn": 123240,
@@ -623,7 +623,7 @@
     "kaynak": 164025
    },
    {
-    "sure_sn": 54900,
+    "sure_sn": 57060,
     "uridyum": 13337,
     "kredi": 146708,
     "kaynak": 237171
@@ -685,7 +685,7 @@
    {
     "sure_sn": 131100,
     "uridyum": 31721,
-    "kredi": 248933,
+    "kredi": 348933,
     "kaynak": 2683282
    }
   ],
@@ -733,10 +733,10 @@
     "kaynak": 68062
    },
    {
-    "sure_sn": 130980,
-    "uridyum": 16818,
-    "kredi": 184997,
-    "kaynak": 181019
+    "sure_sn": 72480,
+    "uridyum": 10091,
+    "kredi": 110998,
+    "kaynak": 108612
    },
    {
     "sure_sn": 83820,
@@ -802,13 +802,13 @@
     "sure_sn": 205440,
     "uridyum": 29751,
     "kredi": 327262,
-    "kaynak": 2242237
+    "kaynak": 2242327
    },
    {
     "sure_sn": 218460,
     "uridyum": 31721,
     "kredi": 348933,
-    "kaynak": 2683382
+    "kaynak": 2683282
    }
   ],
   "promeriumRefinery": [
@@ -855,14 +855,14 @@
     "kaynak": 113437
    },
    {
-    "sure_sn": 3600,
-    "uridyum": 11738,
-    "kredi": 129119,
-    "kaynak": 66136
+    "sure_sn": 130980,
+    "uridyum": 16818,
+    "kredi": 184997,
+    "kaynak": 181019
    },
    {
     "sure_sn": 150840,
-    "uridyum": 19586,
+    "uridyum": 19486,
     "kredi": 214341,
     "kaynak": 273375
    },
@@ -972,7 +972,7 @@
    },
    {
     "sure_sn": 223140,
-    "uridyum": 28645,
+    "uridyum": 28465,
     "kredi": 313116,
     "kaynak": 226873
    },
@@ -1014,7 +1014,7 @@
    },
    {
     "sure_sn": 512640,
-    "uridyum": 67102,
+    "uridyum": 67702,
     "kredi": 744720,
     "kaynak": 2566777
    },
@@ -1056,6 +1056,7 @@
    }
   ]
  },
+ "_yazim_duzeltmeleri": "darkorbitwiki Skylab tablolarındaki yazım hataları tools/skylab.py (WIKI_YAZIM_DUZELTMELERI, DEPO_DUZELTMELERI) ile düzeltilir: fandom Skylab modül tabloları aynı hücrelerde düzeltilmiş değeri veriyor ve sayı dizisi düzgün; depo = 48 x saatlik üretim.",
  "moduller": {
   "BASE_MODULE": {
    "grup": "basicSolarStorage",

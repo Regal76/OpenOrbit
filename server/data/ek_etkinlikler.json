@@ -8,10 +8,11 @@
   "olasilik": 0.4,
   "omur_sn": 300,
   "kapilar": {
-   "delta": 27778400,
+   "delta": 29674400,
    "epsilon": 46420000,
-   "zeta": 55537600,
+   "zeta": 55589600,
    "kappa": 57070000,
+   "streuner": 64050000,
    "kronos": 93420000
   },
   "kutu_esikleri": [
@@ -28,8 +29,8 @@
     600
    ]
   ],
-  "_kaynak": "hitac_chromin.json chromin: 160.000 sınırı, etkinlik sonunda 1:7 onur, kapılar (Kappa, Epsilon, Zeta, Delta, Kuiper, Kronos), kutu türleri CHROMIN_BOX_1..3, kapı başına ~2.700 (düşük güven)",
-  "_uyarlama": "Kuiper kapısı sunucuda yok. Uzaylı başına miktar kapı toplamının (2.700) uzaylının gücüne (can + kalkan) oranı; uzaylıların %40'ı kutu düşürür (miktar ona göre). Sınırı aşan Chromin başına 10 kredi (oranı kaynakta yok). Kutunun büyüklüğü miktara göre (150, 600 eşikleri)."
+  "_kaynak": "hitac_chromin.json chromin: 160.000 sınırı, etkinlik sonunda 1:7 onur, kapılar (Kappa, Epsilon, Zeta, Delta, Kuiper, Kronos; kapilar.json streuner = Kuiper Gate), kutu türleri CHROMIN_BOX_1..3, altı kapı için de kapı başına 2.700 (darkorbitwiki chromin-rush, 2026-10-01)",
+  "_uyarlama": "Uzaylı başına miktar kapı toplamının (2.700) uzaylının gücüne (can + kalkan) oranı; uzaylıların %40'ı kutu düşürür (miktar ona göre). Sınırı aşan Chromin başına 10 kredi (oranı kaynakta yok). Kutunun büyüklüğü miktara göre (150, 600 eşikleri)."
  },
  "hitac_piyango": {
   "kelime": "HITAC",
@@ -49,16 +50,221 @@
   "harf_ek": {
    "etk_hitac_underling_": [
     "HITAC_MINION",
-    0.005
+    0.005,
+    [
+     [
+      "ammunition_laser_mcb-50",
+      [
+       100,
+       300
+      ]
+     ],
+     [
+      "ammunition_laser_job-100",
+      [
+       100,
+       300
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2026",
+      [
+       20,
+       60
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_hstrm-01",
+      [
+       20,
+       60
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_eco-10",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_pld-8",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "resource_pet-fuel",
+      [
+       50,
+       150
+      ]
+     ]
+    ]
    ],
    "etk_hitac_underboss_": [
     "HITAC_UNDERBOSS",
-    0.18
+    0.18,
+    [
+     [
+      "ammunition_laser_ucb-100",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_laser_rsb-75",
+      [
+       500,
+       1500
+      ]
+     ],
+     [
+      "ammunition_rocket_plt-2021",
+      [
+       200,
+       600
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_sar-02",
+      [
+       100,
+       300
+      ]
+     ],
+     [
+      "ammunition_specialammo_dcr-250",
+      [
+       10,
+       30
+      ]
+     ],
+     [
+      "ammunition_specialammo_sr-5",
+      [
+       20,
+       60
+      ]
+     ],
+     [
+      "ammunition_rocketlauncher_ubr-100",
+      [
+       50,
+       150
+      ]
+     ],
+     [
+      "resource_extra-energy",
+      [
+       5,
+       15
+      ]
+     ],
+     [
+      "resource_logfile",
+      [
+       1,
+       3
+      ]
+     ],
+     [
+      "currency_uridium",
+      [
+       500,
+       2000
+      ]
+     ]
+    ]
    ]
   },
   "ana_gemi_kutusu": {
    "tur": "HITAC",
-   "kapsul": 1
+   "kapsul": 1,
+   "kesin": [
+    [
+     "ammunition_mine_acm-01",
+     50
+    ],
+    [
+     "ammunition_rocket_plt-3030",
+     1000
+    ]
+   ],
+   "sans": [
+    [
+     "tech_shield-backup2",
+     1,
+     0.05
+    ],
+    [
+     "tech_battle-repair-bot2",
+     1,
+     0.05
+    ],
+    [
+     "tech_explosive-charging-blob",
+     1,
+     0.05
+    ],
+    [
+     "tech_npc-nuke",
+     1,
+     0.05
+    ]
+   ]
+  },
+  "bitis_cekilisi": {
+   "paket": 3,
+   "havuz": [
+    [
+     "equipment_generator_shield_fs-04",
+     1
+    ],
+    [
+     "equipment_generator_shield_sg3n-b03",
+     1
+    ],
+    [
+     "equipment_shipupgrade_dmg-xof02",
+     1
+    ],
+    [
+     "equipment_shipupgrade_hp-xof02",
+     1
+    ],
+    [
+     "equipment_shipupgrade_shd-xof02",
+     1
+    ],
+    [
+     "equipment_shipupgrade_spc-xof02",
+     1
+    ]
+   ]
   },
   "donusturucu": [
    [
@@ -263,7 +469,7 @@
    ]
   ],
   "_kaynak": "hitac_chromin.json: HITAC 5 harf, her zaman eksik harf; Minion kutusu %50 harf ve 300 MCB-50; Underling %0,5, Underboss %18; ana gemi kutusundan 1 kapsül; dönüştürücü 2024-2026 tablosu (40 paket, toplam %100). Harf olasılıkları: {\"Hitac-Minion cargo box (classic Hitac event 2012-2015)\": 50.0, \"HITAC MINION box (Hitac Assault, Hitac 2.0 / 2.5 motherships)\": null, \"Easy Hitac Minion box (low-level version)\": null, \"Hitac Underling (X-2..X-8)\": 0.5, \"Hitac Underboss (X-2..X-8)\": 18.0, \"HITAC MOTHERSHIP box (darkorbitwiki)\": null}",
-  "_uyarlama": "Kutu türleri istemcinin adları (HITAC_MINION, HITAC_UNDERBOSS, HITAC). Underling ve Underboss'un harfi kendi kutusunda (yalnız harf). Kapsülün uridyum fiyatı mağaza dengesinde."
+  "_uyarlama": "Kutu türleri istemcinin adları (HITAC_MINION, HITAC_UNDERBOSS, HITAC). Underling ve Underboss her öldüğünde kutu düşer: harf wiki şansıyla, yanında içerikten eşit ağırlıkla bir satır (kalemler darkorbitwiki hitac-assault; miktarlar ve şans kaynakta yok: uyarlama). Ana gemi kutusu kapsülün yanında 50 ACM-1 ve 1.000 PLT-3030 (wiki) verir; Backup Shield 2, Battle Repair Bot 2, Explosive Charging Blob ve NPC Nuke her biri %5 (şans kaynakta yok: uyarlama). bitis_cekilisi: wiki \"end-of-event lottery (used capsules)\", ödül sayısı örnek başına 3 paket; tek oyunculuda çekilişin tek katılımcısı olarak Capsule Converter'da harcanan her kapsül bir hak, her hak havuzdan en çok 3 sahip olunmayan ödül (olasılık kaynakta yok: eşit). Kapsülün uridyum fiyatı mağaza dengesinde."
  },
  "unvan_avi": {
   "etkinlik": "unvan_avi",
@@ -578,8 +784,416 @@
    454,
    455
   ],
-  "_kaynak": "diger_etkinlikler.json fever: saatler (hafta içi 19-21, hafta sonu 13-15 ve 19-21), Galactic Strife 09-2020 takımı (istemcinin metinleriyle aynı), ölünce üste ya da en yakın portalda ücretsiz onarım",
-  "_uyarlama": "Asıl oyunda PvP haritalarında: tek oyunculuda Hitac'ın normal haritaları (X-2..X-8), Black Light ve Gauntlet of Plutus; oyuncu gemisine hasar yerine uzaylı hasarı."
+  "_kaynak": "diger_etkinlikler.json fever: saatler (hafta içi 19-21, hafta sonu 13-15 ve 19-21), Galactic Strife 09-2020 takımı (istemcinin metinleriyle aynı), ölünce üste ya da en yakın portalda ücretsiz onarım; Black Light Fever setleri (setler): darkorbitwiki eternal-black-light (17-23 Eylül ve 25 Eylül - 1 Ekim 2026)",
+  "_uyarlama": "Asıl oyunda PvP haritalarında: tek oyunculuda Hitac'ın normal haritaları (X-2..X-8), Black Light ve Gauntlet of Plutus; oyuncu gemisine hasar yerine uzaylı hasarı. Black Light haftaları (fever_black_light takvimi) kendi setiyle ve yalnız BL haritalarında; yılda bir (52 haftada bir) tekrarlanır.",
+  "setler": [
+   {
+    "bas": "2026-09-17",
+    "bit": "2026-09-23",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Citadel Plus",
+       "Cyborg",
+       "Diminisher",
+       "Hecate Plus",
+       "Mimesis",
+       "Spearhead Plus",
+       "Tempest"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 15,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ]
+   },
+   {
+    "bas": "2026-09-25",
+    "bit": "2026-10-01",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ]
+   }
+  ]
  },
  "fiesta": {
   "zorluklar": [
@@ -5018,7 +5632,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5036,7 +5656,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        }
       ],
@@ -5072,7 +5698,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5090,7 +5722,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        }
       ],
@@ -5126,7 +5764,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5144,7 +5788,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5162,7 +5812,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5180,7 +5837,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5226,7 +5890,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5244,7 +5914,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5262,7 +5938,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5280,7 +5963,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5326,7 +6016,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5344,7 +6040,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5362,7 +6064,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5380,7 +6089,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5426,7 +6142,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5444,7 +6166,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5462,7 +6190,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5480,7 +6215,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5526,7 +6268,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5544,7 +6292,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5562,7 +6316,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5580,7 +6341,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5626,7 +6394,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5644,7 +6418,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5662,7 +6442,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5680,7 +6467,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5726,7 +6520,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5744,7 +6544,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5762,7 +6568,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5780,7 +6593,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5826,7 +6646,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5844,7 +6670,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5862,7 +6694,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5880,7 +6719,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -5926,7 +6772,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5944,7 +6796,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -5962,7 +6820,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -5980,7 +6845,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -6026,7 +6898,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6044,7 +6922,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6062,7 +6946,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -6080,7 +6971,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -6126,7 +7024,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6144,7 +7048,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6162,7 +7072,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -6180,7 +7097,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -6226,7 +7150,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6244,7 +7174,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6262,7 +7198,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -6280,7 +7223,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -6326,7 +7276,13 @@
          "kredi": 2074,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6344,7 +7300,13 @@
          "kredi": 704,
          "uridyum": 3
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6362,7 +7324,13 @@
          "kredi": 1760,
          "uridyum": 5
         },
-        "kargo": {},
+        "kargo": {
+         "0": 33,
+         "2": 33,
+         "1": 33,
+         "4": 4,
+         "5": 4
+        },
         "adet": 1
        },
        {
@@ -6380,7 +7348,14 @@
          "kredi": 13824,
          "uridyum": 6
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -6398,7 +7373,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        },
        {
@@ -6416,7 +7398,14 @@
          "kredi": 14080,
          "uridyum": 7
         },
-        "kargo": {},
+        "kargo": {
+         "0": 34,
+         "2": 34,
+         "1": 34,
+         "4": 5,
+         "5": 5,
+         "6": 1
+        },
         "adet": 1
        }
       ],
@@ -7831,7 +8820,9 @@
         "condition": {
          "_": "QuestConditionModule",
          "id": 79500301,
-         "matches": [],
+         "matches": [
+          "0"
+         ],
          "type": 9,
          "displayType": 9,
          "targetValue": 3600000,
@@ -9125,8 +10116,12 @@
    "79",
    "111"
   ],
-  "_kaynak": "diger_etkinlikler.json infiltration: 10 dakika, gizli komandolar (ateş etmez), vurulunca görünür, olağan uzaylıdan fazla ödül, X-1'de değil, akşam 19-22 turları, Şükran Günü 24 Kasım - 5 Aralık",
-  "_uyarlama": "Takım 6 uzaylı (kaynak yok), ödül 2x (kaynaklar 2x/4x), tur arası 2 dk; türler Saimon, Mordon, Sibelonit, Kristallin, Protegit, Kristallon, Interceptor (kaynaktaki örnekler); takım oyuncunun firmasının haritasında."
+  "gizli_patron": {
+   "tur": "etk_sizma_boss_kristallon",
+   "olasilik": 0.25
+  },
+  "_kaynak": "diger_etkinlikler.json infiltration: 10 dakika, gizli komandolar (ateş etmez), vurulunca görünür, olağan uzaylıdan fazla ödül, X-1'de değil, akşam 19-22 turları, Şükran Günü 24 Kasım - 5 Aralık; gizli Boss Kristallon (bulunup yok edilince Uber Kristallon'un ganimetini verir; fandom Infiltration)",
+  "_uyarlama": "Takım 6 uzaylı (kaynak yok), ödül 2x (kaynaklar 2x/4x), tur arası 2 dk; türler Saimon, Mordon, Sibelonit, Kristallin, Protegit, Kristallon, Interceptor (kaynaktaki örnekler); takım oyuncunun firmasının haritasında. Gizli Boss Kristallon (npc.json etk_sizma_boss_kristallon) turun %25'inde bir komandonun yerine gelir (kaynakta olasılık yok)."
  },
  "istila": {
   "kapilar": {
@@ -10428,10 +11423,18 @@
          "kredi": 13107200,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 3200000,
+        "kalkan": 2400000,
         "hasar": 10000
        },
        {
@@ -10446,7 +11449,15 @@
          "kredi": 6000000,
          "uridyum": 512
         },
-        "kargo": {},
+        "kargo": {
+         "0": 1200,
+         "1": 1200,
+         "2": 1200,
+         "4": 512,
+         "5": 512,
+         "6": 64,
+         "3": 256
+        },
         "adet": 1,
         "hp": 1650000,
         "kalkan": 1200000,
@@ -10492,10 +11503,18 @@
          "kredi": 13107200,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 3200000,
+        "kalkan": 2400000,
         "hasar": 10000
        },
        {
@@ -10510,7 +11529,15 @@
          "kredi": 6000000,
          "uridyum": 512
         },
-        "kargo": {},
+        "kargo": {
+         "0": 1200,
+         "1": 1200,
+         "2": 1200,
+         "4": 512,
+         "5": 512,
+         "6": 64,
+         "3": 256
+        },
         "adet": 1,
         "hp": 1650000,
         "kalkan": 1200000,
@@ -11849,10 +12876,18 @@
          "kredi": 13107200,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 3200000,
+        "kalkan": 2400000,
         "hasar": 10000
        },
        {
@@ -11867,7 +12902,15 @@
          "kredi": 6000000,
          "uridyum": 512
         },
-        "kargo": {},
+        "kargo": {
+         "0": 1200,
+         "1": 1200,
+         "2": 1200,
+         "4": 512,
+         "5": 512,
+         "6": 64,
+         "3": 256
+        },
         "adet": 1,
         "hp": 1650000,
         "kalkan": 1200000,
@@ -11913,10 +12956,18 @@
          "kredi": 13107200,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 3200000,
+        "kalkan": 2400000,
         "hasar": 10000
        },
        {
@@ -11931,7 +12982,15 @@
          "kredi": 6000000,
          "uridyum": 512
         },
-        "kargo": {},
+        "kargo": {
+         "0": 1200,
+         "1": 1200,
+         "2": 1200,
+         "4": 512,
+         "5": 512,
+         "6": 64,
+         "3": 256
+        },
         "adet": 1,
         "hp": 1650000,
         "kalkan": 1200000,
@@ -13270,10 +14329,18 @@
          "kredi": 13107200,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 3200000,
+        "kalkan": 2400000,
         "hasar": 10000
        },
        {
@@ -13288,7 +14355,15 @@
          "kredi": 6000000,
          "uridyum": 512
         },
-        "kargo": {},
+        "kargo": {
+         "0": 1200,
+         "1": 1200,
+         "2": 1200,
+         "4": 512,
+         "5": 512,
+         "6": 64,
+         "3": 256
+        },
         "adet": 1,
         "hp": 1650000,
         "kalkan": 1200000,
@@ -13334,10 +14409,18 @@
          "kredi": 13107200,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 3200000,
+        "kalkan": 2400000,
         "hasar": 10000
        },
        {
@@ -13352,7 +14435,15 @@
          "kredi": 6000000,
          "uridyum": 512
         },
-        "kargo": {},
+        "kargo": {
+         "0": 1200,
+         "1": 1200,
+         "2": 1200,
+         "4": 512,
+         "5": 512,
+         "6": 64,
+         "3": 256
+        },
         "adet": 1,
         "hp": 1650000,
         "kalkan": 1200000,
@@ -14691,10 +15782,18 @@
          "kredi": 26214400,
          "uridyum": 4096
         },
-        "kargo": {},
+        "kargo": {
+         "0": 9600,
+         "1": 9600,
+         "2": 9600,
+         "4": 4096,
+         "5": 4096,
+         "6": 512,
+         "3": 2048
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 10000000,
+        "kalkan": 6000000,
         "hasar": 30000
        },
        {
@@ -14709,7 +15808,15 @@
          "kredi": 12000000,
          "uridyum": 1024
         },
-        "kargo": {},
+        "kargo": {
+         "0": 2400,
+         "1": 2400,
+         "2": 2400,
+         "4": 1024,
+         "5": 1024,
+         "6": 128,
+         "3": 512
+        },
         "adet": 1,
         "hp": 3300000,
         "kalkan": 2400000,
@@ -14755,10 +15862,18 @@
          "kredi": 26214400,
          "uridyum": 4096
         },
-        "kargo": {},
+        "kargo": {
+         "0": 9600,
+         "1": 9600,
+         "2": 9600,
+         "4": 4096,
+         "5": 4096,
+         "6": 512,
+         "3": 2048
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 10000000,
+        "kalkan": 6000000,
         "hasar": 30000
        },
        {
@@ -14773,7 +15888,15 @@
          "kredi": 12000000,
          "uridyum": 1024
         },
-        "kargo": {},
+        "kargo": {
+         "0": 2400,
+         "1": 2400,
+         "2": 2400,
+         "4": 1024,
+         "5": 1024,
+         "6": 128,
+         "3": 512
+        },
         "adet": 1,
         "hp": 3300000,
         "kalkan": 2400000,
@@ -16112,10 +17235,18 @@
          "kredi": 26214400,
          "uridyum": 4096
         },
-        "kargo": {},
+        "kargo": {
+         "0": 9600,
+         "1": 9600,
+         "2": 9600,
+         "4": 4096,
+         "5": 4096,
+         "6": 512,
+         "3": 2048
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 10000000,
+        "kalkan": 6000000,
         "hasar": 30000
        },
        {
@@ -16130,7 +17261,15 @@
          "kredi": 12000000,
          "uridyum": 1024
         },
-        "kargo": {},
+        "kargo": {
+         "0": 2400,
+         "1": 2400,
+         "2": 2400,
+         "4": 1024,
+         "5": 1024,
+         "6": 128,
+         "3": 512
+        },
         "adet": 1,
         "hp": 3300000,
         "kalkan": 2400000,
@@ -16176,10 +17315,18 @@
          "kredi": 26214400,
          "uridyum": 4096
         },
-        "kargo": {},
+        "kargo": {
+         "0": 9600,
+         "1": 9600,
+         "2": 9600,
+         "4": 4096,
+         "5": 4096,
+         "6": 512,
+         "3": 2048
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 10000000,
+        "kalkan": 6000000,
         "hasar": 30000
        },
        {
@@ -16194,7 +17341,15 @@
          "kredi": 12000000,
          "uridyum": 1024
         },
-        "kargo": {},
+        "kargo": {
+         "0": 2400,
+         "1": 2400,
+         "2": 2400,
+         "4": 1024,
+         "5": 1024,
+         "6": 128,
+         "3": 512
+        },
         "adet": 1,
         "hp": 3300000,
         "kalkan": 2400000,
@@ -17533,10 +18688,18 @@
          "kredi": 26214400,
          "uridyum": 4096
         },
-        "kargo": {},
+        "kargo": {
+         "0": 9600,
+         "1": 9600,
+         "2": 9600,
+         "4": 4096,
+         "5": 4096,
+         "6": 512,
+         "3": 2048
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 10000000,
+        "kalkan": 6000000,
         "hasar": 30000
        },
        {
@@ -17551,7 +18714,15 @@
          "kredi": 12000000,
          "uridyum": 1024
         },
-        "kargo": {},
+        "kargo": {
+         "0": 2400,
+         "1": 2400,
+         "2": 2400,
+         "4": 1024,
+         "5": 1024,
+         "6": 128,
+         "3": 512
+        },
         "adet": 1,
         "hp": 3300000,
         "kalkan": 2400000,
@@ -17597,10 +18768,18 @@
          "kredi": 26214400,
          "uridyum": 4096
         },
-        "kargo": {},
+        "kargo": {
+         "0": 9600,
+         "1": 9600,
+         "2": 9600,
+         "4": 4096,
+         "5": 4096,
+         "6": 512,
+         "3": 2048
+        },
         "adet": 1,
-        "hp": 20000000,
-        "kalkan": 20000000,
+        "hp": 10000000,
+        "kalkan": 6000000,
         "hasar": 30000
        },
        {
@@ -17615,7 +18794,15 @@
          "kredi": 12000000,
          "uridyum": 1024
         },
-        "kargo": {},
+        "kargo": {
+         "0": 2400,
+         "1": 2400,
+         "2": 2400,
+         "4": 1024,
+         "5": 1024,
+         "6": 128,
+         "3": 512
+        },
         "adet": 1,
         "hp": 3300000,
         "kalkan": 2400000,
@@ -18954,7 +20141,15 @@
          "kredi": 39321600,
          "uridyum": 8192
         },
-        "kargo": {},
+        "kargo": {
+         "0": 19200,
+         "1": 19200,
+         "2": 19200,
+         "4": 8192,
+         "5": 8192,
+         "6": 1024,
+         "3": 4096
+        },
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
@@ -18972,7 +20167,15 @@
          "kredi": 24000000,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
         "hp": 5000000,
         "kalkan": 5000000,
@@ -19018,7 +20221,15 @@
          "kredi": 39321600,
          "uridyum": 8192
         },
-        "kargo": {},
+        "kargo": {
+         "0": 19200,
+         "1": 19200,
+         "2": 19200,
+         "4": 8192,
+         "5": 8192,
+         "6": 1024,
+         "3": 4096
+        },
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
@@ -19036,7 +20247,15 @@
          "kredi": 24000000,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
         "hp": 5000000,
         "kalkan": 5000000,
@@ -20375,7 +21594,15 @@
          "kredi": 39321600,
          "uridyum": 8192
         },
-        "kargo": {},
+        "kargo": {
+         "0": 19200,
+         "1": 19200,
+         "2": 19200,
+         "4": 8192,
+         "5": 8192,
+         "6": 1024,
+         "3": 4096
+        },
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
@@ -20393,7 +21620,15 @@
          "kredi": 24000000,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
         "hp": 5000000,
         "kalkan": 5000000,
@@ -20439,7 +21674,15 @@
          "kredi": 39321600,
          "uridyum": 8192
         },
-        "kargo": {},
+        "kargo": {
+         "0": 19200,
+         "1": 19200,
+         "2": 19200,
+         "4": 8192,
+         "5": 8192,
+         "6": 1024,
+         "3": 4096
+        },
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
@@ -20457,7 +21700,15 @@
          "kredi": 24000000,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
         "hp": 5000000,
         "kalkan": 5000000,
@@ -21796,7 +23047,15 @@
          "kredi": 39321600,
          "uridyum": 8192
         },
-        "kargo": {},
+        "kargo": {
+         "0": 19200,
+         "1": 19200,
+         "2": 19200,
+         "4": 8192,
+         "5": 8192,
+         "6": 1024,
+         "3": 4096
+        },
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
@@ -21814,7 +23073,15 @@
          "kredi": 24000000,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
         "hp": 5000000,
         "kalkan": 5000000,
@@ -21860,7 +23127,15 @@
          "kredi": 39321600,
          "uridyum": 8192
         },
-        "kargo": {},
+        "kargo": {
+         "0": 19200,
+         "1": 19200,
+         "2": 19200,
+         "4": 8192,
+         "5": 8192,
+         "6": 1024,
+         "3": 4096
+        },
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
@@ -21878,7 +23153,15 @@
          "kredi": 24000000,
          "uridyum": 2048
         },
-        "kargo": {},
+        "kargo": {
+         "0": 4800,
+         "1": 4800,
+         "2": 4800,
+         "4": 2048,
+         "5": 2048,
+         "6": 256,
+         "3": 1024
+        },
         "adet": 1,
         "hp": 5000000,
         "kalkan": 5000000,

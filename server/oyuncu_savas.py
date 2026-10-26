@@ -71,6 +71,7 @@ def laser(w, other, now):
         w.send(err)
         w.laser_stop()
         return
+    w.last_pvp = other.last_pvp = now           # 4-X'te iki taraf da portal kullanamaz (dunya.jump)
     w.side_laser(now, other.hid, other.hero_pos(now),
                  lambda normal, shield: _hit(w, other, now, normal, shield), pvp=True)
     if other.hero_dead:
@@ -111,7 +112,7 @@ def rocket(w, other, now):
     w.end_invuln(force=True)
     w.abilities.reveal()
     w.items.reveal()
-    w.last_combat = now
+    w.last_combat = w.last_pvp = other.last_pvp = now
     w.stop_repair()
     w.p.ach('shot', silah='ROCKET_LAUNCHER')
     mods = w.p.mods()
@@ -119,13 +120,12 @@ def rocket(w, other, now):
              * (1 + mods.get('roket_bekleme', 0)) * D.EK.rocket_factor(w.p) * D.AY.carpan('roket_bekleme'))
     ms = w.abilities.rocket_ms(ms, now)
     w.rocket_ready = now + ms / 1000
-    roll = random.random()
-    hit = roll < w.rocket_hit(rocket)
-    saved = hit and roll >= w.rocket_hit(rocket, skill=False)
-    w.send(w.ammo_msgs(rocket) + [w.rocket_msg(other.hid, hit, D.ESYA['roketler'][rocket].get('kimlik', 1), saved),
+    hit = random.random() < w.rocket_hit(rocket)
+    w.send(w.ammo_msgs(rocket) + [w.rocket_msg(other.hid, hit, D.ESYA['roketler'][rocket].get('kimlik', 1)),
         ('MenuItemCooldownGroupTimerCommand', dict(timerState=D.mod('TimerStateModule', timerStateValue=2),
             cooldownType=D.mod('CooldownTypeModule', typeValue=4), maxTime=ms, time=ms))])
-    damage = int(D.ESYA['roketler'][rocket].get('hasar', 1000) * random.uniform(0.85, 1.0)
+    r = D.ESYA['roketler'][rocket]
+    damage = int(r.get('pvp_hasar', r.get('hasar', 1000)) * random.uniform(0.85, 1.0)         # BDR-1211 oyunculara en çok 4.000
                  * (1 + mods.get('roket', 0)) * (1 + w.p.lab_bonus(1)))
     if w.p.lab_bonus(1):
         w.lab_spend(1)

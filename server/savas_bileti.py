@@ -1,7 +1,8 @@
 """Battle Pass ve anahtar değişimi (yol haritası Aşama 7, E8; veri data/biletler.json "savas_bileti" <- tools/biletler.py): etkinlik
 başına pass ('passler': Halloween kayıttan ve CDN'deki pass_halloween2026.xml'den, Immortal Union resmî pass_valentine2026.xml'den,
-Hitac, Protegit, Mimesis, GoP, Treacherous Domain, Frozen Labyrinth ve Galactic Strife yazılan pass_offline_*.xml'lerle); anahtar
-değişimi hepsinde kayıttaki Halloween listesi, önünde etkinliğin tasarımları (etkinlik_gorunumleri.py: etkinlik görünümlerinin yolu).
+Hitac, Protegit, Mimesis, GoP, Treacherous Domain, Frozen Labyrinth, Galactic Strife, Astral Ascension ve Space Cup yazılan
+pass_offline_*.xml'lerle); anahtar değişimi: Halloween'de kayıttaki liste, önünde etkinliğin tasarımları (etkinlik_gorunumleri.py);
+öteki etkinliklerin kendi tablosu (passler[k].anahtar_degisimi: wiki'deki tablo, bedel/sınır/öncelik etkinlik başına).
 
 Mesajlar (istemcinin kodu ve kayıt):
   giriş       BattlePassInfoCommand {filename, statusCommand BattlePassUpdateStatusCommand {questsToCollectReward [görev],
@@ -29,13 +30,36 @@ PASSES = {k: dict(p, gorevler={int(q): d for q, d in p['gorevler'].items()}, odu
           for k, p in B['passler'].items()}
 EXCHANGE = {r['exchangeReward']: r for r in B['anahtar_degisimi']}
 EVENT_EXCHANGE = {k: {r['exchangeReward']: r for r in EG.exchange_rows(k)} for k in PASSES}      # etkinlik -> tasarım satırları
+PASS_EXCHANGE = {k: {r['exchangeReward']: dict(r) for r in p['anahtar_degisimi']} for k, p in PASSES.items() if p.get('anahtar_degisimi')}
+for _k, _rows in PASS_EXCHANGE.items():
+    # etkinliğin kendi tablosunda olmayan tasarımlar (etkinlik_gorunumleri.json: başka tasarım sayfalarının kaynakları) sona özel satır
+    # olarak kalır; mağazada satılmayan bu tasarımların tek yolu burası (etkinlik_gorunumleri.ITEMS)
+    _have = {x['lootId'] for r in _rows.values() for x in r['listOfloot']}
+    _top = max([r['priority'] for r in _rows.values() if r['isSpecial']] or [0])
+    for _r in EVENT_EXCHANGE[_k].values():
+        if _r['listOfloot'][0]['lootId'] not in _have:
+            _top += 1
+            _rows[_r['exchangeReward']] = dict(_r, priority=_top)
 KEY, PASS_ITEM = 'resource_battle-pass-key', 'resource_battle-pass'
 RUNNING, DONE = 2, 3
+CLOAK = 'equipment_extra_cpu_cl04k'      # Cloak CPU çeşitleri (-m, -xl, -xs): görevler tek kimliğe (-xs) bağlı
 
 
 def mod(name, **f):
     f['_'] = name
     return f
+
+
+def measure(c, kind, kw, map_id=None):
+    """gorev_takip.measure + Pass görevlerine özgü üç eşleme: "hasar al" (tür 7, görünüm 9 = TAKE_DAMAGE) alınan hasarı sayar;
+    cephane harcama (SPEND_ITEM + cephane: use_ammo 'ammo' olayı yayar) 'spend' gibi sayılır; Cloak CPU çeşitleri tek kimlik."""
+    if c['type'] == 7 and c.get('displayType') == 9:
+        c = dict(c, type=9)
+    if c['type'] == 89 and kind == 'ammo':
+        kind = 'spend'
+    if kind == 'spend' and kw.get('loot', '').startswith(CLOAK):
+        kw = dict(kw, loot=CLOAK + '-xs')
+    return GT.measure(c, kind, kw, map_id)
 
 
 def event_key(now=None):
@@ -97,8 +121,9 @@ class SavasBileti:
         return ('BattlePassInfoCommand', dict(filename=bp['dosya'], statusCommand=self.status_cmd(), battlePassQuestModuleList=rows))
 
     def exchanges(self):
-        """Dönemin anahtar değişimi (ensure'dan sonra): etkinliğin tasarımları, ardından kayıttaki liste."""
-        return dict(EVENT_EXCHANGE.get(self.st['donem'].rsplit('-', 1)[0], {}), **EXCHANGE)
+        """Dönemin anahtar değişimi (ensure'dan sonra): etkinliğin kendi tablosu; yoksa (Halloween) tasarımları, ardından kayıttaki liste."""
+        k = self.st['donem'].rsplit('-', 1)[0]
+        return dict(PASS_EXCHANGE[k]) if k in PASS_EXCHANGE else dict(EVENT_EXCHANGE.get(k, {}), **EXCHANGE)
 
     def exchange_cmd(self):
         rows = [dict(r, claimCount=self.st.get('degisim', {}).get(k, 0)) for k, r in self.exchanges().items()]
@@ -124,7 +149,7 @@ class SavasBileti:
         for q, d in self.bp['gorevler'].items():
             if q in st['tamam']:
                 continue
-            m, fin = GT.advance(self.p, d['rootCase'], st['deger'].setdefault(str(q), {}), kind, kw, self.map_id)
+            m, fin = GT.advance(self.p, d['rootCase'], st['deger'].setdefault(str(q), {}), kind, kw, self.map_id, fn=measure)
             msgs += m
             if fin:
                 done.append(q)

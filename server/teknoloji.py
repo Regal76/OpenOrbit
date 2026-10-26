@@ -13,7 +13,7 @@ Transmitter, Speed Burst, Versus Laser Overdrive. Veri esyalar.json "teknoloji" 
 """
 import json, math, os, time
 
-from eski_protokol import legacy
+from eski_protokol import legacy, stm
 import ayar as AY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +26,13 @@ ATTACK_ROCKET, ATTACK_ECI = 0, 5            # istemcinin AttackType'ı
 def mod(name, **f):
     f['_'] = name
     return f
+
+
+def used_msg(code):
+    """Kullanıldı bildirimi, ekranda ve günlükte (istemci resource.json tech_used_<KOD>, örn. "NPC Nuke used"). resource.json
+    anahtarları yalnız eski protokolün 0|A|STM|anahtar iletisiyle çözülür: MessageCommand (tür 5 flashres, 3-7 eşya) bulamayıp
+    hiçbir şey göstermiyor (canlı deneme 2026-10-26)."""
+    return stm('tech_used_' + code)
 
 
 def count(p, item):
@@ -73,7 +80,8 @@ def menu_status(p, item, st):
     if n <= 0:
         st.update(visible=False, available=False, activatable=False, counterValue=0)
         return st
-    usable = not ITEMS[item].get('yalniz_vog')
+    maps = ITEMS[item].get('yalniz_harita')
+    usable = not maps or str(p.d['konum'].get('mapId', 0)) in map(str, maps)        # Versus Laser Overdrive: yalnız Vortex of Greed haritasında
     lines = [{'_': 'MessageKeyListWildcardModule', 'baseKey': item, 'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 3},
               'textStyle': 0, 'wildCardReplacements': []},
              {'_': 'MessageKeyListWildcardModule', 'baseKey': 'ttip_count', 'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 5},
@@ -95,12 +103,21 @@ class Teknoloji:
         self.next_tick = 0.0
         self.charges = []          # Burning Trail yükleri: {x, y, bitis}
         self.trail_n = 0           # Burning Trail'in geçen saniyeleri (aralik_sn'de bir yük)
-        self.nuke = None           # NPC Nuke: {hedef, sonraki}
+        self.nuke = None           # NPC Nuke: {sonraki, kalan}
         self.started = False
         now = time.time()
         for item, s in state(self.p).items():
+            maps = ITEMS.get(item, {}).get('yalniz_harita')
+            if maps and now < s.get('bitis', 0) and str(world.map_id) not in map(str, maps):
+                s['bitis'] = now                       # Versus Laser Overdrive: gemi Vortex of Greed'den ayrılınca etki silinir (bekleme sürer)
+                self.p.dirty = True
             if now < s.get('bitis', 0):
                 self.ending[item] = s['bitis']
+                if item == 'tech_npc-nuke':            # harita değişince kalan vuruşlar sürer (vuruşlar başlangıçtan aralik_sn'de bir)
+                    c = ITEMS[item]
+                    start, total = s['bitis'] - c['sure_sn'], int(c['sure_sn'] // c['aralik_sn'])
+                    done = min(total, max(0, int((now - start) // c['aralik_sn'])))
+                    self.nuke = dict(sonraki=start + (done + 1) * c['aralik_sn'], kalan=total - done)
             elif now < s.get('hazir', 0):
                 self.waiting[item] = s['hazir']
 
@@ -131,6 +148,10 @@ class Teknoloji:
     def mine_protected(self, now=None):
         return self.active('tech_anti-mine-transmitter', now)
 
+    def laser_bonus(self, now=None):
+        """Versus Laser Overdrive: etkinken her lazerin taban hasarına eklenen düz hasar (yoksa 0)."""
+        return ITEMS['tech_versus-laser-overdrive']['taban_lazer'] if self.active('tech_versus-laser-overdrive', now) else 0
+
     def leech(self, ammo, dmg):
         """Energy Leech: sıradan lazer cephanesiyle verilen hasarın %10'u cana."""
         if dmg <= 0 or ammo not in T['cephaneler'] or not self.active('tech_energy-leech'):
@@ -147,7 +168,7 @@ class Teknoloji:
         w, p = self.w, self.p
         now = now or time.time()
         c = ITEMS.get(item)
-        if not c or count(p, item) <= 0 or w.hero_dead or w.jumping or c.get('yalniz_vog'):
+        if not c or count(p, item) <= 0 or w.hero_dead or w.jumping or (c.get('yalniz_harita') and str(w.map_id) not in map(str, c['yalniz_harita'])):
             w.log('   teknoloji kullanılamaz: %s' % item)
             return False
         if is_active(p, item, now) or now < state(p).get(item, {}).get('hazir', 0):
@@ -192,21 +213,17 @@ class Teknoloji:
             msg = legacy('0|n|ECI|1|%d|%s' % (w.hid, '|'.join(str(n.id) for n in targets)))
             def strike():
                 for n in targets:
-                    w.hit_npc(n.id, c['hasar'], ATTACK_ECI)
+                    w.hit_npc(n.id, c['hasar'], ATTACK_ECI, shield_only=True)      # istemci: "chain reaction of shield damage"
                     if not n.alive:
                         p.ach('chain_kill')                 # başarım ChainImpulse
             w.later(0.3, strike)
             w.last_combat = now
             return [msg]
         if item == 'tech_npc-nuke':
-            n = w.npcs.get(w.target)
-            if not n or not n.alive:
-                return None
-            nx, ny = n.mover.pos(now)
-            if math.hypot(nx - hx, ny - hy) > c['menzil']:
-                return None
-            self.nuke = dict(hedef=n.id, sonraki=now + c['aralik_sn'])
-            return []
+            # istemci: "burst of damage to NPCs in an area around your ship once every 10 seconds": hedef gerekmez, gemi çevresindeki
+            # bütün uzaylılara sure_sn / aralik_sn vuruş (nuke_tick)
+            self.nuke = dict(sonraki=now + c['aralik_sn'], kalan=int(c['sure_sn'] // c['aralik_sn']))
+            return [used_msg('NNK')]
         if item == 'tech_speed-burst':
             w.hero_effect('hizlanma', c['sure_sn'], c['hiz'], source=item)
         if item == 'tech_burning-trail':
@@ -274,18 +291,24 @@ class Teknoloji:
                 w.hit_npc(n.id, c['hasar'], ATTACK_ROCKET)
 
     def nuke_tick(self, now):
+        """NPC Nuke: aralik_sn'de bir, gemi çevresindeki (yaricap) bütün uzaylılara hasar; şok dalgası geminin kimliğinde.
+        Vuruşlar sayılır (6 x 100.000): son vuruş süre sonuyla aynı ana düşer, tick gecikmesi onu kaybettirmez."""
         nk = self.nuke
         if not nk:
             return
-        w = self.w
-        n = w.npcs.get(nk['hedef'])
-        if not n or not n.alive or not self.active('tech_npc-nuke', now - 0.001):
+        w, c = self.w, ITEMS['tech_npc-nuke']
+        while nk['kalan'] > 0 and now >= nk['sonraki']:
+            nk['sonraki'] += c['aralik_sn']
+            nk['kalan'] -= 1
+            hx, hy = w.hero_pos(now)
+            hits = [n.id for n in w.npcs.values()
+                    if n.alive and math.hypot(n.mover.pos(now)[0] - hx, n.mover.pos(now)[1] - hy) <= c['yaricap']]
+            self.send([legacy('0|n|NNK|%d' % w.hid)])
+            w.last_combat = now
+            for uid in hits:
+                w.hit_npc(uid, c['hasar'], ATTACK_ROCKET)
+        if nk['kalan'] <= 0:
             self.nuke = None
-            return
-        if now >= nk['sonraki']:
-            nk['sonraki'] += ITEMS['tech_npc-nuke']['aralik_sn']
-            self.send([legacy('0|n|NNK|%d' % n.id)])
-            w.hit_npc(n.id, ITEMS['tech_npc-nuke']['hasar'], ATTACK_ROCKET)
 
     def finish(self, item, now, frac=1.0):
         """Süre bitti (ya da gemi yok oldu): görsel kalkar, bekleme başlar. Explosive Charging Blob patlar."""

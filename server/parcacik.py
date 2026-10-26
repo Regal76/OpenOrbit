@@ -119,6 +119,9 @@ def ensure(p, iid, rng=random):
         with p.lock:
             p.d.setdefault('parcacik', {})[str(iid)] = st
             p.dirty = True
+    if st is not None and st['hak'] > rerolls(loot):         # değiştirme sınırı düştü (URETIM-4): eski kayıtlardaki kalan hak
+        st['hak'] = rerolls(loot)
+        p.dirty = True
     if st is not None and (loot in DRIVES or loot in LENSES):
         need = sum(1 for lv in D['kilit']['seviyeler'] if level(p, iid) >= lv)
         pl = D['nitelikler']['surucu']
@@ -236,7 +239,7 @@ def module_msg(p, iid):
     st = ensure(p, iid)
     t = tier(loot)
     back = upgrade_returns(p, iid, D['yenileme']['iade'])
-    return mod('CannonUnstableModuleModule', recycleReturns=0 if CANNONS.get(loot, {}).get('kalite') == 'ul' else D['yenileme']['cip'][t],
+    return mod('CannonUnstableModuleModule', recycleReturns=D['yenileme']['cip'][t],
                rerollsMax=rerolls(loot), rerollCost=D['yenileme']['bedel'][t], rerollsLeft=st['hak'], retainCost=[],
                attributes=attr_mods(st),
                shipDesigns=[CANNONS[loot]['gemi']] if CANNONS.get(loot, {}).get('gemi') else [], itemId=int(iid), lootId=loot,
@@ -280,9 +283,9 @@ def revert(p, iid):
 
 
 def recycle(p, iid):
-    """Geri dönüşüm -> {lootId: adet} ya da None (UL, takılı)."""
+    """Geri dönüşüm -> {lootId: adet} ya da None (takılı)."""
     loot = p.d['esyalar'].get(str(iid), '')
-    if not restabilizable(loot) or CANNONS.get(loot, {}).get('kalite') == 'ul' or iid in p.equipped_ids():
+    if not restabilizable(loot) or iid in p.equipped_ids():
         return None
     got = upgrade_returns(p, iid, D['yenileme']['iade'])
     chips = D['yenileme']['cip'][tier(loot)]

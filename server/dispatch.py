@@ -4,7 +4,8 @@ istemcinin kodundan (tools/il2cpp/istemci_verisi.py), ödül listeleri, yuva fiy
 Akış (kayıtta liste isteği ve "kaynak yetmiyor" yanıtı var; ötekiler istemcinin komut ve enum'larından):
   girişte                          DispatchSlotInfoCommand {currentMaxSlotCount, availableSlotCount}
   DispatchGetRetrieverListRequest  {statusType}: 0 gönderilebilenler (toplayıcı tanımları), 1 sürenler (kalan saniye; 0 = toplanabilir)
-                                   -> DispatchGetRetrieverListCommand + DispatchActiveEventCommand (Dispatch Day: pazartesi, cuma)
+                                   -> DispatchGetRetrieverListCommand + DispatchActiveEventCommand (1 Dispatch Day: pazartesi, cuma;
+                                   2 Galaxy Gate Day: Pazar GG Double Rewards, kayıt 2026-10-25)
   DispatchSendRetrieverRequest     {dispatchId}: boş yuva ve ücret -> DispatchMessageCommand SUCCESS_SEND_RETRIEVER; para yoksa
                                    DispatchLootMessageCommand NO_RESOURCE {eksikler} (kayıttaki yanıt); yuva yoksa ERROR_NO_SLOT
   DispatchCollectRetrieverRequest  {slotId}: süresi bittiyse rastgele ödüller -> DispatchLootMessageCommand COLLECTED
@@ -28,7 +29,7 @@ AVAILABLE, IN_PROGRESS, READY = 0, 1, 2                    # StatusType (istemci
 NO_RESOURCE, COLLECTED = 0, 1                             # DispatchLootMessageCommand.MessageType
 (SUCCESS_SEND_RETRIEVER, SUCCESS_SEND_GATE, SUCCESS_ADD_SLOT, ERROR_NO_GATE, ERROR_NO_SLOT, ERROR_NO_RESOURCE, ERROR_NOT_READY,
  ERROR_COLLECT, ERROR_SEND_RETRIEVER, ERROR_SEND_GATE, ERROR_INCOMPLETE_GATE, ERROR_MAX_SLOT) = range(12)   # DispatchMessageCommand
-EVENT_NONE, DISPATCH_DAY = 0, 1
+EVENT_NONE, DISPATCH_DAY, GALAXY_GATE_DAY = 0, 1, 2          # DispatchActiveEventCommand.activeEvent (istemci enum'u)
 
 
 def mod(name, **f):
@@ -43,6 +44,22 @@ def loot(l, n):
 def dispatch_day(now=None):
     import takvim as TK                       # takvim.py: dispatch_gunu (pazartesi ve cuma)
     return TK.is_active('dispatch_gunu', now)
+
+
+def gate_day(now=None):
+    import takvim as TK                       # takvim.py: gg_cift_odul (Pazar GG Double Rewards)
+    return TK.is_active('gg_cift_odul', now)
+
+
+def event_ranges(kod, now=None):
+    """Süren etkinliklerin bu toplayıcıya (ya da 'kapi' gönderimine) eklediği kalemler: {lootId: [en az, en çok]} (etkinlik_oduller)."""
+    import takvim as TK
+    return {l: rngs[kod] for ev, items in D['etkinlik_oduller'].items() if TK.is_active(ev, now)
+            for l, rngs in items.items() if kod in rngs}
+
+
+def event_loot(kod, now=None):
+    return {l: random.randint(*lohi) for l, lohi in event_ranges(kod, now).items()}
 
 
 class Dispatch:
@@ -69,8 +86,8 @@ class Dispatch:
         return ('DispatchSlotCostCommand', {'slotCosts': [mod('DispatchSlotModule', slotId=int(s), costList=[loot(l, n) for l, n in c.items()])
                                                           for s, c in sorted(D['yuvalar']['fiyatlar'].items())]})
 
-    def event(self):
-        return ('DispatchActiveEventCommand', {'activeEvent': DISPATCH_DAY if dispatch_day() else EVENT_NONE})
+    def event(self, now=None):
+        return ('DispatchActiveEventCommand', {'activeEvent': DISPATCH_DAY if dispatch_day(now) else GALAXY_GATE_DAY if gate_day(now) else EVENT_NONE})
 
     def login_msgs(self):
         return [self.slot_info()]
@@ -83,7 +100,7 @@ class Dispatch:
         else:
             lst = [mod('DispatchModule', duration=max(0, int(g['bitis'] - now)), id=g['id'], slotId=int(s))
                    for s, g in sorted(self.st['gonderilen'].items())]
-        return [('DispatchGetRetrieverListCommand', dict(statusType=status, retrieverList=lst)), self.event()]
+        return [('DispatchGetRetrieverListCommand', dict(statusType=status, retrieverList=lst)), self.event(now)]
 
     def send(self, f):
         rid = str(f.get('dispatchId'))
@@ -111,17 +128,19 @@ class Dispatch:
                 + [('DispatchMessageCommand', {'messageType': SUCCESS_SEND_RETRIEVER}), self.slot_info()])
 
     def rewards(self, rid, now=None):
-        """Rastgele ödüller: listeden odul_sayisi farklı eşya (seyrekler düşük ağırlıkla); adet kademeyle artar, Dispatch Day x1,5."""
+        """Bir dönüşün ödülleri (kayıt: sabit kalemler + 4 farklı rastgele kalem): serinin sabit kalemleri (Solidus, EXP), listeden
+        odul_sayisi farklı eşya (seyrekler düşük ağırlıkla); adet kademeyle artar, Dispatch Day x1,5; süren etkinliğin kalemi eklenir."""
         r = R[str(rid)]
-        pool = list(D['oduller'][r['kod']])
         f = (1 + D['kademe_artisi'] * (r['kademe'] - 1)) * (D['dispatch_gunu_carpani'] if dispatch_day(now) else 1)
-        out = {}
+        out = {l: max(1, int(round(n * f))) for l, n in D['sabit'][r['seri']].items()}
+        pool = [x for x in D['oduller'][r['kod']] if x not in out]
         for _ in range(min(D['odul_sayisi'], len(pool))):
             weights = [D['seyrek'].get(x, 1.0) for x in pool]
             pick = random.choices(pool, weights)[0]
             pool.remove(pick)
             base = D['taban_adet'][pick]
             out[pick] = 1 if pick in D['tekil'] else max(1, int(round(base * f)))
+        out.update(event_loot(r['kod'], now))
         return out
 
     def grant(self, items):
@@ -185,11 +204,14 @@ class Dispatch:
         r = R.get(str(f.get('dispatchId')))
         if not r:
             return []
-        pool = D['oduller'][r['kod']]
         f_ = 1 + D['kademe_artisi'] * (r['kademe'] - 1)
+        fixed = {l: max(1, int(round(n * f_))) for l, n in D['sabit'][r['seri']].items()}
+        pool = [x for x in D['oduller'][r['kod']] if x not in fixed]
         total = sum(D['seyrek'].get(x, 1.0) for x in pool)
-        lst = [mod('DispatchRewardModule', lootId=x, amount=1 if x in D['tekil'] else max(1, int(round(D['taban_adet'][x] * f_))),
-                   chance=max(1, int(round(100 * D['odul_sayisi'] * D['seyrek'].get(x, 1.0) / total)))) for x in pool]
+        lst = [mod('DispatchRewardModule', lootId=l, amount=n, chance=100) for l, n in fixed.items()]
+        lst += [mod('DispatchRewardModule', lootId=x, amount=1 if x in D['tekil'] else max(1, int(round(D['taban_adet'][x] * f_))),
+                    chance=max(1, int(round(100 * D['odul_sayisi'] * D['seyrek'].get(x, 1.0) / total)))) for x in pool]
+        lst += [mod('DispatchRewardModule', lootId=l, amount=lohi[0], chance=100) for l, lohi in event_ranges(r['kod']).items()]
         return [('DispatchGetRewardPackageCommand', dict(name=r['ad'], rewards=lst))]
 
     # ------------------------------------------------------------ kapılar
@@ -238,7 +260,12 @@ class Dispatch:
             del self.st['kapilar'][key]
             self.p.dirty = True
         self.p.ach('dispatch', olay='DISPATCH_GATE')                 # başarım: "N Gate Dispatch"
-        return self.k.dispatch_complete(key) + self.gate_list()
+        msgs = self.k.dispatch_complete(key)
+        extra = event_loot('kapi', now)                              # Chaos Omen / Protegit: kapı gönderiminden Chaos Fragment
+        if extra:
+            msgs[-1][1]['loots'] += [loot(l, n) for l, n in extra.items()]       # son ileti DispatchLootMessageCommand
+            msgs = self.grant(extra) + msgs
+        return msgs + self.gate_list()
 
     def handle(self, name, f):
         fn = {'DispatchGetRetrieverListRequest': lambda f: self.retriever_list(f.get('statusType', 0)),

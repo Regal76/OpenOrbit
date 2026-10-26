@@ -36,9 +36,15 @@ TOP = {'exp': (4, 5, 6, 7), 'onur': (8, 9, 10, 11), 'puan': (0, 1, 2, 3, 16), 'k
 TOP_WEEK, TOP_CLIMB, TOP_MONTH = (2, 6, 10), (3, 7, 11), (16,)
 ORE_NAMES = {0: 'PROMETIUM', 1: 'ENDURIUM', 2: 'TERBIUM', 3: 'XENOMIT', 4: 'PROMETID', 5: 'DURANIUM', 6: 'PROMERIUM', 7: 'SEPROM',
              8: 'PALLADIUM'}
-# Champion Token ("Rewarded to the top pilots of each month"; Assembly'nin şampiyon tasarımları): tek oyunculuda aylık sıralamanın
-# birincisi oyuncu; etkin geçen ayın sonunda rütbeyle orantılı (uyarlama: en üst rütbede bir gemi tasarımı, 120)
-CHAMPION, CHAMPION_MAX = 'resource_collectable_champion-token', 120
+# Aylık sıralama (darkorbitwiki events/monthly-ranking; istemci hof_rank_month_info_popup): ilk 50'ye Champion Token (Assembly'nin
+# şampiyon tasarımları) ve unvan: 1. 100 + General of the Month; 2-5. 80, 6-10. 60, 11-25. 40, 26-50. 20 + Acclaimed Pilot.
+# Tek oyunculu uyarlama: sıra yok, oyuncunun sanal derecesi rütbesinden (en üst rütbe 1.; ondan 1-3 aşağısı 2-5., 4-6 aşağısı 6-10.,
+# 7-10 aşağısı 11-25., 11-15 aşağısı 26-50.; daha aşağısı ilk 50 dışı: jeton ve unvan yok). Etkin geçen ay (puan arttı) aranır.
+# Kademe: (en üst rütbeden en çok kaç rütbe aşağıda, jeton, unvan, başarım olayı: basarim.SERVER_SIDE)
+CHAMPION, CHAMPION_MAX = 'resource_collectable_champion-token', 100
+MONTHLY = ((0, 100, 'title_monthlyranking-general', 'monthly_general'), (3, 80, 'title_monthlyranking-pilot', 'monthly_pilot'),
+           (6, 60, 'title_monthlyranking-pilot', 'monthly_pilot'), (10, 40, 'title_monthlyranking-pilot', 'monthly_pilot'),
+           (15, 20, 'title_monthlyranking-pilot', 'monthly_pilot'))
 
 
 def stamp(t=None):
@@ -138,10 +144,24 @@ def daily_rank(p, now=None, force=False):
             del hist[old]
         p.d['pilot']['dailyRank'] = icon           # ShipInitializationCommand.dailyRank (profil.PILOT_FIELDS)
         p.dirty = True
-    if monthly:
-        p.ach('monthly_rank')                       # başarım: aylık sıralama (basarim.SERVER_SIDE)
-        p.add_resource(CHAMPION, max(1, round(CHAMPION_MAX * prev_rank / len(R['esikler']))))
+    tier = next((t for t in MONTHLY if len(R['esikler']) - prev_rank <= t[0]), None) if monthly else None
+    if tier:
+        _, tokens, title, kind = tier
+        p.ach(kind)                                 # başarım: General of the Month / Acclaimed Pilot sayacı (basarim.SERVER_SIDE)
+        p.add_resource(CHAMPION, tokens)
+        grant_title(p, title)
     return icon
+
+
+def grant_title(p, key):
+    """Aylık sıralama unvanı: başarım penceresinde seçilir (tabloda olmayan etkinlik unvanı; basarim.title_id sabit kimlik verir)."""
+    import basarim as BSM
+    BSM.title_id(key)
+    st = BSM.state(p)
+    if key not in st['unvanlar']:
+        with p.lock:
+            st['unvanlar'].append(key)
+            p.dirty = True
 
 
 def rank_icon(p, rank):

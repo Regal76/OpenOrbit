@@ -121,9 +121,11 @@ def update_cmd(p, removed=(), now=None):
 
 
 def drop_for(npc_name):
-    """Boss/Uber uzaylıdan booster düşer mi (wiki: "Boss/Uber-Alien (1-10h)"; olasılık uyarlama). -> (lootId, saat) ya da None."""
+    """Boss/Uber uzaylıdan booster düşer mi (wiki: "Boss/Uber-Alien (1-10h)" ve 1 saatlik DLB/NPC/REP-S01 türleri; olasılık uyarlama).
+    Türler eşit ağırlıkla. -> (lootId, saat) ya da None."""
     d = B['dusme']
     kind = 'boss' if npc_name.startswith('..::{') else 'uber' if npc_name.startswith('( Uber') else None
     if not kind or random.random() >= AY.chance('dusme', d['olasilik'][kind], 'booster'):
         return None
-    return random.choice(d['turler']), random.randint(*d['saat'])
+    loot, hours = random.choice([(l, None) for l in d['turler']] + [(l, 1) for l in d.get('turler_1sa', ())])     # 1 saatlik türler sabit 1 sa
+    return loot, hours or random.randint(*d['saat'])

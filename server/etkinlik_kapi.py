@@ -6,8 +6,12 @@ kapi.Kosu'nunkiyle aynı (dalga biçimi kapilar.json'unki). Kurallar ('kural'):
   gunluk          günde bir giriş (aynı 'grup'taki kapılar birlikte: Gauntlet of Plutus Easy ya da Normal)
   bekleme_sn      bittikten ya da canlar tükendikten sonra bekleme (Trial of Terrors 12 saat)
   yillik          yılda bir (Birthday Gate)
-  cpu             portalı yalnız CPU açar (Quarantine Zone: Immunizer CPU, X-7; pve_modlari.py)
-  seviye, bir_kez en düşük seviye; bir kez tamamlanabilir (Compromising Invasion)
+  cpu             portalı yalnız CPU açar (Quarantine Zone: Immunizer CPU, X-7; Permafrost Fissure: Subglacial CPU, X-1; pve_modlari.py);
+                  cpu_can: kapı açıkken CPU kullanılırsa eklenen can (Subglacial CPU +2; istemci metni)
+  gorev           yalnız bu görev (kimliği) sürerken girilir (Devolarium Attack: "Preemptive Strike Force" 20012; bitince görevin
+                  FINISH_STARTER_GATE koşulu için kapi_turu STARTER_GATE); konum: {firma kimliği: [x, y]} X-1'deki portalın kaynaklı yeri
+                  (Devolarium Attack'in wiki koordinatı; yoksa portallar haritanın ortasında yayda dizilir)
+  seviye, bir_kez en düşük seviye; bir kez tamamlanabilir (Compromising Invasion; The Breach Hard 16+)
   rastgele        her haritanın dalgaları kendi aralarında rastgele sırayla ('sabit' dalga, Plutus, sonda; Gauntlet of Plutus)
   sure            bitiş süresi ölçülür (ölü geçen süre dahil); en iyi süreler profilde (Gauntlet of Plutus'un kişisel rekoru)
 'secenek' grubundaki dalgalardan (Vortex'in "ya da" dalgaları) girişte biri seçilir. Dalga uzaylısının 'kutu'su ölünce düşer
@@ -15,7 +19,9 @@ kapi.Kosu'nunkiyle aynı (dalga biçimi kapilar.json'unki). Kurallar ('kural'):
 Ödüller ('odul'): EP, onur, kredi, uridyum ve eşyalar (mağazanın ödül işleviyle).
 Profilde: etkinlik_kapilari {kapı: {hazir, dalga, can, sira, bas, tamam, son_gun, son_yil, son_bitis, en_iyi_sn, sureler}}.
 Gauntlet of Plutus'un göstergesi istemcinin PlutusInfoCommand / PlutusStatusCommand'ıyla (can, mod, kalan süre, en iyi süreler).
-Takvimsiz kapılar ('etkinlik' yok): Quarantine Zone ve Compromising Invasion (yol haritası Aşama 8).
+Takvimsiz kapılar ('etkinlik' yok): Quarantine Zone ve Compromising Invasion (yol haritası Aşama 8), Permafrost Fissure (Subglacial CPU
+ile açılır, 45 dalga, UFO ve Ufonit Proxium kutusu düşürür: etkinlik_harita.roll) ve Devolarium Attack (başlangıç kapısı, görevle).
+The Breach (Cold Wave 2014, Easy 77 / Hard 78) kış etkinliğine ('kis') bağlı.
 Frozen Labyrinth ayrı (labirent.py); X-1'deki giriş portalı burada.
 """
 import datetime, json, math, os, random, time
@@ -40,6 +46,13 @@ LAB_ENTRY = PORTAL_BASE + 99            # X-1'deki Frozen Labyrinth portalı
 PLUTUS_DONE, PLUTUS_OPEN, PLUTUS_RUNNING = 1, 2, 3
 
 
+def poi(pid, x, y, r, ptype=4, design=6):
+    """MapAddPOICommand (dunya_patronu.poi'nin biçimi; ptype 4 / design 6: yeşil iyileşme dairesi)."""
+    return ('MapAddPOICommand', dict(inverted=False, poiTypeSpecification='', poiType=KAPI.mod('POITypeModule', typeValue=ptype), shape=0,
+                                     active=True, design=KAPI.mod('POIDesignModule', designValue=design), poiId=pid,
+                                     shapeCoordinates=[int(x), int(y), int(r)]))
+
+
 def npc_type(key, wave, i):
     return 'eg_%s_%d_%d' % (key, wave, i)
 
@@ -53,7 +66,7 @@ def _tip(a, key=None, aggressive=True):
              saldirgan=a.get('saldirgan', aggressive), odul=dict(a['odul']), kargo=dict(a.get('kargo', {})), npc_kimlik=a['npc_kimlik'])
     if key:
         d['kapi'] = key
-    for k in ('kutu', 'davranis', 'anahtar', 'dusme', 'yeniden_sn', 'puan'):
+    for k in ('kutu', 'davranis', 'anahtar', 'dusme', 'yeniden_sn', 'puan', 'ek_odul', 'cpu_artis', 'radyoaktif'):
         if a.get(k):
             d[k] = a[k]
     return d
@@ -121,7 +134,9 @@ class EtkinlikKapilari:
         if AY.get('giris_siniri_yok'):                       # panel: günlük/yıllık/bir kez ve bekleme süresi yok
             kural = {k: v for k, v in kural.items() if k not in ('bir_kez', 'gunluk', 'yillik', 'bekleme_sn')}
         if kural.get('cpu'):
-            return False, 'CPU ile açılır'            # Quarantine Zone: Immunizer CPU kapıyı kurar (pve_modlari.py)
+            return False, 'CPU ile açılır'            # Quarantine Zone, Permafrost Fissure: CPU kapıyı kurar (pve_modlari.py)
+        if kural.get('gorev') and str(kural['gorev']) not in (self.p.d.get('gorevler') or {}).get('aktif', {}):
+            return False, 'görev gerekli'             # Devolarium Attack: yalnız "Preemptive Strike Force" görevi sürerken
         if kural.get('seviye') and self.p.d['pilot'].get('level', 1) < kural['seviye']:
             return False, 'seviye %d gerekli' % kural['seviye']
         if kural.get('azami_seviye') and self.p.d['pilot'].get('level', 1) > kural['azami_seviye']:
@@ -172,6 +187,9 @@ class EtkinlikKapilari:
         for i, g in enumerate(out):
             a = -math.pi / 2 + (i - (len(out) - 1) / 2.0) * 0.55
             g['x'], g['y'] = int(cx + math.cos(a) * 2400), int(cy + math.sin(a) * 2400)
+            pos = (GATES.get(g['kapi'], {}).get('konum') or {}).get(str(self.p.d['pilot'].get('factionId')))
+            if pos:
+                g['x'], g['y'] = pos                    # kaynaklı konum (Devolarium Attack: wiki'nin firma başına X-1 koordinatı)
         return out
 
     def enter(self, key, now=None):
@@ -211,7 +229,7 @@ class EtkinlikKapilari:
     def exit_portal(self, key, map_id, side=False):
         x, y = center(map_id)
         return dict(gateId=PORTAL_BASE + 50 + GATES[key]['kimlik'], x=x - 1500 if side else x, y=y, hedef=self.home(), designId=1,
-                    kapi=key, cikis=True)
+                    kapi=key, cikis=True, varis='istasyon')
 
     def next_portal(self, key, map_id, dest):
         x, y = center(map_id)
@@ -225,6 +243,7 @@ class EtkinlikKapilari:
             G = self.gate(key)
             G.update(hazir=False, dalga=0, can=GATES[key]['can'], son_bitis=now)
             G.pop('sira', None)
+            G.pop('cpu_artis', None)
             self.p.dirty = True
 
     def finish(self, key, reward_msgs=None):
@@ -248,6 +267,9 @@ class EtkinlikKapilari:
         for loot, n, chance in o.get('sans', []):          # şanslı ödül (Quarantine Box'ın LF-4'ü)
             if random.random() < AY.chance('dusme', chance, 'kapi') and self.m:
                 msgs += self.m.prize(loot, n, 'kapi')
+        c = g.get('cpu')
+        if c and self.m and random.random() < AY.chance('dusme', c['taban'] + G.get('cpu_artis', 0.0), 'kapi'):
+            msgs += self.m.prize(c['esya'], 1, 'kapi')     # Bountiful Alien CPU: temel şans, öldürülen Aura Dun Jig başına artar
         secs = int(now - G.get('bas', now))
         best = G.get('en_iyi_sn')
         with self.p.lock:
@@ -324,6 +346,7 @@ class Kosu(KAPI.Kosu):
         G = ekapi.gate(key)
         self.npcs, self.keep = set(), set()
         self.guards = set()           # kalıcı patronu koruyanlar (dalganın doğan uzaylıları; çağrılanlar değil: Plutus'un Warhead'leri)
+        self.rad, self.rad_next = None, 0.0     # süren radyoaktif alan (radio_tick) ve bir sonrakinin en erken zamanı
         self.sub, self.counted, self.left, self.exposed, self.boss = 0, None, None, False, ''
         now = time.time()
         if not G['hazir'] or G['can'] <= 0:
@@ -345,7 +368,70 @@ class Kosu(KAPI.Kosu):
         """Bu kapının uzaylısı öldü (dunya.kill): türün puan aralığından etkinlik puanı (Plutus)."""
         if n.d.get('kapi') != self.key or not n.d.get('puan'):
             return []
+        if n.d.get('cpu_artis'):                                      # Aura Dun Jig: Bountiful Alien CPU şansı (EtkinlikKapilari.finish)
+            with self.k.p.lock:
+                G = self.k.gate(self.key)
+                G['cpu_artis'] = G.get('cpu_artis', 0.0) + n.d['cpu_artis']
+                self.k.p.dirty = True
         return self.k.add_points(self.key, random.randint(*n.d['puan']))
+
+    # ------------------------------------------------------------ Space Uncertainty (kalkanı biten patronun radyoaktif alanı)
+    def tick(self, now):
+        super().tick(now)
+        self.radio_tick(now)
+
+    def radio_tick(self, now):
+        """Kalıcı patronun (npc türünün 'radyoaktif'i; Plutus) kalkanı bitince radyoaktif alan: uyarıdan sonra sure_sn boyunca her
+        saniye yeşil dairelerin dışındaki oyuncu hasar alır (azami canın azami_oran'ından fazla değil), içindeki iyileşir; alan
+        bitince bekleme_sn sonra (kalkan hâlâ 0'sa) yenisi (darkorbitwiki "Space Uncertainty", fandom)."""
+        w, r = self.w, self.rad
+        boss = self.boss_npc() if self.phase == 'fight' else None
+        spec = boss.d.get('radyoaktif') if boss else None
+        if r and (not spec or w.hero_dead or w.jumping):
+            self.radio_end(now)
+        elif not r:
+            if spec and boss.shield <= 0 and now >= self.rad_next and not w.hero_dead and not w.jumping:
+                self.radio_start(boss, spec, now)
+        else:
+            if now >= r['sonraki']:
+                r['sonraki'] += 1.0
+                self.radio_pulse(boss, spec, now)
+            if now >= r['bitis']:
+                self.radio_end(now)
+
+    def radio_start(self, boss, spec, now):
+        w = self.w
+        hx, hy = w.hero_pos(now)
+        a0, circles = random.uniform(0, 2 * math.pi), []
+        for i in range(spec['daire']):          # biri yakın (uyarı süresinde ulaşılır), ötekiler uzak
+            a = a0 + i * 2 * math.pi / spec['daire']
+            d = random.uniform(*spec['uzaklik']) if i else spec['uzaklik'][0]
+            m = spec['yaricap']
+            circles.append((min(max(m, hx + math.cos(a) * d), w.map_w - m), min(max(m, hy + math.sin(a) * d), w.map_h - m)))
+        self.rad = dict(daireler=circles, bitis=now + spec['uyari_sn'] + spec['sure_sn'], sonraki=now + spec['uyari_sn'])
+        w.send([KAPI.screen('Plutus: Space Uncertainty! Get into a green circle!', big=True)]
+               + [poi('plutusSpaceUncertainty%d' % i, x, y, spec['yaricap']) for i, (x, y) in enumerate(circles)])
+        w.log('   %s: radyoaktif alan (%d daire, %d sn)' % (self.g['ad'], len(circles), spec['sure_sn']))
+
+    def radio_pulse(self, boss, spec, now):
+        """Saniyelik nabız: dairenin içindeyse iyileşme, dışındaysa hasar."""
+        w = self.w
+        hx, hy = w.hero_pos(now)
+        g = w.p.d['gemi']
+        if any(math.hypot(hx - x, hy - y) <= spec['yaricap'] for x, y in self.rad['daireler']):
+            hp0 = g.get('hitPoints', 0)
+            w.p.set_hull(hp=hp0 + spec['iyilesme_sn'])
+            w.send([w.hp_msg()] + w.heal_msgs(hp0))
+        else:
+            w.send(w.hurt_hero(min(spec['hasar_sn'], int(g.get('hitMax', 1) * spec['azami_oran'])), boss, atype=0, now=now,
+                               source_asset=True))
+
+    def radio_end(self, now):
+        r, self.rad = self.rad, None
+        spec = next((n.d.get('radyoaktif') for n in (self.w.npcs.get(i) for i in self.keep) if n and n.d.get('radyoaktif')), None)
+        self.rad_next = now + (spec['bekleme_sn'] if spec else 0)
+        if r:
+            self.w.send([('MapRemovePOICommand', {'poiId': 'plutusSpaceUncertainty%d' % i}) for i in range(len(r['daireler']))])
 
     def wave_count(self):
         return len(self.k.order(self.key))

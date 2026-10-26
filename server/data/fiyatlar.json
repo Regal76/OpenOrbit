@@ -146,15 +146,26 @@
   "equipment_shipupgrade_hp-c01": 20000,
   "equipment_shipupgrade_shd-c01": 20000,
   "equipment_shipupgrade_spc-c01": 20000,
-  "ammunition_rocket_agt-500": 100,
+  "ammunition_rocket_agt-500": 125,
   "ammunition_rocket_bdr-1211": 5,
   "ammunition_specialammo_sp-100x": 300,
   "ifade": 50,
-  "resource_ftl-key": 8284.8,
+  "resource_ftl-key": 8298.0,
   "resource_collectable_galaxy-coupon": 601.1,
   "resource_lottery-capsule": 6867.2,
   "resource_booty-key-apotheosis": 5000,
-  "resource_recall-pass-vip-badge": 150000
+  "resource_recall-pass-vip-badge": 150000,
+  "ammunition_mine_agl-m01": 250,
+  "ammunition_specialammo_ghostifier": 15,
+  "equipment_weapon_laser_lf-p01": 10000,
+  "equipment_generator_shield_sg3n-p01": 10000,
+  "equipment_generator_shield_sg3n-px01": 30000,
+  "resource_booty-key-astral": 5000,
+  "resource_booty-key-lucent": 5000,
+  "resource_booty-key-laurel": 5000,
+  "resource_booty-key-prosperous": 5000,
+  "resource_booty-key-empyrian": 5000,
+  "resource_collectable_infiltrator-fragment": 3
  },
  "fiyatlar": {
   "ammunition_slug_cos-a04": {
@@ -2669,7 +2680,7 @@
    "kaynak": "ek_magaza:esyalar_o6"
   },
   "resource_ftl-key": {
-   "deger": 8285,
+   "deger": 8298,
    "kural": "tek",
    "para": "U",
    "fiyat": 8300,
@@ -3009,6 +3020,321 @@
    "kategori": "extras",
    "eski": 0,
    "kaynak": "ek_magaza:surum_115"
+  },
+  "package_event-deal-cnyl": {
+   "deger": 100000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 85000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-cnym": {
+   "deger": 50000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 42000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-cnyplatinum": {
+   "deger": 1247500,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 1100000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-cnypremium": {
+   "deger": 575000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 490000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-cnys": {
+   "deger": 25000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 21000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-cnyxl": {
+   "deger": 200000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 170000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-empyrian-exquisite": {
+   "deger": 1247500,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 1100000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-empyrian-l": {
+   "deger": 100000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 85000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-empyrian-m": {
+   "deger": 50000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 42000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-empyrian-premium": {
+   "deger": 575000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 490000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-empyrian-s": {
+   "deger": 25000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 21000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-empyrian-xl": {
+   "deger": 200000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 170000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-ftl-l": {
+   "deger": 165960,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 140000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-ftl-m": {
+   "deger": 41490,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 35000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-ftl-s": {
+   "deger": 8298,
+   "kural": "tek",
+   "para": "U",
+   "fiyat": 8300,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-ftl-xl": {
+   "deger": 414900,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 350000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-ftl-xxl": {
+   "deger": 1244700,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 1100000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-laurel-key-l": {
+   "deger": 120000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 100000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-laurel-key-m": {
+   "deger": 50000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 42000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-laurel-key-s": {
+   "deger": 25000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 21000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-laurel-key-xl": {
+   "deger": 200000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 170000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-laurel-key-xxl": {
+   "deger": 440000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 370000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-lucent-key-l": {
+   "deger": 125000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 110000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-lucent-key-m": {
+   "deger": 60000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 51000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-lucent-key-s": {
+   "deger": 30000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 26000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-lucent-key-xl": {
+   "deger": 240000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 200000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-perseus-key-l": {
+   "deger": 125000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 110000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-perseus-key-m": {
+   "deger": 60000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 51000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-perseus-key-s": {
+   "deger": 30000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 26000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-perseus-key-xl": {
+   "deger": 240000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 200000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-perseus-key-xxl": {
+   "deger": 320000,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 270000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-worldboss-topup-l": {
+   "deger": 42500,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 36000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-worldboss-topup-m": {
+   "deger": 21250,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 18000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-worldboss-topup-s": {
+   "deger": 10500,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 8900,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
+  },
+  "package_event-deal-worldboss-topup-xl": {
+   "deger": 76250,
+   "kural": "paket",
+   "para": "U",
+   "fiyat": 65000,
+   "kategori": "extras",
+   "eski": 0,
+   "kaynak": "ek_magaza:esya2"
   }
  },
  "eksik": {

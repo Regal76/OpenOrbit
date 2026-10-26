@@ -358,7 +358,8 @@ class Motor:
         if a.get('hedefli'):
             n = w.npcs.get(w.target)
             hx, hy = w.hero_pos(now)
-            if not n or not n.alive or math.hypot(*(c - h for c, h in zip(n.mover.pos(now), (hx, hy)))) > self.range:
+            if not n or not n.alive or (math.hypot(*(c - h for c, h in zip(n.mover.pos(now), (hx, hy)))) > self.range
+                                        and not e.get('hedefe_isinla')):         # Sleight: seçili hedefe menzil sınırı olmadan ışınlanır
                 self.send([timer_msg(p, item, now)])
                 w.log('   yetenek için menzilde hedef yok: %s' % item)
                 return False
@@ -393,10 +394,12 @@ class Motor:
             hp0 = g.get('hitPoints', 0)
             p.set_hull(hp=hp0 + g.get('hitMax', 0) * e['can_yuzde'] * factor(p, item, 'etki'))
             msgs += [w.hp_msg()] + w.heal_msgs(hp0)
-        if 'hedef_kalkan_sil' in e:               # Diminisher: hedefin kalkanının %30'u gider, süre boyunca kalkanı zayıf
-            target.shield -= int(target.shield * e['hedef_kalkan_sil'])
-            target.etki.add('kalkan_emme', dur, e.get('hedef_kalkan_emme', 1.0), item, now)
-            msgs.append(w.selection(target))
+        if 'hedef_kalkan_hasari' in e:            # Diminisher Weaken Shields: süre boyunca hedefin kalkanına giden hasar artar (dunya.hit_npc)
+            target.etki.add('kalkan_hasari', dur, e['hedef_kalkan_hasari'], item, now)
+        if e.get('hedefe_isinla'):                # Keres Sleight: hedefin konumuna ışınlan (Phase Out'taki anlık MoveCommand yolu), ardından hedef yavaşlar
+            x, y = (int(c) for c in target.mover.pos(now))
+            w.hero = type(w.hero)(x, y)
+            msgs.append(('MoveCommand', dict(userId=w.hid, x=x, y=y, timeToTarget=0)))
         if 'hedef_kalkan_kapat' in e:             # Disruptor Shield Disarray: kalkanın yarısı süre boyunca kapanır, bitince geri
             st['kapatilan'] = int(target.shield * e['hedef_kalkan_kapat'])
             target.shield -= st['kapatilan']
@@ -465,8 +468,8 @@ class Motor:
 
     # ------------------------------------------------------------ süre
     def finish(self, item, now):
-        """Etki bitti: görsel kalkar, hedefin kalkanı yine azalır (Diminisher) ya da geri gelir (Shield Disarray), dolan vuruş
-        (Charge Shot), bekleme başlar."""
+        """Etki bitti: görsel kalkar, kendi kalkanın azalır (Diminisher Weaken Shields) ya da hedefin kalkanı geri gelir (Shield Disarray),
+        dolan vuruş (Charge Shot), bekleme başlar."""
         p, w = self.p, self.w
         self.ending.pop(item, None)
         s = state(p).get(item, {})
@@ -486,11 +489,10 @@ class Motor:
             n.shield = min(max(n.d.get('kalkan', 0), n.shield), n.shield + back)
             if w.target == n.id:
                 msgs.append(w.selection(n))
-        if 'hedef_kalkan_sil' in e and s.get('hedef') in w.npcs and w.npcs[s['hedef']].alive:
-            n = w.npcs[s['hedef']]
-            n.shield -= int(n.shield * e['hedef_kalkan_sil'])
-            if w.target == n.id:
-                msgs.append(w.selection(n))
+        if 'kalkan_kaybi' in e and not w.hero_dead:      # Weaken Shields: etki bitince KENDİ kalkanının %30'u gider
+            g = p.d['gemi']
+            p.set_hull(shield=g.get('shield', 0) * (1 - e['kalkan_kaybi']))
+            msgs.append(('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)}))
         n = w.npcs.get(s.get('hedef'))
         if n:
             n.etki.remove(source=item)            # hedefteki etkiler (zayıf kalkan, zehir, işaret) erken kalkar

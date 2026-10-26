@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<battlePass>
+    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py, wiki verisi: tools/biletler_wiki.json; resmî dosya değil) -->
+    <objectiveList>
+        <!-- No Pain No Gain -->
+        <objective questId="500529">
+            <questReward lootid="ammunition_laser_ucb-100" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Triple Threat -->
+        <objective questId="500607">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="30"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- All Out Fight -->
+        <objective questId="500611">
+            <questReward lootid="ammunition_rocket_plt-2021" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Jamming -->
+        <objective questId="500615">
+            <questReward lootid="tech_shield-backup2" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Alpha Loop -->
+        <objective questId="500562">
+            <questReward lootid="ammunition_laser_rsb-75" amount="10000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- My Domain! -->
+        <objective questId="500621">
+            <questReward lootid="ammunition_rocketlauncher_sar-02" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Endurance is Key -->
+        <objective questId="500530">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="45"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Our War -->
+        <objective questId="500608">
+            <questReward lootid="resource_extra-energy" amount="20"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Back And Forth -->
+        <objective questId="500612">
+            <questReward lootid="ammunition_rocketlauncher_cbr" amount="500"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Show Yourself -->
+        <objective questId="500616">
+            <questReward lootid="resource_battle-pass-key" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Double Dare -->
+        <objective questId="500563">
+            <questReward lootid="ammunition_rocketlauncher_ubr-100" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Space Dweller -->
+        <objective questId="500622">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="100"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Thanks a Lot! -->
+        <objective questId="500531">
+            <questReward lootid="ammunition_specialammo_pld-8" amount="500"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Last Man Standing -->
+        <objective questId="500609">
+            <questReward lootid="ammunition_laser_spacecup_group-c" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Climax -->
+        <objective questId="500613">
+            <questReward lootid="ammunition_laser_spacecup_group-d" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- All Seeing Eye -->
+        <objective questId="500617">
+            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="1000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Triple Trip -->
+        <objective questId="500564">
+            <questReward lootid="resource_collectable_indoctrine-accelerator" amount="40"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- First In Last Out -->
+        <objective questId="500623">
+            <questReward lootid="ammunition_rocketlauncher_ubr-100" amount="1500"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Conquerer -->
+        <objective questId="500610">
+            <questReward lootid="resource_booty-key" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="10"/>
+        </objective>
+        <!-- Finale -->
+        <objective questId="500614">
+            <questReward lootid="booster_dmg-dlb" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="10"/>
+        </objective>
+        <!-- God of War -->
+        <objective questId="500624">
+            <questReward lootid="tech_burning-trail" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Thrill Hunter -->
+        <objective questId="500625">
+            <questReward lootid="tech_explosive-charging-blob" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Ruler Of Space -->
+        <objective questId="500628">
+            <questReward lootid="tech_battle-repair-bot2" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Wicked Power -->
+        <objective questId="500548">
+            <questReward lootid="tech_battle-repair-bot2" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Unlimited Power -->
+        <objective questId="500550">
+            <questReward lootid="tech_shield-backup2" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Battle Champion -->
+        <objective questId="500336">
+            <questReward lootid="equipment_shipupgrade_spc-xof02" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+    </objectiveList>
+    <flvDisplayLootId>resource_battle-pass-key</flvDisplayLootId>
+    <titleKeyBeforePurchase>window_objectives_bp_title</titleKeyBeforePurchase>
+    <descriptionKeyBeforePurchase>window_objectives_bp_promo_desc-spacecup2022</descriptionKeyBeforePurchase>
+    <descriptionKeyCollect>window_objectives_bp_collect_desc</descriptionKeyCollect>
+    <titleKeyAfterPurchase>window_objectives_bp_highlight_title-spacecup2022</titleKeyAfterPurchase>
+    <descriptionKeyAfterPurchase>window_objectives_bp_highlight_desc-spacecup2022</descriptionKeyAfterPurchase>
+</battlePass>

@@ -1987,35 +1987,35 @@
  },
  "yenileme": {
   "hak": [
-   2,
-   3,
-   4,
    5,
-   6,
-   7,
-   8
+   5,
+   5,
+   5,
+   5,
+   5,
+   5
   ],
   "bedel": [
-   5,
-   10,
-   15,
-   25,
-   35,
-   50,
-   70
-  ],
-  "cip": [
    2,
    4,
+   6,
    8,
-   15,
-   25,
+   9,
+   10,
+   12
+  ],
+  "cip": [
+   10,
    40,
-   0
+   80,
+   120,
+   150,
+   200,
+   250
   ],
   "iade": 0.8,
   "cip_esya": "resource_collectable_optigrad-chip",
-  "_uyarlama": "kalite sırasıyla OptiGrad Chip yenileme hakları ve bedelleri, geri dönüşümün çipi (UL geri dönüştürülmez)"
+  "_kaynak": "https://darkorbitwiki.com/guides/assembly-cannons-and-refractors-restabilize/ (2026-02-27): top 7 kalite, kırıcı MR-01..06 (aynı ilk 6 değer); iade: top SSS'si (geri dönüşümde yükseltme malzemesinin %80'i). Kalite sırasıyla: değiştirme sınırı, değiştirme bedeli (OptiGrad Chip), geri dönüşümün çipi (UL dahil); kırıcıda ilk 6 değer"
  },
  "kilit": {
   "seviyeler": [
@@ -5725,7 +5725,7 @@
     "adet": 5,
     "girdi_yildiz": 0,
     "bedel": {
-     "currency_uridium": 10000
+     "currency_uridium": 1000
     }
    },
    {
@@ -5738,7 +5738,7 @@
     "adet": 5,
     "girdi_yildiz": 0,
     "bedel": {
-     "currency_uridium": 10000
+     "currency_uridium": 1000
     }
    },
    {
@@ -5751,7 +5751,7 @@
     "adet": 5,
     "girdi_yildiz": 0,
     "bedel": {
-     "currency_uridium": 10000
+     "currency_uridium": 1000
     }
    }
   ],
@@ -5778,6 +5778,6 @@
    "ship_venom": 67
   },
   "iade": 0.5,
-  "_uyarlama": "grup ve tablo adları istemcinin çevirilerinden (Synthesis_table_1 Nidhogg, _2 Helios, _3 Indra, Synthesis_drive_1/2); UL gemi topu 4 LEG (wiki; SSS iki gemide 5); sürücü/mercek tarifleri 5 adet + 10.000 U (darkorbitwiki)"
+  "_uyarlama": "grup ve tablo adları istemcinin çevirilerinden (Synthesis_table_1 Nidhogg, _2 Helios, _3 Indra, Synthesis_drive_1/2); UL gemi topu 4 LEG (wiki; SSS iki gemide 5); sürücü/mercek tarifleri 5 adet + 1.000 U (darkorbitwiki intensify-synthesis, kayıt)"
  }
 }

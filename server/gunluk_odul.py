@@ -4,7 +4,9 @@ data/biletler.json <- tools/biletler.py, kayıttaki pencereler).
 Mini Client ödülü (kayıt: MiniClientRewardInfoCommand {rewardList 15 gün, isClaimable, timeToEndEvent sn, daysClaimed};
   MiniClientRewardClaimRequest -> ödül + MiniClientRewardDayInfoCommand {isClaimable, daysClaimed}): etkinlik süresince (takvim.py:
   'MiniClientReward' türü olan etkinlik: Trial of Terrors, E8'den Prosperous, Protegit, Gauntlet of Plutus, Mimesis, Treacherous
-  Domain, Fiesta, Thanksgiving ve kış takvimi) günde bir; liste kayıttaki Halloween listesi (ötekilerinin listesi kaynakta yok).
+  Domain, Fiesta, Thanksgiving ve kış takvimi) günde bir; liste kayıttaki Halloween listesi, Thanksgiving ve Prosperous'ta wiki'nin
+  8 günlük listesi (biletler.json mini_istemci_etkinlik; fandom, 2021-2022 koşuları: gerçek 2026 listesi doğrulanamıyor), ötekilerinin
+  listesi kaynakta yok (Halloween'inki).
 Monthly Deluxe (MonthlyDeluxeInfoCommand {rewardList 28, dayInfoCommand {today, daysClaimed, isClaimable}, timeInfoCommand
   {timeToPassEnd}}; MonthlyDeluxeClaimRequest -> MonthlyDeluxeDayInfoCommand): gerçek parayla satılan paket
   (package_event-deal-month-deluxe -> resource_monthly-deluxe) uridyumla; alındığı günden 28 gün, her gün o günün ödülü.
@@ -22,6 +24,7 @@ import takvim as TK
 HERE = os.path.dirname(os.path.abspath(__file__))
 D = json.load(open(os.path.join(HERE, 'data', 'biletler.json'), encoding='utf8'))
 MINI, DELUXE, UNITY = D['mini_istemci'], D['aylik_deluxe'], D['unity_odul']
+MINI_EVENT = D.get('mini_istemci_etkinlik', {})       # etkinlik -> kendi gün listesi (yoksa MINI)
 UNITY_Q = {q['id']: q for day in UNITY for q in day}
 DELUXE_ITEM = 'resource_monthly-deluxe'
 
@@ -33,6 +36,11 @@ def mod(name, **f):
 
 def today(now=None):
     return datetime.date.fromtimestamp(time.time() if now is None else now)
+
+
+def mini_list(now=None):
+    """Süren Mini Client etkinliğinin gün listesi [[lootId, adet, özel]]."""
+    return MINI_EVENT.get(mini_event(now)[0], MINI)
 
 
 def mini_event(now=None):
@@ -67,14 +75,14 @@ class GunlukOdul:
         return st
 
     def mini_claimable(self, st, now=None):
-        return st['n'] < len(MINI) and st['gun'] != today(now).isoformat()
+        return st['n'] < len(mini_list(now)) and st['gun'] != today(now).isoformat()
 
     def mini_info(self, now=None):
         st = self.mini_state(now)
         if st is None:
             return None
         k, _ = mini_event(now)
-        rows = [mod('MiniClientItemRewardModule', amount=n, special=s, lootId=l) for l, n, s in MINI]
+        rows = [mod('MiniClientItemRewardModule', amount=n, special=s, lootId=l) for l, n, s in mini_list(now)]
         return ('MiniClientRewardInfoCommand', dict(rewardList=rows, isClaimable=self.mini_claimable(st, now),
                                                     timeToEndEvent=TK.time_left(k, now), daysClaimed=st['n']))
 
@@ -82,7 +90,7 @@ class GunlukOdul:
         st = self.mini_state()
         if st is None or not self.mini_claimable(st):
             return [('MiniClientRewardDayInfoCommand', dict(isClaimable=False, daysClaimed=st['n'] if st else 0))]
-        l, n, s = MINI[st['n']]
+        l, n, s = mini_list()[st['n']]
         with self.p.lock:
             st['n'] += 1
             st['gun'] = today().isoformat()

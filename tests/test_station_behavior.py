@@ -307,12 +307,26 @@ class StationBehavior(unittest.TestCase):
         self.assertFalse(any(name=='HellstormAttackCommand' for name,f in self.sent))
         self.assertFalse(self.w.timers)
 
-    def test_npc_launcher_retaliation_preserves_portal_peace(self):
+    def test_npc_launcher_retaliates_after_player_fires_from_portal_zone(self):
+        # Reversed on purpose (player report 2026-10-26, user-approved rule): in every protected zone (station, portal, layout safe
+        # zone) the alien the pilot attacked keeps fighting him; the old version of this test expected portal peace to hold.
         gate = self.w.gates[0]
         self.w.hero = dunya.Mover(gate['x'],gate['y'])
         n = self.launcher_npc()
-        n.mover = dunya.Mover(gate['x']+500,gate['y'])
+        n.mover = dunya.Mover(gate['x']+400,gate['y'])       # inside npc_menzil (450)
         self.w.hit_npc(n.id,1,1)
+        self.w.alien.rocket(n,self.now+.01)
+        salvos = [f for name,f in self.sent if name=='HellstormAttackCommand']
+        self.assertEqual(len(salvos),1)
+        self.assertEqual((salvos[0]['attackerId'],salvos[0]['targetId']), (91002,self.w.hid))
+        self.assertEqual(len(self.w.timers),1)
+
+    def test_unprovoked_npc_launcher_cannot_fire_into_portal_zone(self):
+        gate = self.w.gates[0]
+        self.w.hero = dunya.Mover(gate['x'],gate['y'])
+        n = self.launcher_npc()
+        n.mover = dunya.Mover(gate['x']+400,gate['y'])
+        n.engaged = True
         self.w.alien.rocket(n,self.now+.01)
         self.assertFalse(any(name=='HellstormAttackCommand' for name,f in self.sent))
         self.assertFalse(self.w.timers)
@@ -337,13 +351,33 @@ class StationBehavior(unittest.TestCase):
                 self.assertFalse(self.w.timers)
                 data[key] = False
 
-    def test_player_retaliation_does_not_bypass_portal_peace(self):
+    def test_player_shooting_from_portal_zone_can_be_attacked_back(self):
+        # Reversed on purpose (player report 2026-10-26, user-approved rule): the portal zone no longer overrides the pilot's own attack.
         gate = self.w.gates[0]
         self.w.hero = dunya.Mover(gate['x'], gate['y'])
-        n = self.npc(gate['x'] + 850, gate['y'])
+        n = self.npc(gate['x'] + 400, gate['y'])
+        n.d['hasar'] = 100
         self.w.hit_npc(n.id, 1, 1)
         self.w.think(n, self.now + .01)
-        self.assertFalse(n.engaged)
+        self.assertTrue(n.engaged)
+        self.assertTrue(any(name == 'AttackLaserRunCommand' and f['attackerId'] == n.id for name, f in self.sent))
+
+    def test_unprovoked_npc_drops_attack_at_portal_zone_and_other_npcs_stay_out(self):
+        gate = self.w.gates[0]
+        self.w.hero = dunya.Mover(gate['x'], gate['y'])
+        shot, other = self.npc(gate['x'] + 400, gate['y']), self.npc(gate['x'] - 400, gate['y'])
+        other.id = 91003
+        self.w.npcs = {shot.id: shot, other.id: other}
+        for n in (shot, other):
+            n.d['hasar'] = 100
+            n.engaged = True
+        self.w.hit_npc(shot.id, 1, 1)
+        self.sent.clear()
+        self.w.think(shot, self.now + .01)
+        self.w.think(other, self.now + .01)
+        self.assertTrue(shot.engaged)
+        self.assertFalse(other.engaged)
+        self.assertEqual({f['attackerId'] for name, f in self.sent if name == 'AttackLaserRunCommand'}, {shot.id})
 
 
 if __name__ == '__main__':

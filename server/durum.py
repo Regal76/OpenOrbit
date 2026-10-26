@@ -5,13 +5,16 @@ Türler (değer anlamı):
   yavas        hız çarpanı düşüşü (0.3 = %30 yavaş); birden çoksa en güçlüsü
   donuk        kıpırdamaz ve ateş etmez
   isabet       isabet düşüşü (0.4 = %40 daha az isabet); toplanır, en çok 1
-  kalkan_emme  kalkanın emme çarpanı (0.5 = yarı yarıya zayıf; Diminisher); birden çoksa en küçüğü
+  kalkan_hasari kalkana giden hasar çarpanı (1.5 = kalkan emdiği payın 1,5 katı erir, gövde payı aynı; Diminisher Weaken Shields);
+               birden çoksa en büyüğü
   hasar_bonus  bu varlığa verilen hasar bonusu (0.05 = +%5; Target Marker); toplanır
   dokunulmaz   hasar almaz
   hizlanma     hız en az bu değer (Speed Burst 1.800); oyuncuda ust_hiz
   zehir        saniyede bir gövdeye hasar: deger (vuruş), artis (her vuruşta artış), en_cok, kalan (toplam sınır), sonraki (zaman)
   hiz_siniri   hız en çok bu değer (Barb ve The Stinger'ın yavaşlatma küresi: 120); oyuncuda azami_hiz; birden çoksa en küçüğü
   zayiflik     oyuncunun lazer ve roket hasarı düşüşü (0.1 = %10; Emperor Sibelon'un DMG kapsülü); toplanır
+  yetenek      oyuncuda gemi yeteneği biçiminde etki (gemi_yetenekleri.json 'etki': yansit, emme_can, mods); Mimesis Chest'in Revenge,
+               Assimilate ve Flux'u (mimesis_sandik.py); mods profil bonuslarına, ability(anahtar) hurt_hero'ya
 Her etkinin kaynağı (ör. yeteneğin menü öğesi) vardır; kaynağa göre erken kaldırılabilir.
 """
 import time
@@ -64,8 +67,8 @@ class Etkiler:
     def accuracy_loss(self, now=None):
         return min(1.0, sum(e['deger'] for e in self.get('isabet', now)))
 
-    def shield_factor(self, now=None):
-        return min((e['deger'] for e in self.get('kalkan_emme', now)), default=1.0)
+    def shield_damage(self, now=None):
+        return max((e['deger'] for e in self.get('kalkan_hasari', now)), default=1.0)
 
     def damage_bonus(self, now=None):
         return sum(e['deger'] for e in self.get('hasar_bonus', now))
@@ -75,6 +78,10 @@ class Etkiler:
 
     def speed_cap(self, now=None):
         return min((e['deger'] for e in self.get('hiz_siniri', now)), default=None)
+
+    def ability(self, key, now=None):
+        """Etkin 'yetenek' etkilerinin bir etkisi (yansit, emme_can …) -> değer ya da None (gemi_yetenek.effect'in sandık karşılığı)."""
+        return next((e['deger'][key] for e in self.get('yetenek', now) if key in e['deger']), None)
 
     def speed_factor(self, now=None):
         return 0.0 if self.frozen(now) else 1.0 - self.slow(now)
@@ -110,6 +117,9 @@ class Etkiler:
         cap = self.speed_cap(now)
         if cap is not None:
             out['azami_hiz'] = cap
+        for e in self.get('yetenek', now):
+            for k, v in e['deger'].get('mods', {}).items():
+                out[k] = out.get(k, 0) + v
         weak = sum(e['deger'] for e in self.get('zayiflik', now))
         if weak:
             out['lazer'] = out.get('lazer', 0) - weak

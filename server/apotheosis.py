@@ -420,7 +420,7 @@ class ApoKosu:
 
     def enter_msgs(self):
         self.w.add_gate(dict(gateId=EXIT_ID, x=self.cx - 3000, y=self.cy + 2400, hedef=self.m.k.home() if self.m.k else 5,
-                             designId=1, kapi=self.key, cikis=True))
+                             designId=1, kapi=self.key, cikis=True, varis='istasyon'))
         if time.time() >= self.boss_at:
             self.spawn_boss()
             return []

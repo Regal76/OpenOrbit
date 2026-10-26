@@ -11,7 +11,8 @@ ortasında duran dost gemi, uzaylılar ona da ateş eder; eşlik et: dost gemi h
 Dost gemi yok olursa, gemin yok olursa ya da süre dolarsa seviye kaybedilir; yok olan gemi bu koşuda kullanılamaz. Seviye bitince
 ilk geçiş ödülü (bir kez, sıfırlanmaz) ve her geçişte uridyum + UCB-100; salona dönüş portalı açılır.
 Sıfırlama (ExpeditionResetRequest): ilerleme 1. seviyeye, kadro boşalır. Atlama (ExpeditionJumpTargetLevelRequest): ulaşılmış bloğun
-başına uridyumla. Aylık dönem: ay değişince ilerleme ve sıralama sıfırlanır (ilk geçiş ödülleri kalır). Sıralama: en yüksek seviye,
+başına uridyumla. Aylık dönem: ay değişince ilerleme ve sıralama sıfırlanır (ilk geçiş ödülleri kalır; geçen ay seviye geçen oyuncu
+tek oyunculu sıralamanın birincisi: yeni dönemde Cosmic Tyrant unvanı, siralama[].unvan). Sıralama: en yüksek seviye,
 eşitlikte toplam süre (tek oyunculu: yalnız oyuncu). Patron seviyesi (her 5.) bitince Echo sandığı düşer (Aşama 9; qfc.py): renk
 ulaşılan seviyeye göre, açmak için aynı renk Echo Key (anahtarlı kutu sistemi, ganimet.py); içinde Quantum Fluid Core.
 Profilde: pve.echoes {donem, seviye, en_yuksek, sure, ilk [], kadro [hangarId], yok [hangarId], sira {blok: [seviye …]}, izin}.
@@ -48,6 +49,7 @@ class Echoes:
     def __init__(self, profil, magaza, log=print):
         self.p, self.m, self.log = profil, magaza, log
         self.world = None
+        self.titles = None             # oturum bağlar: unvan_avi.grant_title (dönem sonu sıralama unvanı)
         self.level = None              # oynanan seviyenin kaydı
         self.ally_npc = None
 
@@ -55,9 +57,11 @@ class Echoes:
     def st(self):
         s = self.p.d.setdefault('pve', {}).setdefault('echoes', {})
         if s.get('donem') != period():
-            first = s.get('ilk', [])
+            first, top = s.get('ilk', []), s.get('en_yuksek', 0)
             s.clear()
             s.update(donem=period(), seviye=1, en_yuksek=0, sure=0, ilk=first, kadro=[], yok=[], sira={}, kosu=False)
+            if top:                    # tek oyunculu sıralamada oynayan birinci: unvan info_cmd'de verilir (st profil kilidi altında da okunur)
+                s['unvan_bekle'] = True
             self.p.dirty = True
         return s
 
@@ -378,6 +382,9 @@ class Echoes:
     # ------------------------------------------------------------ pencereler
     def info_cmd(self):
         st = self.st
+        if st.get('unvan_bekle') and self.titles:             # geçen ayın birincisi (wiki: Cosmic Tyrant)
+            self.titles(next(r['unvan'] for r in D['siralama'] if r['den'] == 1))
+            st.pop('unvan_bekle')
         me = st['en_yuksek']
         ranks = [mod('ExpeditionRankUserInfoCommand', rank=1, curLevel=me, clearanceTime=int(st.get('sure', 0)),
                      userId=self.p.d['pilot'].get('userId', 0), userName=self.p.d['pilot'].get('userName', ''))] if me else []

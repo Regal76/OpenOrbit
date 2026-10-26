@@ -58,9 +58,9 @@ def ship_icons(name):
     exact = '_'.join(w.upper() if w.lower() == 'boss' else w for w in words)
     out = (exact, exact.upper())
     return out + ((ICON_ALIASES[exact.upper()],) if exact.upper() in ICON_ALIASES else ())
-# sunucu tarafı koşullar (IgnoredCondition): başarım -> olay. Aylık sıralama: tek oyunculu uyarlama, rütbe puanı kazanılan her ay
-# (oyuncu Hall of Fame'de tek; rutbe.py daily_rank yeni ayın ilk hesabında gönderir)
-SERVER_SIDE = {'achievement_monthlyranking-general': 'monthly_rank', 'achievement_monthlyranking-pilot': 'monthly_rank',
+# sunucu tarafı koşullar (IgnoredCondition): başarım -> olay. Aylık sıralama: tek oyunculu uyarlama, rütbe puanı kazanılan her ay;
+# 1. sıra General of the Month, 2-50. sıra Acclaimed Pilot sayacı (rutbe.py daily_rank yeni ayın ilk hesabında, rütbeden sanal sıra)
+SERVER_SIDE = {'achievement_monthlyranking-general': 'monthly_general', 'achievement_monthlyranking-pilot': 'monthly_pilot',
                # şampiyonlar (E6 uyarlaması): sıralamada tek oyuncu; kişisel rekor (EBL'de en ileri dalga, Plutus'ta en iyi süre)
                'achievement_event_eternalgate-champion': 'rekor_ebl', 'achievement_event_gauntletofplutus-champion': 'rekor_plutus'}
 

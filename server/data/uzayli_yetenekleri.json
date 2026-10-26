@@ -1,5 +1,5 @@
 {
- "_aciklama": "Uzaylı yetenekleri (yol haritası Aşama 4; uzayli.py ve dunya.py uygular). Anahtar istemcinin npcId'si (npc.json npc_kimlik, kapilar.json npc_kimlik): aynı uzaylı haritada da kapıda da aynı yetenekle gelir. Kaynak belgeler/wiki/aliens.md (wiki); wiki'nin sayı vermediği yerler '_uyarlama' notunda. Alanlar: vurulunca_cagir {tur, adet, en_cok, bekleme_sn, ilk_bekleme_sn (sakin_sn (15) vurulmadıktan sonraki ilk vuruşta çağrı bu kadar sonra), sakin_sn, aralik_sn (sürü bu arayla art arda çıkar), koru {yaricap: [en az, en çok], tasma (yoksa en çok + ateş menzili)} (çağrılanlar çağıranın çevresinde dolaşır; saldırırken de, oyuncuyu menzilinde tutarak; oyuncu çağırandan tasmadan uzaksa peşini bırakır)}, yenilenme {can_sn, kalkan_sn, bekleme_sn}, olunce_dogur [{tur, adet}], cagrilar_yasarken_dokunulmaz, cagrilar_yasarken_onarim {can_sn}, ofke {saldiran, sure_sn, hasar_carpani, ek_cagri, onarim_can_sn}, can_esiginde_cagir [{oran, tur, adet}], gizlenme_bozar {menzil}, yavaslatan_atis {hiz | oran, sn, menzil}, coklu_hedef {can_orani}, roket {hasar, bekleme_sn, firlatici, adet, tur (eski roket kimliği; yoksa 1)}, tekillik {sn_hasar, azami, sure_sn, menzil, bekleme_sn, gorsel (girdap; yoksa var)}, temasla_patla {hasar, yaricap}, kaybolma {hasar, sahte, uzaklik, patlama, patlama_yaricap, sahte_omur_sn, can_sn, kalkan_sn}, yapiskan_bomba {hasar, aralik_sn, gecikme_sn, grup}, hiz_becerisi {hiz, kalkan_orani}, kapsuller {adet, aralik_sn, toplama_ms, toplama_mesafe, can, kalkan, hasar}, olunce_cagrilar_dagilir {omur_sn}, kamikaze_esik {oran, bekle_sn, yaklas_sn, yaricap, hasar_can_orani}, ters_kontrol {kalkan_orani | can_orani, sn}.",
+ "_aciklama": "Uzaylı yetenekleri (yol haritası Aşama 4; uzayli.py ve dunya.py uygular). Anahtar istemcinin npcId'si (npc.json npc_kimlik, kapilar.json npc_kimlik): aynı uzaylı haritada da kapıda da aynı yetenekle gelir. Kaynak belgeler/wiki/aliens.md (wiki); wiki'nin sayı vermediği yerler '_uyarlama' notunda. Alanlar: vurulunca_cagir {tur, adet, en_cok, bekleme_sn, ilk_bekleme_sn (sakin_sn (15) vurulmadıktan sonraki ilk vuruşta çağrı bu kadar sonra), sakin_sn, aralik_sn (sürü bu arayla art arda çıkar), koru {yaricap: [en az, en çok], tasma (yoksa en çok + ateş menzili)} (çağrılanlar çağıranın çevresinde dolaşır; saldırırken de, oyuncuyu menzilinde tutarak; oyuncu çağırandan tasmadan uzaksa peşini bırakır)}, yenilenme {can_sn, kalkan_sn, bekleme_sn}, olunce_dogur [{tur, adet}], cagrilar_yasarken_dokunulmaz, cagrilar_yasarken_onarim {can_sn}, ofke {saldiran, sure_sn, hasar_carpani, ek_cagri, onarim_can_sn}, can_esiginde_cagir [{oran, tur, adet}], gizlenme_bozar {menzil}, yavaslatan_atis {hiz | oran, sn, menzil}, coklu_hedef {can_orani}, roket {hasar, bekleme_sn, firlatici, adet, tur (eski roket kimliği; yoksa 1)}, tekillik {sn_hasar, azami, sure_sn, menzil, bekleme_sn, gorsel (girdap; yoksa var)}, temasla_patla {hasar, yaricap}, kaybolma {hasar, sahte, uzaklik, patlama, patlama_yaricap, sahte_omur_sn, can_sn, kalkan_sn}, yapiskan_bomba {hasar, aralik_sn, gecikme_sn, grup}, hiz_becerisi {hiz, kalkan_orani}, kapsuller {adet, aralik_sn, toplama_ms, toplama_mesafe, can, kalkan, hasar}, olunce_cagrilar_dagilir {omur_sn}, kamikaze_esik {oran, bekle_sn, yaklas_sn, yaricap, hasar_can_orani}, ters_kontrol {kalkan_orani | can_orani, sn}. iyilestirme {can_sn | can_orani, bekleme_sn, menzil, hedef [ad parçaları; yoksa her uzaylı]} (yakındaki uzaylıların gövdesini onarır, kendini değil), izle {hedef (ad parçası), yaricap [en az, en çok]} (koruyucu düzeniyle o uzaylının çevresinde dolaşır), periyodik_cagir {bekleme_sn, cagrilar [{tur, adet, en_cok}]} (savaşırken vurulmasa da çağırır), mayin_birak {mayin, can_orani, bekleme_sn, en_cok, hedef, yaricap [en az, en çok]} (canı can_orani'nın altındayken savaşırken mayın bırakır: uzaylının konumuna, hedef true ise oyuncunun çevresine; en_cok mayın yaşarken yenisini bırakmaz), periyodik_emp {bekleme_sn, menzil}, olum_isini {hasar, aralik_sn, uzaklik} (oyuncu Overlord'dan uzaklik'tan uzaktayken savaşırken aralık_sn'de bir hasar), kalkan_bitince_emp (bool: kalkanı her bitişinde EMP), kritik_emp {can_orani} (bir kez), ters_atis {sn, bekleme_sn} (isabet eden lazer kontrolleri ters çevirir), hiz_oyuncu {ek, can_orani} (hızı oyuncununkine eşit; can_orani varsa yalnız o canda), temasla_patla.kenarda (patlama yarıçapının kenarında hasarın kalan payı; temasta tam), yapiskan_bomba.hasar [en az, en çok] olabilir. Üst düzey \"dusuk_can\": harita başıboşlarının düşük canda kaçışı ve parkı (uzayli.low_health; oran, donus_orani, kenar_payi, yenilenme, menzil_artisi).",
  "yetenekler": {
   "13": {
    "_ad": "Cubikon",
@@ -250,6 +250,21 @@
    "_kaynak": "aliens.md: ~30 sn'de bir 300.000 hasarlık yapışkan bomba, yakın duran oyuncular paylaşır",
    "_uyarlama": "tek oyunculu: hasar Hades'in en küçük grubuna (4) bölünür (75.000). Statik yük (+/- kutuplu pilotlar) birden çok oyuncu ister: bot oyuncularla."
   },
+  "108": {
+   "_ad": "Boss Curcubitor",
+   "ters_kontrol": {
+    "can_orani": 0.5,
+    "sn": 5
+   },
+   "yapiskan_bomba": {
+    "hasar": 120000,
+    "aralik_sn": 30,
+    "gecikme_sn": 10,
+    "grup": 1
+   },
+   "_kaynak": "darkorbitwiki aliens/boss-curcubitor: kırmızı hale vurulan geminin kontrollerini ters çevirir; yeşil hale yapışkan bomba (10 sn geri sayım, en çok 120k hasar)",
+   "_uyarlama": "halka renkleri kaynakta sürekli değişiyor: ters kontrol canın yarısında bir kez 5 sn, bomba 30 sn'de bir (Emperor Kristallon gibi)"
+  },
   "113": {
    "_ad": "Emperor Sibelon",
    "hiz_becerisi": {
@@ -268,14 +283,61 @@
    "_kaynak": "aliens.md: kalkanı biterken hızı ~380'e çıkar; haritada güçlendirme kapsülleri belirir: HP (~%10 can), SHD (~%10 kalkan), DMG (hasarı ~%10 artar, oyuncularınki ~%10 düşer)",
    "_uyarlama": "kalkan %10'un altına inince; 15 sn'de bir kapsül, en çok 3; Emperor en yakın kapsüle gidip 3 sn'de toplar; oyuncu kapsülün 150 birim yakınından geçerse kapsül yok olur"
   },
+  "128": {
+   "_ad": "Gygerim Overlord",
+   "olum_isini": {
+    "hasar": 60000,
+    "aralik_sn": 2,
+    "uzaklik": 1500
+   },
+   "_kaynak": "darkorbitwiki aliens/gygerim-overlord: Death Ray, ışınlar haritanın dışından gelir, hasar Overlord'a uzaklığa bağlı; yeterince uzaktayken 2 sn'de bir ortalama 60.000 hasar",
+   "_uyarlama": "uzaklığa bağlı hasar eğrisi kaynakta yok: oyuncu Overlord'dan 1.500 birimden uzaktayken (lazer 700, roket 900, Overlord'un menzili 1.000) 2 sn'de bir 60.000 x %80-120; yakındayken ışın yok. Quarantine Zone ve Compromising Invasion'ın Overlord'u (npc_kimlik 128) aynı"
+  },
+  "260": {
+   "_ad": "Agatus",
+   "mayin_birak": {
+    "mayin": "ammunition_mine_acm-01",
+    "can_orani": 0.5,
+    "bekleme_sn": 15,
+    "en_cok": 4
+   },
+   "_kaynak": "aliens.md agatus_x3..x8: \"drops ACM-1 mines at 50% health\"",
+   "_uyarlama": "canı %50'nin altındayken savaşırken 15 sn'de bir uzaylının konumuna ACM-1; aynı anda en çok 4 mayın (kaynakta sayı yok). Spinel çağırması etkinlikler.json agatus.patron'da"
+  },
   "266": {
    "_ad": "Strokelight Barrage",
    "roket": {
     "hasar": 300000,
     "bekleme_sn": 30
    },
-   "_kaynak": "aliens.md: azami hasar lazer 20.000 / roket 300.000",
-   "_uyarlama": "30 sn'de bir roket"
+   "mayin_birak": {
+    "mayin": "ammunition_mine_acm-01",
+    "can_orani": 0.2,
+    "bekleme_sn": 20,
+    "en_cok": 3,
+    "hedef": true,
+    "yaricap": [
+     250,
+     500
+    ]
+   },
+   "_kaynak": "aliens.md: azami hasar lazer 20.000 / roket 300.000; fandom (Strokelight Barrage): Abide I ve Steadfast III çağırabilir; düşük canda hedefinin çevresine ACM-1 yaratır (fandom ACM-1)",
+   "_uyarlama": "30 sn'de bir roket; savaşırken vurulmasa da 25 sn'de bir 2 Abide I ve 1 Steadfast III (en çok 4 ve 2 yaşarken; sayılar kaynakta yok); canı %20'nin altındayken (düşük can) 20 sn'de bir oyuncunun 250-500 birim çevresine ACM-1, en çok 3 mayın (sayılar kaynakta yok)",
+   "periyodik_cagir": {
+    "bekleme_sn": 25,
+    "cagrilar": [
+     {
+      "tur": "npc268",
+      "adet": 2,
+      "en_cok": 4
+     },
+     {
+      "tur": "npc269",
+      "adet": 1,
+      "en_cok": 2
+     }
+    ]
+   }
   },
   "235": {
    "_ad": "Cloning Mimesis",
@@ -371,11 +433,172 @@
    },
    "_kaynak": "fandom: canı azken hareketi 5 sn ters çevirir (Boss StreuneR gibi)",
    "_uyarlama": "düşük can %25, bir kez"
+  },
+  "148": {
+   "_ad": "Streuner Turret",
+   "ters_atis": {
+    "sn": 4,
+    "bekleme_sn": 8
+   },
+   "_kaynak": "fandom (Streuner Turret): ışını oyuncunun kontrollerini tersine çevirir (Boss StreuneR'dan alınan etki)",
+   "_uyarlama": "4 sn ters, 8 sn beklemeyle (süre ve bekleme kaynakta yok; Boss StreuneR'unki 5 sn, bir kez)"
+  },
+  "149": {
+   "_ad": "Streuner Specialist",
+   "iyilestirme": {
+    "can_sn": 6000,
+    "bekleme_sn": 3,
+    "menzil": 1500,
+    "hedef": [
+     "streuner"
+    ]
+   },
+   "_kaynak": "fandom (Streuner Specialist, Healing Wave): 3 sn'de bir öteki Streuner'ların gövdesini 6.000 onarır; kendini onarmaz, öteki Specialist'in dalgası onu onarır",
+   "_uyarlama": "dalganın menzili 1.500 birim (kaynakta yok)"
+  },
+  "153": {
+   "_ad": "Aider Streuner",
+   "iyilestirme": {
+    "can_sn": 150,
+    "bekleme_sn": 3,
+    "menzil": 1000
+   },
+   "izle": {
+    "hedef": "recruit streuner",
+    "yaricap": [
+     150,
+     450
+    ]
+   },
+   "_kaynak": "darkorbitwiki (Aider Streuner) ve fandom (Streuner Metammorphosis: \"Aider Streuners will follow Recruit Streuners and will also heal other aliens near it\"; Specialist'in dalgası Aider'inkine benzer)",
+   "_uyarlama": "3 sn'de 150 (kendi canının %10'u), menzil 1.000, yakındaki her uzaylıya; Recruit Streuner'in çevresinde 150-450 birimde dolaşır (kaynakta sayı yok)"
+  },
+  "158": {
+   "_ad": "Streuner Rocketeer",
+   "periyodik_cagir": {
+    "bekleme_sn": 8,
+    "cagrilar": [
+     {
+      "tur": "seeker_roket",
+      "adet": 1,
+      "en_cok": 2
+     }
+    ]
+   },
+   "_kaynak": "fandom (Streuner Rocketeer, Seeker Rocket): Seeker Rocket çağırır (yalnız onunla saldırır); darkorbitwiki Kuiper Gate",
+   "_uyarlama": "8 sn'de bir, en çok 2 roket yaşarken (kaynakta sayı yok). Kuiper kapısının Rocketeer'ındaki davranis.roket (3000 hasar) ve lazer hasarı bu yetenekle birlikte kalkmalı (kapilar.json, tools/kapilar.py: KAPI akışı)"
+  },
+  "159": {
+   "_ad": "Seeker Rocket",
+   "temasla_patla": {
+    "hasar": 6000,
+    "yaricap": 500,
+    "kenarda": 0.5
+   },
+   "hiz_oyuncu": {
+    "ek": 20
+   },
+   "_kaynak": "fandom (Seeker Rocket): hız oyuncununki + 20; oyuncuya yaklaşınca 6.000 alan hasarıyla patlar, hasar patlama anındaki uzaklığa bağlı; vurulup yok edilebilir",
+   "_uyarlama": "patlama uzaklığı 500; hasar temasta 6.000, 500 birimde yarısı (3.000)"
+  },
+  "243": {
+   "_ad": "Medic Mimesis",
+   "iyilestirme": {
+    "can_orani": 0.05,
+    "bekleme_sn": 3,
+    "menzil": 1500,
+    "hedef": [
+     "mimesis"
+    ]
+   },
+   "_kaynak": "darkorbitwiki (Medic Mimesis, Mimesis Mutiny): yakındaki Mimesis uzaylılarını iyileştirir",
+   "_uyarlama": "3 sn'de hedefin azami canının %5'i, menzil 1.500 (kaynakta sayı yok)"
+  },
+  "246": {
+   "_ad": "Obscured Mimesis",
+   "kalkan_bitince_emp": true,
+   "_kaynak": "darkorbitwiki (Obscured Mimesis): kalkanını kaybedince EMP darbesi savurur",
+   "_uyarlama": "EMP oyuncunun hedefini sıfırlar, gizlenmeyi bitirir ve mini haritayı 5 sn parazitler (EMP-01'in oyuncuya etkisi gibi)"
+  },
+  "248": {
+   "_ad": "Mirror Mimesis",
+   "vurulunca_cagir": {
+    "tur": "etk_mirror_klon",
+    "adet": 2,
+    "en_cok": 4,
+    "bekleme_sn": 20
+   },
+   "_kaynak": "darkorbitwiki (Mirror Mimesis): savaşta zayıf klonlarını yaratır",
+   "_uyarlama": "vurulunca 2 klon, en çok 4, 20 sn bekleme; klon %10 can/kalkan, %20 hasar, ödülsüz (etk_mirror_klon: tools/etkinlik_uzaylilari.py)"
+  },
+  "251": {
+   "_ad": "Marker Mimesis",
+   "yapiskan_bomba": {
+    "hasar": [
+     100000,
+     300000
+    ],
+    "aralik_sn": 30,
+    "gecikme_sn": 2,
+    "grup": 1
+   },
+   "_kaynak": "darkorbitwiki (Marker Mimesis): gemiye yapışan bomba, 100-300 bin hasar",
+   "_uyarlama": "30 sn'de bir, 2 sn gecikmeli (Emperor Kristallon'un yapışkan bombası gibi); hasar her bombada aralıktan rastgele"
+  },
+  "285": {
+   "_ad": "Spookfish",
+   "kritik_emp": {
+    "can_orani": 0.2
+   },
+   "_kaynak": "fandom (Spookfish): kritik canda EMP-01 salar (Saimon gibi)",
+   "_uyarlama": "kritik can %20, bir kez"
+  },
+  "300": {
+   "_ad": "Hitac Underboss",
+   "yavaslatan_atis": {
+    "hiz": 120,
+    "sn": 5,
+    "menzil": 300
+   },
+   "periyodik_emp": {
+    "bekleme_sn": 30,
+    "menzil": 800
+   },
+   "_kaynak": "darkorbitwiki (Hitac Underboss): yavaşlatma ve EMP Impulse kullanır",
+   "_uyarlama": "yavaşlatma Saboteur'un küresi gibi (hız 120, 5 sn, menzil 300); EMP Impulse savaşırken 800 birimde 30 sn'de bir (kaynakta sayı yok)"
+  },
+  "46": {
+   "_ad": "Hooligan",
+   "hiz_oyuncu": {
+    "can_orani": 0.2
+   },
+   "_kaynak": "fandom (Hooligan, Critical Health): kritik canda hızı oyuncununkine eşitlenir",
+   "_uyarlama": "kritik can %20; Hooligan kaçmaz (dusuk_can), oyuncuyla aynı hızda savaşır"
   }
  },
  "kapsul_turleri": [
   "can",
   "kalkan",
   "hasar"
- ]
+ ],
+ "dusuk_can": {
+  "_aciklama": "Harita başıboşlarının düşük canı (uzayli.low_health, dunya.think): canı oran'ın altına inen uzaylı oyuncunun tersindeki kenar/köşe noktasına kaçar (menzildeyse ateş eder), varınca durur ve yenilenir (vurulmadığı bekleme_sn sonra saniyede azami canın can_orani_sn'si, kalkanın kalkan_orani_sn'si; ateş etmez), donus_orani'na yenilenince normal davranışa döner. Kaçmayanlar: kapı/mod/etkinlik uzaylıları, çağrılanlar, hareketsizler, mothership ve özel patronlar (npc.json savas.yeniden_dogma_ozel), korsan haritaları (5-X), Barracuda (kamikaze_esik) ve Hooligan (hiz_oyuncu). menzil_artisi: ad parçası eşleşen türlerin kaçarken ateş menzili carpan katına çıkar.",
+  "oran": 0.2,
+  "donus_orani": 1.0,
+  "kenar_payi": 700,
+  "yenilenme": {
+   "can_orani_sn": 0.01,
+   "kalkan_orani_sn": 0.05,
+   "bekleme_sn": 5
+  },
+  "menzil_artisi": {
+   "carpan": 1.2,
+   "ad": [
+    "kristallon",
+    "kristallin"
+   ]
+  },
+  "_kaynak": "fandom (Low health, Parking, Critical Health): genelde %20'nin altında uzaylı haritanın kenarındaki sabit noktalara kaçar ve kaçarken ateş etmeyi sürdürür; kritik canda oyuncunun tersine haritanın köşesine gider, orada durup kalkanını/canını yeniler, vurulabilir ve karşılık vermez; Kristallon ve Kristallin'in menzili düşük canda nadiren artar; mothership (Cubikon, Ice Meteoroid) ve korsanlar kaçmaz; Barracuda patlar",
+  "_uyarlama": "kaçış noktaları: haritanın dört köşesi ve dört kenar ortası (700 birim içeride), oyuncudan en uzağı; yenilenme saniyede can %1, kalkan %5 (kaynakta sayı yok) ve tamamen dolunca dönüş; menzil artışı x1,2 (kaynakta sayı yok); etkinlik uzaylıları kendi akışlarında (patron süresi, kota) olduğundan kaçmaz; Hooligan kaçmaz çünkü kritik canda hızı oyuncununkine eşitlenir (tehdit)"
+ }
 }

@@ -13,9 +13,12 @@ istemcinin Restabilize penceresi (istekler istemcinin kodundan):
   UnstableModuleRestabiliseRequest {itemId, isSalvage}  isSalvage: Salvage Core vb. ödenip önceki nitelikler geri alınır ("Your
       unstable module has been salvaged to retain the same modifiers"); değilse yenisi kalır
   UnstableModuleRecycleRequest {itemId}        modül sökülür, Unstable Shard geri verilir
-Değerler (uyarlama; istemcide yok): seri başına artış aralığı (X1 %2-5, X2 %4-8, X3 %2-10; "at least N%" serilerinde N..N+6),
-1-2 nitelik, 3-5 gemi (açıklamadaki gemiler öncelikli), 5 Restabilize hakkı, 15 shard, geri dönüşüm 10 shard, saklama 10 Salvage
-Core + 100 Polychromium.
+Değerler gerçek kayda (UnstableModulesListCommand) ve wiki'ye göre, seri başına (veri gemi_modulleri.json kararsiz.restabilize ve
+.aralik <- tools/gemi_modulleri.py): geri dönüşümde alınan shard, yeniden çekme bedeli ve hakkı (X1/XW01 2/10/10, X2 ve ara seriler
+4/20/8, XSP01 20/100/4, XT10 30/150/2); saklama (Salvage) bedeli her modülde 200 Salvage Core + 38 ABR + 6 Indoctrine Oil. Nitelik
+değerleri tam sayı yüzde, serinin iki kademeli aralığından (büyük şans / küçük şans: KUCUK_SANS); kayıttaki modüllerde 1-3 nitelik
+(ana nitelik modülün ailesinden, öbürleri IKINCIL havuzdan %1-3) ve 1-3 gemi var. Uyarlama (kayıtta yok): kademe şansı, nitelik ve
+gemi sayısı ağırlıkları, X1/X2/XW01 aralıkları (wiki "Randomly").
 Profilde: kararsiz {itemId: {nitelik: [[ad, değer]], gemiler, hak, onceki}}.
 """
 import json, os, random, re
@@ -31,11 +34,15 @@ ATTR_KEYS = {'damage': ('lazer', 'roket'), 'dmg_laser': ('lazer',), 'dmg_rockets
              'hitpoints': ('can',), 'shield': ('kalkan',), 'speed': ('hiz',), 'evasion': ('kacinma',), 'hitchance_laser': ('lazer_isabet',),
              'hitchance_rocket': ('roket_isabet',), 'experience': ('ep',), 'honour': ('onur',), 'shield_penetration': ('kalkan_delme',)}
 POOL = {'DAMAGE': ['damage', 'dmg_laser', 'dmg_rockets', 'dmg_npc'], 'HP': ['hitpoints'], 'SHIELD': ['shield'],
-        'SPECIAL': ['speed', 'evasion', 'hitchance_laser', 'hitchance_rocket', 'experience', 'shield_penetration']}
-SERIES = {'x1': (0.02, 0.05), 'x2': (0.04, 0.08), 'x3': (0.02, 0.10), 'xw01': (0.0, 0.15)}
-REROLLS, REROLL_COST, RECYCLE, RETAIN = 5, 15, 10, {'resource_collectable_salvage-core': 10, 'resource_collectable_polychromium': 100}
+        'SPECIAL': ['speed', 'evasion', 'hitchance_laser', 'hitchance_rocket', 'shield_penetration']}      # ana nitelik (istemcinin açıklaması)
+RETAIN = {'resource_collectable_salvage-core': 200, 'resource_collectable_axion-beam-regulator': 38,
+          'resource_collectable_indoctrineoil': 6}          # kayıttaki retainCost, her modülde aynı (wiki "Salvage Expansion")
 XP_MAX_LEVEL = 16
 UPGRADE_SLOTS = 3
+KUCUK_SANS = 0.2          # iki kademeli serilerde (XV01, XU, XHD01 …) küçük şansın (yüksek kademe) olasılığı: istemci "moderate chance" (uyarlama)
+ONCELIK_SANS = 0.5        # her gemi seçiminde öncelikli listeden çekme olasılığı (kayıttaki 12 gemiden 6'sı öncelikliydi)
+IKINCIL = ('damage', 'dmg_laser', 'dmg_rockets', 'dmg_npc', 'dmg_pvp', 'hitpoints', 'shield', 'speed', 'evasion', 'hitchance_laser',
+           'hitchance_rocket', 'shield_penetration')      # 2. ve 3. niteliğin havuzu (kayıt: SPC-XU03'te DMG_NPC 1, DMG-XT10'ta HITCHANCE_LASER 3 ve SHIELD 1)
 
 
 def mod(name, **f):
@@ -72,21 +79,36 @@ _SHIPS = None
 
 
 # ------------------------------------------------------------ kararsız modül değerleri
+def restab(loot):
+    """Kararsız modülün serisinin Restabilize değerleri: geri (geri dönüşümde alınan shard), bedel (yeniden çekme), hak (en çok kaç kez)."""
+    return M[loot]['kararsiz']['restabilize']
+
+
+def pick_value(kz, attr, rng):
+    """Ana niteliğin değeri: serinin aralığı (niteliğin kendi aralığı varsa o); küçük şans (yüksek kademe) KUCUK_SANS olasılıkla;
+    tam sayı yüzde (kayıttaki boostValue'lar hep tam sayı)."""
+    a = kz['aralik']
+    a = a.get('nitelik', {}).get(attr) or a
+    lo, hi = a['kucuk'] if a.get('kucuk') and rng.random() < KUCUK_SANS else a['buyuk']
+    return rng.randint(lo, hi) / 100.0
+
+
 def roll(loot, rng=random):
-    """Kararsız modülün nitelikleri ve gemileri."""
+    """Kararsız modülün nitelikleri ve gemileri: 1-3 nitelik (biri modülün ailesinden ve serinin aralığında, öbürleri küçük) ve 1-3 gemi
+    (kayıt: 7 modül 1, 1, 1, 1, 2, 2 ve 3 gemili; öncelikli gemiler sık çıkar ama zorunlu değil)."""
     info = M[loot]
-    code = loot.rsplit('-', 1)[-1]
-    lo, hi = SERIES.get(code) or ((info['kararsiz']['en_az'], info['kararsiz']['en_az'] + 0.06) if info['kararsiz'].get('en_az')
-                                  else (0.03, 0.08))
-    pool = POOL.get(info['tur'], POOL['DAMAGE'])
-    attrs = rng.sample(pool, min(len(pool), rng.choice((1, 1, 2))))
-    vals = [[a, round(rng.uniform(lo, hi), 3)] for a in attrs]
-    pref = [s for s in info['kararsiz'].get('tercih', [])]
+    kz = info['kararsiz']
+    main = rng.choice(POOL.get(info['tur'], POOL['DAMAGE']))
+    vals = [[main, pick_value(kz, main, rng)]]
+    vals += [[a, rng.randint(1, 3) / 100.0] for a in rng.sample([a for a in IKINCIL if a != main], rng.choices((0, 1, 2), (6, 3, 1))[0])]
+    rng.shuffle(vals)                      # kayıtta ana nitelik ilk olmayabiliyor (DMG-XT10: DMG_NPC sonuncu)
+    pref = list(kz.get('tercih', []))
     rest = [s for s in all_ships() if s not in pref]
-    n = rng.randint(3, 5)
-    picks = rng.sample(pref, min(len(pref), rng.randint(1, max(1, len(pref))))) if pref else []
-    picks += rng.sample(rest, max(0, n - len(picks)))
-    return dict(nitelik=vals, gemiler=sorted(set(picks)))
+    picks = []
+    for _ in range(rng.choice((1, 1, 2, 3))):
+        pool = [s for s in (pref if pref and rng.random() < ONCELIK_SANS else rest) if s not in picks] or [s for s in rest + pref if s not in picks]
+        picks.append(rng.choice(pool))
+    return dict(nitelik=vals, gemiler=sorted(picks))
 
 
 def state(p, iid):
@@ -95,16 +117,20 @@ def state(p, iid):
     rec = d.get(str(iid))
     loot = p.d['esyalar'].get(str(iid))
     if rec is None and loot and unstable(loot):
-        rec = d[str(iid)] = dict(roll(loot), hak=REROLLS)
+        rec = d[str(iid)] = dict(roll(loot), hak=restab(loot)['hak'])
+        p.dirty = True
+    elif rec and loot and unstable(loot) and rec['hak'] > restab(loot)['hak']:
+        rec['hak'] = restab(loot)['hak']            # eski sabit 5 hak, seri azamisini (XT10 2, XSP01 4) aşamaz
         p.dirty = True
     return rec
 
 
 def module_msg(p, iid):
     rec, loot = state(p, iid), p.d['esyalar'].get(str(iid))
-    return mod('UnstableModuleModule', recycleReturns=RECYCLE, rerollsMax=REROLLS, rerollCost=REROLL_COST, rerollsLeft=rec['hak'],
+    r = restab(loot)
+    return mod('UnstableModuleModule', recycleReturns=r['geri'], rerollsMax=r['hak'], rerollCost=r['bedel'], rerollsLeft=rec['hak'],
                retainCost=[mod('LootModule', lootId=l, amount=n, modifier='') for l, n in sorted(RETAIN.items())],
-               attributes=[mod('UnstableAttributeModule', attribute=a, boostValue=float(v * 100)) for a, v in rec['nitelik']],
+               attributes=[mod('UnstableAttributeModule', attribute=a, boostValue=round(v * 100, 2)) for a, v in rec['nitelik']],
                shipDesigns=list(rec['gemiler']), itemId=int(iid), lootId=loot)
 
 
@@ -208,18 +234,19 @@ class Moduller:
         if rec['hak'] <= 0:
             from eski_protokol import legacy
             return [legacy('0|A|STM|msg_reroll_error_item')]
-        if INV.missing(self.p, {SHARD: REROLL_COST}):
+        cost = restab(loot)['bedel']
+        if INV.missing(self.p, {SHARD: cost}):
             from eski_protokol import legacy
             return [legacy('0|A|STM|msg_reroll_error_shards'), list_cmd(self.p)]
         old = module_msg(self.p, iid)
-        self.p.add_resource(SHARD, -REROLL_COST)
+        self.p.add_resource(SHARD, -cost)
         with self.p.lock:
             rec['onceki'] = dict(nitelik=rec['nitelik'])
             rec['nitelik'] = roll(loot)['nitelik']             # gemiler değişmez (resmî SSS)
             rec['hak'] -= 1
             self.p.dirty = True
         self.log('   Restabilize: %s -> %s %s' % (loot, rec['nitelik'], rec['gemiler']))
-        RT.note(self.p, 'his_rerolled_unstable_module', loot, REROLL_COST)    # seyir defteri (%NAME% info'dan, %COUNT%)
+        RT.note(self.p, 'his_rerolled_unstable_module', loot, cost)    # seyir defteri (%NAME% info'dan, %COUNT%)
         return self.after(iid, [self.result(iid, old, module_msg(self.p, iid))])
 
     def restabilise(self, f):
@@ -275,11 +302,12 @@ class Moduller:
             del self.p.d['esyalar'][str(iid)]
             self.p.d.get('kararsiz', {}).pop(str(iid), None)
             self.p.dirty = True
-        msgs = [('InventoryItemRemovedCommand', {'itemId': iid})] + (self.m.reward(SHARD, RECYCLE) if self.m else [])
+        back = restab(loot)['geri']
+        msgs = [('InventoryItemRemovedCommand', {'itemId': iid})] + (self.m.reward(SHARD, back) if self.m else [])
         if not self.m:
-            self.p.add_resource(SHARD, RECYCLE)
-        self.log('   geri dönüşüm: %s -> %d shard' % (loot, RECYCLE))
-        RT.note(self.p, 'his_recycled_unstable_module', loot, RECYCLE)
+            self.p.add_resource(SHARD, back)
+        self.log('   geri dönüşüm: %s -> %d shard' % (loot, back))
+        RT.note(self.p, 'his_recycled_unstable_module', loot, back)
         return msgs + [('UnstableModuleRecycleResultCommand', dict(itemId=iid, shardCommand=shard_cmd(self.p))), list_cmd(self.p)]
 
     def after(self, iid, msgs):

@@ -1321,7 +1321,20 @@
     },
     "kargo": {},
     "puan": 20,
-    "byte": 4
+    "byte": 4,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_ASSAILANT_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       2
+      ]
+     ],
+     "icerik": []
+    }
    },
    "mm_raider": {
     "ad": "-=[ Raider Mimesis ]=-",
@@ -1340,7 +1353,20 @@
     },
     "kargo": {},
     "puan": 20,
-    "byte": 4
+    "byte": 4,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_RAIDER_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       2
+      ]
+     ],
+     "icerik": []
+    }
    },
    "mm_medic": {
     "ad": "-=[ Medic Mimesis ]=-",
@@ -1359,7 +1385,20 @@
     },
     "kargo": {},
     "puan": 85,
-    "byte": 17
+    "byte": 17,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_MEDIC_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       8
+      ]
+     ],
+     "icerik": []
+    }
    },
    "mm_inspirit": {
     "ad": "-=[ Inspirit Mimesis ]=-",
@@ -1397,7 +1436,20 @@
     },
     "kargo": {},
     "puan": 100,
-    "byte": 20
+    "byte": 20,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_HARDY_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       10
+      ]
+     ],
+     "icerik": []
+    }
    },
    "mm_piercing": {
     "ad": "-=[ Piercing Mimesis ]=-",
@@ -1416,7 +1468,77 @@
     },
     "kargo": {},
     "puan": 350,
-    "byte": 70
+    "byte": 70,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_MINI_BOSS_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       [
+        35,
+        70
+       ]
+      ]
+     ],
+     "icerik": [
+      [
+       "ammunition_laser_emaa-20",
+       [
+        100,
+        300
+       ],
+       30
+      ],
+      [
+       "resource_extra-energy",
+       [
+        20,
+        60
+       ],
+       20
+      ],
+      [
+       "resource_logfile",
+       [
+        2,
+        6
+       ],
+       20
+      ],
+      [
+       "ammunition_rocket_plt-2021",
+       [
+        50,
+        150
+       ],
+       15
+      ],
+      [
+       "ammunition_rocketlauncher_sar-02",
+       [
+        20,
+        60
+       ],
+       10
+      ],
+      [
+       "ammunition_specialammo_sr-5",
+       [
+        50,
+        150
+       ],
+       10
+      ],
+      [
+       "ship_disruptor_design_disruptor-tyrannos",
+       1,
+       1
+      ]
+     ]
+    }
    },
    "mm_hounding": {
     "ad": "-=[ Hounding Mimesis ]=-",
@@ -1435,7 +1557,77 @@
     },
     "kargo": {},
     "puan": 350,
-    "byte": 70
+    "byte": 70,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_MINI_BOSS_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       [
+        35,
+        70
+       ]
+      ]
+     ],
+     "icerik": [
+      [
+       "ammunition_laser_emaa-20",
+       [
+        100,
+        300
+       ],
+       30
+      ],
+      [
+       "resource_extra-energy",
+       [
+        20,
+        60
+       ],
+       20
+      ],
+      [
+       "resource_logfile",
+       [
+        2,
+        6
+       ],
+       20
+      ],
+      [
+       "ammunition_rocket_plt-2021",
+       [
+        50,
+        150
+       ],
+       15
+      ],
+      [
+       "ammunition_rocketlauncher_sar-02",
+       [
+        20,
+        60
+       ],
+       10
+      ],
+      [
+       "ammunition_specialammo_sr-5",
+       [
+        50,
+        150
+       ],
+       10
+      ],
+      [
+       "ship_disruptor_design_disruptor-tyrannos",
+       1,
+       1
+      ]
+     ]
+    }
    },
    "mm_sniper": {
     "ad": "-=[ Sniper Mimesis ]=-",
@@ -1454,7 +1646,77 @@
     },
     "kargo": {},
     "puan": 350,
-    "byte": 70
+    "byte": 70,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_MINI_BOSS_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       [
+        35,
+        70
+       ]
+      ]
+     ],
+     "icerik": [
+      [
+       "ammunition_laser_emaa-20",
+       [
+        100,
+        300
+       ],
+       30
+      ],
+      [
+       "resource_extra-energy",
+       [
+        20,
+        60
+       ],
+       20
+      ],
+      [
+       "resource_logfile",
+       [
+        2,
+        6
+       ],
+       20
+      ],
+      [
+       "ammunition_rocket_plt-2021",
+       [
+        50,
+        150
+       ],
+       15
+      ],
+      [
+       "ammunition_rocketlauncher_sar-02",
+       [
+        20,
+        60
+       ],
+       10
+      ],
+      [
+       "ammunition_specialammo_sr-5",
+       [
+        50,
+        150
+       ],
+       10
+      ],
+      [
+       "ship_disruptor_design_disruptor-tyrannos",
+       1,
+       1
+      ]
+     ]
+    }
    },
    "mm_obscured": {
     "ad": "-=[ Obscured Mimesis ]=-",
@@ -1473,7 +1735,77 @@
     },
     "kargo": {},
     "puan": 450,
-    "byte": 90
+    "byte": 90,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_BOSS_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       [
+        45,
+        90
+       ]
+      ]
+     ],
+     "icerik": [
+      [
+       "ammunition_laser_emaa-20",
+       [
+        100,
+        300
+       ],
+       30
+      ],
+      [
+       "resource_extra-energy",
+       [
+        20,
+        60
+       ],
+       20
+      ],
+      [
+       "resource_logfile",
+       [
+        2,
+        6
+       ],
+       20
+      ],
+      [
+       "ammunition_rocket_plt-2021",
+       [
+        50,
+        150
+       ],
+       15
+      ],
+      [
+       "ammunition_rocketlauncher_sar-02",
+       [
+        20,
+        60
+       ],
+       10
+      ],
+      [
+       "ammunition_specialammo_sr-5",
+       [
+        50,
+        150
+       ],
+       10
+      ],
+      [
+       "ship_disruptor_design_disruptor-tyrannos",
+       1,
+       1
+      ]
+     ]
+    }
    },
    "mm_mirror": {
     "ad": "-=[ Mirror Mimesis ]=-",
@@ -1492,7 +1824,77 @@
     },
     "kargo": {},
     "puan": 450,
-    "byte": 90
+    "byte": 90,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_BOSS_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       [
+        45,
+        90
+       ]
+      ]
+     ],
+     "icerik": [
+      [
+       "ammunition_laser_emaa-20",
+       [
+        100,
+        300
+       ],
+       30
+      ],
+      [
+       "resource_extra-energy",
+       [
+        20,
+        60
+       ],
+       20
+      ],
+      [
+       "resource_logfile",
+       [
+        2,
+        6
+       ],
+       20
+      ],
+      [
+       "ammunition_rocket_plt-2021",
+       [
+        50,
+        150
+       ],
+       15
+      ],
+      [
+       "ammunition_rocketlauncher_sar-02",
+       [
+        20,
+        60
+       ],
+       10
+      ],
+      [
+       "ammunition_specialammo_sr-5",
+       [
+        50,
+        150
+       ],
+       10
+      ],
+      [
+       "ship_disruptor_design_disruptor-tyrannos",
+       1,
+       1
+      ]
+     ]
+    }
    },
    "mm_marker": {
     "ad": "-=[ Marker Mimesis ]=-",
@@ -1511,7 +1913,77 @@
     },
     "kargo": {},
     "puan": 450,
-    "byte": 90
+    "byte": 90,
+    "kutu": {
+     "olasilik": 1.0,
+     "omur_sn": 600,
+     "mod": "biri",
+     "tur": "MIMESIS_AI_BOSS_BOX",
+     "kesin": [
+      [
+       "resource_collectable_byte-remnant",
+       [
+        45,
+        90
+       ]
+      ]
+     ],
+     "icerik": [
+      [
+       "ammunition_laser_emaa-20",
+       [
+        100,
+        300
+       ],
+       30
+      ],
+      [
+       "resource_extra-energy",
+       [
+        20,
+        60
+       ],
+       20
+      ],
+      [
+       "resource_logfile",
+       [
+        2,
+        6
+       ],
+       20
+      ],
+      [
+       "ammunition_rocket_plt-2021",
+       [
+        50,
+        150
+       ],
+       15
+      ],
+      [
+       "ammunition_rocketlauncher_sar-02",
+       [
+        20,
+        60
+       ],
+       10
+      ],
+      [
+       "ammunition_specialammo_sr-5",
+       [
+        50,
+        150
+       ],
+       10
+      ],
+      [
+       "ship_disruptor_design_disruptor-tyrannos",
+       1,
+       1
+      ]
+     ]
+    }
    },
    "mm_turret": {
     "ad": "-=[ Mimesis Turret ]=-",
@@ -1914,13 +2386,64 @@
    }
   ],
   "en_iyi_sefer": 10,
+  "sandik": {
+   "olasilik": 0.3,
+   "etkiler": [
+    {
+     "ad": "Heal",
+     "olasilik": 0.25,
+     "tur": "can",
+     "can": 120000
+    },
+    {
+     "ad": "Flux",
+     "olasilik": 0.1,
+     "tur": "hiz",
+     "sure_sn": 15,
+     "hiz": 0.1
+    },
+    {
+     "ad": "Heal Field",
+     "olasilik": 0.25,
+     "tur": "can_alani",
+     "can": 50000,
+     "yaricap": 500
+    },
+    {
+     "ad": "Frost Field",
+     "olasilik": 0.1,
+     "tur": "teknik",
+     "teknik": "tech_frost-field"
+    },
+    {
+     "ad": "Revenge",
+     "olasilik": 0.1,
+     "tur": "yetenek",
+     "yetenek": "ability_berserker_rvg",
+     "sure_sn": 10
+    },
+    {
+     "ad": "Shield",
+     "olasilik": 0.15,
+     "tur": "kalkan",
+     "kalkan": 80000
+    },
+    {
+     "ad": "Assimilate",
+     "olasilik": 0.05,
+     "tur": "yetenek",
+     "yetenek": "ability_orcus_assimilate",
+     "sure_sn": 10
+    }
+   ]
+  },
   "anahtar_dusme": {
    "pm_hexormimesis": 0.03,
    "pm_reflectormimesis": 0.5
   },
   "anahtar_uridyum": 5000,
-  "_kaynak": "mimesis_mutiny.json: resmî SSS 2020-2026, darkorbitwiki (Mimesis türleri), istemcinin metinleri ve game.xml; tools/buyuk_icerikler.py",
-  "_uyarlama": "Rota (4 nokta + fener), dalgalar ve puanlar kaynakta yok (araştırmanın önerileri); tek oyunculu: dalgalar oyuncunun gücüyle (World Boss ölçeği): can x0,3 x güç, hasar x0,25 x güç (0,5-1,5); EM Freighter canı en güçlü dalganın 240 sn ateşine dayanacak kadar (en az 2.000.000); sıralama sanal (oyuncu 1.); firma haritaları: MMO 433, EIC 436, VRU 430 (her firmanın ilk Escort haritası)."
+  "_kaynak": "mimesis_mutiny.json: resmî SSS 2020-2026, darkorbitwiki (Mimesis türleri, boxes/mimesis-box, galaxy-gates/mimesis-mutiny-gate: Mimesis Chest), istemcinin metinleri ve game.xml; tools/buyuk_icerikler.py",
+  "_uyarlama": "Rota (4 nokta + fener), dalgalar ve puanlar kaynakta yok (araştırmanın önerileri); tek oyunculu: dalgalar oyuncunun gücüyle (World Boss ölçeği): can x0,3 x güç, hasar x0,25 x güç (0,5-1,5); EM Freighter canı en güçlü dalganın 240 sn ateşine dayanacak kadar (en az 2.000.000); sıralama sanal (oyuncu 1.); firma haritaları: MMO 433, EIC 436, VRU 430 (her firmanın ilk Escort haritası); Byte Remnant türün ödülüne doğrudan (ek_odul; mimesis._register) ve kutuya; kutu miktarları, ağırlıkları ve MINI_BOSS / BOSS eşlemesi kaynakta yok (normal kutu: türün Byte ödülünün yarısı; elit kutu: yarısı ile tamamı arası + bir satır); buff çekilişi mimesis_sandik.py."
  },
  "kristallon_apotheosis": {
   "etkinlik": "kristallon_apotheosis",

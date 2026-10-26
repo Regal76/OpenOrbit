@@ -7,7 +7,7 @@ Mesaj akışları gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md, 
   roket   AttackRocketRequest -> "0|v|<saldıran>|<hedef>|H|1|<iz>|<güdüm>" + 4 sn bekleme, ~0,8 sn sonra AttackHitCommand(attackType 0)
   ölüm    AttackHitCommand(hp 0) + ShipDestroyedCommand + ShipDeselectionCommand + ShipRemoveCommand
   ödül    "0|LM|ST|EP|<kazanç>|<toplam>|<seviye>", HON, CRE (+ InventoryItemUpdatedCommand), URI
-  kutu    AddBoxCommand(FROM_SHIP) ölüm yerinde (CandyCargo etkinliğinde, Halloween, CANDY_CARGO: aynı kutu, şekerli görünüm; kayıt);
+  kutu    AddBoxCommand(FROM_SHIP) ölüm yerinde (CandyCargo etkinliğinde, Halloween, CANDY_CARGO: aynı kutu, şekerli görünüm; kayıt; Thanksgiving'de TURKEY_CARGO);
           CollectBoxRequest -> RemoveCollectableCommand(collected) + cevher günlüğü. Etkinliğin 'kargo_yok' uzaylıları düşürmez
   cevher  AddOreCommand (kümeler hâlinde); HarvestRequest -> ~0,5 sn sonra InventoryItemPack + MapEventOreCommand(1) +
           AttributeOreCountUpdateCommand + RemoveCollectableCommand(collected); kargo doluysa MapEventOreCommand(2)
@@ -30,6 +30,7 @@ import ekstra as EK
 import lazer as LAZER
 import savas_esya as SE
 import teknoloji as TK
+import mimesis_sandik as MSD
 import parcacik as PC
 import rutbe as RT
 import uzayli as UZ
@@ -72,7 +73,7 @@ WORMHOLE_ID = H.GATE_ID_BASE + 990100        # 4-5'teki gizli solucan deliği (C
 DRONE_LEVELS = ESYA['dron_seviyeleri']
 ORE = ESYA['cevherler']
 ORE_EVENT_FINISHED, ORE_EVENT_CARGO_FULL = 1, 2       # MapEventOreCommand.EventType (istemci)
-TRADE_INACTIVE, TRADE_STATION, TRADE_PET, TRADE_PIRATE = 0, 1, 3, 5     # OreTradeInfoCommand.TradeType (istemci)
+TRADE_INACTIVE, TRADE_STATION, TRADE_DRONE, TRADE_PET, TRADE_PIRATE = 0, 1, 2, 3, 5     # OreTradeInfoCommand.TradeType (istemci)
 PALLADIUM, PIRATE_MARKET = 8, '92'          # Palladium yalnız 5-2'deki korsan tüccarında kapı enerjisine çevrilir
 
 
@@ -112,7 +113,7 @@ def range_exceeded(uid, max_range, kind):
 
 # cephane bitince otomatik geçiş sırası (sıradan cephaneler; özel cephaneye kendiliğinden geçilmez)
 AUTO_AMMO = ['ammunition_laser_ucb-100', 'ammunition_laser_mcb-50', 'ammunition_laser_mcb-25', 'ammunition_laser_lcb-10']
-CARGO_BOXES = ('FROM_SHIP', 'CANDY_CARGO')     # uzaylının kargo kutusu (CANDY_CARGO: Halloween'in CandyCargo'sunda, kayıt)
+CARGO_BOXES = ('FROM_SHIP', 'CANDY_CARGO', 'TURKEY_CARGO')     # uzaylının kargo kutusu (CANDY_CARGO: Halloween'in CandyCargo'sunda, kayıt; TURKEY_CARGO: Thanksgiving'de)
 AUTO_REFINE = (4, 5, 6)       # otomatik arıtmanın ürünleri (laboratuvar tarifleri, bu sırayla): Prometid, Duranium, Promerium
 
 
@@ -181,6 +182,9 @@ class NPC:
         self.gate = False                   # Galaksi Kapısı uzaylısı: yeniden doğmaz
         self.hunt = False                   # dalga uzaylısı (kapılar, modlar): oyuncunun peşini bırakmaz, kaçıp dolaşmaya gitmez
         self.flee = False                   # oyuncu güvenli bölgeye kaçtı: uzaklaş
+        self.park = None                    # (x, y) bölge merkezi: bölgenin kenarında bekledi; bekleyince bölgeden uzağa kısa dolaşır
+        self.firing = False                 # oyuncuya lazer açtı, bitişi (AttackAbortLaserCommand) istemciye henüz gitmedi (alien_ceasefire)
+        self.blocked = 0.0                  # kovalama yolu bir yapının/bölgenin yüzünden kapandı: bu ana dek yeniden saldırmaz (dur/ara döngüsü olmasın)
         self.invulnerable = None            # işlev: True dönerken hasar almaz (Zeta Devourer: diğer uzaylılar yaşarken; kapi.py)
         self.vm = {}                        # süren görsel etkiler (VisualModifier -> alanlar): görüşe yeniden girince ShipCreateCommand'la
         self.next_think = time.time() + random.uniform(1, 6)
@@ -381,6 +385,7 @@ class World:
         self.repairing = False
         self.next_repair = 0.0
         self.last_combat = 0.0         # son atış ya da alınan hasar (onarım robotu savaş dışında çalışır)
+        self.last_pvp = 0.0            # oyuncuya atılan ya da oyuncudan yenen son PvP atışı (oyuncu_savas.py; 4-X'te portal kilidi)
         self.next_shield = 0.0
         self.next_form_shield = 0.0    # formasyonun kalkan dolumu/erimesi (form_shield_tick)
         self.next_overdrive = 0.0      # SL-01, Prometheus: 5 sn'de bir ek hasar (lazer.py)
@@ -557,7 +562,7 @@ class World:
         with self.lock:
             npcs = [n for n in self.npcs.values() if n.alive and not n.gate]
             for n in npcs:
-                n.engaged, n.flee, n.children, n.foe = False, False, set(), None
+                n.engaged, n.flee, n.children, n.foe, n.park, n.firing = False, False, set(), None, None, False
             WORLD_CACHE[self.cache_key] = dict(an=time.time(), npcs=npcs, boxes=dict(self.boxes), ores=dict(self.ores),
                                             pending=list(self.pending), ore_fields=list(self.ore_fields), next_uid=self.next_uid)
         while len(WORLD_CACHE) > WORLD_CACHE_MAX:
@@ -1019,8 +1024,8 @@ class World:
                     for c in (self.npcs, self.boxes, self.ores, self.pending, self.ore_fields):
                         c.clear()
             self.ortak.birak()
-        if self.hero_etki.d.keys() & {'yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'zayiflik'}:
-            for kind in ('yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'zayiflik'):
+        if self.hero_etki.d.keys() & {'yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'zayiflik', 'yetenek'}:
+            for kind in ('yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'zayiflik', 'yetenek'):
                 self.hero_etki.remove(kind)      # haritaya özgü etkiler kalkar; enfeksiyon kalan süresiyle taşınır
             if self.stats_msgs:
                 self.send(self.stats_msgs())
@@ -1083,7 +1088,11 @@ class World:
         if now < self.next_rules:
             return
         self.next_rules = now + 1.0
-        if self.rules.get('gizlenme_yok') and (self.abilities.cloaked(now) or self.items.cloaked()):
+        fog = HD.of(self.map_id).get('palladium')            # 5-1, 5-3: Palladium sisi gizlenmenin kapalı olduğu alan (fandom 5-1, 5-3)
+        if fog and not self.rules.get('gizlenme_yok'):
+            hx, hy = self.hero_pos(now)
+            fog = fog['alan'][0] <= hx <= fog['alan'][2] and fog['alan'][1] <= hy <= fog['alan'][3]
+        if (self.rules.get('gizlenme_yok') or fog) and (self.abilities.cloaked(now) or self.items.cloaked()):
             self.abilities.reveal()
             self.items.reveal()
         if self.wormhole and now >= self.wormhole[1] and not self.jumping:
@@ -1338,18 +1347,21 @@ class World:
 
     def trade_info(self):
         """TradeRequest (rafineriye tıklama) -> OreTradeInfoCommand: istasyondaysa fiyatlar; uzayda P.E.T.'in kargo tüccarı
-        seçiliyse P.E.T. ticareti; değilse ticaret etkin değil."""
+        seçiliyse P.E.T. ticareti; HM-7 ticaret dronu varsa (kısayol çubuğundaki simgesi, menu_action) drone ticareti; değilse
+        ticaret etkin değil."""
         pr = ore_prices(self.p.d['pilot'].get('honourPoints', 0))
         pirate = self.at_trade() and self.map_id == PIRATE_MARKET          # 5-2'deki korsan tüccarı: Palladium -> kapı enerjisi
-        kind = TRADE_PIRATE if pirate else TRADE_STATION if self.at_trade() else TRADE_PET if self.pet_trade() else TRADE_INACTIVE
+        kind = (TRADE_PIRATE if pirate else TRADE_STATION if self.at_trade() else TRADE_PET if self.pet_trade()
+                else TRADE_DRONE if self.hm7_ready() else TRADE_INACTIVE)          # HM-7 ticaret dronu: her yerde (sell_ore ile aynı sıra)
         cbs = self.cbs_trade() if self.cbs_trade and not self.at_trade() else None
         if cbs:                                                             # kendi Battle Station'ında (Ö5): %10 pahalı
             kind = 4
             pr = {k: int(v * cbs) for k, v in pr.items()}
         return ('OreTradeInfoCommand', dict(
             prometiumPrice=pr[0], enduriumPrice=pr[1], terbiumPrice=pr[2], prometidPrice=pr[4], duraniumPrice=pr[5],
-            promeriumPrice=pr[6], sepromPrice=pr[7], osmiumPrice=ORE['osmium_fiyati'],
-            palladiumExchangeRate=ORE['palladium_enerji'] if pirate else -1, type=kind, remainingCharges=0))
+            promeriumPrice=pr[6], sepromPrice=pr[7], osmiumPrice=pr[28],
+            palladiumExchangeRate=ORE['palladium_enerji'] if pirate else -1, type=kind,
+            remainingCharges=EK.uses(self.p, 'equipment_extra_hmd-07') if kind == TRADE_DRONE else 0))
 
     def trade_palladium(self, n):
         """5-2'deki korsan tüccarında Palladium -> kapı enerjisi (15'e 1; artan Palladium kargoda kalır)."""
@@ -1391,6 +1403,10 @@ class World:
             if not (self.at_trade() or cbs or by_pet or by_hm7) or price is None or n <= 0 or n > have:
                 self.log('   satış olmadı: tür %s x%d (elde %d, istasyonda %s)' % (t, n, have, self.at_trade()))
                 return
+            if by_pet and self.pet.d['yakit'] < self.pet.trade_fuel():      # satışın yakıt bedeli (istemci: "You have to use P.E.T. fuel to trade")
+                self.log('   P.E.T. satışı olmadı: yakıt yetmiyor (%d < %d)' % (self.pet.d['yakit'], self.pet.trade_fuel()))
+                self.send([legacy('0|A|STM|msg_pet_no_fuel_to_activate')])
+                return
             if by_pet:
                 price = int(price * (1 + self.pet.trade_bonus()))     # G-TRA1: +%5/15/30
                 self.pet.trade_used(time.time())      # kargo tüccarı bekleme süresine girer
@@ -1403,6 +1419,8 @@ class World:
             if self.ore_pack:
                 msgs.append(self.ore_pack([t]))
             msgs += self.quest('sell', ore=t, amount=n)
+            if by_hm7:
+                msgs += self.p.menu_changes([SE.HM7])         # son hak kullanıldıysa kısayol simgesi hemen pasifleşir
             self.send(msgs)
             self.sold = self.sold or self.at_trade()
             self.log('   satıldı: %s x%d = %d kredi' % (ORE['turler'].get(str(t), t), n, kredi))
@@ -1448,6 +1466,10 @@ class World:
                 if not (g or self.jumping or self.hero_dead):
                     self.send([stm('jumpgate_failed_no_gate')])     # "Jump not possible! You're not located close enough to a jump gate."
                 return False
+            if H.map_class(self.map_id).startswith('4-') and time.time() - self.last_pvp < ESYA['savas_esyalari']['atlama_cpu']['savas_sn']:
+                self.send([stm('jumpgate_failed_pvp_map')])         # savaş haritasında (4-X) PvP sürerken portal kullanılamaz (fandom Portal)
+                self.log('   portal %d: PvP sürüyor (4-X)' % g['gateId'])
+                return True
             need = 0 if g.get('kapi') else H.level_required(g['hedef'], self.p.d['pilot'].get('factionId'))
             if self.p.d['pilot'].get('level', 1) < need:
                 # istemcinin metni: "You need level %! for the jump. Not possible to jump from your level."
@@ -1654,10 +1676,8 @@ class World:
                      * EK.rocket_factor(self.p) * AY.carpan('roket_bekleme'))                          # R0K-T01: yarıya; panel
             ms = self.abilities.rocket_ms(ms, now)                  # Rapid Fire (Tartarus)
             self.rocket_ready = now + ms / 1000
-            roll = random.random()
-            hit = roll < self.rocket_hit(rocket)
-            saved = hit and roll >= self.rocket_hit(rocket, skill=False)
-            self.send(self.ammo_msgs(rocket) + [self.rocket_msg(uid, hit, ESYA['roketler'].get(rocket, {}).get('kimlik', 1), saved),
+            hit = random.random() < self.rocket_hit(rocket)
+            self.send(self.ammo_msgs(rocket) + [self.rocket_msg(uid, hit, ESYA['roketler'].get(rocket, {}).get('kimlik', 1)),
                        ('MenuItemCooldownGroupTimerCommand', dict(timerState=mod('TimerStateModule', timerStateValue=2),
                                                                   cooldownType=mod('CooldownTypeModule', typeValue=4), maxTime=ms, time=ms))])
             dmg = int(ESYA['roketler'].get(rocket, {'hasar': 1000})['hasar'] * random.uniform(0.85, 1.0)   # kayıt: R-310 853/991
@@ -1673,14 +1693,13 @@ class World:
                 timerState=mod('TimerStateModule', timerStateValue=0), cooldownType=mod('CooldownTypeModule', typeValue=4),
                 maxTime=ms, time=0))]))
 
-    def rocket_hit(self, rocket, skill=True):
-        """Roketin isabet şansı: taban (npc.json roket_isabet; BDR-1211 %100) x (1 + Heat-Seeking Missiles + DMG-H01 + durum).
-        skill False: Heat-Seeking Missiles sayılmadan (güdüm görseli: yeteneksiz ıskalayacak roket; rocket_look)."""
+    def rocket_hit(self, rocket):
+        """Roketin isabet şansı: taban (npc.json roket_isabet; BDR-1211 %100) x (1 + Heat-Seeking Missiles + DMG-H01 + durum)."""
         if self.tech.full_rocket_hit():
             return 1.0                                      # Precision Targeter
         m = self.p.mods()
         base = ESYA['roketler'].get(rocket, {}).get('isabet', SAVAS['roket_isabet'])
-        bonus = m.get('roket_isabet', 0) + m.get('isabet', 0) - (0 if skill else YT.mods(self.p).get('roket_isabet', 0))
+        bonus = m.get('roket_isabet', 0) + m.get('isabet', 0)
         return AY.chance('oyuncu_isabet', min(1.0, base * max(0.0, 1 + bonus)))     # panel
 
     def collect(self, f):
@@ -1720,7 +1739,7 @@ class World:
             self.take_box(h)
 
     def take_box(self, h, by_pet=False):
-        """Kutuyu al (oyuncu ya da P.E.T.'in otomatik toplayıcısı): kargo kutusu cevherleri kargoya sığdığı kadar, bonus kutusu
+        """Kutuyu al (oyuncu ya da P.E.T.'in otomatik toplayıcısı): kargo kutusu cevherleri kargoya sığdığı kadar (sığmayan kısım kutuda yerde kalır), bonus kutusu
         kredi/uridyum/cephane. P.E.T.'in kurtarma protokolü (AI-S) P.E.T.'in topladığı kutunun içeriğini artırır (istemci "boxes,
         collected by your P.E.T.")."""
         with self.lock:
@@ -1738,33 +1757,47 @@ class World:
                 return False
             if b['tip'] in GN.BOXES and not b.get('etk'):
                 return False if by_pet else self.open_booty(h, b)
-            del self.boxes[h]
-            msgs = pre + [self.beam_msg(by_pet), ('RemoveCollectableCommand', {'collected': True, 'hash': h})]
-            if cargo_box:
-                ores, free = {}, self.p.cargo_free()
+            ores, left, free = {}, {}, self.p.cargo_free()
+            if cargo_box:                                   # cevherler kargoya sığdığı kadar alınır; sığmayan kısım kutuda kalır (kutu silinmez)
+                mult = boost * (1 + m.get('kargo_kutusu', 0))
                 for k, v in sorted(b['icerik'].items()):
-                    take = int(v * boost * (1 + m.get('kargo_kutusu', 0)))
+                    take = want = int(v * mult)
                     if int(k) in self.p.CARGO_ORES:            # Xenomit yer kaplamaz: hepsi alınır
-                        take = min(take, free)
+                        take = min(want, free)
                         free -= take
+                        if take < want and v - math.ceil(take / mult - 1e-9) > 0:     # alınan kadarı (taban birim) kutudan düşer
+                            left[k] = v - math.ceil(take / mult - 1e-9)
                     if take > 0:
                         ores[int(k)] = take
+            if left:
+                b['icerik'] = left
+            else:
+                del self.boxes[h]
+            msgs = pre + [self.beam_msg(by_pet)] + ([] if left else [('RemoveCollectableCommand', {'collected': True, 'hash': h})])
+            if cargo_box:
                 totals = self.p.add_ores(ores)
                 content = [mod('OreCountModule', oreType=mod('OreTypeModule', typeValue=t), count=c) for t, c in sorted(ores.items())]
                 msgs += [('LMCollectResourcesCommand', dict(priorityMode=mod('LogMessengerPriorityModule', priorityModeValue=0),
                                                             contentList=content)),
                          ('AttributeOreCountUpdateCommand', {'oreCountList': totals})]
-                msgs += self.quest('cargo')
+                if not left:
+                    msgs += self.quest('cargo')          # kutu sayacı: kutu boşalınca (kısmi alımda kutu yerde kalır)
                 for t, c in sorted(ores.items()):
-                    msgs += self.quest('loot', loot=ORE['turler'].get(str(t), ''), amount=c)
+                    msgs += self.quest('loot', loot=ORE['turler'].get(str(t), ''), amount=c, kutu=True)    # kutu: SALVAGE görevi
                     RT.note(self.p, 'received_item', ORE['turler'].get(str(t), ''), c)       # seyir defteri
                 msgs += self.auto_refine()               # her toplamadan sonra (ayar açıksa)
+                if left and self.p.cargo_free() < 1:     # kısmi alım: kalanı yer açılınca (satış/arıtma) alınır
+                    msgs += [legacy('0|A|STM|loadfull')] + self.p.hint(IP.FULL_CARGO)
             elif b.get('al'):                        # kendi toplama işlevi olan kutu (Ö4: Vortex'in Stellar Coin kutuları)
                 msgs += b['al'](b) or []
             elif b.get('etk'):                       # etkinlik kutusu (etkinlik_harita.py): içerik açılınca çekilir
-                got = ETK.roll(b['etk'])
+                got = ETK.roll(b['etk'], m)
                 for loot, n in got:
                     msgs += self.grant_loot(loot, n)
+                    if loot.startswith('resource_collectable_'):          # toplama görevi (Collect 200 Proxium: Permafrost'un UFO / Ufonit kutuları)
+                        msgs += self.quest('loot', loot=loot, amount=n)
+                if b['tip'].startswith('MIMESIS_AI_'):    # Mimesis Chest: ödülün üstüne %30 olasılıkla bir buff (mimesis_sandik.py)
+                    msgs += MSD.roll(self)
                 if b['etk'].get('yeniden_sn'):
                     self.schedule(random.uniform(*b['etk']['yeniden_sn']) * AY.carpan('kutu_yenilenme'), 'etk_kutu', b['tip'])
                 self.log('   etkinlik kutusu %s: %s' % (b['tip'], ', '.join('%s x%d' % x for x in got) or '-'))
@@ -1774,9 +1807,13 @@ class World:
                 if seq:                                  # Cubikon Mezarlığı: ilki 1.000 UCB-100, sonra giderek LCB-10 (wiki)
                     what, amount = seq[min(self.boxes_taken, len(seq) - 1)]
                     self.boxes_taken += 1
-                amount = int(amount * boost * (1 + m.get('bonus_kutusu', 0)) * (1 + (m.get('bonus_uridyum', 0) if what == 'uridyum' else 0)))
+                x1 = self.x1_reward()            # kendi X-1'inde yüksek seviyede bonus kutusu da azalır (fandom 1-1, 2-1, Lowers)
+                amount = int(amount * boost * (1 + m.get('bonus_kutusu', 0)) * (1 + (m.get('bonus_uridyum', 0) if what == 'uridyum' else 0))
+                             * ((x1 > 0) if what == 'enerji' else x1))     # tek birimlik enerji basamakla azalamaz: yalnız 15+ boş (HARITALAR-7)
                 amount = AY.miktar({'kredi': 'kredi', 'uridyum': 'uridyum', 'enerji': 'kapi_enerji'}.get(what, 'toplama'), amount, 'kutu')  # panel
-                if what == 'kredi':
+                if amount <= 0:
+                    pass                                 # seviye 15+ kendi X-1'inde bonus kutusu boş (x1_odul)
+                elif what == 'kredi':
                     msgs += self.reward_msgs(self.p.gain(kredi=amount, neden='collect_bonusbox'), kredi=amount)
                 elif what == 'uridyum':
                     msgs += self.reward_msgs(self.p.gain(uridyum=amount, neden='collect_bonusbox'), uridyum=amount)
@@ -1793,7 +1830,8 @@ class World:
             self.send(msgs)
             if not by_pet:
                 self.abilities.reveal()          # kutu toplayınca gizlenme biter
-            self.p.ach('box', tip=b['tip'], pet=by_pet)
+            if not left:                         # başarım sayacı: kutu boşalınca
+                self.p.ach('box', tip=b['tip'], pet=by_pet)
             if by_pet:
                 self.log('   P.E.T. kutu topladı: %s' % b['tip'])
             return True
@@ -1852,17 +1890,18 @@ class World:
         self.p.add_resource(key, -1)
         if box.get('defter'):
             RT.note(self.p, box['defter'])                              # seyir defteri: "… booty key used"
-        loot, n = GN.pick(self.p, kind)
+        got = GN.pick_all(self.p, kind)                                 # Epic paketi çıkarsa parçaların hepsi
         msgs += [('RemoveCollectableCommand', {'collected': True, 'hash': h})]
         if GN.key_line(self.p, kind):
             msgs.append(legacy(GN.key_line(self.p, kind)))
-        msgs += self.grant_loot(loot, n)          # para (Prime Astral'ın EP/onuru …) hesaba, gerisi mağazanın ödül işleviyle; panelin çarpanları
+        for loot, n in got:
+            msgs += self.grant_loot(loot, n)      # para (Prime Astral'ın EP/onuru …) hesaba, gerisi mağazanın ödül işleviyle; panelin çarpanları
         if box.get('yeniden_sn'):                                       # Echo sandığı: patronun düşürdüğü, yeniden doğmaz
             self.schedule(GN.respawn_delay(kind) * AY.carpan('kutu_yenilenme'), 'booty', kind)
         self.send(msgs)
         self.abilities.reveal()
         self.p.ach('box', tip=kind, pet=False)
-        self.log('   %s açıldı (%s): %s x%d' % (box['ad'], key, loot, n))
+        self.log('   %s açıldı (%s): %s' % (box['ad'], key, ', '.join('%s x%d' % x for x in got)))
         return True
 
     # ------------------------------------------------------------ savaş
@@ -1981,15 +2020,21 @@ class World:
                 dmg = int(dmg * max(0.0, 1 - red()))
             if shield_only:
                 dmg = min(dmg, int(n.shield))
-            absorb = n.d.get('kalkan_emme', SAVAS['npc_kalkan_emme']) * n.etki.shield_factor(now)   # türün emmesi; Diminisher
+            absorb = n.d.get('kalkan_emme', SAVAS['npc_kalkan_emme'])           # türün emmesi
+            kh = 1.0 if attacker else n.etki.shield_damage(now)                # Diminisher Weaken Shields: kalkana giden hasar artar
             if not attacker:                                                     # kalkan delme (Moth +%20, Double Arrow +%10, Pincer -%10)
                 absorb *= max(0.0, 1 - self.p.mods().get('kalkan_delme', 0))
             if split:                                                            # mayın (savas_esya.py)
                 b = 0 if immune else 1 + n.etki.damage_bonus(now)
-                to_shield = min(int(n.shield), int(split[0] * b))
+                to_shield = min(int(n.shield), int(split[0] * b * kh))
                 dmg = to_shield + int(split[1] * b)
             else:
                 to_shield = dmg if shield_only else 0 if hull_only else min(n.shield, int(round(dmg * absorb)))
+                if kh > 1.0 and to_shield and not shield_only:                   # kalkan emdiği payın kh katı erir; gövdeye geçen pay aynı, kalkan tükenirse payı kh'ye göre
+                    want = int(round(to_shield * kh))
+                    loss = min(int(n.shield), want)
+                    taken = to_shield if loss >= want else int(round(loss / kh))
+                    dmg, to_shield = dmg - taken + loss, loss
             n.shield -= to_shield
             n.hp = max(0, n.hp - (dmg - to_shield))
             floor = getattr(n, 'can_tabani', 0)                    # Ö4: Guardian 1 HP'de "düşer" (evre 1-3)
@@ -2002,7 +2047,7 @@ class World:
             if dmg > 0 and not attacker:
                 self.p.ach('damage', adet=dmg, npc=n.d.get('npc_kimlik'))
             self.alien.on_hit(n, dmg, attacker, now)              # can eşiğinde çağırma, kaybolma (uzayli.py)
-            if engage:
+            if engage and not attacker:                  # the pilot's own hit lets this NPC fight on inside a protected zone; the P.E.T.'s does not
                 if getattr(n, 'station_retaliation', None) is None:
                     n.station_retaliation = {}
                 n.station_retaliation[self.hid] = now    # keep each player's permission on a shared NPC
@@ -2047,6 +2092,9 @@ class World:
     def grant_loot(self, loot, n, kaynak='kutu'):
         """Kutudan ödül: para EP/onur/kredi/uridyum hesaba (Uridium Bank'a sayılır), gerisi mağazanın ödül işleviyle. kaynak:
         panelin alt ayarı (modların parası 'mod')."""
+        if loot == 'resource_key_access-flb':                              # Labyrinth Key (Ice Box): profildeki sayaç, kaynak deposunda değil
+            import labirent as LB
+            return LB.add_keys(self.p, n)
         cur = {'currency_credits': 'kredi', 'currency_uridium': 'uridyum', 'currency_experience': 'ep', 'currency_honour': 'onur'}
         n = AY.miktar(cur.get(loot, 'toplama'), n, kaynak)                 # panelin çarpanları
         if loot in cur:
@@ -2074,8 +2122,8 @@ class World:
                 cnt = int(cnt * (1 + bm.get('agat_miktar', 0)))          # AS-B01: Agate Splinter x2
             if cnt <= 0:
                 continue
-            if loot.startswith('equipment_'):
-                msgs += self.grant(loot, cnt) if self.grant else []      # The Stinger'ın Caucasus lazeri (%0,5)
+            if loot.startswith(('equipment_', 'ammunition_', 'tech_')) or loot == 'resource_extra-energy':
+                msgs += self.grant(loot, cnt) if self.grant else []      # The Stinger'ın Caucasus lazeri (%0,5), A-BL, kaos paketleri (cephane, NPC Nuke, EE)
                 continue
             cnt = AY.miktar('toplama', cnt, 'ek')                        # panelin toplama çarpanı
             if loot == 'resource_ore_palladium':
@@ -2230,7 +2278,7 @@ class World:
         self.later(0.3, reward)
         cargo = {} if ETK.no_cargo(n) else self.cargo_of(n)        # Curcubitor: yalnız sandığı (etkinlik_harita)
         if cargo:
-            kind = 'CANDY_CARGO' if TKV.has_type('CandyCargo') else 'FROM_SHIP'
+            kind = self.etkinlik.cargo_kind() or ('CANDY_CARGO' if TKV.has_type('CandyCargo') else 'FROM_SHIP')
             self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_box(kind, x, y, cargo, SAVAS['kutu_omur_sn'], sahip))
         if n.d.get('sandik'):                              # hasara göre sandıklar (Invoke XVI, Mindfire Behemoth; npc.json)
             self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_chests(n.d['sandik'], x, y, sahip))
@@ -2266,6 +2314,12 @@ class World:
     def quest(self, kind, **kw):
         """Görev ilerlemesi (oturumun gorev.py'si) -> gönderilecek mesajlar."""
         return self.quest_event(kind, map=int(self.map_id), **kw) if self.quest_event else []
+
+    def quest_state(self):
+        """Görev alt koşulları (MISCELLANEOUS) için anlık durum: gizli mi, radyasyon bölgesinde mi, canı onda birin altında mı."""
+        g = self.p.d['gemi']
+        return {'gizli': bool(self.abilities.cloaked() or self.items.cloaked()), 'radyasyon': self.radiation_since is not None,
+                'az_can': g.get('hitPoints', 0) < 0.1 * g.get('hitMax', 0)}
 
     def drone_points(self, n):
         """Dronlar öldürülen uzaylıdan puan alır; puan gemiye göre (wiki tablosu, güçlü gemide az). Seviye eşiğini geçen dron
@@ -2328,20 +2382,21 @@ class World:
         now = now or time.time()
         lz = ESYA['lazerler']
         ship = self.lasers()
-        base = sum(LAZER.hit(l, target, pvp=pvp) * YK.factor(l, lv, YK.LASER) for l, lv in self.laser_levels()) \
+        vlo = self.tech.laser_bonus(now)                          # Versus Laser Overdrive: lazer başına taban hasara +500 (VoG)
+        base = sum((LAZER.hit(l, target, pvp=pvp) + vlo) * YK.factor(l, lv, YK.LASER) for l, lv in self.laser_levels()) \
             * (1 + LAZER.set_bonus(ship, pvp=pvp) + self.ofke.bonus(ship, now))
         self.crit = bool(ship) and random.random() < LAZER.crit_chance(ship)
         if self.crit:
             base += LAZER.crit_damage(ship)                       # Odysseus kritiği
-        extra = LAZER.overdrive(ship)
-        if extra and now >= self.next_overdrive:                  # SL-01 +38, Prometheus +200: 5 sn'de bir
+        extra = LAZER.overdrive(ship, target, pvp)
+        if extra and now >= self.next_overdrive:                  # SL-01 +38, Caucasus +100, Prometheus +200 (x3,5 Black Light): 5 sn'de bir
             base += extra
             self.next_overdrive = now + LAZER.OVERDRIVE_SN
         mods = self.p.mods()
         dlv = self.p.d.get('dron_ekipman_seviye', [])
         for k, (level, loots) in enumerate(self.p.d.get('dron_ekipman', [])):
             dloot, dup, ilv = dlv[k] if k < len(dlv) else (None, 0, [])
-            hits = sum(LAZER.hit(l, target, pvp=pvp) * YK.factor(l, ilv[j] if j < len(ilv) else 0, YK.LASER)
+            hits = sum((LAZER.hit(l, target, pvp=pvp) + vlo) * YK.factor(l, ilv[j] if j < len(ilv) else 0, YK.LASER)
                        for j, l in enumerate(loots) if l in lz)
             base += (hits * (1 + DRONE_LEVELS[level - 1]['lazer'] + mods.get('dron_lazer', 0))      # Havoc, Cerberus: dron lazerine
                      * YK.factor(dloot, dup, YK.DRONE_DAMAGE))
@@ -2354,9 +2409,12 @@ class World:
         if ramp:                                                  # IDB-125: x1'den isabet başına +1,25, en çok x6; 3 sn'de sıfırlanır
             carpan = 1.0 if now - self.artan[1] > ramp['sifirlama_sn'] else self.artan[0]
             self.artan = [min(ramp['azami'], carpan + ramp['adim']), now]
+        if target is not None and not pvp:                        # etkinlik sürerken UCB-100 / CC-C / RSB-75 listedeki uzaylılara (esyalar.json etkinlik_cephane)
+            carpan = LAZER.event_ammo(ammo, target, TKV.is_active) or carpan
         if target is not None and ammo in (target.d.get('cephane_carpani') or {}):          # Ö4: etkinlik uzaylısının cephane bonusu
             carpan = target.d['cephane_carpani'][ammo]
-        return int(base * carpan * r), int(base * a.get('kalkan_carpan', 0) * r)
+        flat = LAZER.flat_extra(ship + self.drone_lasers(), pvp) if carpan else 0       # Paritydrill / Magmadrill +5: çarpanlardan sonra
+        return int(base * carpan * r) + flat, int(base * a.get('kalkan_carpan', 0) * r)
 
     def laser_range(self):
         """Lazer menzili: SL-01 takılıysa -%25 (lazer.py); Momentum/Stockpile'ın biriken yükü (yük başına +5)."""
@@ -2410,20 +2468,21 @@ class World:
         0 değilse). Shield Mechanics (8) son seviyesinde ve kalkan doluyken (resmî SSS: 5/5'te beyaz kalkan); yalnız görüntü."""
         return YT.maxed(self.p, '8') and self.p.d['gemi'].get('shield', 0) > 0
 
-    def rocket_look(self, saved=False):
+    def rocket_look(self):
         """Roketin görünümü -> (iz, güdüm): eski metnin 0|v|…|iz|güdüm alanları (istemci NetConnectionHelper.OnData 'v': 7. alan
         rocketSmoke kimliği, 8. alan 1 ise AttackRocketRun/BezierRocketEffect isHeatSeeking: kavisli uçuş ve kırmızı parıltı). İz
         (canlıda görüldü): 0 turuncu-kırmızı alev (resmî sunucu kaydında yeteneksiz hesabın izi), 1 mor-mavi: Rocket Fusion (6) son
-        seviyesinde (resmî SSS: "purple trail"), 2 ince gri: Precision Targeter açıkken; güdüm: Heat-Seeking Missiles (20) son
-        seviyesindeyken her roket (darkorbitwiki pilot-skills: görsel yalnız 5/5'te; özel sunucu Ow AttackManager heatseekingMissiles
-        == 5), değilse yalnız yeteneksiz ıskalayacak (saved) roket. Önceden yalnız saved'de: görsel hemen hiç görünmüyordu (kullanıcı
-        bildirimi 2026-10-25)."""
+        seviyesinde (resmî SSS: "purple trail"), 2 ince gri: Precision Targeter açıkken; güdüm: Heat-Seeking Missiles (20) 1. seviyeden
+        itibaren her roket, ıskalayan da (fandom Heat-Seeking Missiles, Skill tree ve Rocket Trail Colours: görsel için 1 puan yeter, son
+        seviye gerekmez; resmî sunucu kaydında güdümlü oyuncuların 64/64 ve 52/52 roketi, 6 ıska dahil, güdümlü: bayrak atışa değil
+        yeteneğe bağlı; darkorbitwiki'nin "son seviyede" satırı bununla çelişiyor). Önceki sürümler: yalnız yeteneğin kurtardığı rokette
+        (2026-10-24), sonra yalnız 5/5'te (2026-10-25); kullanıcı bildirimi 2026-10-26: görsel ilk puandan başlar."""
         smoke = 2 if self.tech.full_rocket_hit() else 1 if YT.maxed(self.p, '6') else 0
-        return smoke, int(saved or YT.maxed(self.p, '20'))
+        return smoke, int(YT.level(self.p, '20') > 0)
 
-    def rocket_msg(self, target, hit, kind, saved=False):
+    def rocket_msg(self, target, hit, kind):
         """Oyuncunun roket görseli (eski metin 0|v|saldıran|hedef|H/M|tür|iz|güdüm)."""
-        return legacy('0|v|%d|%d|%s|%d|%d|%d' % ((self.hid, target, 'H' if hit else 'M', kind) + self.rocket_look(saved)))
+        return legacy('0|v|%d|%d|%s|%d|%d|%d' % ((self.hid, target, 'H' if hit else 'M', kind) + self.rocket_look()))
 
     def hit_asset(self, uid, dmg, atype=0, shield_only=False, hull_only=False, attacker=None):
         """Resolve an impact against the current map, including shield-only ammunition."""
@@ -2693,6 +2752,9 @@ class World:
                 pass                                # mayın, Smart Bomb, Insta-Shield, EMP, CPU'lar, fırlatıcı (savas_esya.py)
             elif item.startswith('ammunition_ggportal_') and self.portal_cpu:
                 self.portal_cpu(item)               # mod kapısı CPU'su (pve_modlari.py)
+            elif item == SE.HM7:                    # HM-7 ticaret dronu: simgesi ticaret penceresini açar (TradeType.DRONE)
+                if self.hm7_ready():
+                    self.send([self.trade_info()])
             elif act == 0:
                 pass                                # SELECT: öğe çubuğunda tek tıklama (kayıtta gerçek sunucu yanıt vermiyor)
             elif item == 'equipment_extra_repbot_rep':
@@ -2745,15 +2807,13 @@ class World:
 
     # ------------------------------------------------------------ onarım robotu
     def repair_rate(self):
-        rep = next((e for e in self.p.d['ekipman'].get('extra', []) if e in ESYA['onarim_robotlari']), None)
+        rep = next((e for e in EK.equipped(self.p) if e in ESYA['onarim_robotlari']), None)      # dronda takılı robot da çalışır
         if not rep:
             return 0
         r = ESYA['onarim_robotlari'][rep]
         boost = (1 + self.p.mods().get('onarim', 0)) * AY.carpan('onarim_hizi')     # REP-B01 (booster); panel
         if self.p.premium:
             boost *= 2                                                              # Premium: "twice as effective repair robots"
-        if self.low:
-            boost *= self.low.regen(time.time())                                    # LoW: etkin röleler ortada hızlandırır
         if 'tam_onarim_sn' in r:
             return self.p.d['gemi'].get('hitMax', 0) / r['tam_onarim_sn'] * boost
         return r.get('dakikada_hp', 0) / 60.0 * boost
@@ -2766,7 +2826,7 @@ class World:
         g = self.p.d['gemi']
         now = time.time()
         if (not self.repair_rate() or self.hero_dead or g.get('hitPoints', 0) >= g.get('hitMax', 0)
-                or now - self.last_combat < ESYA['savas_disi_sn']):
+                or now - self.last_combat < ESYA['yenilenme_bekleme_sn']):
             self.send([('UIItemRemoveHighlightCommand', self.repbot_highlight())])     # kayıttaki başarısız deneme yanıtı
             return
         self.repairing = True
@@ -2891,12 +2951,14 @@ class World:
     def hero_effect(self, kind, sec, value=1.0, source=None):
         """Oyuncuya durum etkisi: hız/isabet profil bonuslarından (profil.mods -> world_mods); hız göstergesi hemen güncellenir."""
         if kind == 'enfeksiyon':
+            if self.items.serum_cure():
+                return None                      # Serum CPU: bulaşan enfeksiyonu kendiliğinden iyileştirir
             self.hero_etki.remove(kind)          # yeniden bulaşma yığılmaz; yalnız süre yenilenir
         e = self.hero_etki.add(kind, sec, value, source)
         if kind == 'enfeksiyon':
             self.p._infection_effect = e
         self.send(self.items.mine_effect_msgs())
-        if kind in ('yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'enfeksiyon') and self.stats_msgs:
+        if kind in ('yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'enfeksiyon', 'yetenek') and self.stats_msgs:
             self.send(self.effect_stats_msgs())
         return e
 
@@ -2918,7 +2980,7 @@ class World:
         if 'enfeksiyon' in expired:
             self.p._infection_effect = None
         self.send(self.items.mine_effect_msgs(now))
-        if expired & {'yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'zayiflik', 'enfeksiyon'} and self.stats_msgs:
+        if expired & {'yavas', 'donuk', 'hizlanma', 'hiz_siniri', 'zayiflik', 'enfeksiyon', 'yetenek'} and self.stats_msgs:
             self.send(self.effect_stats_msgs(now))         # hız değiştiyse süren uçuşu da yeniden zamanla
 
     # ------------------------------------------------------------ otomatik CPU'lar (ekstra.py)
@@ -2935,7 +2997,7 @@ class World:
             if msgs:
                 self.send(msgs)
         if (EK.has(self.p, 'oto_onarim') and not self.repairing and not self.hero_dead and g.get('hitPoints', 0) < g.get('hitMax', 0)
-                and now - self.last_combat >= ESYA['savas_disi_sn'] and self.repair_rate()):
+                and now - self.last_combat >= ESYA['yenilenme_bekleme_sn'] and self.repair_rate()):
             self.start_repair()
         for loot, cfg in EK.props(self.p, 'oto_alim'):
             kind = cfg['tur']
@@ -2977,7 +3039,7 @@ class World:
 
     def repair_tick(self, now):
         g = self.p.d['gemi']
-        if self.hero_dead or now - self.last_combat < ESYA['savas_disi_sn']:
+        if self.hero_dead or now - self.last_combat < ESYA['yenilenme_bekleme_sn']:
             self.stop_repair()
             return
         if now < self.next_repair:
@@ -3005,11 +3067,13 @@ class World:
             self.send([('CombatMusicCommand', {'combatEvent': 0 if fight else 1})] + (self.p.hint(IP.SHIP_REPAIR) if hurt else []))
 
     def shield_tick(self, now):
-        """Savaş dışında kalkan dolar (kalkan jeneratörü takılıysa; oran esyalar.json kalkan_yenilenme_sn)."""
+        """Savaş dışında kalkan dolar: son vuruştan yenilenme_bekleme_sn (15) sonra saniyede kalkan_yenilenme_sn (%4) oranında;
+        panelin kalkan_yenilenme çarpanı ve SREG-B01 üstüne biner (kayıt ve fandom Shield: esyalar.json notları)."""
         g = self.p.d['gemi']
         k = AY.carpan('kalkan_yenilenme')                   # panel: 0 dolmaz
         if (now < self.next_shield or self.hero_dead or g.get('shield', 0) >= g.get('shieldMax', 0) or k <= 0
-                or now - self.last_combat < ESYA['savas_disi_sn']):
+                or now - self.last_combat < ESYA['yenilenme_bekleme_sn']
+                or self.p.mods().get('kalkan_erime_sn', 0) > 0):       # Moth / 3D Wheel eritir: pasif dolum erimeyi silmesin
             return
         self.next_shield = now + 1.0
         rate = ESYA['kalkan_yenilenme_sn'] * (1 + self.p.mods().get('kalkan_yenilenme', 0)) * k   # SREG-B01 (booster)
@@ -3051,8 +3115,9 @@ class World:
     def npc_shoot(self, n, now):
         """Uzaylının atışı: dost gemiye (echoes.py) ya da gemiye. P.E.T.'e ateş etmez, Mindfire Behemoth'un kritik candaki ek hedefi
         (uzayli.extra_target) de yok: gerçek oyunda P.E.T.'e yalnız düşman oyuncular saldırır (kullanıcı bildirimi 2026-10-24)."""
+        n.firing = True                         # lazer durumu açık (dost gemiye atış da): bırakınca alien_ceasefire AttackAbortLaserCommand yollar
         if self.ally and self.ally.take_shot(n, now):
-            return                              # atış dost gemiye gitti (echoes.py)
+            return                              # atış dost gemiye gitti (echoes.py, mimesis.py)
         ddol = n.etki.get('atis_bozuk', now)          # Disruptor DDoL: lazer beklemesi 3-5 sn
         n.next_shot = now + (random.uniform(*ddol[0]['aralik']) if ddol else n.d.get('atis_aralik_sn', SAVAS['npc_saldiri_aralik_sn']))
         m = self.p.mods()
@@ -3084,14 +3149,16 @@ class World:
         msgs = [] if msgs is None else msgs
         g, m = self.p.d['gemi'], self.p.mods()
         yer = 'dalga' if getattr(killer, 'hunt', False) else 'harita'      # panelin hasar alt ayarı: kapı ve mod dalgası mı
-        dmg = int(dmg * max(0.0, 1 + m.get('alinan_hasar', 0)) * (1.0 if (source_player or source_asset) else AY.carpan('npc_hasar', yer)))      # Fortify; panelin hasar çarpanı
+        k = 1.0 if (source_player or source_asset) else AY.carpan('npc_hasar', yer)      # panelin hasar çarpanı
+        ham = dmg * k                                                     # alinan_hasar indiriminden önceki hasar: Revenge bunu yansıtır
+        dmg = int(dmg * max(0.0, 1 + m.get('alinan_hasar', 0)) * k)       # Fortify, Revenge (alınan hasar %5)
         if self.hero_etki.invulnerable(now) or ((source_player or source_asset) and (self.invulnerable or now < self.invuln_until)):
             dmg = 0                                 # Insta-Shield (savas_esya.py)
         if dmg and killer is not None and getattr(killer, 'alive', False):
-            back = GY.effect(self.p, 'yansit', now)                   # Berserker Revenge: hasar saldırana döner
+            back = GY.effect(self.p, 'yansit', now) or self.hero_etki.ability('yansit', now)       # Berserker Revenge (Mimesis Chest'inki de): hasar saldırana döner
             if back:
-                self.hit_npc(killer.id, int(dmg * back), 1)
-            heal = GY.effect(self.p, 'emme_can', now)                 # Orcus Assimilate: uzaylı hasarı cana döner
+                self.hit_npc(killer.id, int(ham * back), 1)
+            heal = GY.effect(self.p, 'emme_can', now) or self.hero_etki.ability('emme_can', now)  # Orcus Assimilate (Mimesis Chest'inki de): uzaylı hasarı cana döner
             if heal:
                 self.p.set_hull(hp=g.get('hitPoints', 0) + dmg * heal)
                 dmg = int(dmg * (1 - heal))
@@ -3213,7 +3280,7 @@ class World:
     # ------------------------------------------------------------ ölüm ve ölüm ekranı
     def ach_tick(self, now):
         """Başarım sayaçları: kat edilen yol (saniyede bir; ışınlanma sayılmaz) ve oyun süresi (dakikada bir; P.E.T. etkin mi,
-        başka firmanın haritası mı, PvP haritası (4-X) mı)."""
+        başka firmanın haritası mı, PvP haritası (4-X) mı). Görevlere saniyede bir konum olayı (koordinata varmak, haritada kalmak)."""
         if now < self.ach_next:
             return
         self.ach_next = now + 1.0
@@ -3226,6 +3293,10 @@ class World:
                     self.p.ach('distance', adet=int(self.ach_dist))
                     self.ach_dist -= int(self.ach_dist)
         self.ach_pos = pos
+        if not self.hero_dead and not self.jumping:
+            msgs = self.quest('pos', x=int(pos[0]), y=int(pos[1]))
+            if msgs:
+                self.send(msgs)
         self.ach_secs += 1
         if self.ach_secs >= 60 and not self.hero_dead:
             self.ach_secs = 0
@@ -3330,7 +3401,7 @@ class World:
             if self.raid_gate():
                 offers[REPAIR_RAID_GATE] = 0    # Hades: kapı haritasında ücretsiz (istemci: ttip_killscreen_repair_hadesgate)
             return offers                       # kapıda: üste ücretsiz tamir (istemci: galaxygates_pvemap_leave_on_kill_p)
-        voucher = self.vouchers() > 0
+        voucher = self.vouchers() > 0 or bool(self.rules.get('onarim_ucretsiz'))      # Cubikon Mezarlığı: onarımlar ücretsiz (npc.json)
         k = AY.carpan('tamir_ucreti')                                   # panelin tamir ücreti çarpanı
         if self.gates:
             offers[REPAIR_GATE] = 0 if voucher or self.free_gate_repair() else int(round(OLUM['portal_uridyum'] * k))
@@ -3342,7 +3413,7 @@ class World:
         ayrıntı metni ve düğme yazısı buradan (istemcinin çeviri anahtarları)."""
         u = self.p.d['pilot'].get('uridium', 0)
         out = []
-        vouchers = self.vouchers()
+        vouchers = 0 if self.rules.get('onarim_ucretsiz') else self.vouchers()          # ücretsiz haritada kupon yazılmaz ve harcanmaz
         for kind, price in self.repair_offers().items():
             if kind not in REPAIR_TEXTS:          # koşucunun seçeneği (Ö4): metinleri ondan
                 desc, ttip, btn, (akey, aparams) = self.kapi.repair_texts(kind)
@@ -3389,7 +3460,7 @@ class World:
             if price:
                 self.p.gain(uridyum=-price, neden='repair_ship')
                 msgs += self.money_msgs() if self.money_msgs else []
-            elif kind in (REPAIR_GATE, REPAIR_LOCATION) and self.vouchers() > 0 and not self.kapi:
+            elif kind in (REPAIR_GATE, REPAIR_LOCATION) and self.vouchers() > 0 and not self.kapi and not self.rules.get('onarim_ucretsiz'):
                 with self.p.lock:
                     self.p.d['kapilar']['kupon'] -= 1          # onarım kuponu kullanıldı (istemci: repair_voucher_used)
                     self.p.dirty = True
@@ -3487,14 +3558,49 @@ class World:
             best = best or (x, y)
         return best
 
+    def alien_ceasefire(self, n):
+        """The alien stops attacking the pilot (gave up at a zone, out of range, frozen, he died / jumped / cloaked): the client keeps a
+        ship that opened laser fire turned to its old target until AttackAbortLaserCommand arrives, so it flew away backwards (user
+        report 2026-10-26; same as H166). The real server sends it whenever an alien stops firing (real recording 5-2 and elsewhere)."""
+        if n.firing:
+            n.firing = False
+            self.send([('AttackAbortLaserCommand', dict(uid=n.id))])
+
     def disengage(self, n, now, flee=True):
         """Peşini bırak. flee: bir sonraki düşüncede güvenli bölgeden ve oyuncudan uzaklaşır (dalga uzaylısı kaçmaz, yerinde bekler)."""
+        self.alien_ceasefire(n)
         if n.engaged and not self.hero_dead:
             self.send(self.combat_state(COMBAT_ESCAPED, now))        # "You escaped the attack."
         n.engaged = False
         n.station_retaliation = {}
         n.flee = flee
+        n.park = None
         n.next_think = now
+
+    def peace_circle(self, x, y):
+        """(x, y, radius) of the protected zone around a point (home station or docked CBS, portal, layout safe zone) or None."""
+        s = self.station_at(x, y)
+        zones = ([(s['posX'], s['posY'], s['peaceRadius'])] if s else []) + list(HD.safe_zones(self.map_id))
+        zones += [(g['x'], g['y'], HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)) for g in self.peace_gates()]
+        return next((z for z in zones if math.hypot(x - z[0], y - z[1]) <= z[2]), None)
+
+    def park_at_zone(self, n, hx, hy, nx, ny, now):
+        """The pilot entered a protected zone and this alien gave up: it stops just outside the zone edge (real recording: 91-150
+        units beyond it) and waits 6-13 s, then roams away from the zone (think). False: no usable edge point, it flees as before."""
+        zone = self.peace_circle(hx, hy)
+        if not zone or n.speed() <= 0 or n.etki.frozen(now) or self.ward_of(n) or HD.navigates(self.map_id):
+            return False
+        cx, cy, r = zone
+        a, edge = math.atan2(ny - cy, nx - cx), r + random.uniform(90, 150)
+        tx, ty = cx + math.cos(a) * edge, cy + math.sin(a) * edge
+        if (not (300 <= tx <= self.map_w - 300 and 300 <= ty <= self.map_h - 300) or self.near_zone(tx, ty, 0)
+                or self.path_near_zone(nx, ny, tx, ty)):
+            return False
+        n.flee, n.park = False, (cx, cy)
+        ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
+        self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
+        n.next_think = now + max(ms / 1000, random.uniform(6, 13))
+        return True
 
     def combat_state(self, state, now):
         """Savaş durumu satırı (Ö1): CombatStateCommand {combatState}; istemci (AttackUpdateCombatState) günlüğe yazar: 0 "Out of
@@ -3531,7 +3637,7 @@ class World:
         return math.hypot(hx - px, hy - py) > n.guard[1].get('tasma', n.guard[1]['yaricap'][1] + self.npc_range(n))
 
     def npc_retaliating(self, n):
-        """Station access belongs to each provoking player in the current encounter."""
+        """In a protected zone (station, portal, layout safe zone) only the NPC the pilot attacked in this encounter keeps fighting him."""
         permissions = getattr(n, 'station_retaliation', None) or {}
         when = permissions.get(self.hid)
         if when is not None and when < max(self.entered, self.death_time):
@@ -3549,9 +3655,18 @@ class World:
         nx, ny = n.mover.pos(now)
         dist = math.hypot(hx - nx, hy - ny)
         retaliating = self.npc_retaliating(n)
-        station_safe = bool(self.station_at(hx, hy)) and not retaliating
-        hero_safe = (station_safe or self.near_gate_peace(hx, hy) or self.hero_dead or self.jumping or self.abilities.cloaked(now)
-                     or self.items.cloaked())                      # gizlenme CPU'su
+        # protected zone (station, portal, layout safe zone): nobody attacks the pilot, except the alien he attacked (permission set in hit_npc)
+        zoned = self.in_peace(hx, hy) and not retaliating
+        hidden = self.hero_dead or self.jumping or self.abilities.cloaked(now) or self.items.cloaked()     # gizlenme CPU'su
+        hero_safe = zoned or hidden
+        phase = self.alien.low_health(n, now)
+        if phase:                               # düşük can (uzayli.low_health): kaçış; varınca park (ateş etmez). Kaçarken menzildeyse ateş eder
+            if (phase == 'kac' and n.engaged and not hero_safe and not n.etki.frozen(now) and dist <= self.alien.flee_range(n)
+                    and now >= n.next_shot and n.d['hasar'] > 0 and now >= self.invuln_until):
+                self.npc_shoot(n, now)
+            elif phase != 'kac' or not n.engaged or hero_safe or dist > self.alien.flee_range(n):
+                self.alien_ceasefire(n)         # park, güvenli bölge ya da menzil dışı: lazer bitti
+            return
         # dalga uzaylısı (kapı, mod): uzaklık ve saldırganlık ayarından bağımsız hep oyuncunun peşinde. Önceden 2.500 birimden uzak
         # kalınca ya da oyuncu ölüp dirilince/gizlenince peşini bırakıp oyuncudan 3.000+ birim uzağa dolaşmaya gidiyor, kapıda kalan
         # uzaylılar bulunamıyordu (kullanıcı bildirimi, 2026-10-22: Delta Gate dalga III)
@@ -3563,13 +3678,16 @@ class World:
         if (self.aggressive(n) and not getattr(n, 'pasif', False) and not hero_safe
                 and dist < n.d.get('fark_mesafe', SAVAS['npc_fark_mesafe']) * AY.carpan('npc_fark')
                 and not self.in_peace(nx, ny)
-                and not n.engaged and not tied):
+                and not n.engaged and not tied and now >= n.blocked):
             n.engaged = True
             n.next_think = min(n.next_think, now)      # hemen kovalamaya başla (--yakin-npc ile dondurulmuş olsa da)
             self.log('   %s saldırıyor (mesafe %d)' % (n.d['ad'], dist))
         if n.engaged and (hero_safe or tied or (dist > 2500 and not hunt)):
-            self.disengage(n, now, flee=not hunt)   # oyuncu güvenli bölgeye kaçtı: peşini bırak ve uzaklaş (portalın önünde beklemez)
+            self.disengage(n, now, flee=not hunt)   # oyuncu güvenli bölgeye kaçtı: peşini bırak
+            if zoned and not hidden and not hunt:
+                self.park_at_zone(n, hx, hy, nx, ny, now)       # bölgenin kenarında bekler (uzağa kaçmaz); olmazsa uzaklaşır
         if n.etki.frozen(now):
+            self.alien_ceasefire(n)
             return                              # donuk: kıpırdamaz, ateş etmez (durum.py)
         if n.engaged:
             # koruyucu (Cubikon'un Protegit'leri) durmaz: çağıranın çevresinde, oyuncuyu menzilinde tutan noktalar arasında dolaşır;
@@ -3585,18 +3703,20 @@ class World:
                 # harita içinde: oyuncu kenarda ya da sınırın dışındayken (radyasyon) uzaylı haritadan çıkmasın
                 tx = min(max(tx, 300), self.map_w - 300)
                 ty = min(max(ty, 300), self.map_h - 300)
-                if not hunt and (self.path_near_zone(nx, ny, tx, ty, allow_station=retaliating)
-                                 or (self.near_zone(tx, ty, 0) and not (retaliating and self.station_at(tx, ty)
-                                                                       and not self.near_gate_peace(tx, ty)))):
+                follows = retaliating and self.in_peace(hx, hy)      # the alien the pilot attacked follows him into the zone
+                if not hunt and not follows and (self.path_near_zone(nx, ny, tx, ty, allow_station=retaliating)
+                                                 or (self.near_zone(tx, ty, 0) and not (retaliating and self.station_at(tx, ty)
+                                                                                       and not self.near_gate_peace(tx, ty)))):
                     self.disengage(n, now)          # güvenli bölgeye girmez
                     self.stop_npc_motion(n, now)
+                    n.blocked = now + 6             # saldırganlık her adımda yeniden başlatıp dur/ara/bırak döngüsüne sokmasın (canlı: 10 MoveCommand/sn)
                     return
                 if HD.navigates(self.map_id):      # X-BL: duvarın çevresinden (yolun ilk ara noktası; her düşüncede yeniden)
                     if not HD.clear(self.map_id, hx, hy, tx, ty):
                         tx, ty = hx, hy             # kovalama noktası duvarın uzaylı tarafında: yol oyuncunun kendisine
                     tx, ty = HD.waypoint(self.map_id, self.map_w, self.map_h, nx, ny, tx, ty)
                 ms = 0
-                if not (hunt and self.in_peace(tx, ty)):     # dalga uzaylısı güvenli bölgenin kenarında bekler
+                if not (hunt and self.in_peace(tx, ty) and not follows):     # dalga uzaylısı güvenli bölgenin kenarında bekler (oyuncunun vurduğu girer)
                     ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
                     self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
                 n.next_think = now + (max(0.5, ms / 1000) if post else 1.0)
@@ -3604,6 +3724,8 @@ class World:
                 if n.next_shot == 0.0:
                     self.send([legacy('0|n|LSH|%d|%d' % (self.hid, n.id))])
                 self.npc_shoot(n, now)
+            elif dist > self.npc_range(n):
+                self.alien_ceasefire(n)         # menzilin dışına çıktı: istemcide lazer durumu kapanır
             return
         if hunt:
             return                              # dalga uzaylısı dolaşmaz: oyuncu yine ulaşılabilir olunca peşine düşer
@@ -3624,18 +3746,25 @@ class World:
             self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
             n.next_think = now + ms / 1000 + random.uniform(0.2, 1.0)
         elif now >= n.next_think:
+            park, n.park = n.park, None             # waited at a zone edge: a normal short wander, away from the zone
             r = random.uniform(300, 1200)
-            a = random.uniform(0, 2 * math.pi)
+            a = math.atan2(ny - park[1], nx - park[0]) + random.uniform(-1.2, 1.2) if park else random.uniform(0, 2 * math.pi)
             tx = min(max(nx + math.cos(a) * r, 300), self.map_w - 300)
             ty = min(max(ny + math.sin(a) * r, 300), self.map_h - 300)
-            leaving = n.flee or self.near_zone(nx, ny, 500)
-            if leaving or self.near_zone(tx, ty, 500):
+            leaving = n.flee or (self.near_zone(nx, ny, 500) and not park)
+            if leaving or self.near_zone(tx, ty, 0 if park else 500):
                 tx, ty = self.spot_away(hx, hy)     # güvenli bölgenin içinden/kenarından uzaklaş, oyuncudan uzağa
             if HD.navigates(self.map_id):
                 tx, ty = HD.waypoint(self.map_id, self.map_w, self.map_h, nx, ny, tx, ty)
-            if self.path_near_zone(nx, ny, tx, ty):
-                self.stop_npc_motion(n, now)
-                return
+            tries = 0
+            while self.path_near_zone(nx, ny, tx, ty):
+                tries += 1
+                if tries > 5:
+                    self.stop_npc_motion(n, now)    # yapının kıyısında sıkıştı: yolu açık nokta bulunamadı
+                    return
+                tx, ty = self.spot_away(hx, hy)     # başka nokta dene (her 2 sn'de dur komutu yağmasın)
+                if HD.navigates(self.map_id):
+                    tx, ty = HD.waypoint(self.map_id, self.map_w, self.map_h, nx, ny, tx, ty)
             n.flee = False
             ms = n.mover.go(tx, ty, n.speed() * (1.0 if leaving else 0.6) * n.etki.speed_factor(now), now)
             self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])

@@ -6,7 +6,8 @@ bölgesine giden portal (bir Labyrinth Key; wiki), ortasında X-1'e dönüş (ü
 [hedef harita, hedef bölge, varılan köşe]. Duvarlar istemcinin; sunucu bölgeyi doğma yeri için kullanır.
   - Bölge nüfusu (Frozen Icy, Kristallin, Kristallon, patronlar, meteorlar) 'nufus'tan; ölünce aynı bölgede yeniden doğar.
   - Labyrinth Key: uzaylının 'anahtar' [olasılık, adet] (wiki: Icy %5 … Super Meteoroid %80 ve 2); profilde sayaç, istemciye
-    FrozenLabyrinthKeyInfoCommand. Etkinlik bitince kalan anahtarlar silinir (wiki).
+    FrozenLabyrinthKeyInfoCommand. Etkinlik bitince kalan anahtarlar silinir (wiki). Ice Box (ICY_BOX, etkinlikler.json labirent
+    harita_ek) her kutuda 1 anahtar verir: dunya.grant_loot -> add_keys.
   - Skoll: aralıkla bulunulan haritada (olasılıkla) belirir, labirente duyurulur; ölünce 3 anahtar, Indoctrine Oil ve Accelerator.
   - Synk: bütün labirentte bir tane; rastgele harita ve bölgede doğar, saldırmaz, kaçar; ölünce ödül kutusu, Synk avı sayılır
     (FrozenLabyrinthSynkInfoCommand: harita, bölge, yeniden doğmaya kalan; FrozenLabyrinthInfoCommand: avlar, anahtarlar, süreler).
@@ -27,6 +28,7 @@ NAMES = {v['ad']: k for k, v in MAPS.items()}
 ZONES = ['TL', 'TR', 'BL', 'BR']
 PORTAL_BASE = 152900000               # + harita * 100 + bölge * 10 + köşe (0-3), merkez + 4
 INSET = 1800                          # köşe portallarının bölge kenarından uzaklığı
+FLB_KEY = 'resource_key_access-flb'   # Pass görevlerinin anahtar kimliği (anahtar profilde state['anahtar'] sayısı)
 SKOLL, SYNK = 'lab_skoll', 'lab_synk'
 
 
@@ -74,7 +76,7 @@ def portals(map_id, home):
             out.append(dict(gateId=PORTAL_BASE + int(map_id) * 100 + zi * 10 + ci, x=x, y=y, hedef=dest, designId=L['portal'],
                             kapi='labirent', ucretli=True, varis=(int(ax + (cx - ax) * k), int(ay + (cy - ay) * k))))
         x, y = zone_center(map_id, z)
-        out.append(dict(gateId=PORTAL_BASE + int(map_id) * 100 + zi * 10 + 4, x=x, y=y, hedef=home, designId=1, kapi='labirent'))
+        out.append(dict(gateId=PORTAL_BASE + int(map_id) * 100 + zi * 10 + 4, x=x, y=y, hedef=home, designId=1, kapi='labirent', varis='istasyon'))
     return out
 
 
@@ -88,6 +90,15 @@ def keys(p):
 
 def key_cmd(p):
     return ('FrozenLabyrinthKeyInfoCommand', {'labyrinthKeys': keys(p)})
+
+
+def add_keys(p, n):
+    """Labyrinth Key ekle (uzaylının düşürdüğü ya da Ice Box'ın anahtarı) -> istemci mesajları."""
+    with p.lock:
+        state(p)['anahtar'] = keys(p) + n
+        p.dirty = True
+    p.ach('loot', loot=FLB_KEY, amount=n)                          # Frozen Labyrinth Pass: "Labyrinth Key topla" (savas_bileti.py)
+    return [key_cmd(p), KAPI.screen('+%d Labyrinth Key (%d)' % (n, keys(p)))]
 
 
 def expire_keys(p, now=None):
@@ -151,6 +162,7 @@ class Labirent:
             state(self.p)['anahtar'] = keys(self.p) - need
             self.p.dirty = True
         self.log('   labirent: %d anahtar harcandı (kalan %d) -> %s' % (need, keys(self.p), MAPS[g['hedef']]['ad']))
+        self.p.ach('spend', loot=FLB_KEY, adet=need)                # Frozen Labyrinth Pass: "Labyrinth Key kullan" (savas_bileti.py)
         return True, [key_cmd(self.p)]
 
     # ------------------------------------------------------------ ölüm
@@ -160,10 +172,7 @@ class Labirent:
         w, msgs = self.w, []
         a = n.d.get('anahtar')
         if a and random.random() < a[0]:
-            with self.p.lock:
-                state(self.p)['anahtar'] = keys(self.p) + a[1]
-                self.p.dirty = True
-            msgs += [key_cmd(self.p), KAPI.screen('+%d Labyrinth Key (%d)' % (a[1], keys(self.p)))]
+            msgs += add_keys(self.p, a[1])
             self.log('   labirent: +%d anahtar (%d)' % (a[1], keys(self.p)))
         for loot, amount, chance in n.d.get('dusme', []):
             if random.random() < chance:

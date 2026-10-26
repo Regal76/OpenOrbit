@@ -19,12 +19,17 @@ Vergi: üyenin uzaylı ödülünden (profil.gain) oranı kadar kredi kasaya.
 """
 import copy, json, os, random, secrets, threading, time
 
+import ayar as AY
+
 KURMA_BEDELI = 300000
 FIRMA_BEDELI = 5000           # şirket değiştirme (istemcide sabit: ClanSubViewCompany.InitUI, changeFaction_infoText)
 X1 = {1: 1, 2: 5, 3: 9}       # firma -> X-1 haritası
 HAKLAR = ['hiremember', 'firemember', 'editranks', 'news', 'roundmail', 'tax', 'payout', 'diplo_start', 'diplo_end',
           'diplo_war', 'battle_station_replace_module', 'battle_station_deflector', 'battle_station_build']      # + Ö5 (CBS)
 AZAMI_VERGI = 10
+BEKLEME_SN = 48 * 3600        # klandan ayrılınca yeni klan kurma/katılma yok; klan adı/etiketi iki değişim arası (istemci: clan_user_2dayblock,
+#                               err_clannameChange2Days; darkorbitwiki guides/clan: 48 saat)
+ODEME_KESINTISI = 10          # kasadan üyeye ödemede kendiliğinden silinen pay, yüzde (darkorbitwiki guides/clan)
 DIPLO_HAK = {0: 'diplo_end', 1: 'diplo_start', 2: 'diplo_start', 3: 'diplo_war'}
 REQUESTS = {'LoginInitClanRequest', 'ClanFilterSearchRequest', 'ClanSearchNameTagRequest', 'ClanListRequest', 'ShowClanInfoRequest',
             'FoundClanRequest', 'ApplyClanRequest', 'DeleteClanApplyRequest', 'ClanApplyInfoListRequest', 'ApplyAcceptRequest',
@@ -363,6 +368,10 @@ class Klan:
         rid = k['uyeler'].get(self.ben, {}).get('rutbe', 0)
         return any(r['id'] == rid and right in r['haklar'] for r in k['rutbeler'])
 
+    def blocked(self):
+        """Klandan ayrıldıktan sonra BEKLEME_SN dolmadan yeni klan kurulamaz, klana katılınamaz."""
+        return AY.get('klan_bekleme') and time.time() < self.p.d.get('klan_ayrilis', 0) + BEKLEME_SN
+
     def uye_ad(self, k, uid):
         """Üyenin adı (istemci kimlikle sorar) ya da None."""
         return next((a for a, u in k['uyeler'].items() if int(u.get('uid', 0)) == int(uid or 0)), None)
@@ -663,6 +672,8 @@ class Klan:
         reply = lambda ok, key='empty', cid=0, **a: [('FoundClanCommand', {'success': ok, 'clanId': cid, 'errorMsg': err(key, **a)})]
         if self.k:
             return reply(False, 'err_user_in_clan')
+        if self.blocked():
+            return reply(False, 'clan_user_2dayblock')
         if not tag or not cname:
             return reply(False, 'clan_errmsg_required', _NAME_=_res('clan_name' if not cname else 'clan_tag'))
         if len(cname) > 50:
@@ -710,6 +721,8 @@ class Klan:
                                                               'success': ok})]
         if self.k:
             return reply(False, 'err_user_in_clan')
+        if self.blocked():
+            return reply(False, 'clan_user_2dayblock')
         with LOCK:
             c = KLANLAR.get(cid)
             if c is None:
@@ -844,10 +857,15 @@ class Klan:
             return reply(False, 'clan_errmsg_clantag_not_allowed')
         if len(cname) > 50:
             return reply(False, 'clan_errmsg_to_long')
+        renamed = (tag, cname) != (k['etiket'], k['ad'])
+        if renamed and AY.get('klan_bekleme') and time.time() < k.get('ad_zamani', 0) + BEKLEME_SN:
+            return reply(False, 'err_clannameChange2Days')
         busy = self.taken(cname, tag, skip=k)
         if busy:
             return [('EditClanInfoCommand', {'success': False, 'clanId': k['id'], 'clanInfoCommand': self.info(), 'errorMsg': metin(busy)})]
         with LOCK:
+            if renamed:
+                k['ad_zamani'] = time.time()
             k.update(etiket=tag, ad=cname, ts=str(f.get('clanTS', k['ts']))[:100], alim=int(f.get('recruitingStatus') or 0),
                      alim_bilgi=int(f.get('recuritingInfo') or 0), firma=firma if firma in (0,) + tuple(X1) else k['firma'])
         self.changed(k)
@@ -935,6 +953,8 @@ class Klan:
         with LOCK:
             k['uyeler'].pop(self.ben, None)
             self.add_news('left', '', k)
+        self.p.d['klan_ayrilis'] = time.time()            # 48 saat yeni klan kurma/katılma yok (blocked)
+        self.p.dirty = True
         self.changed(k)                                   # kendi kopyası düşer (üye değil)
         self.log('   klandan ayrıldı: [%s]' % k['etiket'])
         return [('LeaveClanCommand', {'errorMsg': metin('clan_leave_clan_success'), 'success': True}), self.no_clan(), self.tag_cmd()]
@@ -1042,7 +1062,7 @@ class Klan:
         return []
 
     def payout(self, f):
-        """Kasadan üyeye (payout hakkı): bağlıysa hemen, değilse sonraki girişinde (bagla)."""
+        """Kasadan üyeye (payout hakkı; verilen kredinin %10'u silinir): bağlıysa hemen, değilse sonraki girişinde (bagla)."""
         k, pl = self.k, self.p.d['pilot']
         amount, uid = int(f.get('amount') or 0), int(f.get('payoutUserId') or 0)
         a = self.uye_ad(k, uid) if uid else self.ben
@@ -1054,6 +1074,7 @@ class Klan:
         if amount <= 0 or amount > k['kasa']:
             return fail('err_clan_no_money')
         u = k['uyeler'][a]
+        net = amount * (100 - ODEME_KESINTISI) // 100            # kasadan çıkan tutarın kesintisi silinir
         log = {'balanceUserId': int(u.get('uid', 0)), 'credits': amount, 'insertDate': stamp(), 'toName': u.get('ad', ''),
                'fromName': pl.get('userName', ''), 'moneyType': 'payout', 'reason': str(f.get('reason', ''))[:100]}
         s = kisiler().get(a) if a != self.ben else None
@@ -1062,11 +1083,11 @@ class Klan:
             k['kasa_kaydi'].insert(0, log)
             del k['kasa_kaydi'][200:]
             if a != self.ben and s is None:
-                u['bekleyen'] = int(u.get('bekleyen', 0)) + amount
+                u['bekleyen'] = int(u.get('bekleyen', 0)) + net
         if a == self.ben:
-            self.p.gain(kredi=amount, neden='clan_hl_auszahlungen', detay=k['ad'])
+            self.p.gain(kredi=net, neden='clan_hl_auszahlungen', detay=k['ad'])
         elif s is not None:
-            s.profil.gain(kredi=amount, neden='clan_hl_auszahlungen', detay=k['ad'])
+            s.profil.gain(kredi=net, neden='clan_hl_auszahlungen', detay=k['ad'])
             o = s.oturum
             if o is not None and getattr(o, 'magaza', None) is not None:
                 s.gonder(o.magaza.money_msgs(), 'klan ödemesi')

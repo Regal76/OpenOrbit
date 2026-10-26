@@ -76,7 +76,10 @@ ETKINLIK_ACIKLAMA = {
     'immortal_union': 'Lanatum, Styxus ve Charopos; etkinlik paraları.',
     'protegit': "Chaos Protegit'ler; etkinlik paraları.",
     'kis': "Ice Meteoroid'ler, hediye kutuları ve Santa.",
-    'thanksgiving': "Ice Meteoroid'ler.",
+    'thanksgiving': 'Thanksgiving Box ve Roast Turkey Cargo Box.',
+    'thanksgiving_buz': "Ice Meteoroid'ler ve Super Ice Meteoroid (Şükran Günü'nden 3 gün önce - 5 Aralık).",
+    'sukran_gg_cift': "Şükran Günü'nden pazartesiye Galaksi Kapısı çift ödülü (Pazar kuralının yanında).",
+    'kardan_adam': 'Yeni yıl Snowman penceresi (WIZ-X).',
     'plutus': 'Gauntlet of Plutus kapısı (Easy X-1, Normal X-8; günde bir).',
     'labirent': "Frozen Labyrinth: X-1'den 16 haritalık labirent, Labyrinth Key'ler ve Synk.",
     'galactic_strife': 'Battle Pass (görevler uzaylılarla) ve anahtar değişiminde Arios ve Neikos tasarımları.',
@@ -99,7 +102,10 @@ ETKINLIK_ACIKLAMA = {
     'obsidian_booty': "Haritalarda Obsidian Booty Box'lar çıkar.",
     'rb_booty': "Haritalarda kırmızı ve mavi Booty Box'lar çıkar.",
     'apocalypse_booty': "Haritalarda Apocalypse Booty Box'lar çıkar.",
-    'fever': 'Listedeki gemilere güçlenme; yalnız Gauntlet of Plutus, Mimesis Mutiny ve Protegit sürerken.',
+    'fever': 'Listedeki gemilere güçlenme; yalnız Gauntlet of Plutus, Mimesis Mutiny, Protegit sürerken ve Black Light Fever haftalarında.',
+    'fever_black_light': 'Black Light Fever haftaları: Fever yalnız BL haritalarında.',
+    'astral_ascension': 'Battle Pass (2022 koşusu) ve anahtar değişimi.',
+    'spacecup': 'Battle Pass (2022 koşusu; Spaceball ve PvP yok) ve anahtar değişimi.',
 }
 GUNLER = {'tr': ('Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'), 'en': ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')}
 AYLAR = {'tr': ('Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'),

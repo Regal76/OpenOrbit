@@ -37,9 +37,11 @@ LAUNCHERS = S['fircatici']['turler']
 LAUNCHER_AMMO = S['fircatici_cephane']
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
 ALIEN_CPUS = S['uzayli_cpu']                  # Chaos Alien CPU'ları, Cubi Portal -> harita sınıfları, doğan türler
+ALIEN_CPUS.update(json.load(open(os.path.join(HERE, 'data', 'etkinlik_kapilari.json'), encoding='utf8')).get('cpu', {}))   # Bountiful (Gauntlet of Plutus; tools/etkinlik_kapilari.py)
 FORMATIONS = _E['formasyonlar']               # drone formation menu items: one shared wait between two changes (S['formasyon'])
 TOGGLE_DEFAULT = {'nisan': False}             # Xenomit harcar: kendiliğinden açılmaz; ötekiler takılınca açık
 XENOMIT = 3
+HM7 = 'equipment_extra_hmd-07'                # ticaret dronu: kısayol çubuğu simgesi ticaret penceresini açar (dunya.menu_action)
 TIMERS = 'bekleme_gruplari'                   # profilde: {grup: [bitiş, azami ms]}
 # havai fişek (K6): istemcinin fireworkDescriptor kimlikleri 31-35 (canlıda istemcinin sözlüğünden okundu; başkası FireWorkInfo.Init'te
 # NullReference), sıra istemcinin Ammunition'ı gibi (FIREWORK_1-3, COM, RZ); ateşleme öğesi sayaçsız
@@ -316,6 +318,16 @@ def menu_status(p, menu_id, st):
         _tips(st, [_line('ttip_cloak_cpu', [('%TYPE%', loot, 1)]), _line('ttip_cpu_cloak_count', [('%COUNT%', n, 0)])])
         st.update(visible=True, available=True, activatable=n > 0 and not on, selected=on, counterValue=n, iconLootId=loot)
         return st
+    if menu_id == HM7:                             # takılıysa ve hakkı varsa kullanılabilir: tıklayınca ticaret penceresi
+        owned = EK.has(p, 'her_yerde_satis')
+        ok = owned and EK.uses(p, HM7) > 0
+        st.update(visible=owned, available=ok, activatable=ok)
+        if owned:
+            for tip in ('toolTipSlotBar', 'toolTipItemBar'):
+                lines = (st.get(tip) or {}).get('commandList')
+                if lines:
+                    lines[:] = [l for l in lines if l.get('baseKey') != 'ttip_cpu_not_equipped']
+        return st
     if menu_id in TOGGLES:
         key = TOGGLES[menu_id]
         loot = _first(p, key)
@@ -392,6 +404,7 @@ class Esyalar:
         self.next_lure = 0.0
         self.waiting = {}          # grup -> bitiş: bitince READY bildirimi
         self.ghost_end = 0.0       # Ghostifier görünümünün bitişi
+        self.serum_next = 0.0      # Serum CPU'su bir sonraki iyileştirmeye hazır
         self.next_dep = 0.0        # Smart Bomb / Insta-Shield sayacının denetimi (dependent_tick)
         self.aim_warned = False    # nişan CPU'sunun Xenomit uyarısı gitti (Xenomit gelince yeniden)
         self.born = time.time()    # bu harita yüklemesi (giriş, atlama, portal): atlama CPU'su 10 sn sonra (jump_cpu_failed_time)
@@ -640,6 +653,17 @@ class Esyalar:
         return [('AddMineCommand', dict(hash=h, x=int(m['x']), y=int(m['y']), typeId=MINES[m['loot']]['tip'], maxSkill1=False,
                                         maxSkill5b=False)) for h, m in self.mines.items()]
 
+    def serum_cure(self):
+        """Serum CPU (ANTI-Z1 1 doz, XL 10 doz; istemci: "automatically cure you of any infections"): takılıysa ve dozu varsa bulaşan
+        enfeksiyonu kendiliğinden iyileştirir, bir doz harcanır; sonraki iyileştirme 60 sn sonra (wiki bekleme). -> iyileştiyse True"""
+        now = time.time()
+        loot = next((l for l, _ in EK.props(self.p, 'serum') if EK.uses(self.p, l) > 0), None)
+        if not loot or now < self.serum_next:
+            return False
+        self.serum_next = now + EK.X[loot]['bekleme_sn']
+        self.log('   Serum CPU enfeksiyonu iyileştirdi (%s, kalan %d)' % (loot, EK.use(self.p, loot)))
+        return True
+
     def mine_effect_msgs(self, now=None, replay=False, remember=True):
         """Mayının gemideki kalıcı görseli: PLAGUE (57), SL-M01'in slow-effect'i; patlama bunları kendiliğinden başlatmaz."""
         now = time.time() if now is None else now
@@ -742,7 +766,7 @@ class Esyalar:
 
     def mine_npc(self, n, cfg, f, now, source):
         w = self.w
-        sh = min(n.shield, n.d['kalkan'] * cfg.get('kalkan', 0) * min(f, 1.0))
+        sh = min(n.shield, n.d['kalkan'] * cfg.get('kalkan', 0) * f)       # SAB-M01 %50 x (Lance + Detonation) en çok %100 (wiki)
         hp = n.d['hp'] * cfg.get('can', 0) * f
         if cfg.get('hasar_turu') == 'standart':
             sh = min(n.shield, int(hp * n.d.get('kalkan_emme', _N['savas']['npc_kalkan_emme'])))
@@ -769,7 +793,7 @@ class Esyalar:
         yer = 'dalga' if getattr(npc_owner, 'hunt', False) else 'harita'
         k = AY.carpan('npc_hasar', yer) if npc_owner else 1.0
         shield, hull = g.get('shield', 0), g.get('hitPoints', 0)
-        sh = min(shield, int(g.get('shieldMax', 0) * cfg.get('kalkan', 0) * min(f, 1.0) * k))
+        sh = min(shield, int(g.get('shieldMax', 0) * cfg.get('kalkan', 0) * f * k))
         hp = int(g.get('hitMax', 0) * cfg.get('can', 0) * f * k)
         if cfg.get('hasar_turu') == 'standart':
             sh = min(shield, int(hp * p.d.get('kalkan_emme', 0.8)))
@@ -903,6 +927,12 @@ class Esyalar:
         if any(n.alive and getattr(n, 'cpu', False) for n in w.npcs.values()):
             self.send([stm('msg_aliencpu_npc_already_exists')])
             return
+        if len(w.npcs) > c.get('npc_siniri', 10 ** 9):                # Bountiful: haritada 250'den çok uzaylı varsa kullanılamaz
+            self.send([stm('msg_aliencpu_npc_limit_reached')])
+            return
+        if c.get('etkinlik') and not TKV.is_active(c['etkinlik']):    # Bountiful yalnız Gauntlet of Plutus sürerken (bitince silinir)
+            self.log('   %s: %s etkinliği sürmüyor' % (loot, c['etkinlik']))
+            return
         p.use_ammo(loot, 1)
         a = random.uniform(0, 2 * math.pi)
         x = min(max(600, hx + math.cos(a) * 800), w.map_w - 600)
@@ -940,6 +970,8 @@ class Esyalar:
             self.send([stm('cloak_cpu_failed_generic')])
             return
         left = EK.use(p, loot)
+        p.ach('spend', loot=loot, adet=1)       # Pass görevleri: "Cloak CPU'yu etkinleştir" (savas_bileti.py)
+        w.abilities.reveal()                   # wiki: etkin Ultimate Cloaking biter, CPU'nun gizlenmesi devralır
         with p.lock:
             p.d['cpu_gizli'] = True
             p.dirty = True
@@ -1066,7 +1098,8 @@ class Esyalar:
             return
         mods = p.mods()
         dmg = sum(cfg.get('hasar', 0) * random.uniform(0.85, 1.0) for _ in range(cnt))
-        dmg = int(dmg * (1 + mods.get('roket', 0) + (mods.get('npc', 0) if n else 0) + mods.get('fircatici_hasar', 0))     # Rapid Fire Plus +%20
+        fusion = YT.mods(p).get('roket', 0)                  # Rocket Fusion Hellstorm'u artırmaz (fandom Rocket launcher)
+        dmg = int(dmg * (1 + mods.get('roket', 0) - fusion + (mods.get('npc', 0) if n else 0) + mods.get('fircatici_hasar', 0))     # Rapid Fire Plus +%20
                   * (1 + p.lab_bonus(1)) * launcher_upgrade(p))
         drain = cfg.get('kalkan_cek', 0) * cnt
         impact = w.hit_asset if asset else w.hit_npc
@@ -1100,10 +1133,8 @@ class Esyalar:
         w.last_combat = now
         w.stop_repair()
         p.ach('shot', silah='ROCKET_LAUNCHER')
-        roll = random.random()
-        hit = roll < w.rocket_hit(rocket)
-        saved = hit and roll >= w.rocket_hit(rocket, skill=False)             # güdüm görseli (dunya.rocket_look)
-        self.send(w.ammo_msgs(rocket) + [w.rocket_msg(uid, hit, r.get('kimlik', 1), saved), self.cooldown(rocket, now)])
+        hit = random.random() < w.rocket_hit(rocket)
+        self.send(w.ammo_msgs(rocket) + [w.rocket_msg(uid, hit, r.get('kimlik', 1)), self.cooldown(rocket, now)])
         if hit:
             w.later(ROCKET_FLIGHT, lambda: self.special_hit(rocket, uid))
         else:
@@ -1143,8 +1174,14 @@ class Esyalar:
             return
         if r.get('gorunum_sn'):                                                               # WIZ-X: başka bir geminin görünümü
             models = {int(t.get('model', k)) for k, t in _N['tipler'].items() if str(t.get('model', k)).isdigit()}
-            ev = [m for k, m in sorted(r.get('gorunum_etkinlik', {}).items()) if TKV.is_active(k)]    # Thanksgiving hindi, kış kardan adam
-            model = str(ev[0] if ev else random.choice(sorted(models - {int(n.model)})))
+            ev = [m for k, m in sorted(r.get('gorunum_etkinlik', {}).items()) if TKV.is_active(k)]    # Thanksgiving: hindi, her isabette
+            pool = [m for k, ms in sorted(r.get('gorunum_sansli', {}).items()) if TKV.is_active(k) for m in ms]    # etkinlik tasarımları
+            if ev:
+                model = str(ev[0])
+            elif pool and random.random() < r.get('gorunum_sans', 1.0):              # etkinlikte %30 olasılıkla etkinlik tasarımı (wiki)
+                model = str(random.choice(pool))
+            else:
+                model = str(random.choice(sorted(models - {int(n.model)})))
             vis = lambda on: [('VisualModifierCommand', dict(userId=uid, modifier=25, attribute=0, additionalAttribute=model, count=0,
                                                              activated=on))]
             self.send(vis(True))
@@ -1221,7 +1258,7 @@ class Esyalar:
         w.jumping, w.attacking, w.target = True, False, None
         for n in w.npcs.values():
             n.engaged = False
-        dest, pos = j['hedef'], 'istasyon'
+        dest, pos = j['hedef'], 'rastgele' if j['cpu'] == 'ajp' else 'istasyon'   # AJP-01: hedef haritada rastgele yere (gerçek oyun)
         if (j['cpu'] != 'ajp' and int(w.map_id) != 42 and AY.get('atlama_sapma')                 # panel: kapatılabilir
                 and random.random() < S['atlama_cpu'].get('mezarlik_sansi', 0)):
             dest, pos = 42, None                      # Cubikon Mezarlığı (wiki: "her 1.000 atlamada bir"; tek oyunculu oran)

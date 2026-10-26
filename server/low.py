@@ -1,19 +1,23 @@
 """LoW (Lord of War), tek kişilik sürüm (yol haritası Aşama 4). Değerler ve kaynaklar data/low.json'da.
 
-Akış (dünya döngüsünden, kilit altında): giriş -> eski korsanlar türlerine göre dalga dalga -> dört röle istasyonu sırayla (istemcinin
-RELAY_STATION varlığı; wiki: "shoot the station until its green indicator loads": vurulunca dolar, dünyanın asset_targets'ı; yedek
-olarak yanında durunca da; haritada korsan varken etkinleşmez, istemcinin metni) -> Century Falcon ve eskortu -> bitti: ortada
-firmanın X-3'üne dönüş portalı. Etkin her röle haritanın ortasında (LoW HQ'su, harita.py) onarım robotunu hızlandırır (wiki "speeds
-HP regeneration in the middle of the map").
-İlerleme profilde (low): ölünce donus_sn içinde X-3'teki portaldan dönülürse kaldığı aşamadan sürer (dalganın uzaylıları yeniden gelir),
-yoksa baştan. LoW'da tamir yalnız istasyonda (X-1); atlama CPU'su çalışmaz.
+Harita (wiki görseli, emu-dark): giriş sol alt köşede (harita.LOW_START); ortada korsan HQ'su (süs istasyon harita.py LOW_STATION; boss burada
+doğar; ilk röle etkinleşince çevresinde iyileştirme bölgesi açılır); dört röle istasyonu sabit yerlerde (role.yerler), ilki girişten beri
+görünür, sonraki bir öncekinin etkinleşmesiyle belirir; kırmızı uçuş yasağı bölgeleri harita_duzeni.json'un 200 kaydında.
+Akış (dünya döngüsünden, kilit altında): rota (low.json): eski korsanlar türlerine göre dalga dalga, sabit doğuş noktalarında (dogma_noktalari);
+dalgaların arasında röle istasyonları sırayla (istemcinin RELAY_STATION varlığı; wiki: "shoot the station until its green indicator
+loads": vurulunca dolar, dünyanın asset_targets'ı; yedek olarak yanında durunca da; haritada korsan varken ya da sırası gelmeden etkinleşmez,
+istemcinin metni) -> Century Falcon ve eskortu HQ'da -> bitti: ortada firmanın X-3'üne dönüş portalı. Anlatı: HQ'dan telsiz metinleri
+(istemcinin transmission_groupgate_* anahtarları, low.json anlati).
+İlerleme profilde (low: asama, dalga = doğan dalga sayısı, role = etkin röle sayısı; rotadaki sıradaki adım bunlardan türer): ölünce donus_sn
+içinde X-3'teki portaldan dönülürse kaldığı aşamadan sürer (dalganın uzaylıları yeniden gelir), yoksa baştan. LoW'da tamir yalnız istasyonda
+(X-1); atlama CPU'su çalışmaz.
 """
 import json, math, os, random, time
 
 import harita as H
 import uzayli as UZ
 from eski_protokol import legacy
-from kapi import screen
+from kapi import mod, screen
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 L = json.load(open(os.path.join(HERE, 'data', 'low.json'), encoding='utf8'))
@@ -21,6 +25,7 @@ MAP = L['harita']
 RELAY_STATION = 31                  # AssetTypeModule.AssetType (istemci)
 RELAY_BASE = 152100000
 EXIT_ID = H.GATE_ID_BASE + 990010
+POI_HQ = 'lowHqHealing'             # HQ iyileştirme bölgesi (POIType HEALING = 4, design SIMPLE = 6; dunya_patronu'nun şifa feneriyle aynı)
 
 
 def fresh():
@@ -31,8 +36,10 @@ class Low:
     def __init__(self, world):
         self.w, self.p = world, world.p
         self.npcs = set()           # bu aşamanın uzaylıları
-        self.relay = None           # {kimlik, x, y, ilerleme, son}
+        self.relay = None           # {kimlik, x, y, ilerleme, son, yuzde, savunan}
         self.boss = None
+        self.heal_next = 0.0
+        self.told = set()           # anlatılan olaylar (low.json anlati): her biri girişten sonra bir kez
         now = time.time()
         st = self.p.d.get('low')
         returning = bool(st and st.get('asama') != 'bitti' and st.get('olum') and now - st['olum'] <= L['donus_sn'])
@@ -41,7 +48,11 @@ class Low:
             self.p.dirty = True
         self.t = now + L['giris_sn']
         world.asset_targets = self             # röle seçilir ve vurulur (dunya.asset_laser)
+        self.show_relay()                      # sıradaki röle girişten görünür
+        self.w.send(self.asset_msgs())         # Low hazır demetinden sonra kurulur (resend yalnız haritayı yeniden yükleyince taşır): canlıda ilk röle istemciye gitmiyordu
         self.say('devam' if returning else 'giris')
+        if not returning:
+            self.tell('giris')
         self.w.log('   LoW: %s (%s)' % ('kaldığı yerden' if returning else 'baştan', self.st['asama']))
 
     @property
@@ -59,13 +70,28 @@ class Low:
         vals.update(kw)
         self.w.send([screen(L['mesajlar'][key].format(**vals))])
 
+    def tell(self, event):
+        """HQ'nun telsiz anlatısı (istemcinin transmission_groupgate_* metinleri, low.json anlati): olay başına bir kez."""
+        keys = L['anlati'].get(event)
+        if keys and event not in self.told:
+            self.told.add(event)
+            self.w.send([legacy('0|A|STM|' + k) for k in keys])
+
+    def hq(self):
+        """HQ: haritanın ortası (süs istasyonun yeri)."""
+        return self.w.map_w // 2, self.w.map_h // 2
+
     # ------------------------------------------------------------ doğurma
-    def spawn(self, tip, count, near=None):
+    def spawn(self, tip, count, near=None, at=None):
+        """at verilirse tam o noktanın çevresinde (rota doğuş noktası, HQ); yoksa near'ın (yoksa oyuncunun) çevresinde halkada."""
         w = self.w
-        hx, hy = near or w.hero_pos()
-        a, r = random.uniform(0, 2 * math.pi), random.uniform(*L['dogma_uzaklik'])
-        cx = min(max(hx + math.cos(a) * r, 800), w.map_w - 800)
-        cy = min(max(hy + math.sin(a) * r, 800), w.map_h - 800)
+        if at:
+            cx, cy = at
+        else:
+            hx, hy = near or w.hero_pos()
+            a, r = random.uniform(0, 2 * math.pi), random.uniform(*L['dogma_uzaklik'])
+            cx = min(max(hx + math.cos(a) * r, 800), w.map_w - 800)
+            cy = min(max(hy + math.sin(a) * r, 800), w.map_h - 800)
         out = []
         for i in range(count):
             b, d = random.uniform(0, 2 * math.pi), random.uniform(0, 250 + 40 * count)
@@ -80,60 +106,89 @@ class Low:
         return self.npcs
 
     # ------------------------------------------------------------ adımlar
+    def step(self):
+        """Rotadaki sıradaki adım (low.json rota): ('dalga', i), ('role', i), ('boss',); bitince None. Profildeki sayaçlardan türer."""
+        st = self.st
+        if st['asama'] == 'bitti':
+            return None
+        for s in L['rota']:
+            if s[0] == 'boss' or (st['dalga'] if s[0] == 'dalga' else st['role']) <= s[1]:
+                return tuple(s)
+        return ('boss',)
+
     def tick(self, now):
         w = self.w
+        self.heal_tick(now)
         if w.hero_dead or w.jumping or now < self.t:
             return
-        a = self.st['asama']
-        if a == 'dalga':
+        s = self.step()
+        if s is None:
+            return
+        if s[0] == 'dalga':
             if self.alive():
                 return
-            i = self.st['dalga']
-            if i >= len(L['dalgalar']):
-                self.save(asama='role', role=0)
-                self.place_relay(now)
-                return
+            i = s[1]
             tip, n = L['dalgalar'][i]
-            self.spawn(tip, n)
-            self.save(dalga=i + 1)
+            self.spawn(tip, n, at=L['dogma_noktalari'][i])
+            self.save(asama='dalga', dalga=i + 1)
             self.t = now + L['dalga_arasi_sn']
             self.say('dalga', ad=w.alien.CFG['tipler'][tip]['ad'].strip('-=[] '), adet=n, dalga=i + 1)
             w.log('   LoW dalga %d: %s x%d' % (i + 1, tip, n))
-        elif a == 'role':
-            if not self.relay:
+        elif s[0] == 'role':
+            if not (self.relay and self.relay['savunan']):
+                if self.alive():                             # önceki dalga bitmeden rölenin savunanı gelmez
+                    return
+                self.save(asama='role')
                 self.place_relay(now)
             self.relay_tick(now)
-        elif a == 'boss':
-            if not self.alive() and self.boss is None:
-                self.spawn_boss()
-            elif not self.alive():
-                self.finish()
+        elif not self.alive() and self.boss is None:
+            self.save(asama='boss')
+            self.spawn_boss()
+        elif not self.alive():
+            self.finish()
+
+    def relay_msg(self):
+        r = self.relay
+        return UZ.asset_create(r['kimlik'], RELAY_STATION, r['x'], r['y'], name='Relay Station %d' % (self.st['role'] + 1))
+
+    def show_relay(self):
+        """Sıradaki röle istasyonunu sabit yerinde (role.yerler) belirtir (savunanı sırası gelince doğar) -> yaratma iletisi ya da None."""
+        no = self.st['role'] + 1
+        if no > L['role']['adet']:
+            return None
+        x, y = L['role']['yerler'][no - 1]
+        self.relay = dict(kimlik=RELAY_BASE + no, x=x, y=y, ilerleme=0.0, son=time.time(), yuzde=-1, savunan=False)
+        return self.relay_msg()
 
     def place_relay(self, now):
-        """Sıradaki röle istasyonu: oyuncudan uzakta, yanında Vagrant savunması."""
+        """Rölenin sırası geldi: yanında Vagrant savunması doğar (röle girişten ya da öncekinin ardından beri haritada görünür)."""
         w = self.w
-        no = self.st['role'] + 1
-        x, y = w.alien.far_spot(None, 3000)
-        aid = RELAY_BASE + no
-        self.relay = dict(kimlik=aid, x=x, y=y, ilerleme=0.0, son=now, yuzde=-1)
-        w.send([UZ.asset_create(aid, RELAY_STATION, x, y, name='Relay Station %d' % no)])
+        if not self.relay:
+            w.send([self.show_relay()])
+        r = self.relay
+        r['son'], r['savunan'] = now, True
         tip, n = L['role']['savunma']
-        self.spawn(tip, n, near=(x, y))
+        self.spawn(tip, n, near=(r['x'], r['y']))
+        no = self.st['role'] + 1
         self.say('role', no=no)
-        w.log('   LoW röle istasyonu %d: (%d,%d)' % (no, x, y))
+        self.tell('role_%d' % no)
+        w.log('   LoW röle istasyonu %d: (%d,%d)' % (no, r['x'], r['y']))
 
     def relay_tick(self, now):
         """Röle (yedek yol): yanında yaricap içinde, haritada korsan yokken ilerler; sn saniyede etkinleşir."""
         w, r, cfg = self.w, self.relay, L['role']
         dt, r['son'] = now - r['son'], now
+        if self.alive():
+            return
+        self.tell('role_%d_hazir' % (self.st['role'] + 1))
         hx, hy = w.hero_pos(now)
-        if math.hypot(r['x'] - hx, r['y'] - hy) > cfg['yaricap'] or self.alive():
+        if math.hypot(r['x'] - hx, r['y'] - hy) > cfg['yaricap']:
             return
         r['ilerleme'] += min(dt, 1.0)
         self.relay_step(now)
 
     def relay_step(self, now):
-        """Rölenin ilerlemesi (saniye; vuruş hasar/hasar x sn kadar): yüzde iletisi, dolunca etkinleşir."""
+        """Rölenin ilerlemesi (saniye; vuruş hasar/hasar x sn kadar): yüzde iletisi, dolunca etkinleşir; sıradaki röle belirir."""
         w, r, cfg = self.w, self.relay, L['role']
         pct = min(100, int(100 * r['ilerleme'] / cfg['sn']))
         no = self.st['role'] + 1
@@ -142,24 +197,50 @@ class Low:
             self.say('role_ilerleme', no=no, yuzde=pct)
         if r['ilerleme'] < cfg['sn']:
             return
-        w.send([UZ.asset_remove(r['kimlik'], RELAY_STATION), legacy('0|A|STM|msg_relaisstation_activated')])
+        msgs = [UZ.asset_remove(r['kimlik'], RELAY_STATION), legacy('0|A|STM|msg_relaisstation_activated')]
         self.relay = None
+        self.save(role=no)
+        msgs += self.zone_msgs() if no == 1 else []                 # ilk röle HQ iyileştirme bölgesini açar
+        nxt = self.show_relay()
+        w.send(msgs + ([nxt] if nxt else []))
         self.say('role_tamam', no=no)
+        self.tell('role_%d_tamam' % no)
+        self.t = now + L['dalga_arasi_sn']
+        s = self.step()
+        self.save(asama=s[0])
         w.log('   LoW röle istasyonu %d etkin' % no)
-        if no >= cfg['adet']:
-            self.save(asama='boss', role=no)
-            self.t = now + L['dalga_arasi_sn']
-        else:
-            self.save(role=no)
-            self.place_relay(now)
 
-    def regen(self, now):
-        """Onarım robotu çarpanı: haritanın ortasında (merkez.yaricap) etkin röle başına +merkez.onarim."""
+    # ------------------------------------------------------------ HQ iyileştirme bölgesi
+    def zone_msgs(self):
+        """İlk röle etkinleşince haritanın ortasında açılan iyileştirme bölgesi (istemcide HEALING POI'si, mini haritada da görünür)."""
+        if self.st.get('role', 0) < 1:
+            return []
+        cx, cy = self.hq()
+        return [('MapAddPOICommand', dict(inverted=False, poiTypeSpecification='', poiType=mod('POITypeModule', typeValue=4), shape=0,
+                                          active=True, design=mod('POIDesignModule', designValue=6), poiId=POI_HQ,
+                                          shapeCoordinates=[int(cx), int(cy), int(L['role']['merkez']['yaricap'])]))]
+
+    def heal_tick(self, now):
+        """HQ bölgesinde saniyede sabit can (iyilestirme_sn_can; etkin her ek röleyle role_artis kadar artar); onarım robotundan ve
+        savaştan bağımsız (resmî forum SSS: savaşırken de iyileşir). Bölgeye ilk girişte HQ'nun anlatısı."""
+        w = self.w
+        n = self.st.get('role', 0)
+        if n < 1 or w.hero_dead or now < self.heal_next:
+            return
+        self.heal_next = now + 1.0
         c = L['role']['merkez']
-        hx, hy = self.w.hero_pos(now)
-        if math.hypot(hx - self.w.map_w / 2, hy - self.w.map_h / 2) > c['yaricap']:
-            return 1.0
-        return 1 + c['onarim'] * self.st.get('role', 0)
+        cx, cy = self.hq()
+        hx, hy = w.hero_pos(now)
+        if math.hypot(hx - cx, hy - cy) > c['yaricap']:
+            return
+        self.tell('hq')
+        g = self.p.d['gemi']
+        hp0 = g.get('hitPoints', 0)
+        if hp0 >= g.get('hitMax', 0):
+            return
+        self.p.set_hull(hp=min(g['hitMax'], hp0 + c['iyilestirme_sn_can'] * (1 + c['role_artis'] * (n - 1))))
+        w.send([('HitpointInfoCommand', dict(hitpoints=int(g['hitPoints']), hitpointsMax=g.get('hitMax', 0),
+                                             nanoHull=g.get('nanoHull', 0), nanoHullMax=g.get('maxNanoHull', 0)))] + w.heal_msgs(hp0))
 
     # ------------------------------------------------------------ röleyi vurma (dunya.asset_targets)
     def charge(self):
@@ -180,8 +261,10 @@ class Low:
                                           maxShieldEnergy=0))]
 
     def asset_attackable(self, uid):
-        """Korsanlar (rölenin savunanı da) haritadayken röle etkinleşmez (istemcinin metni)."""
-        return [legacy('0|A|STM|msg_groupgate_cant_activate_relay_because_npcs_are_alive')] if self.alive() else []
+        """Korsanlar (rölenin savunanı da) haritadayken ya da rölenin sırası gelmeden (dalgalar sürerken) röle etkinleşmez (istemcinin metni)."""
+        if self.alive() or self.step() != ('role', self.st['role']):
+            return [legacy('0|A|STM|msg_groupgate_cant_activate_relay_because_npcs_are_alive')]
+        return []
 
     def asset_hit(self, uid, dmg):
         """Vuruş röleyi doldurur (gösterge: AttackHitAssetCommand'ın canı dolum)."""
@@ -193,10 +276,13 @@ class Low:
         return msgs
 
     def spawn_boss(self):
-        self.boss = self.spawn(L['boss'], 1)[0].id
+        """Century Falcon HQ'da (haritanın ortası) doğar, eskortu çevresinde."""
+        hq = self.hq()
+        self.boss = self.spawn(L['boss'], 1, at=hq)[0].id
         tip, n = L['eskort']
-        self.spawn(tip, n, near=self.w.npcs[self.boss].mover.pos(time.time()))
+        self.spawn(tip, n, at=hq)
         self.say('boss')
+        self.tell('boss')
         self.w.send([legacy('0|A|STM|msg_boss_adds_spawn')])                 # eskortu (istemcinin metni)
         self.w.log('   LoW: Century Falcon geldi')
 
@@ -206,6 +292,7 @@ class Low:
         dest = L['cikis'].get(str(self.p.d['pilot'].get('factionId')), 7)
         w.add_gate(dict(gateId=EXIT_ID, x=w.map_w // 2, y=w.map_h // 2, hedef=dest, designId=1))
         self.say('bitti')
+        self.tell('bitti')
         w.log('   LoW tamamlandı: X-3 portalı açık')
         self.boss = -1
 
@@ -219,8 +306,9 @@ class Low:
             self.boss = None
 
     def asset_msgs(self):
-        r = self.relay
-        return [UZ.asset_create(r['kimlik'], RELAY_STATION, r['x'], r['y'], name='Relay Station %d' % (self.st['role'] + 1))] if r else []
+        """Giriş demeti: görünür röle ve (ilk röle etkinleştiyse) HQ iyileştirme bölgesi."""
+        return ([self.relay_msg()] if self.relay else []) + self.zone_msgs()
 
     def cleanup_msgs(self):
-        return [UZ.asset_remove(self.relay['kimlik'], RELAY_STATION)] if self.relay else []
+        return ([UZ.asset_remove(self.relay['kimlik'], RELAY_STATION)] if self.relay else []) + \
+               ([('MapRemovePOICommand', {'poiId': POI_HQ})] if self.zone_msgs() else [])

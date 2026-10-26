@@ -10,6 +10,8 @@ olur. Puan: öldürme (türün puanı), nokta (400), varış (3.000 x geminin ca
 seferde sefer kademesinin ödülleri (1.000-8.000+). Toplam puan en iyi 10 seferin toplamı; pencerenin ödül sekmesi sıralama bantları
 (RankRewardRequest rankType 5; tek oyunculu: oyuncu 1.). Gemi yok olursa ya da süre dolarsa sefer biter. Ölünce yerinde ücretsiz tamir
 (kalırsın) ya da üste dönüş (bu sefere yeniden girilemez).
+Ödüller (wiki aliens / Mimesis Box): uzaylı yok olunca Byte Remnant doğrudan (türün 'byte'ı; npc ek_odul), kutusundan ayrıca; kutu
+toplanınca %30'la Mimesis Chest etkisi (mimesis_sandik.py).
 Escort Key: günde bir "Freighter Protection" (radyasyon içinde 10.000 birim yol; istemcinin görevi 500483 sunucuda yok, uyarlama),
 seferin seçkin Mimesis'lerinden olasılıkla. En çok 100.
 İstemci: PayloadEscortInfoCommand (girişte, durum değişince, haritaya girip çıkınca), PayloadEscortTimeInfoCommand, KeyInfo, ScoreCommand.
@@ -38,11 +40,15 @@ POI_ZONE = 'payloadEscortProtectionZone'
 RANK_TYPE = 5
 KEY = D.get('anahtar', 'resource_key_access-escort')
 RUN_SN = 3600
+BYTE = 'resource_collectable_byte-remnant'
 
 
 def _register():
     for k, v in (D.get('turler') or {}).items():
-        dunya.CFG['tipler'][k] = {x: y for x, y in v.items() if x not in ('puan', 'byte')}
+        t = {x: y for x, y in v.items() if x not in ('puan', 'byte')}
+        if v.get('byte'):
+            t['ek_odul'] = {BYTE: v['byte']}         # wiki aliens: öldürünce doğrudan Byte Remnant (kutudaki ayrıca)
+        dunya.CFG['tipler'][k] = t
     g = D.get('gemi')
     if g:
         dunya.CFG['tipler'][FREIGHTER] = dict(ad=g['ad'], model=g['model'], npc_kimlik=g['npc_kimlik'], hp=g['asgari_can'], kalkan=0,
@@ -165,6 +171,7 @@ class Mimesis:
             w.send([legacy('0|A|STM|msg_mutiny_escort_no_key')])
             return
         self.p.add_resource(KEY, -1)
+        self.p.ach('spend', loot=KEY, adet=1)                      # Pass görevleri: "Escort Key kullan" (savas_bileti.py)
         with self.p.lock:
             self.st['son'] = key
             self.p.dirty = True
@@ -511,7 +518,8 @@ class MmKosu:
         self.done_at = time.time()
         bx, by = D['rota'][-1]
         self.exit_x, self.exit_y = min(bx, w.map_w - 1500), by
-        w.add_gate(dict(gateId=EXIT_ID, x=self.exit_x, y=self.exit_y, hedef=self.m.home(), designId=1, kapi=self.key, cikis=True))
+        w.add_gate(dict(gateId=EXIT_ID, x=self.exit_x, y=self.exit_y, hedef=self.m.home(), designId=1, kapi=self.key, cikis=True,
+                        varis='istasyon'))
         for i in self.alive_wave():
             n = w.npcs.get(i)
             if n:

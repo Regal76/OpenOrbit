@@ -32,7 +32,7 @@ def level(p, sid):
 
 
 def maxed(p, sid):
-    """Yetenek son seviyesinde mi (istemcinin görselleri: kalın lazer, roket izi ve güdümü; dunya.skilled_laser, rocket_look)."""
+    """Yetenek son seviyesinde mi (istemcinin son seviye görselleri: kalın lazer, roket izi, kalkan; dunya.skilled_laser, rocket_look, skill_shield; roketin güdümü ilk puandan başlar)."""
     return level(p, sid) >= len(SKILLS[sid]['degerler'])
 
 

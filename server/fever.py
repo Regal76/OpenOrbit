@@ -9,6 +9,8 @@ yakın portalda ücretsiz onarım), ship_boost_schedule_content_effects_1..9 (g�
 Asıl oyunda Galactic Strife (PvP) haritalarında; tek oyunculu uyarlama: PvE haritaları (veri 'olaylar': Hitac'ın normal haritaları
 X-2..X-8, Eternal Blacklight, Gauntlet of Plutus) ve oyuncu gemisine verilen hasar yerine uzaylı hasarı (damage_npc). Gemi
 eşleşmesi: gösterilen ad geminin lootId'sinin başı (Aegis -> ship_aegis*, Goliath -> ship_goliath*).
+Tarih aralıklı setler ('setler': bas, bit, haritalar, olaylar, gunler; gerçek oyunun Black Light haftaları): sürerken varsayılan
+takımın yerine geçer (cfg); takvimdeki gibi her 52 haftada (364 gün) tekrarlanır.
 """
 import datetime, json, os, time
 
@@ -30,10 +32,20 @@ def _hm(s):
     return h * 60 + m
 
 
+def cfg(now=None):
+    """Geçerli takım: sürmekte olan tarih aralıklı set ('setler'; her 52 haftada tekrar) ya da varsayılan takım (D)."""
+    d = datetime.date.fromtimestamp(time.time() if now is None else now)
+    for s in D.get('setler', []):
+        a, b = datetime.date.fromisoformat(s['bas']), datetime.date.fromisoformat(s['bit'])
+        if d >= a and (d - a).days % 364 <= (b - a).days:
+            return s
+    return D
+
+
 def slot_for(now=None):
     """Bugünün dilimi (gün 1 = pazartesi) ya da None."""
     t = datetime.datetime.fromtimestamp(time.time() if now is None else now)
-    return next((s for s in D.get('gunler', []) if s['gun'] == t.isoweekday()), None)
+    return next((s for s in cfg(now).get('gunler', []) if s['gun'] == t.isoweekday()), None)
 
 
 def window(now=None):
@@ -59,9 +71,9 @@ def ship_matches(slot, loot):
     return any(base.startswith(n.lower().replace(' ', '-')) for n in slot.get('gemiler', []))
 
 
-def map_matches(map_id):
-    cls = H.map_class(map_id)
-    return cls in D.get('haritalar', []) or int(map_id) in D.get('harita_kimlikleri', [])
+def map_matches(map_id, now=None):
+    c, cls = cfg(now), H.map_class(map_id)
+    return cls in c.get('haritalar', []) or int(map_id) in c.get('harita_kimlikleri', [])
 
 
 class Fever:
@@ -83,7 +95,7 @@ class Fever:
         """Fever şu an oyuncunun gemisine uygulanıyor mu (gün, saat, gemi, harita)."""
         s = slot_for(now)
         return bool(s and self.active(now) and ship_matches(s, self.p.ship()['lootId'])
-                    and map_matches(self.p.d['konum'].get('mapId', 0)))
+                    and map_matches(self.p.d['konum'].get('mapId', 0), now))
 
     def compute(self, now=None):
         """Gemiye uygulanan etkiler (profil.mods() sıcak yolda: tick'te saniyede bir hesaplanıp saklanır)."""
@@ -102,21 +114,21 @@ class Fever:
     def free_repair(self):
         return bool(self._mods)
 
-    def module(self, s):
+    def module(self, s, now=None):
         return {'_': 'ShipBoostEventModule', 'day': s['gun'], 'startTime': s['bas'], 'endTime': s['bit'], 'shipTypes': list(s['gemiler']),
-                'eventNameTextKeys': list(D.get('olaylar', [])),
+                'eventNameTextKeys': list(cfg(now).get('olaylar', [])),
                 'attributeBoosts': [{'_': 'ShipBoostEventAttributeModule', 'attribute': a, 'boostValue': float(v)}
                                     for a, v in s['etkiler'].items()]}
 
     def update_cmd(self, now=None):
         on, left = window(now)
         s = slot_for(now)
-        return {'_': 'ShipBoostEventUpdateInfoCommand', 'currentSlot': self.module(s) if s else None, 'timeToWindowChange': left,   # saniye (canlı)
+        return {'_': 'ShipBoostEventUpdateInfoCommand', 'currentSlot': self.module(s, now) if s else None, 'timeToWindowChange': left,   # saniye (canlı)
                 'isBoostActive': bool(on and self.enabled()),
                 'boostInfo': {'_': 'ShipBoostEventBoostInfoCommand', 'isShipBoosted': self.boosted(now)}}
 
     def info_cmd(self, now=None):
-        return ('ShipBoostEventInfoCommand', {'shipBoostSlots': [self.module(s) for s in D.get('gunler', [])],
+        return ('ShipBoostEventInfoCommand', {'shipBoostSlots': [self.module(s, now) for s in cfg(now).get('gunler', [])],
                                              'boostUpdateInfo': self.update_cmd(now)})
 
     def login_msgs(self):

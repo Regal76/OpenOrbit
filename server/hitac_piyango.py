@@ -13,11 +13,14 @@ Kurallar (resmî SSS ve wiki; sayılar ek_etkinlikler.json): Hitac Minion'ın ku
 Underling %0,5, Underboss %18 harf kutusu; her zaman eksik harflerden biri; HITAC tamamlanınca bir kapsül
 (resource_lottery-capsule); ana gemi kutusunda (HITAC) bir kapsül; kapsüller mağazadan da gelir; Capsule Converter'da her kapsül
 tablodan (2024-2026, 40 paket) bir ödül. Harfler yalnız Hitac etkinliği sürerken düşer; kapsüller kalıcı, çevirmek de etkinlik sürerken.
-Profilde: hitac_piyango {harfler: [toplanan sıra numaraları], gecmis: [{tarih, adet, oduller}]}.
+Underling ve Underboss kutusu harfin yanında içerikten bir satır (harf_ek), ana gemi kutusu 50 ACM-1 ve 1.000 PLT-3030 ile şanslı teknoloji
+verir. Etkinlik bitince çevrilen kapsül sayısı kadar hak 'bitis_cekilisi' havuzundan ödül çeker (end_draw).
+Profilde: hitac_piyango {harfler: [toplanan sıra numaraları], gecmis: [{tarih, adet, oduller}], harcanan: çekiliş hakkı}.
 """
 import json, os, random, time
 
 import ayar as AY
+import ganimet as GN
 import takvim as TK
 from kapi import screen
 
@@ -68,10 +71,11 @@ class HitacPiyango:
         on = active(now)
         if getattr(self, 'was', None) is None:
             self.was = on
+        msgs = [] if on else self.end_draw()
         if on == self.was:
-            return []
+            return msgs
         self.was = on
-        return self.login_msgs()
+        return self.login_msgs() + msgs
 
     def login_replace(self, n, f):
         if n == 'LotteryEventFlushCommand':        # kayıttaki false: etkinlik sürerken sekme açık (hazır demetinde ayrıca)
@@ -99,9 +103,16 @@ class HitacPiyango:
         return msgs
 
     # ------------------------------------------------------------ uzaylılar
-    def drop(self, w, kind, x, y, rows, life=300):
+    def drop(self, w, kind, x, y, rows, life=300, pool=None, sans=None):
+        """Etkinlik kutusu: 'kesin' satırların hepsi; pool (harf_ek) verilirse eşit ağırlıkla bir satır, sans ([lootId, adet, olasılık]) verilirse
+        her biri kendi olasılığıyla (etkinlik_harita.roll)."""
         h = w.drop_box(kind, x, y, None, life)
-        w.boxes[h]['etk'] = {'tur': kind, 'mod': 'hepsi', 'kesin': rows}
+        spec = {'tur': kind, 'mod': 'biri' if pool else 'hepsi', 'kesin': rows}
+        if pool:
+            spec['icerik'] = pool
+        elif sans:
+            spec['icerik'] = [[l, n, AY.chance('dusme', c, 'etkinlik') * 100] for l, n, c in sans]
+        w.boxes[h]['etk'] = spec
 
     def on_kill(self, w, npc, x, y):
         """Hitac uzaylısı öldü (dünya kilidi altında): Minion'ın kutusu (MCB-50, %50 harf), Underling (%0,5) ve Underboss'un (%18)
@@ -114,12 +125,39 @@ class HitacPiyango:
             self.drop(w, b['tur'], x, y, rows, b.get('omur_sn', 300))
         elif npc.tip in MOTHERSHIPS:
             b = D.get('ana_gemi_kutusu', {'tur': 'HITAC', 'kapsul': 1})
-            self.drop(w, b['tur'], x, y, [[CAPSULE, b['kapsul']]])
+            self.drop(w, b['tur'], x, y, [[CAPSULE, b['kapsul']]] + b.get('kesin', []), sans=b.get('sans'))      # + 50 ACM-1, 1.000 PLT-3030, şanslı teknoloji
         else:
-            for prefix, (kind, chance) in (D.get('harf_ek') or {}).items():
-                if npc.tip.startswith(prefix) and random.random() < AY.chance('dusme', chance, 'etkinlik'):      # panel: düşme şansı
-                    self.drop(w, kind, x, y, [[LETTER, 1]])
+            for prefix, (kind, chance, *pool) in (D.get('harf_ek') or {}).items():
+                if not npc.tip.startswith(prefix):
+                    continue
+                rows = [[LETTER, 1]] if random.random() < AY.chance('dusme', chance, 'etkinlik') else []      # panel: düşme şansı
+                if rows or pool:                   # Underling / Underboss: kutu her zaman düşer, harf şansla, içeriğinden bir satır
+                    self.drop(w, kind, x, y, rows, pool=pool[0] if pool else None)
         return []
+
+    # ------------------------------------------------------------ etkinlik sonu çekilişi
+    def end_draw(self):
+        """Hitac bitti (ek_etkinlikler.json 'bitis_cekilisi'; wiki: kullanılan kapsüller etkinlik sonunda çekilişe girer): Capsule Converter'da
+        harcanan her kapsül bir hak, her hak 'paket' kadar havuz ödülü (sahip olunmayanlar; tek oyunculuda çekilişin tek katılımcısı).
+        Etkinlik sürerken yazılan sayaç (profilde 'harcanan'); bitişten sonra ilk adımda (oturum kapalıyken bittiyse girişte) ödenir."""
+        c = D.get('bitis_cekilisi')
+        n = self.p.d.get('hitac_piyango', {}).get('harcanan', 0)       # her adımda çağrılır: profile boş kayıt açma
+        if not n or active():
+            return []
+        with self.p.lock:
+            self.st['harcanan'] = 0
+            self.p.dirty = True
+        msgs, got = [], []
+        for _ in range(n):
+            pool = [r for r in (c or {}).get('havuz', []) if not GN.owned(self.p, r[0]) and r[0] not in got]
+            for loot, adet in random.sample(pool, min(c.get('paket', 1), len(pool))) if c else []:
+                got.append(loot)
+                msgs += self.m.reward(loot, adet)
+            if not pool:
+                break
+        if got:
+            self.log('   Hitac bitti: kapsül çekilişi (%d kapsül) -> %s' % (n, ', '.join(got)))
+        return msgs + (self.m.money_msgs() if got else [])
 
     # ------------------------------------------------------------ piyango
     def roll(self):
@@ -142,6 +180,8 @@ class HitacPiyango:
             info = [('LotteryRequestCommand', dict(lotteryLogCommandList=self.log_cmds(), change=0, lotteryItems=have, quantity=have))]
             return info + ([screen('key:payment_lottery_text_dialog_nocapsules')] if want else [])
         self.p.add_resource(CAPSULE, -q)
+        with self.p.lock:
+            self.st['harcanan'] = self.st.get('harcanan', 0) + q          # etkinlik sonu çekilişinin hakları
         got = {}
         for _ in range(q):
             loot, n = self.roll()

@@ -112,9 +112,10 @@ class MineMechanics(unittest.TestCase):
         self.assertEqual(self.other.p.d['gemi']['hitPoints'], 918800)
         self.assertEqual(self.other.p.d['gemi']['shield'], 200000)
 
-    def test_sab_cannot_be_boosted_above_half_maximum_shield(self):
+    def test_sab_boost_is_capped_at_the_whole_shield(self):
+        # fandom SAB-M01: 50% of the shield, raised to at most 100% by the Skill Tree and Lance (wiki audit SILAHLAR-8)
         self.other.items.mine_hero(SE.MINES[SAB], 5, self.w.hid, self.now, SAB)
-        self.assertEqual(self.other.p.d['gemi']['shield'], 100000)
+        self.assertEqual(self.other.p.d['gemi']['shield'], 0)
         self.assertEqual(self.other.p.d['gemi']['hitPoints'], 100000)
 
     def test_anti_mine_transmitter_prevents_player_trigger(self):

@@ -1,5 +1,5 @@
 {
- "_aciklama": "Gemi modülleri (equipment_shipupgrade_*) -> server/data/gemi_modulleri.json (yol haritası Aşama 6).\n\n145 modülün türü (DAMAGE, HP, SHIELD, SPECIAL) istemcinin eşya verisinden (data/istemci_esyalari.json); etkileri ve takılabildiği\ngemiler istemcinin kendi açıklamasından: \"5% increased laser damage and 15% increased rocket damage if equipped on your ship. This\nship upgrade module can be used on the following ships: Cyborg, Hecate, Hecate Plus, Tempest.\" Etki adları sunucunun bonus\nanahtarlarına çevrilir (lazer, roket, npc, kalkan, can, hiz, kacinma, isabet (lazer ve roket), lazer_isabet, roket_isabet, kalkan_delme, ep, pvp).\nKararsız modüller (X1/X2/X3, XA01, XV03 … \"series unstable module\"): istemcinin açıklamasındaki en az artış (\"at least a 5%\nboost\") ve öncelikli gemiler (\"higher chance of affecting the …\"); değerleri Restabilize ile rastgele belirlenir (gemi_modul.py).\nGemi adları istemcinin gemi adlarıyla (items_ship_*_fullname) ve kısaltmalarla eşlenir.\nÜreten: tools/gemi_modulleri.py.",
+ "_aciklama": "Gemi modülleri (equipment_shipupgrade_*) -> server/data/gemi_modulleri.json (yol haritası Aşama 6).\n\n145 modülün türü (DAMAGE, HP, SHIELD, SPECIAL) istemcinin eşya verisinden (data/istemci_esyalari.json); etkileri ve takılabildiği\ngemiler istemcinin kendi açıklamasından: \"5% increased laser damage and 15% increased rocket damage if equipped on your ship. This\nship upgrade module can be used on the following ships: Cyborg, Hecate, Hecate Plus, Tempest.\" Etki adları sunucunun bonus\nanahtarlarına çevrilir (lazer, roket, npc, kalkan, can, hiz, kacinma, isabet (lazer ve roket), lazer_isabet, roket_isabet, kalkan_delme, ep, pvp).\nKararsız modüller (X1/X2/X3, XA01, XV03 … \"series unstable module\"): istemcinin açıklamasındaki en az artış (\"at least a 5%\nboost\") ve öncelikli gemiler (\"higher chance of affecting the …\"); değerleri Restabilize ile rastgele belirlenir (gemi_modul.py).\nHer kararsız modüle serisinin Restabilize değerleri (geri dönüşüm, yeniden çekme bedeli ve hakkı: wiki assembly-restabilize ve gerçek\nkayıttaki UnstableModulesListCommand) ile değer aralıkları (wiki modules-damage/-hitpoints/-shield/-special: iki kademe, büyük ve\nküçük şans) yazılır. Kararlı modüllerde taban gemi listedeyse Plus sürümü de eklenir (wiki: \"Non-unstable modules usable by non-plus\nvariants can be equipped by plus variants\", 16.11.2021).\nGemi adları istemcinin gemi adlarıyla (items_ship_*_fullname) ve kısaltmalarla eşlenir.\nÜreten: tools/gemi_modulleri.py.",
  "moduller": {
   "equipment_shipupgrade_dmg-a01": {
    "tur": "DAMAGE",
@@ -136,7 +136,8 @@
     "ship_sentinel",
     "ship_solace",
     "ship_mimesis",
-    "ship_berserker"
+    "ship_berserker",
+    "ship_solace-plus"
    ]
   },
   "equipment_shipupgrade_dmg-ret01": {
@@ -147,7 +148,8 @@
     "kalkan": -0.05
    },
    "gemiler": [
-    "ship_retiarus"
+    "ship_retiarus",
+    "ship_retiarus-plus"
    ]
   },
   "equipment_shipupgrade_dmg-sdz01": {
@@ -159,7 +161,8 @@
    "gemiler": [
     "ship_solaris",
     "ship_disruptor",
-    "ship_zephyr"
+    "ship_zephyr",
+    "ship_solaris-plus"
    ]
   },
   "equipment_shipupgrade_dmg-sg01": {
@@ -191,7 +194,8 @@
    "gemiler": [
     "ship_spearhead",
     "ship_s-elite",
-    "ship_s-veteran"
+    "ship_s-veteran",
+    "ship_spearhead-plus"
    ]
   },
   "equipment_shipupgrade_dmg-st01": {
@@ -202,7 +206,9 @@
    },
    "gemiler": [
     "ship_spectrum",
-    "ship_tartarus"
+    "ship_tartarus",
+    "ship_spectrum-plus",
+    "ship_tartarus-plus"
    ]
   },
   "equipment_shipupgrade_dmg-t01": {
@@ -213,7 +219,8 @@
     "can": -0.08
    },
    "gemiler": [
-    "ship_tartarus"
+    "ship_tartarus",
+    "ship_tartarus-plus"
    ]
   },
   "equipment_shipupgrade_dmg-t02": {
@@ -224,7 +231,8 @@
     "kalkan": -0.12
    },
    "gemiler": [
-    "ship_tartarus"
+    "ship_tartarus",
+    "ship_tartarus-plus"
    ]
   },
   "equipment_shipupgrade_dmg-ven01": {
@@ -250,28 +258,65 @@
     "ship_v-avenger",
     "ship_v-corsair",
     "ship_v-revenge",
-    "ship_pusat"
+    "ship_pusat",
+    "ship_pusat-plus"
    ]
   },
   "equipment_shipupgrade_dmg-x1": {
    "tur": "DAMAGE",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      2,
+      5
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-x2": {
    "tur": "DAMAGE",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-x3": {
    "tur": "DAMAGE",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      3,
+      27
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-xa01": {
@@ -284,7 +329,19 @@
      "ship_diminisher",
      "ship_pusat",
      "ship_zephyr"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      10
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-xh01": {
@@ -294,7 +351,19 @@
     "tercih": [
      "ship_berserker",
      "ship_sentinel"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      10
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-xhd01": {
@@ -308,28 +377,85 @@
      "ship_c-elite",
      "ship_hammerclaw",
      "ship_berserker"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      21
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-xof01": {
    "tur": "DAMAGE",
    "kararsiz": {
     "en_az": 0.04,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      13,
+      21
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-xof02": {
    "tur": "DAMAGE",
    "kararsiz": {
     "en_az": 0.05,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-xsp01": {
    "tur": "DAMAGE",
    "kararsiz": {
     "en_az": 0.09,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 20,
+     "bedel": 100,
+     "hak": 4
+    },
+    "aralik": {
+     "buyuk": [
+      9,
+      18
+     ],
+     "kucuk": [
+      19,
+      22
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-xt10": {
@@ -339,7 +465,19 @@
     "tercih": [
      "ship_orcus",
      "ship_centurion"
-    ]
+    ],
+    "restabilize": {
+     "geri": 30,
+     "bedel": 150,
+     "hak": 2
+    },
+    "aralik": {
+     "buyuk": [
+      10,
+      16
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-xu01": {
@@ -350,7 +488,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-xu02": {
@@ -367,7 +520,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-xu03": {
@@ -385,7 +553,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-xv01": {
@@ -395,7 +578,22 @@
     "tercih": [
      "ship_berserker",
      "ship_solaris"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-xv02": {
@@ -407,7 +605,19 @@
      "ship_berserker",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-xv03": {
@@ -420,14 +630,38 @@
      "ship_hecate-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-xw01": {
    "tur": "DAMAGE",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      1,
+      15
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_dmg-zep01": {
@@ -447,7 +681,22 @@
     "tercih": [
      "ship_spectrum",
      "ship_mimesis"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-zpvp": {
@@ -457,7 +706,22 @@
     "tercih": [
      "ship_diminisher",
      "ship_tartarus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_dmg-zpvp02": {
@@ -468,7 +732,22 @@
      "ship_spearhead-plus",
      "ship_tempest",
      "ship_cyborg"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-a01": {
@@ -542,7 +821,8 @@
    },
    "gemiler": [
     "ship_hammerclaw",
-    "ship_aegis"
+    "ship_aegis",
+    "ship_hammerclaw-plus"
    ]
   },
   "equipment_shipupgrade_hp-holo": {
@@ -594,7 +874,8 @@
    "gemiler": [
     "ship_spearhead",
     "ship_s-elite",
-    "ship_s-veteran"
+    "ship_s-veteran",
+    "ship_spearhead-plus"
    ]
   },
   "equipment_shipupgrade_hp-sol01": {
@@ -603,7 +884,8 @@
     "can": 0.15
    },
    "gemiler": [
-    "ship_solace"
+    "ship_solace",
+    "ship_solace-plus"
    ]
   },
   "equipment_shipupgrade_hp-t01": {
@@ -612,7 +894,8 @@
     "can": 0.25
    },
    "gemiler": [
-    "ship_tartarus"
+    "ship_tartarus",
+    "ship_tartarus-plus"
    ]
   },
   "equipment_shipupgrade_hp-vp01": {
@@ -627,28 +910,68 @@
     "ship_v-avenger",
     "ship_v-corsair",
     "ship_v-revenge",
-    "ship_pusat"
+    "ship_pusat",
+    "ship_pusat-plus"
    ]
   },
   "equipment_shipupgrade_hp-x1": {
    "tur": "HP",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      2,
+      5
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-x2": {
    "tur": "HP",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-x3": {
    "tur": "HP",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      1,
+      10
+     ],
+     "kucuk": [
+      20,
+      36
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xa01": {
@@ -661,7 +984,19 @@
      "ship_diminisher",
      "ship_pusat",
      "ship_zephyr"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-xh01": {
@@ -671,7 +1006,19 @@
     "tercih": [
      "ship_berserker",
      "ship_sentinel"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      10
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-xhd01": {
@@ -685,28 +1032,85 @@
      "ship_c-elite",
      "ship_hammerclaw",
      "ship_berserker"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      25,
+      32
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xof01": {
    "tur": "HP",
    "kararsiz": {
     "en_az": 0.04,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      25,
+      32
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xof02": {
    "tur": "HP",
    "kararsiz": {
     "en_az": 0.05,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-xsp01": {
    "tur": "HP",
    "kararsiz": {
     "en_az": 0.09,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 20,
+     "bedel": 100,
+     "hak": 4
+    },
+    "aralik": {
+     "buyuk": [
+      9,
+      20
+     ],
+     "kucuk": [
+      21,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xt10": {
@@ -716,7 +1120,19 @@
     "tercih": [
      "ship_orcus",
      "ship_centurion"
-    ]
+    ],
+    "restabilize": {
+     "geri": 30,
+     "bedel": 150,
+     "hak": 2
+    },
+    "aralik": {
+     "buyuk": [
+      10,
+      16
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-xu01": {
@@ -727,7 +1143,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      25,
+      32
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xu02": {
@@ -744,7 +1175,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      25,
+      32
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xu03": {
@@ -762,7 +1208,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      25,
+      32
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xv01": {
@@ -772,7 +1233,22 @@
     "tercih": [
      "ship_berserker",
      "ship_solaris"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-xv02": {
@@ -784,7 +1260,19 @@
      "ship_berserker",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-xv03": {
@@ -797,14 +1285,38 @@
      "ship_hecate-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      10,
+      16
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-xw01": {
    "tur": "HP",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      1,
+      15
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_hp-zpve": {
@@ -814,7 +1326,22 @@
     "tercih": [
      "ship_spectrum",
      "ship_mimesis"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-zpvp": {
@@ -824,7 +1351,22 @@
     "tercih": [
      "ship_diminisher",
      "ship_tartarus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_hp-zpvp02": {
@@ -835,7 +1377,22 @@
      "ship_spearhead-plus",
      "ship_tempest",
      "ship_cyborg"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      25,
+      32
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-bach01": {
@@ -849,7 +1406,8 @@
     "ship_hammerclaw",
     "ship_aegis",
     "ship_a-elite",
-    "ship_a-veteran"
+    "ship_a-veteran",
+    "ship_hammerclaw-plus"
    ]
   },
   "equipment_shipupgrade_shd-c01": {
@@ -946,7 +1504,8 @@
    "gemiler": [
     "ship_spearhead",
     "ship_s-elite",
-    "ship_s-veteran"
+    "ship_s-veteran",
+    "ship_spearhead-plus"
    ]
   },
   "equipment_shipupgrade_shd-sh02": {
@@ -958,7 +1517,8 @@
    "gemiler": [
     "ship_spearhead",
     "ship_s-elite",
-    "ship_s-veteran"
+    "ship_s-veteran",
+    "ship_spearhead-plus"
    ]
   },
   "equipment_shipupgrade_shd-sk01": {
@@ -971,7 +1531,9 @@
    "gemiler": [
     "ship_keres",
     "ship_spectrum",
-    "ship_spearhead"
+    "ship_spearhead",
+    "ship_spectrum-plus",
+    "ship_spearhead-plus"
    ]
   },
   "equipment_shipupgrade_shd-sl01": {
@@ -982,7 +1544,8 @@
    },
    "gemiler": [
     "ship_sentinel",
-    "ship_solace"
+    "ship_solace",
+    "ship_solace-plus"
    ]
   },
   "equipment_shipupgrade_shd-t01": {
@@ -993,28 +1556,65 @@
     "can": -0.1
    },
    "gemiler": [
-    "ship_tartarus"
+    "ship_tartarus",
+    "ship_tartarus-plus"
    ]
   },
   "equipment_shipupgrade_shd-x1": {
    "tur": "SHIELD",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      2,
+      5
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-x2": {
    "tur": "SHIELD",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-x3": {
    "tur": "SHIELD",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      1,
+      30
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-xa01": {
@@ -1027,7 +1627,19 @@
      "ship_diminisher",
      "ship_pusat",
      "ship_zephyr"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      10
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-xh01": {
@@ -1037,7 +1649,19 @@
     "tercih": [
      "ship_berserker",
      "ship_sentinel"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      10
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-xhd01": {
@@ -1051,28 +1675,85 @@
      "ship_c-elite",
      "ship_hammerclaw",
      "ship_berserker"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      12,
+      20
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-xof01": {
    "tur": "SHIELD",
    "kararsiz": {
     "en_az": 0.04,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      12,
+      20
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-xof02": {
    "tur": "SHIELD",
    "kararsiz": {
     "en_az": 0.05,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-xsp01": {
    "tur": "SHIELD",
    "kararsiz": {
     "en_az": 0.09,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 20,
+     "bedel": 100,
+     "hak": 4
+    },
+    "aralik": {
+     "buyuk": [
+      9,
+      18
+     ],
+     "kucuk": [
+      19,
+      22
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-xt10": {
@@ -1082,7 +1763,19 @@
     "tercih": [
      "ship_orcus",
      "ship_centurion"
-    ]
+    ],
+    "restabilize": {
+     "geri": 30,
+     "bedel": 150,
+     "hak": 2
+    },
+    "aralik": {
+     "buyuk": [
+      10,
+      16
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-xu01": {
@@ -1093,7 +1786,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-xu02": {
@@ -1110,7 +1818,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-xu03": {
@@ -1128,7 +1851,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-xv01": {
@@ -1138,7 +1876,22 @@
     "tercih": [
      "ship_berserker",
      "ship_solaris"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-xv02": {
@@ -1150,7 +1903,19 @@
      "ship_berserker",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-xv03": {
@@ -1163,14 +1928,38 @@
      "ship_hecate-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      10,
+      16
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-xw01": {
    "tur": "SHIELD",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      1,
+      15
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_shd-zpve": {
@@ -1180,7 +1969,22 @@
     "tercih": [
      "ship_spectrum",
      "ship_mimesis"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-zpvp": {
@@ -1190,7 +1994,22 @@
     "tercih": [
      "ship_diminisher",
      "ship_tartarus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_shd-zpvp02": {
@@ -1201,7 +2020,22 @@
      "ship_spearhead-plus",
      "ship_tempest",
      "ship_cyborg"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      24
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-c01": {
@@ -1317,7 +2151,10 @@
     "ship_disruptor",
     "ship_zephyr",
     "ship_spectrum",
-    "ship_tartarus"
+    "ship_tartarus",
+    "ship_solaris-plus",
+    "ship_spectrum-plus",
+    "ship_tartarus-plus"
    ]
   },
   "equipment_shipupgrade_spc-sl01": {
@@ -1328,7 +2165,8 @@
    },
    "gemiler": [
     "ship_sentinel",
-    "ship_solace"
+    "ship_solace",
+    "ship_solace-plus"
    ]
   },
   "equipment_shipupgrade_spc-spd01": {
@@ -1342,7 +2180,9 @@
     "ship_goliath-plus",
     "ship_hecate",
     "ship_sentinel",
-    "ship_solace"
+    "ship_solace",
+    "ship_hecate-plus",
+    "ship_solace-plus"
    ]
   },
   "equipment_shipupgrade_spc-spd02": {
@@ -1365,7 +2205,8 @@
     "roket": 0.2
    },
    "gemiler": [
-    "ship_spectrum"
+    "ship_spectrum",
+    "ship_spectrum-plus"
    ]
   },
   "equipment_shipupgrade_spc-tar01": {
@@ -1376,7 +2217,8 @@
     "roket": -0.03
    },
    "gemiler": [
-    "ship_tartarus"
+    "ship_tartarus",
+    "ship_tartarus-plus"
    ]
   },
   "equipment_shipupgrade_spc-vp01": {
@@ -1393,28 +2235,74 @@
     "ship_v-avenger",
     "ship_v-corsair",
     "ship_v-revenge",
-    "ship_pusat"
+    "ship_pusat",
+    "ship_pusat-plus"
    ]
   },
   "equipment_shipupgrade_spc-x1": {
    "tur": "SPECIAL",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      2,
+      5
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_spc-x2": {
    "tur": "SPECIAL",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_spc-x3": {
    "tur": "SPECIAL",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      1,
+      20
+     ],
+     "kucuk": null,
+     "nitelik": {
+      "shield_penetration": {
+       "buyuk": [
+        1,
+        25
+       ],
+       "kucuk": null
+      }
+     }
+    }
    }
   },
   "equipment_shipupgrade_spc-xa01": {
@@ -1427,7 +2315,28 @@
      "ship_diminisher",
      "ship_pusat",
      "ship_zephyr"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null,
+     "nitelik": {
+      "speed": {
+       "buyuk": [
+        2,
+        8
+       ],
+       "kucuk": null
+      }
+     }
+    }
    }
   },
   "equipment_shipupgrade_spc-xh01": {
@@ -1437,7 +2346,28 @@
     "tercih": [
      "ship_berserker",
      "ship_sentinel"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      10
+     ],
+     "kucuk": null,
+     "nitelik": {
+      "speed": {
+       "buyuk": [
+        2,
+        8
+       ],
+       "kucuk": null
+      }
+     }
+    }
    }
   },
   "equipment_shipupgrade_spc-xhd01": {
@@ -1451,21 +2381,72 @@
      "ship_c-elite",
      "ship_hammerclaw",
      "ship_berserker"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      12,
+      20
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-xof01": {
    "tur": "SPECIAL",
    "kararsiz": {
     "en_az": 0.04,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      12,
+      20
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-xof02": {
    "tur": "SPECIAL",
    "kararsiz": {
     "en_az": 0.05,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null,
+     "nitelik": {
+      "speed": {
+       "buyuk": [
+        2,
+        8
+       ],
+       "kucuk": null
+      }
+     }
+    }
    }
   },
   "equipment_shipupgrade_spc-xp01": {
@@ -1515,7 +2496,22 @@
    "tur": "SPECIAL",
    "kararsiz": {
     "en_az": 0.09,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 20,
+     "bedel": 100,
+     "hak": 4
+    },
+    "aralik": {
+     "buyuk": [
+      9,
+      13
+     ],
+     "kucuk": [
+      14,
+      16
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-xt10": {
@@ -1525,7 +2521,19 @@
     "tercih": [
      "ship_orcus",
      "ship_centurion"
-    ]
+    ],
+    "restabilize": {
+     "geri": 30,
+     "bedel": 150,
+     "hak": 2
+    },
+    "aralik": {
+     "buyuk": [
+      10,
+      16
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_spc-xu01": {
@@ -1536,7 +2544,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-xu02": {
@@ -1553,7 +2576,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-xu03": {
@@ -1571,7 +2609,22 @@
      "ship_citadel-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-xv01": {
@@ -1581,7 +2634,22 @@
     "tercih": [
      "ship_berserker",
      "ship_solaris"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-xv02": {
@@ -1593,7 +2661,19 @@
      "ship_berserker",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_spc-xv03": {
@@ -1606,14 +2686,47 @@
      "ship_hecate-plus",
      "ship_goliath-plus",
      "ship_liberator-plus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      11
+     ],
+     "kucuk": null,
+     "nitelik": {
+      "speed": {
+       "buyuk": [
+        2,
+        8
+       ],
+       "kucuk": null
+      }
+     }
+    }
    }
   },
   "equipment_shipupgrade_spc-xw01": {
    "tur": "SPECIAL",
    "kararsiz": {
     "en_az": null,
-    "tercih": []
+    "tercih": [],
+    "restabilize": {
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
+    },
+    "aralik": {
+     "buyuk": [
+      1,
+      15
+     ],
+     "kucuk": null
+    }
    }
   },
   "equipment_shipupgrade_spc-zpve": {
@@ -1623,7 +2736,22 @@
     "tercih": [
      "ship_spectrum",
      "ship_mimesis"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-zpvp": {
@@ -1633,7 +2761,22 @@
     "tercih": [
      "ship_diminisher",
      "ship_tartarus"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      4,
+      8
+     ],
+     "kucuk": [
+      15,
+      23
+     ]
+    }
    }
   },
   "equipment_shipupgrade_spc-zpvp02": {
@@ -1644,7 +2787,22 @@
      "ship_spearhead-plus",
      "ship_tempest",
      "ship_cyborg"
-    ]
+    ],
+    "restabilize": {
+     "geri": 4,
+     "bedel": 20,
+     "hak": 8
+    },
+    "aralik": {
+     "buyuk": [
+      5,
+      10
+     ],
+     "kucuk": [
+      16,
+      23
+     ]
+    }
    }
   }
  }

@@ -187,6 +187,7 @@ class CbsBonuses(unittest.TestCase):
         booster.add(self.p, 'booster_qr-01', hours=1)
         session = game.Session.__new__(game.Session)
         session.profil, session.world = self.p, self.w
+        session.magaza = SimpleNamespace(prize=lambda loot, n, src: [])  # item rewards (Log Disk ...) are outside this check
         quests = gorev.Gorevler(self.p, lambda _: None)
         quests.grant = session.quest_reward
         before = dict(self.p.d['pilot'])

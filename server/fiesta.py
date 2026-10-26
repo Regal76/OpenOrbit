@@ -28,6 +28,7 @@ COUPON = D.get('kupon', 'resource_collectable_galaxy-coupon')
 BY_LEVEL = {z['seviye']: z for z in D.get('zorluklar', [])}
 BY_GATE = {z['kapi']: z for z in D.get('zorluklar', [])}
 PORTAL_ID = EKP.PORTAL_BASE + 90                  # X-1'deki tek Fiesta portalı (pencereli)
+TITLE_TRANQUIL = 'title_fiestagate_dec2025'      # "Epoch Lit" (istemci metni): Tranquil seviyesini tamamlayınca
 
 # kapılar etkinlik kapısı motoruna (game.py EKP.register_npcs'den önce içe aktarılır: uzaylı türleri de kaydedilir)
 for _k, _g in (D.get('kapilar') or {}).items():
@@ -51,6 +52,7 @@ class Fiesta:
     def __init__(self, profil, magaza, ekapilar, log=print):
         self.p, self.m, self.k, self.log = profil, magaza, ekapilar, log
         self.change_map = None                    # oturum bağlar: (hedef, portal, konum)
+        self.titles = None                        # oturum bağlar: unvan_avi.grant_title (Epoch Lit)
         ekapilar.finish_hooks.append(self.on_finish)
 
     @property
@@ -158,6 +160,8 @@ class Fiesta:
         lv = self.level()[0]
         self.log('   Fiesta Gate %s bitti: +%d AP (toplam %d, seviye %d)' % (z['ad'], z['ap'], self.st['ap'], lv))
         msgs = [screen('+%d Activity Points' % z['ap'], big=True)]
+        if z['sira'] == 1 and self.titles:          # wiki: "Epoch Lit: Complete the Tranquil level"
+            msgs += self.titles(TITLE_TRANQUIL)
         if lv > before:
             msgs.append(self.point_cmd(False))
         return msgs

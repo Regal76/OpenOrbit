@@ -123,6 +123,11 @@ def heat_level(points):
     return max(i for i, r in enumerate(HEAT_ROWS) if points >= r['esik'])
 
 
+def heat_cap(points):
+    """Çubuğun azamisi: bir sonraki HEAT eşiği (son seviyede son eşik). Gerçek kayıt: seviye 0'da petHeatAmountMax 75 (ilk eşik)."""
+    return HEAT_ROWS[min(heat_level(points) + 1, len(HEAT_ROWS) - 1)]['esik']
+
+
 def heat_bonus(lv):
     """HEAT seviyesine kadar biriken bonuslar (wiki: seviyelerin bonusları toplanır)."""
     out = {}
@@ -164,6 +169,7 @@ class Pet:
         self.mover = None
         self.task = None             # ('box' | 'ore', hash): toplayıcı dişlinin hedefi
         self.shooting = None         # ateş edilen NPC/CBS kimliği
+        self.last_fight = 0.0        # P.E.T.'in kendi savaşı (atış, vuruş, vurulma): kahramanın savaşını (w.last_combat: tamir, kalkan) etkilemez
         self.next_shot = self.next_follow = self.next_second = self.next_locate = 0.0
         self.fuel_clock = 0.0        # harcanmamış yakıt (birim)
         self.tick_t = time.time()
@@ -313,6 +319,9 @@ class Pet:
     def open_slots(self, slot):
         if slot == 'visual':
             return 1                         # istemci: HangarAuxiliary.ReturnPetMaxSlotCount "visual" sabit
+        if slot == 'generators':             # jeneratör yuvası seviyeyle gelmez: başlangıç 2 + satın alınanlar (gerçek kayıt: seviye 7'de 2)
+            worn = (len(c.get(slot, [])) for s in self.p.d['gemiler'].values() for c in s.get('pet_konfig', {}).values())
+            return max(self.d['yuva'].get(slot, 0), max(worn, default=0))       # eski profilde takılı olan hep açık
         return max(self.d['yuva'].get(slot, 0), self.row()['yuva'].get(slot, 0))
 
     def slot_price(self, slot):
@@ -393,7 +402,7 @@ class Pet:
 
     def heat_msg(self, now=None):
         h = self.heat()
-        return ('PetHeatUpdateCommand', dict(heatState=self.heat_state(now), petHeatAmountMax=float(HEAT_MAX), heatLevel=heat_level(h),
+        return ('PetHeatUpdateCommand', dict(heatState=self.heat_state(now), petHeatAmountMax=float(heat_cap(h)), heatLevel=heat_level(h),
                                              petHeatAmount=float(round(h, 2))))
 
     def add_heat(self, amount):
@@ -507,6 +516,9 @@ class Pet:
     def repair_button(self):
         return ('PetUIRepairButtonCommand', dict(enabled=self.owned and self.d['yikik'], repairCosts=self.repair_cost()))
 
+    def rename_price(self):
+        return AY.fiyat('hizmet_fiyat', PET['yeniden_adlandir_uridyum'], 'pet')            # panel: hizmet ücretleri
+
     def repair_cost(self):
         if not self.owned or self.p.premium:                       # Premium: "Free P.E.T. repairs" (istemcinin haberi)
             return 0
@@ -536,7 +548,7 @@ class Pet:
                     maxGearSlots=self.open_slots('gears'), maxProtocolSlots=self.open_slots('protocols'),
                     petLasersSlotPrice=self.slot_price('lasers'), petGeneratorsSlotPrice=self.slot_price('generators'),
                     petGearsSlotPrice=self.slot_price('gears'), petProtocolsSlotPrice=self.slot_price('protocols'),
-                    maxHeatSlots=self.open_slots('heat'), petHeatSlotPrice=self.slot_price('heat'))
+                    maxHeatSlots=self.open_slots('heat'), petHeatSlotPrice=self.slot_price('heat'), petRenamePrice=self.rename_price())
         return dict(base, _='HangarShipPetView')       # alan adı 'name': mod() ile çakışır
 
     def config_msgs(self, cur, sid=None):
@@ -576,17 +588,22 @@ class Pet:
         return [reply(1)]
 
     def rename(self, f):
-        """HangarShipRenamePetRequest: 1-24 harf ya da rakam (istemcinin error_pet_name_length / error_pet_name_char metinleri)."""
+        """HangarShipRenamePetRequest: 1-24 harf ya da rakam (istemcinin error_pet_name_length / error_pet_name_char metinleri); her
+        adlandırma rename_price() uridyum (gerçek kayıt: petView.petRenamePrice 3.000)."""
         from magaza import stack_msg
         name = (f.get('name') or '').strip()
+        price = self.rename_price()
         err = (None if not self.owned else 'error_pet_name_length' if not 1 <= len(name) <= 24 else
-               'error_pet_name_char' if not name.isalnum() else None)
+               'error_pet_name_char' if not name.isalnum() else
+               'not_enough_uridium' if self.p.d['pilot'].get('uridium', 0) < price else None)
         ok = self.owned and not err
         if ok:
             with self.p.lock:
+                self.p.d['pilot']['uridium'] -= price
                 self.d['ad'] = name
                 self.p.dirty = True
-            self.log('   P.E.T. adı: %s' % name)
+            RT.money(self.p, 'uridyum', -price, 'buy_SPECIAL')
+            self.log('   P.E.T. adı: %s (%d U)' % (name, price))
         elif err:
             self.log('   P.E.T. adı olmadı: %r (%s)' % (name, err))
         msgs = [('HangarShipRenamePetCommand', dict(errorMessage=stack_msg(err) if err else None, resultId=1 if ok else 0,
@@ -708,6 +725,10 @@ class Pet:
             self.log('   kargo tüccarı beklemede (%d sn)' % (self.trade_ready - now))
             self.send([self.select_msg()])
             return
+        if t == TRADE_POD and self.d['yakit'] < self.trade_fuel():      # satışın yakıt bedeli karşılanmıyor: pencere açılmaz
+            self.log('   kargo tüccarı seçilemedi: yakıt yetmiyor (%d < %d)' % (self.d['yakit'], self.trade_fuel()))
+            self.send([self.select_msg(), legacy('0|A|STM|msg_pet_no_fuel_to_activate')])
+            return
         if t == KAMIKAZE and (now < self.ready.get(KAMIKAZE, 0) or self.start_map()):
             self.log('   Kamikaze seçilemedi (%s)' % ('başlangıç haritası' if self.start_map() else 'beklemede'))
             self.send([self.select_msg()] + ([legacy('0|A|STM|msg_pet_kamikaze-gear_not_on_start_maps')] if self.start_map() else []))
@@ -750,6 +771,8 @@ class Pet:
         self.trading = t == TRADE_POD
         if self.trading:
             msgs.append(('PetTradeWindowShowCommand', {}))
+            if self.active and self.w:                   # 1.1.115 istemcisi PetTradeWindowShow olayını dinlemiyor: pencereyi yalnız
+                msgs.append(self.w.trade_info())         # OreTradeInfoCommand (TradeType.PET) açar (bildirim 2026-10-26)
         if t == REPAIR_PET or old == REPAIR_PET:
             msgs.append(self.hp_msg())
         if t == HEAT_RELEASE:
@@ -783,7 +806,7 @@ class Pet:
         for n in hit:
             w.hit_npc(n.id, int(g.get('hasar_sn', 0)), 1, attacker=self.pid)
         if hit:
-            w.last_combat = now
+            self.last_fight = now
         msgs = [self.hp_msg(), self.heat_msg(now)] + (self.stats_msgs() if changed else [])
         if d.get('isi', 0) <= 0 or d['can'] <= g.get('can_sn', 0):
             msgs += self.end_release(now, notify=False)                 # HEAT bitti ya da can yetmiyor
@@ -885,30 +908,30 @@ class Pet:
         self.log('   P.E.T. tamir edildi (%d U)' % cost)
 
     def buy_fuel(self, amount=None):
-        """Kısayol: 1.000 birim yakıt (istemci metinleri log_msg_bought_fuel_hotkey*). P.E.T. etkin olmalı. amount: otomatik alım
-        CPU'su (FB-X: 10.000; fiyat aynı oranda)."""
+        """Kısayol: 1.000 birim yakıt, uridyumla (gerçek kayıt: 250 U, krediye dokunmaz; istemci metinleri log_msg_bought_fuel_hotkey*).
+        P.E.T. etkin olmalı. amount: otomatik alım CPU'su (FB-X: 10.000; fiyat aynı oranda)."""
         f = dict(PET['yakit_satin'])
         if amount:
-            f.update(kredi=f['kredi'] * amount // f['adet'], adet=amount)
-        f['kredi'] = AY.fiyat('hizmet_fiyat', f['kredi'], 'pet')     # panel: hizmet ücretleri
+            f.update(uridyum=f['uridyum'] * amount // f['adet'], adet=amount)
+        f['uridyum'] = AY.fiyat('hizmet_fiyat', f['uridyum'], 'pet')     # panel: hizmet ücretleri
         pl = self.p.d['pilot']
         if not self.active:
             self.send([legacy('0|A|STM|log_msg_bought_fuel_hotkey_inactive')])
         elif self.d['yakit'] + f['adet'] > PET['azami_yakit']:
             self.send([legacy('0|A|STM|log_msg_bought_fuel_hotkey_full')])
-        elif pl.get('credits', 0) < f['kredi']:
-            self.send([legacy('0|A|STM|not_enough_credits')])
+        elif pl.get('uridium', 0) < f['uridyum']:
+            self.send([legacy('0|A|STM|not_enough_uridium')])
         else:
             with self.p.lock:
-                pl['credits'] -= f['kredi']
+                pl['uridium'] -= f['uridyum']
                 self.d['yakit'] += f['adet']
                 self.p.dirty = True
-            RT.money(self.p, 'kredi', -f['kredi'], 'buy_PETFUEL', qty=f['adet'])
+            RT.money(self.p, 'uridyum', -f['uridyum'], 'buy_PETFUEL', qty=f['adet'])
             msgs = [self.fuel_msg(), legacy('0|A|STM|log_msg_bought_fuel_hotkey')]
             if self.w and self.w.money_msgs:
                 msgs += self.w.money_msgs()
             self.send(msgs)
-            self.log('   P.E.T. yakıtı alındı: +%d (%d kredi)' % (f['adet'], f['kredi']))
+            self.log('   P.E.T. yakıtı alındı: +%d (%d U)' % (f['adet'], f['uridyum']))
 
     # ------------------------------------------------------------ uzay
     def attach(self, world):
@@ -987,7 +1010,7 @@ class Pet:
         if self.release_end:
             msgs += self.release_step(now)
         else:                                    # HEAT: etkinken ısınır, savaşta daha hızlı; AI-AH protokolü artırır
-            fighting = self.shooting or now - w.last_combat < HEAT['savas_sn']
+            fighting = self.shooting or now - max(w.last_combat, self.last_fight) < HEAT['savas_sn']
             gain = (HEAT['kazanc_dk'] / 60.0 + (HEAT['savas_kazanc_sn'] if fighting else 0)) * (1 + self.proto('isi'))
             if self.add_heat(gain):
                 self.log('   P.E.T. HEAT seviyesi %d (%d puan)' % (heat_level(d['isi']), d['isi']))
@@ -1016,7 +1039,7 @@ class Pet:
                 d['can'] = min(self.hp_max(), d['can'] + self.gear(REPAIR_PET).get('can_sn', 0))
                 self.p.dirty = True
             msgs.append(self.hp_msg())
-        if d['kalkan'] < self.shield_max() and now - w.last_combat >= ESYA['savas_disi_sn']:
+        if d['kalkan'] < self.shield_max() and now - max(w.last_combat, self.last_fight) >= ESYA['savas_disi_sn']:
             with self.p.lock:
                 d['kalkan'] = min(self.shield_max(), d['kalkan'] + max(1, self.shield_max() * ESYA['kalkan_yenilenme_sn']))
                 self.p.dirty = True
@@ -1075,6 +1098,11 @@ class Pet:
     def range_bonus(self):
         return 1 + self.proto('menzil')
 
+    def gear_range(self, t):
+        """Dişlinin menzili (AI-R dahil); 3X dişliler (4. seviye) HEAT seviyesi başına menzil kazanır (menzil_isi: G-EL/G-RL +180, G-AL/G-AR +108)."""
+        g = self.gear(t)
+        return (g.get('menzil', 0) + g.get('menzil_isi', 0) * self.heat_lv()) * self.range_bonus()
+
     def collect_step(self, now, g):
         """Otomatik toplayıcı: menzildeki en yakın kutuya/cevhere git, varınca topla. Çalıştıysa True."""
         w = self.w
@@ -1093,11 +1121,11 @@ class Pet:
                     w.send([w.beam_msg(by_pet=True)])     # toplama ışını P.E.T.'ten
                     w.later(ORE_DELAY, lambda: w.finish_harvest(h))
             return True
-        rng = self.gear(g).get('menzil', 0) * self.range_bonus()
+        rng = self.gear_range(g)
         hx, hy = w.hero_pos(now)
         if g == AUTO_LOOT:
             full = self.p.cargo_free() < 1
-            cands = [(h, b) for h, b in w.boxes.items() if not (full and b['tip'] in ('FROM_SHIP', 'CANDY_CARGO')) and not b.get('anahtarli')
+            cands = [(h, b) for h, b in w.boxes.items() if not (full and b['tip'] in ('FROM_SHIP', 'CANDY_CARGO', 'TURKEY_CARGO')) and not b.get('anahtarli')
                      and w.benim(b)]
         else:
             if self.p.cargo_free() < 1:
@@ -1168,7 +1196,7 @@ class Pet:
             self.log('   P.E.T. ateş ediyor: %s (%d lazer, %s)' % (n.d['ad'] if n else 'CBS %s' % uid, len(lasers), ammo))
         self.shooting = uid
         self.next_shot = now + ESYA['lazer_cephane'].get(ammo, {}).get('aralik_sn', SAVAS['lazer_aralik_sn'])
-        w.last_combat = now
+        self.last_fight = now                  # not w.last_combat: the pilot is not in combat, repair and shield regeneration keep running
         w.send(w.ammo_msgs(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.pid, targetId=uid,
                                                                    laserColor=ESYA['lazer_renkleri']['cephane'].get(ammo, 0),
                                                                    isDiminishedBySkillShield=False, skilledLaser=False, visualType=0))])
@@ -1180,7 +1208,7 @@ class Pet:
             a = ESYA['lazer_cephane'].get(ammo, {'carpan': 1})
             r = random.uniform(*ESYA['hasar_rastgele'])
             shield = int(base * a.get('kalkan_carpan', 0) * r)
-            dmg = shield or int(base * a.get('carpan', 1) * r)
+            dmg = shield or int(base * a.get('carpan', 1) * r) + LAZER.flat_extra(self.lasers(), bool(asset))     # Paritydrill +5: çarpanlardan sonra
             if asset:
                 w.hit_asset(uid, dmg, 1, shield_only=bool(shield), attacker=self.pid)
                 if not w.asset_at(uid):
@@ -1209,11 +1237,20 @@ class Pet:
         return []
 
     def trade_bonus(self):
-        """G-TRA1 ile satışın fiyat bonusu (wiki +%5/15/30; istemci "Trade bonus"). Ticaretin yakıt bedelinin miktarı yok (doğrulanmadı)."""
+        """G-TRA1 ile satışın fiyat bonusu (wiki +%5/15/30; istemci "Trade bonus")."""
         return self.gear(TRADE_POD).get('ticaret_bonusu', 0)
 
+    def trade_fuel(self):
+        """Bir satışın yakıt bedeli (bir kerelik; istemci "You have to use P.E.T. fuel to trade"). Miktar uyarlama: esyalar.json
+        G-TRA1 ticaret_yakit; AI-ECO ve panelin yakıt çarpanı diğer yakıt giderleri gibi uygulanır."""
+        return self.gear(TRADE_POD).get('ticaret_yakit', 0) * (1 + self.proto('yakit')) * AY.carpan('pet_yakit')
+
     def trade_used(self, now):
-        """Kargo tüccarıyla satış yapıldı: dişli bekleme süresine girer (wiki: 300 sn), P.E.T. korumaya döner."""
+        """Kargo tüccarıyla satış yapıldı: yakıt düşer, dişli bekleme süresine girer (wiki: 300 sn), P.E.T. korumaya döner."""
+        with self.p.lock:
+            self.d['yakit'] = max(0, self.d['yakit'] - self.trade_fuel())
+            self.p.dirty = True
+        self.send([self.fuel_msg()])
         self.trade_ready = now + self.gear(TRADE_POD).get('bekleme_sn', 0)
         self.trading = False
         self.select(GUARD)
@@ -1231,7 +1268,7 @@ class Pet:
         w = self.w
         now = time.time()
         hx, hy = w.hero_pos(now)
-        rng = self.gear(g).get('menzil', 0) * self.range_bonus()
+        rng = self.gear_range(g)
         if g == ENEMY_LOCATOR:
             spots = [n.mover.pos(now) for n in w.npcs.values() if locator_id(n) == value]
         else:
@@ -1263,7 +1300,7 @@ class Pet:
             self.p.dirty = True
         amount = int(shield + hull)
         if amount:
-            w.last_combat = now
+            self.last_fight = now
             w.send([('AttackHitCommand', dict(attackType=mod('AttackTypeModule', attackTypeValue=atype), attackerId=int(attacker),
                 victimId=self.pid, victimHitpoints=int(d['can']), victimShield=int(d['kalkan']), victimNanoHull=0,
                 damage=amount, skilled=False, strike=False, cannonType=0)), self.hp_msg(), self.shield_msg()])

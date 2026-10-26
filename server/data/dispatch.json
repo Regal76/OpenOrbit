@@ -659,24 +659,23 @@
   "ammunition_rocket_plt-3030": 25,
   "ammunition_mine_acm-01": 5,
   "ammunition_specialammo_emp-01": 2,
-  "resource_collectable_solidus": 5,
   "resource_pet-fuel": 1000,
   "resource_collectable_quickcoupon": 1,
   "resource_jumpvoucher": 1,
   "resource_repairvoucher": 1,
   "resource_logfile": 1,
-  "resource_collectable_scrapium": 20,
-  "resource_collectable_mucosum": 20,
+  "resource_collectable_scrapium": 2,
+  "resource_collectable_mucosum": 8,
   "resource_collectable_isochronate": 5,
-  "resource_collectable_bifenon": 5,
+  "resource_collectable_bifenon": 4,
   "resource_collectable_kyhalon": 5,
-  "resource_collectable_tetrathrin": 5,
-  "resource_collectable_hydra-alloy": 2,
-  "resource_collectable_neptune-alloy": 2,
-  "resource_collectable_triskelion-alloy": 2,
-  "resource_collectable_ouroboros-alloy": 2,
+  "resource_collectable_tetrathrin": 1,
+  "resource_collectable_hydra-alloy": 1,
+  "resource_collectable_neptune-alloy": 1,
+  "resource_collectable_triskelion-alloy": 1,
+  "resource_collectable_ouroboros-alloy": 1,
   "resource_collectable_diametrion": 5,
-  "resource_collectable_polychromium": 10,
+  "resource_collectable_polychromium": 6,
   "resource_collectable_axion-beam-regulator": 5,
   "resource_collectable_indoctrineoil": 1
  },
@@ -689,7 +688,7 @@
   "resource_logfile",
   "resource_repairvoucher"
  ],
- "odul_sayisi": 3,
+ "odul_sayisi": 4,
  "kademe_artisi": 0.5,
  "seyrek": {
   "resource_collectable_permit": 0.3,
@@ -727,5 +726,90 @@
   "ggeu": "resource_collectable_ggeu",
   "sure_sn": 3600
  },
- "_kaynak": "Ödül listeleri, yuva fiyatları, Dispatch Day (pazartesi, cuma) ve kapı gönderimi (1 GGEU, dalga 1'deki kurulu kapı) wiki'den (darkorbitwiki.com/dispatch-retriever, /dispatch-gate; belgeler/arastirma/sistemler_modlar.md 1.15). Uyarlama (wiki adet ve olasılık vermiyor): her gönderimde listeden odul_sayisi farklı ödül; adet taban_adet x (1 + kademe_artisi x (kademe-1)), tekil olanlar 1; seyrek olanların seçilme ağırlığı düşük; Dispatch Day'de adetler x1,5; kapı gönderimi 1 saat."
+ "sabit": {
+  "ammo": {
+   "currency_experience": 10000
+  },
+  "basic": {
+   "resource_collectable_solidus": 2,
+   "currency_experience": 10000
+  },
+  "resource": {
+   "resource_collectable_solidus": 2,
+   "currency_experience": 10000
+  },
+  "hitac": {
+   "resource_collectable_solidus": 2,
+   "currency_experience": 10000
+  }
+ },
+ "_sabit": "Her dönüşün sabit kalemleri, seri başına (gerçek kayıt 20261025_152841_gercek satır 936 ve 1097: iki R-01 dönüşünün ilk iki kalemi Solidus x2 ve currency_experience 10000). Ammunition serisinin havuzunda Solidus yok: yalnız EXP. Adetler toplayıcının kademe çarpanıyla artar; öteki serilerin (B, H, A) sabitleri kayıtta yok: R-01 biçimi uyarlama.",
+ "etkinlik_oduller": {
+  "chaos_omen": {
+   "resource_collectable_chaos-fragment": {
+    "R-01": [
+     5,
+     10
+    ],
+    "R-02": [
+     10,
+     20
+    ],
+    "R-03": [
+     15,
+     25
+    ],
+    "R-04": [
+     20,
+     30
+    ],
+    "R-05": [
+     35,
+     50
+    ],
+    "R-06": [
+     65,
+     80
+    ],
+    "kapi": [
+     5,
+     10
+    ]
+   }
+  },
+  "protegit": {
+   "resource_collectable_chaos-fragment": {
+    "R-01": [
+     5,
+     10
+    ],
+    "R-02": [
+     10,
+     20
+    ],
+    "R-03": [
+     15,
+     25
+    ],
+    "R-04": [
+     20,
+     30
+    ],
+    "R-05": [
+     35,
+     50
+    ],
+    "R-06": [
+     65,
+     80
+    ],
+    "kapi": [
+     5,
+     10
+    ]
+   }
+  }
+ },
+ "_etkinlik_oduller": "Etkinlik sürerken dönüşe eklenen kalem (takvim.py etkinlik anahtarı -> lootId -> toplayıcı kodu: [en az, en çok]). darkorbitwiki events/chaos-omen: Chaos Fragment Retriever Dispatch'ten (R-01 5-10, R-02 10-20, R-03 15-25, R-04 20-30, R-05 35-50, R-06 65-80) ve Gate Dispatch'ten gelir; kapı için sayı verilmiyor: 'kapi' R-01 aralığı (uyarlama). Protegit Pandemonium'da da sürer (ETKINLIKLER-27); adetler Dispatch Day çarpanından etkilenmez.",
+ "_kaynak": "Ödül listeleri, yuva fiyatları, Dispatch Day (pazartesi, cuma) ve kapı gönderimi (1 GGEU, dalga 1'deki kurulu kapı) wiki'den (darkorbitwiki.com/dispatch-retriever, /dispatch-gate; belgeler/arastirma/sistemler_modlar.md 1.15). Uyarlama (wiki adet ve olasılık vermiyor): her gönderimde listeden odul_sayisi farklı ödül; adet taban_adet x (1 + kademe_artisi x (kademe-1)), tekil olanlar 1; seyrek olanların seçilme ağırlığı düşük; Dispatch Day'de adetler x1,5; kapı gönderimi 1 saat. Gerçek sunucu kaydına göre (20261025_152841_gercek): dönüş başına 4 farklı rastgele kalem ve sabit kalemler (sabit); kademe 1 adetleri kayıttan (Scrap 2, Mucosum 8, Tetrathrin 1, Bifenon 4, Polychromium 6, her alloy 1); kayıtta olmayan kalemlerin adetleri uyarlama. Etkinlik ödülleri: etkinlik_oduller."
 }

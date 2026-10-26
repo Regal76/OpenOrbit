@@ -141,7 +141,8 @@ class Arena:
     def exit_portal(self, world):
         x, y = world.map_w // 2, world.map_h // 2
         home = KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5)
-        return dict(gateId=PORTAL_BASE + 50 + self.slot, x=x, y=y, hedef=home, designId=1, kapi=self.key, cikis=True)
+        return dict(gateId=PORTAL_BASE + 50 + self.slot, x=x, y=y, hedef=home, designId=1, kapi=self.key, cikis=True,
+                    varis='istasyon')
 
     def attach(self, world):
         """Mod haritası açıldı: koşu varsa dalgalar, yoksa yalnız çıkış."""

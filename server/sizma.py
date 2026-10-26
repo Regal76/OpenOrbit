@@ -7,7 +7,8 @@ Kurallar (resmî SSS 2013, fandom): rastgele bir firma haritasında (X-1'de değ
 yok edilmeli, yoksa kaçar. Komandolar ateş etmez, mini haritada sarı nokta; vurulunca (ya da EMP'yle) görünür olurlar; olağan
 uzaylıdan fazla ödül verirler (2x; kaynaklar 2x/4x diyor). Akşam saatlerinde (19-22) turlar ardı ardına; Şükran Günü haftası.
 Tek oyunculu uyarlama: takım oyuncunun firmasının X-2..X-8 haritalarından birinde; oyuncu o haritadaysa (ya da sonradan gelirse)
-kalan komandolar haritanın rastgele bir yerinde doğar. Takım boyu, tur arası ve uzaylı türleri veride (_uyarlama).
+kalan komandolar haritanın rastgele bir yerinde doğar. Takım boyu, tur arası ve uzaylı türleri veride (_uyarlama); turun
+'gizli_patron' olasılığıyla komandolardan biri gizli Boss Kristallon'dur (Uber Kristallon'un ganimeti; fandom Infiltration).
 Profilde tutulmaz (turlar oturumluk).
 """
 import json, os, random, time
@@ -59,7 +60,11 @@ class Sizma:
         cls = random.choice(D.get('haritalar', ['X-2', 'X-3', 'X-4', 'X-5', 'X-6', 'X-7', 'X-8']))
         pool = D.get('turler', ['75', '73', '76', '78', '81'])
         n = D.get('adet', 6)
-        self.round = dict(harita=self.map_for(cls), sinif=cls, turler=[random.choice(pool) for _ in range(n)], adet=n, olen=0,
+        kinds = [random.choice(pool) for _ in range(n)]
+        boss = D.get('gizli_patron')
+        if boss and random.random() < boss['olasilik']:      # gizli Boss Kristallon: bir komandonun yerine (Uber Kristallon'un ganimeti)
+            kinds[random.randrange(n)] = boss['tur']
+        self.round = dict(harita=self.map_for(cls), sinif=cls, turler=kinds, adet=n, olen=0,
                           bitis=now + D.get('sure_sn', 600), dogdu=False)
         self.log('   Infiltration: komando takımı %s (%d)' % (H.name(self.round['harita']), n))
         msgs = [legacy('0|A|STM|msg_infiltration_spawned_map_single|%%MAP%%|%s' % H.name(self.round['harita'])), self.status_cmd(now)]
@@ -85,6 +90,7 @@ class Sizma:
                 n.odul_carpani = D.get('odul_carpani', 2)
                 n.sizma = self                     # takımın sahibi (arkadaş sunucusunda öteki oyuncu da vurabilir)
                 n.pasif = True                     # komandolar ateş etmez (resmî SSS 2013)
+                n.summoned = tip == D.get('gizli_patron', {}).get('tur')       # gizli patron ölünce yeniden doğmaz (etkinlik harita kontrolü de silmez)
             n = w.spawn_npc_at(tip, cx + random.randint(-400, 400), cy + random.randint(-400, 400), prep=prep)
             if n is not None:
                 n.engaged = False

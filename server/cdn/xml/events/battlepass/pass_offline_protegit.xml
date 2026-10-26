@@ -1,102 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <battlePass>
-    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py; resmî dosya değil, uyarlama) -->
+    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py, wiki verisi: tools/biletler_wiki.json; resmî dosya değil) -->
     <objectiveList>
-        <objective questId="500410">
-            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500413">
-            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500416">
-            <questReward lootid="resource_booty-key" amount="5"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500419">
-            <questReward lootid="ammunition_rocket_plt-3030" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500422">
-            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500425">
-            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500428">
-            <questReward lootid="resource_booty-key" amount="5"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500431">
-            <questReward lootid="ammunition_rocket_plt-3030" amount="4000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="2"/>
-        </objective>
-        <objective questId="500411">
-            <questReward lootid="resource_collectable_polychromium" amount="350"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
-        <objective questId="500414">
-            <questReward lootid="resource_collectable_evocation-chip" amount="180"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
-        <objective questId="500417">
-            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
-        <objective questId="500420">
-            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="600"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
-        <objective questId="500423">
-            <questReward lootid="ammunition_laser_vb-142" amount="6000"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
-        <objective questId="500426">
-            <questReward lootid="resource_collectable_polychromium" amount="350"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
-        <objective questId="500429">
-            <questReward lootid="resource_collectable_evocation-chip" amount="180"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
-        <objective questId="500432">
-            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
-            <bpReward lootid="resource_battle-pass-key" amount="5"/>
-        </objective>
+        <!-- Butterfly Effect -->
         <objective questId="500412">
-            <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="11"/>
+            <questReward lootid="ammunition_laser_ucb-100" amount="4000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
-        <objective questId="500415">
-            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
-            <bpReward lootid="resource_battle-pass-key" amount="11"/>
-        </objective>
-        <objective questId="500418">
-            <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="11"/>
-        </objective>
+        <!-- Messy Situation -->
         <objective questId="500421">
-            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
-            <bpReward lootid="resource_battle-pass-key" amount="11"/>
+            <questReward lootid="ammunition_rocket_plt-2021" amount="2000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
+        <!-- Fractured Space -->
+        <objective questId="500418">
+            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="500"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Reassembly -->
+        <objective questId="500415">
+            <questReward lootid="resource_collectable_polychromium" amount="250"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Hodgepodge -->
+        <objective questId="500416">
+            <questReward lootid="ammunition_specialammo_dcr-250" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
+        </objective>
+        <!-- Mixed Signals -->
         <objective questId="500424">
-            <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="11"/>
+            <questReward lootid="resource_collectable_salvage-core" amount="40"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
+        <!-- Up To Chance -->
         <objective questId="500427">
-            <questReward lootid="tech_battle-repair-bot2" amount="3"/>
-            <bpReward lootid="resource_battle-pass-key" amount="11"/>
+            <questReward lootid="ammunition_laser_rsb-75" amount="3000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="1"/>
         </objective>
-        <objective questId="500430">
+        <!-- Hot Mess -->
+        <objective questId="500413">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Reconstruction -->
+        <objective questId="500422">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Undermine -->
+        <objective questId="500419">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Seemingly Random -->
+        <objective questId="500417">
+            <questReward lootid="ammunition_rocket_plt-2021" amount="6000"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Breaking The Mold -->
+        <objective questId="500425">
             <questReward lootid="tech_npc-nuke" amount="1"/>
-            <bpReward lootid="resource_battle-pass-key" amount="11"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
         </objective>
-        <objective questId="500433">
-            <questReward lootid="resource_collectable_indoctrine-accelerator" amount="50"/>
-            <bpReward lootid="resource_battle-pass-key" amount="24"/>
+        <!-- Hit Or Miss -->
+        <objective questId="500428">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="75"/>
+            <bpReward lootid="resource_battle-pass-key" amount="3"/>
+        </objective>
+        <!-- Clearing Debriss -->
+        <objective questId="500414">
+            <questReward lootid="tech_npc-nuke" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Restoring Order -->
+        <objective questId="500423">
+            <questReward lootid="tech_battle-repair-bot2" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Maim And Destroy -->
+        <objective questId="500420">
+            <questReward lootid="tech_speed-burst" amount="5"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Chaos Theory -->
+        <objective questId="500647">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="10"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Finding A Pattern -->
+        <objective questId="500426">
+            <questReward lootid="equipment_shipupgrade_shd-zpve" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Breeding Ground -->
+        <objective questId="500429">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="15"/>
+            <bpReward lootid="resource_battle-pass-key" amount="7"/>
+        </objective>
+        <!-- Fractal Rain -->
+        <objective questId="500603">
+            <questReward lootid="tech_burning-trail" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Utter Chaos -->
+        <objective questId="500604">
+            <questReward lootid="equipment_shipupgrade_hp-zpve" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Deep Wound -->
+        <objective questId="500431">
+            <questReward lootid="tech_burning-trail" amount="2"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Calculated Odds -->
+        <objective questId="500648">
+            <questReward lootid="resource_collectable_indoctrine-accelerator" amount="25"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Gathered Fiends -->
+        <objective questId="500605">
+            <questReward lootid="equipment_shipupgrade_dmg-zpve" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
+        </objective>
+        <!-- Pandemonium -->
+        <objective questId="500430">
+            <questReward lootid="equipment_shipupgrade_spc-zpve" amount="1"/>
+            <bpReward lootid="resource_battle-pass-key" amount="15"/>
         </objective>
     </objectiveList>
     <flvDisplayLootId>resource_battle-pass-key</flvDisplayLootId>

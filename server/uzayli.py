@@ -20,14 +20,28 @@ Yetenekler (veri alanları uzayli_yetenekleri.json'un açıklamasında):
   yapışkan bomba (Emperor Kristallon)                  aralıkla gecikmeli büyük hasar (tek oyunculu: grup boyuna bölünür)
   hız becerisi ve kapsüller (Emperor Sibelon)          kalkanı biterken hızlanır; haritada kapsüller belirir, Emperor toplarsa
                                                        güçlenir (can, kalkan, hasar), oyuncu yakınından geçerse kapsül yok olur
+  iyileştirme (Streuner Specialist, Aider, Medic Mimesis)  aralıkla yakındaki sınıf uzaylılarının gövdesini onarır (kendini değil)
+  izleme (Aider Streuner)                              Recruit Streuner'in çevresinde dolaşır (koruyucu düzeni: dunya.think)
+  periyodik çağırma (Rocketeer, Strokelight Barrage)   savaşırken vurulmasa da aralıkla çağırır (en çok kadar yaşarken)
+  mayın bırakma (Agatus, Strokelight Barrage)         canı eşiğin altına inince aralıkla ACM-1 mayını bırakır (savas_esya.alien_mine)
+  ölüm ışını (Gygerim Overlord)                       oyuncu uzaktayken (haritanın dışından) aralıkla büyük hasar
+  oyuncunun hızı (Seeker Rocket, Hooligan)             hızı oyuncununkine eşitlenir (+ek; Hooligan'da yalnız kritik canda)
+  ters atış (Streuner Turret)                          isabet eden lazer oyuncunun kontrollerini bir süre ters çevirir
+  EMP darbesi (Obscured Mimesis, Hitac Underboss, Spookfish)  oyuncunun hedefi sıfırlanır, gizlenme biter, mini harita parazitlenir
+  düşük can (dusuk_can; harita başıboşları)            %20'nin altında oyuncunun tersindeki kenar noktasına kaçar (menzildeyse
+                                                       ateş eder), orada durup yenilenir, vurulunca karşılık vermez (fandom Low health, Parking)
 """
 import json, math, os, random, time
 
 import ayar as AY
+import harita as H
+import harita_duzeni as HD
+from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 Y = json.load(open(os.path.join(HERE, 'data', 'uzayli_yetenekleri.json'), encoding='utf8'))
 ABILITIES = {int(k): v for k, v in Y['yetenekler'].items()}
+LOW = Y['dusuk_can']               # düşük canda kaçış ve park (fandom Low health, Parking)
 CAPSULES = Y['kapsul_turleri']
 BUFF_CAPSULE = 45                  # AssetTypeModule.AssetType (istemci): BUFF_CAPSULE
 RING_RADIUS = 300                  # kapsül toplanınca Emperor'un çevresindeki halka (birim; uyarlama, canlıda ayarlanacak)
@@ -73,6 +87,8 @@ class Yetenekler:
         self.capsules = {}          # kapsül kimliği -> {x, y, tur, sahip}
         self.next_capsule = CAPSULE_BASE
         self.hero_dots = []         # oyuncunun üzerindeki tekillikler: {npc, bitis, kalan, sn_hasar, sonraki}
+        self.mirror_end = 0.0       # ters kontrolün bitişi (üst üste gelen ters atışlar süreyi uzatır, görsel erken kapanmaz)
+        self.mirror_gen = 0         # son süre uzatan ters atışın sırası: yalnız onun zamanlayıcısı görseli kapatır
 
     # ------------------------------------------------------------ yardımcılar
     def dist(self, n, now):
@@ -85,9 +101,7 @@ class Yetenekler:
         w = self.w
         if (w.hero_dead or w.jumping or now < w.invuln_until or w.abilities.cloaked(now) or w.items.cloaked()):
             return False
-        x, y = w.hero_pos(now)
-        return (not w.in_peace(x, y) or bool(n is not None and w.station_at(x, y)
-                and not w.near_gate_peace(x, y) and w.npc_retaliating(n)))
+        return not w.in_peace(*w.hero_pos(now)) or bool(n is not None and w.npc_retaliating(n))
 
     def adopt(self, parent, child):
         """Uzaylının doğurduğu/çağırdığı: yeniden doğmaz; kapıda dalganın uzaylısı sayılır (dalga o ölmeden bitmez)."""
@@ -125,6 +139,16 @@ class Yetenekler:
                                                       else n.hp <= n.d['hp'] * t['can_orani']):
             n.ab['ters'] = now                                   # bir kez
             self.reverse_controls(n, t['sn'])
+        if 'kalkan_bitince_emp' in n.davranis:                   # Obscured Mimesis: kalkanı her bitişinde bir EMP darbesi
+            if n.shield > 0:
+                n.ab.pop('emp_kalkan', None)
+            elif 'emp_kalkan' not in n.ab and n.hp > 0:
+                n.ab['emp_kalkan'] = now
+                self.emp(n, now)
+        c = n.davranis.get('kritik_emp')
+        if c and 'emp_kritik' not in n.ab and 0 < n.hp <= n.d['hp'] * c['can_orani']:
+            n.ab['emp_kritik'] = now                             # Spookfish: kritik canda EMP (bir kez)
+            self.emp(n, now)
         k = n.davranis.get('kaybolma')
         if k and dmg > 0 and n.alive and n.hp > 0:
             n.ab['kayip'] = n.ab.get('kayip', 0) + dmg
@@ -137,10 +161,21 @@ class Yetenekler:
                                               activated=on))
 
     def reverse_controls(self, n, sec):
-        """Ters kontrol (Boss StreuneR, Boss Saimon): oyuncunun hareketi sec saniye ters (istemci çevirir: MIRRORED_CONTROLS)."""
-        w = self.w
-        w.send([self.visual(w.hid, MIRRORED_CONTROLS, True)])
-        w.later(sec, lambda: w.send([self.visual(w.hid, MIRRORED_CONTROLS, False)]))
+        """Ters kontrol (Boss StreuneR, Boss Saimon, Streuner Turret): oyuncunun hareketi sec saniye ters (istemci çevirir:
+        MIRRORED_CONTROLS). Zaten ters ise süre uzar; görsel son bitişte kapanır."""
+        w, now = self.w, time.time()
+        if now >= self.mirror_end:
+            w.send([self.visual(w.hid, MIRRORED_CONTROLS, True)])
+        if now + sec > self.mirror_end:                              # süreyi uzatan atış: eski kapatma zamanlayıcıları etkisiz kalır
+            self.mirror_end = now + sec
+            self.mirror_gen += 1
+            gen = self.mirror_gen
+
+            def off():
+                if gen == self.mirror_gen:
+                    self.mirror_end = 0.0
+                    w.send([self.visual(w.hid, MIRRORED_CONTROLS, False)])
+            w.later(sec, off)
         w.log('   %s kontrolleri ters çevirdi (%d sn)' % (n.d['ad'], sec))
 
     def summon(self, n, tur, count, now):
@@ -217,7 +252,11 @@ class Yetenekler:
         return f
 
     def after_shot(self, n, now, hit):
-        """Uzaylının lazeri oyuncuya isabet etti: yavaşlatan atış."""
+        """Uzaylının lazeri oyuncuya isabet etti: ters atış (Streuner Turret), yavaşlatan atış."""
+        t = n.davranis.get('ters_atis')
+        if t and hit and not self.w.hero_dead and now >= n.ab.get('ters_sonraki', 0):
+            n.ab['ters_sonraki'] = now + t['bekleme_sn']
+            self.reverse_controls(n, t['sn'])
         s = n.davranis.get('yavaslatan_atis')
         if not s or not hit or self.w.hero_dead or not AY.get('yavaslatan_atis'):          # panel: kapatılabilir
             return
@@ -265,6 +304,20 @@ class Yetenekler:
                 self.speed_skill(n, now)
             if 'kaybolma' in d and n.ab.get('gizli'):
                 self.hidden_regen(n, now)
+            if 'iyilestirme' in d:
+                self.heal(n, now)
+            if 'izle' in d:
+                self.follow(n, now)
+            if 'periyodik_cagir' in d:
+                self.periodic_summon(n, now)
+            if 'mayin_birak' in d:
+                self.drop_mines(n, now)
+            if 'olum_isini' in d:
+                self.death_ray(n, now)
+            if 'periyodik_emp' in d:
+                self.periodic_emp(n, now)
+            if 'hiz_oyuncu' in d:
+                self.match_speed(n, now)
         self.dot_tick(now)
         self.capsule_tick(now)
 
@@ -360,9 +413,12 @@ class Yetenekler:
         t, w = n.davranis['temasla_patla'], self.w
         if not n.engaged or not self.hero_open(now, n) or self.dist(n, now) > t['yaricap']:
             return
+        dmg = t['hasar']
+        if 'kenarda' in t:         # Seeker Rocket: hasar patlama anındaki uzaklığa göre (temasta tam, yaricap kenarında "kenarda" kadarı)
+            dmg = int(dmg * (1 - (1 - t['kenarda']) * min(1.0, self.dist(n, now) / t['yaricap'])))
         boom = [('ShipDestroyedCommand', dict(destroyedUserId=n.id, explosionTypeId=0))] if n.id in w.visible else []
-        w.send(w.hurt_hero(t['hasar'], n, atype=0) + boom + w.remove_npc(n))
-        w.log('   %s patladı: %d hasar' % (n.d['ad'], t['hasar']))
+        w.send(w.hurt_hero(dmg, n, atype=0) + boom + w.remove_npc(n))
+        w.log('   %s patladı: %d hasar' % (n.d['ad'], dmg))
 
     def threshold_kamikaze(self, n, now):
         """Barracuda: canı oran'a inince kırmızı parlar ve bekle_sn yerinde durur (donuk: ateş etmez), sonra oyuncuya yaklaşır;
@@ -435,7 +491,8 @@ class Yetenekler:
         if now < n.ab['bomba']:
             return
         n.ab['bomba'] = now + b['aralik_sn']
-        dmg = int(b['hasar'] / max(1, b.get('grup', 1)))
+        dmg = random.randint(*b['hasar']) if isinstance(b['hasar'], list) else b['hasar']      # Marker Mimesis: 100-300 bin
+        dmg = int(dmg / max(1, b.get('grup', 1)))
         from eski_protokol import legacy
         w.send([legacy('0|v|%d|%d|H|1|0|0' % (n.id, w.hid))])
         uid = n.id
@@ -454,6 +511,188 @@ class Yetenekler:
         k = n.davranis['kaybolma']
         n.hp = min(n.d['hp'], n.hp + k.get('can_sn', 0))
         n.shield = min(n.d['kalkan'], n.shield + k.get('kalkan_sn', 0))
+
+    # ------------------------------------------------------------ iyileştirme, izleme, periyodik çağırma, EMP, oyuncunun hızı
+    def heal(self, n, now):
+        """İyileştirme {can_sn | can_orani, bekleme_sn, menzil, hedef [ad parçaları; yoksa her uzaylı]}: bekleme_sn'de bir menzildeki
+        hedef adlı uzaylıların gövdesini onarır; kendini onarmaz (Streuner Specialist: 3 sn'de 6.000; öteki Specialist onu onarır)."""
+        h = n.davranis['iyilestirme']
+        if now < n.ab.get('iyilestirme', 0):
+            return
+        n.ab['iyilestirme'] = now + h['bekleme_sn']
+        w = self.w
+        nx, ny = n.mover.pos(now)
+        for m in list(w.npcs.values()):
+            if m is n or not m.alive or m.hp <= 0 or m.hp >= m.d['hp'] or (h.get('hedef')
+                                                                           and not any(s in m.d['ad'].lower() for s in h['hedef'])):
+                continue
+            mx, my = m.mover.pos(now)
+            if math.hypot(mx - nx, my - ny) > h['menzil']:
+                continue
+            amount = int(min(m.d['hp'] - m.hp, h['can_sn'] if 'can_sn' in h else m.d['hp'] * h['can_orani']))
+            m.hp += amount
+            msgs = [legacy('0|A|HL|%d|%d|HPT|%d|%d' % (n.id, m.id, int(m.hp), amount))] if m.id in w.visible else []
+            if w.target == m.id:
+                msgs.append(w.selection(m))
+            w.send(msgs)
+
+    def follow(self, n, now):
+        """İzleme {hedef (ad parçası), yaricap}: koruyucusu yoksa en yakın hedef adlı uzaylının çevresinde dolaşır (Aider Streuner,
+        Recruit Streuner'i izler); dolaşma dunya.think'in koruyucu düzeni (NPC.guard)."""
+        if now < n.ab.get('izle', 0) or self.w.ward_of(n):
+            return
+        n.ab['izle'] = now + 5.0
+        f, nx, ny = n.davranis['izle'], *n.mover.pos(now)
+        near = [(math.hypot(m.mover.pos(now)[0] - nx, m.mover.pos(now)[1] - ny), m.id) for m in self.w.npcs.values()
+                if m is not n and m.alive and f['hedef'] in m.d['ad'].lower()]
+        if near:
+            n.guard = (min(near)[1], {'yaricap': f['yaricap']})
+
+    def periodic_summon(self, n, now):
+        """Periyodik çağırma {bekleme_sn, cagrilar [{tur, adet, en_cok}]}: savaşırken, vurulmasa da bekleme_sn'de bir çağırır; her tür
+        en_cok kadar yaşarken yenisini çağırmaz (Rocketeer -> Seeker Rocket; Strokelight Barrage -> Abide I ve Steadfast III)."""
+        p, w = n.davranis['periyodik_cagir'], self.w
+        if not n.engaged or n.etki.frozen(now) or now < n.ab.get('periyodik', 0) or not self.hero_open(now, n):
+            return
+        n.ab['periyodik'] = now + p['bekleme_sn']
+        n.children = {c for c in n.children if c in w.npcs and w.npcs[c].alive}
+        for e in p['cagrilar']:
+            room = e['en_cok'] - sum(1 for c in n.children if w.npcs[c].tip == e['tur'])
+            if room > 0:
+                self.summon(n, e['tur'], min(e['adet'], room), now)
+
+    def drop_mines(self, n, now):
+        """Mayın bırakma {mayin, can_orani, bekleme_sn, en_cok, hedef, yaricap}: canı can_orani'nın altındayken savaşırken bekleme_sn'de bir
+        mayın bırakır (uzaylının konumuna; hedef: oyuncunun çevresine, yaricap [en az, en çok] uzaklıkta); aynı uzaylının en_cok mayını
+        yaşarken yenisini bırakmaz. Mayın savas_esya.alien_mine'ın uzaylı mayınıdır (kurulunca oyuncu yakındaysa patlar)."""
+        m, w = n.davranis['mayin_birak'], self.w
+        if (w.items is None or not n.engaged or n.etki.frozen(now) or n.hp > n.d['hp'] * m['can_orani']
+                or now < n.ab.get('mayin', 0) or not self.hero_open(now, n)):
+            return
+        n.ab['mayin'] = now + m['bekleme_sn']
+        if sum(1 for k in w.items.mines.values() if k['sahip'] == n.id) >= m['en_cok']:
+            return
+        x, y = w.hero_pos(now) if m.get('hedef') else n.mover.pos(now)
+        if m.get('hedef'):
+            a, r = random.uniform(0, 2 * math.pi), random.uniform(*m['yaricap'])
+            x, y = x + math.cos(a) * r, y + math.sin(a) * r
+        w.items.alien_mine(m['mayin'], min(max(0, x), w.map_w), min(max(0, y), w.map_h), n.id, now)
+        w.log('   %s mayın bıraktı (%s)' % (n.d['ad'], m['mayin']))
+
+    def death_ray(self, n, now):
+        """Ölüm ışını {hasar, aralik_sn, uzaklik} (Gygerim Overlord): oyuncu uzaklik'tan uzaktayken (ışınlar haritanın dışından gelir) savaşırken
+        aralik_sn'de bir ortalama hasar (%80-120); menzile bağlı değil, yakındaki oyuncuya ışın düşmez."""
+        r, w = n.davranis['olum_isini'], self.w
+        if (not n.engaged or n.etki.frozen(now) or now < n.ab.get('isin', 0) or self.dist(n, now) <= r['uzaklik']
+                or not self.hero_open(now, n)):
+            return
+        n.ab['isin'] = now + r['aralik_sn']
+        dmg = int(r['hasar'] * random.uniform(0.8, 1.2))
+        w.send(w.hurt_hero(dmg, n, atype=0))
+        w.log('   %s ölüm ışını (%d hasar)' % (n.d['ad'], dmg))
+
+    def periodic_emp(self, n, now):
+        """Periyodik EMP {bekleme_sn, menzil}: savaşırken, menzildeyse bekleme_sn'de bir (Hitac Underboss'un EMP Impulse'u)."""
+        e = n.davranis['periyodik_emp']
+        if not n.engaged or n.etki.frozen(now) or now < n.ab.get('emp_sonraki', 0) or self.dist(n, now) > e['menzil'] \
+                or not self.hero_open(now, n):
+            return
+        n.ab['emp_sonraki'] = now + e['bekleme_sn']
+        self.emp(n, now)
+
+    def emp(self, n, now):
+        """Uzaylının EMP darbesi (Obscured Mimesis, Hitac Underboss, Spookfish): oyuncunun hedefi sıfırlanır, gizlenme biter (EMP-01'in
+        oyuncuya etkisi gibi: hedefleme cihazları kapanır, gizlenme bozulur) ve mini harita parazitlenir."""
+        w = self.w
+        if w.hero_dead or w.jumping:
+            return
+        if w.attacking:
+            w.laser_stop()
+        w.abilities.reveal()
+        w.items.reveal()
+        msgs = [legacy('0|n|EMP|%d' % w.hid), legacy('0|n|EMAL|%d' % EMP_NOISE_SN)]
+        if w.target is not None:
+            w.target = None
+            msgs.append(('ShipDeselectionCommand', {}))
+        w.send(msgs)
+        w.log('   %s EMP darbesi savurdu' % n.d['ad'])
+
+    def match_speed(self, n, now):
+        """Oyuncunun hızı {ek, can_orani}: hızı oyuncununkine eşitlenir (+ek). can_orani varsa yalnız canı o orana inince (Hooligan:
+        kritik canda); Seeker Rocket hep (oyuncu + 20)."""
+        h = n.davranis['hiz_oyuncu']
+        if 'can_orani' in h and n.hp > n.d['hp'] * h['can_orani']:
+            n.ab.pop('hiz', None)
+        else:
+            n.ab['hiz'] = max(1, int(self.w.p.d['gemi'].get('speed', 300)) + h.get('ek', 0))
+
+    # ------------------------------------------------------------ düşük can: kaçış ve park (fandom Low health, Parking)
+    def flees(self, n):
+        """Bu uzaylı düşük canda kaçar mı: yalnız haritanın kendi nüfusundaki başıboşlar. Kapı, mod, etkinlik ve çağrılanlar, hareketsizler,
+        mothership ve özel patronlar (yeniden_dogma_ozel), korsan haritaları (5-X), duvarlı haritalar, Barracuda (kamikaze) ve hızı
+        oyuncununkine eşitlenen Hooligan kaçmaz (fandom: mothership ve korsanlar kaçmaz)."""
+        w = self.w
+        if (n.gate or n.summoned or n.hunt or getattr(n, 'pasif', False) or n.d['hiz'] <= 0 or w.kapi or w.low or w.labirent
+                or n.tip in self.S.get('yeniden_dogma_ozel', {}) or 'kamikaze_esik' in n.davranis or 'hiz_oyuncu' in n.davranis
+                or H.map_class(w.map_id).startswith('5-') or HD.navigates(w.map_id)):
+            return False
+        return any(e['tip'] == n.tip for e in w.rules.get('npc', []))
+
+    def flee_range(self, n):
+        """Kaçarken ateş menzili: bazı uzaylılarda (Kristallon, Kristallin) düşük canda artar (fandom Low health)."""
+        m, r = LOW['menzil_artisi'], self.w.npc_range(n)
+        return r * m['carpan'] if any(s in n.d['ad'].lower() for s in m['ad']) else r
+
+    def flee_spot(self, n, now):
+        """Oyuncudan en uzak kenar/köşe noktası (güvenli bölgeye ve onun yoluna girmeden); yoksa bulunduğu yer."""
+        w, m = self.w, LOW['kenar_payi']
+        hx, hy = w.hero_pos(now)
+        nx, ny = n.mover.pos(now)
+        spots = [(x, y) for x in (m, w.map_w // 2, w.map_w - m) for y in (m, w.map_h // 2, w.map_h - m) if (x, y) != (w.map_w // 2, w.map_h // 2)]
+        spots = [s for s in spots if not w.near_zone(s[0], s[1], 600) and not w.path_near_zone(nx, ny, s[0], s[1])]
+        return max(spots, key=lambda s: math.hypot(s[0] - hx, s[1] - hy)) if spots else (int(nx), int(ny))
+
+    def flee_move(self, n, st, now):
+        tx, ty = st['hedef']
+        ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
+        self.w.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
+
+    def low_health(self, n, now):
+        """Düşük can (canı dusuk_can.oran'ın altına inen harita uzaylısı): oyuncunun tersindeki kenar noktasına kaçar ('kac'; menzildeyse
+        hâlâ ateş eder), varınca durur ve kalkanını/canını yeniler ('park'; ateş etmez, vurulunca karşılık vermez, vurulmadıkça
+        yenilenir); donus_orani'na yenilenince normal yapay zekâ. -> 'kac' | 'park' | None (dunya.think)."""
+        st = n.ab.get('kac')
+        if n.etki.frozen(now):
+            return st['durum'] if st else None
+        if st is None:
+            if not (0 < n.hp < n.d['hp'] * LOW['oran']) or not self.flees(n):
+                return None
+            st = n.ab['kac'] = dict(durum='kac', hedef=self.flee_spot(n, now), dolum=0.0)
+            self.flee_move(n, st, now)
+            self.w.log('   %s düşük canda kaçıyor (can %%%d)' % (n.d['ad'], 100 * n.hp // max(1, n.d['hp'])))
+        if n.hp >= n.d['hp'] * LOW['donus_orani'] and n.shield >= n.d['kalkan'] * LOW['donus_orani']:
+            del n.ab['kac']                                       # tamamen yenilendi: normal yapay zekâ
+            n.next_think = now
+            return None
+        if st['durum'] == 'kac':
+            if n.mover.t1 > now:
+                return 'kac'
+            x, y = n.mover.pos(now)
+            if math.hypot(x - st['hedef'][0], y - st['hedef'][1]) > 150:
+                self.flee_move(n, st, now)                         # yolu kesildi (yavaşlatma, donma): yeniden
+                return 'kac'
+            st['durum'] = 'park'
+            self.w.log('   %s köşeye park etti: (%d,%d)' % (n.d['ad'], x, y))
+        n.engaged = False                                          # park: karşılık vermez
+        if now >= st['dolum']:
+            st['dolum'] = now + 1.0
+            r = LOW['yenilenme']
+            if now - n.last_hit >= r['bekleme_sn']:
+                n.hp = min(n.d['hp'], n.hp + int(n.d['hp'] * r['can_orani_sn']))
+                n.shield = min(n.d['kalkan'], n.shield + int(n.d['kalkan'] * r['kalkan_orani_sn']))
+                if self.w.target == n.id:
+                    self.w.send([self.w.selection(n)])
+        return 'park'
 
     # ------------------------------------------------------------ Emperor Sibelon: hız ve kapsüller
     def speed_skill(self, n, now):

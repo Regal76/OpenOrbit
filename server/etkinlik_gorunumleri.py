@@ -4,7 +4,7 @@ gerçek oyunda bir etkinlikle kazanılanlar ve tek oyunculudaki kazanma yolları
 Panelin 'etkinlik_gorunumleri_magazada' ayarı (varsayılan açık): açıkken mağazada satılırlar (E11'deki gibi); kapalıyken mağazada
 görünmez ve satılmazlar (magaza.gate_ok). Yollar ayardan bağımsız hep açık:
   degisim  savas_bileti: etkinliğin Battle Pass'i sürerken anahtar değişiminde (exchange_rows)
-  kutu     ganimet: kutunun içeriğine ağırlığıyla (box_rows)
+  kutu     ganimet: kutunun yerel tasarım satırlarına ağırlığıyla (box_rows; wiki tablosundakiler 'tablo', ek satır olmaz)
   kapi     takvim: GG Special Rewards Weekend'lerin kapı ödüllerine seçimli satır (apply)
   harita   takvim: etkinliğin harita kutusunun içeriğine (apply)
   sezon    sezon: ödül sıralarındaki sezon tasarımları sezonun sırasıyla (season_track)
@@ -50,8 +50,10 @@ def exchange_rows(event):
 
 
 def box_rows(box):
-    """Kutunun içeriğine eklenen satırlar [lootId, 1, ağırlık]."""
-    return [[loot, 1, y['agirlik']] for loot, y in paths('kutu') if y['kutu'] == box]
+    """Kutunun yerel tasarım satırları [lootId, 1, ağırlık] (ganimet.pick'te tasarım çekilişine katılır): wiki tablosunda olmayan
+    görünümler ve kutunun eski Red / Blue P.E.T. havuzu ('kutu_ek'); tablosunda zaten olan tasarım ek satır olmaz ('tablo')."""
+    return [[loot, 1, y['agirlik']] for loot, y in paths('kutu') if y['kutu'] == box and not y.get('tablo')] + \
+           [list(r) for r in D.get('kutu_ek', {}).get(box, [])]
 
 
 def apply(events):
