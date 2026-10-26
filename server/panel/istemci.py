@@ -34,11 +34,30 @@ GIRIS_URL = 'http://127.0.0.1:8090/#darkorbit://'
 COZUNURLUKLER = [(1280, 720), (1366, 768), (1440, 900), (1600, 900), (1680, 1050), (1920, 1080), (2560, 1440), (3840, 2160)]
 
 
+def bundle_version(folder):
+    """Oyunun kendi sürümü (Unity PlayerSettings.bundleVersion) DarkOrbit_Data/globalgamemanagers'tan: 4 bayt LE uzunluk + metin,
+    ardından sıfır dolgu. Unity motorunun sürümü (2022.3.58f1) aynı dosyada ama uzunluk öneki o biçimde değil; bilinmiyorsa None."""
+    try:
+        with open(os.path.join(folder, DATA_DIR, 'globalgamemanagers'), 'rb') as fh:
+            d = fh.read()
+    except OSError:
+        return None
+    for m in re.finditer(rb'(?<!\d)\d{1,3}\.\d{1,4}\.\d{1,4}', d):
+        n = m.end() - m.start()
+        if m.start() >= 4 and d[m.start() - 4:m.start()] == n.to_bytes(4, 'little') and d[m.end():m.end() + 1] in (b'', b'\0'):
+            return m.group(0).decode()
+    return None
+
+
 def version_of(folder):
-    """Sürüm: klasör adından (DarkOrbit_Version1.1.115), yoksa exe'nin dosya sürümünden; bilinmiyorsa None."""
+    """Sürüm: klasör adından (DarkOrbit_Version1.1.115), yoksa oyunun verisinden (bundle_version; resmî kurulum "DarkOrbit Unity"
+    klasöründe), yoksa exe'nin dosya sürümünden (Unity motorunun sürümüyse, ör. 2022.3.58, sayılmaz); bilinmiyorsa None."""
     m = re.search(r'(\d+\.\d+\.\d+)', os.path.basename(os.path.normpath(folder)))
     if m:
         return m.group(1)
+    v = bundle_version(folder)
+    if v:
+        return v
     try:
         import ctypes
         from ctypes import wintypes
@@ -52,6 +71,8 @@ def version_of(folder):
         ctypes.windll.version.VerQueryValueW(buf, '\\', ctypes.byref(p), ctypes.byref(n))
         ffi = ctypes.cast(p, ctypes.POINTER(wintypes.DWORD * 13)).contents
         ms, ls = ffi[2], ffi[3]
+        if ms >> 16 >= 2000:                      # Unity'nin yıl biçimli motor sürümü, oyunun değil
+            return None
         return '%d.%d.%d' % (ms >> 16, ms & 0xFFFF, ls >> 16)
     except Exception:
         return None
