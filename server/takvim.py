@@ -4,7 +4,8 @@ Bir etkinlik ya yılın belli günlerinde ('donemler': [[başlangıç, bitiş]],
 belli günlerinde ve saatlerinde etkindir; saatler yerel saatle. Dönem ucu:
   - "AA-GG": her yıl
   - "YYYY-AA-GG": yalnız o yıl (gerçek oyunun koşuları). Bilinen son günden ('takvim_bilinen') sonra son 52 haftanın koşuları 52
-    haftalık adımlarla yinelenir (haftanın günü korunur: Çarşamba başlayan etkinlik yine Çarşamba başlar)
+    haftalık adımlarla yinelenir (haftanın günü korunur: Çarşamba başlayan etkinlik yine Çarşamba başlar); üçüncü öğesi "tek" olan
+    dönem yinelenmez (yeni sunucunun Europa sıralaması)
   - "paskalya+N", "cin_yeni_yili-N", "sukran_gunu+N": o yılın bayramından N gün sonra / önce (Kasım'ın 4. perşembesi)
 Dönemin üçüncü öğesi o günlerin saatleri ([[başlangıç, bitiş]]; 24'ü aşan bitiş ertesi güne taşar). Haftalık: 'gunler'
 (0=pazartesi), 'saatler', 'ay_haftasi' (ayın kaçıncı o günü: [1, 3] = ayın 1. ve 3. cuması), 'hafta_dongu' [n, i] (n haftalık
@@ -100,10 +101,12 @@ def _day(s, y):
 
 def _spans(entries, t):
     """t'yi içerebilecek dönemler [(başlangıç, bitiş, saatler)] (datetime; bitiş hariç)."""
-    out, dated = [], []
+    out, dated, once = [], [], []
     for a, b, *h in entries:
-        if a[:4].isdigit() and len(a) == 10:
-            dated.append((datetime.datetime.strptime(a, '%Y-%m-%d'), datetime.datetime.strptime(b, '%Y-%m-%d') + DAY, h))
+        if a[:4].isdigit() and len(a) in (10, 16):          # 'YYYY-AA-GG' ya da 'YYYY-AA-GG SS:DD' (ilk gün saatle: Chromin 10:00)
+            s = datetime.datetime.strptime(a, '%Y-%m-%d %H:%M' if len(a) == 16 else '%Y-%m-%d')
+            e = datetime.datetime.strptime(b, '%Y-%m-%d %H:%M') if len(b) == 16 else datetime.datetime.strptime(b, '%Y-%m-%d') + DAY
+            (once if h[:1] == ['tek'] else dated).append((s, e, h[1:] if h[:1] == ['tek'] else h))
             continue
         for y in (t.year - 1, t.year):
             s, e = _day(a, y), _day(b, y)
@@ -112,7 +115,7 @@ def _spans(entries, t):
     if dated and t >= KNOWN:                    # bilinen son günden sonra: son 52 haftanın koşuları 52 haftada bir
         n = (t - KNOWN) // CYCLE + 1
         out += [(s + k * CYCLE, e + k * CYCLE, h) for s, e, h in dated if KNOWN - CYCLE <= s < KNOWN for k in (n - 1, n) if k]
-    return out + dated
+    return out + dated + once
 
 
 def _hours(t, hours, first=None, last=None):

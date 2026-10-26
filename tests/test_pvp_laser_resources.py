@@ -27,7 +27,7 @@ class PvpLaserResources(unittest.TestCase):
         self.w = dunya.World(self.p, self.sent.extend, lambda text: None, 4)
         self.now = time.time()
         self.target = self.w.hid + 1
-        self.defender = SimpleNamespace(p=SimpleNamespace(mods=Mock(return_value={})))
+        self.defender = SimpleNamespace(p=SimpleNamespace(mods=Mock(return_value={}), d={'pilot': {'factionId': 3}}))
         self.hit = Mock()
         for mocked in (patch.object(self.w, 'oyuncu', return_value=self.defender),
                        patch.object(dunya.AY, 'chance', return_value=1),

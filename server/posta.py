@@ -20,6 +20,8 @@ import time
 import topluluk as TP
 
 NOT_SINIRI = 10
+NOT_SINIRI_PREMIUM = 50       # resmî forum: Premium üyelerde 50 not (süre bitince fazlası silinmez, yenisi eklenemez)
+AZAMI_ALICI = 5               # resmî forum: tek seferde en çok 5 alıcı (spam önlemi; klana gönderimde sınır yok)
 KUTU_SINIRI = 500          # gelen ve giden kutusu başına (seyir defteri ve hesap geçmişiyle aynı)
 SAYFA = 15
 OKUNMADI, OKUNDU = 1, 3
@@ -116,7 +118,7 @@ class Posta:
     # -------------------------------------------------------- istekler
     def init_cmd(self):
         return ('UserMessageInitCommand', {'unreadCount': self.unread(), 'outboxCount': len(self.d['giden']),
-                                           'inboxCount': len(self.d['gelen']), 'noteLimit': NOT_SINIRI})
+                                           'inboxCount': len(self.d['gelen']), 'noteLimit': self.not_siniri()})
 
     def box(self, inbox, start):
         start = max(0, int(start or 0))
@@ -165,16 +167,30 @@ class Posta:
             names = [u['ad'] for a, u in k['uyeler'].items() if a == KL.ad(self.p) or TP.bul(ad=a) is not None] if k else []
         if not names:
             return reply(False, 'messaging_errorLayer_noRecipient')
+        if f.get('recipientType') != 'clan' and len(names) > AZAMI_ALICI:
+            return reply(False, 'messaging_errorLayer_tooManyRecipients')
         if len(subject) < 3:
             return reply(False, 'messaging_errorLayer_subjectTooShort')
+        if len(subject) > 50:
+            return reply(False, 'messaging_errorLayer_subjectTooLong')
         if len(body.strip()) < 5:
             return reply(False, 'messaging_errorLayer_bodyTooShort')
+        if len(body) > 5000:
+            return reply(False, 'messaging_errorLayer_bodyTooLong')
         own = me.get('userName', '')
         alicilar = [None if n.lower() == own.lower() else TP.bul(ad=n) for n in names]     # arkadaş sunucusunda öteki oyuncular
         if any(n.lower() != own.lower() and k is None for n, k in zip(names, alicilar)):
             self.log('   posta: alıcı yok: %s' % names)
             return reply(False, 'messaging_errorLayer_noRecipient')
         clan = f.get('recipientType') == 'clan'
+        for k in alicilar:                                     # alıcının kara listesi ya da rehberde engeli (forum: kara liste)
+            if k is None:
+                continue
+            if any(int(x.get('id', 0)) == self.p.user_id for x in (k.profil.d.get('posta') or {}).get('kara_liste', ())):
+                return reply(False, 'messaging_errorLayer_blacklisted')
+            eng = (k.profil.d.get('rehber') or {}).get('engelli') or []
+            if any(own.lower() == str(x.get('ad', x) if isinstance(x, dict) else x).lower() for x in eng):
+                return reply(False, 'messaging_errorLayer_blocked')
         extra = {'alicilar': [k.ad if k else own for k in alicilar], 'alici_idler': [k.uid if k else self.p.user_id for k in alicilar]}
         if clan:
             extra['clanTag'] = me.get('clanTag', '')
@@ -242,10 +258,10 @@ class Posta:
         if name == 'UserMessageNoteListRequest':
             return [('UserMessageNoteListCommand', {'noteInfoCommandList': lst()})]
         if name == 'UserMessageNoteAddRequest':
-            if len(notes) >= NOT_SINIRI:
+            if len(notes) >= self.not_siniri():
                 return [('UserMessageNoteAddCommand', {'commandList': lst(), 'titleCommand': stack('messaging_errorLayer_notesLimitReached_title'),
                                                        'success': False,
-                                                       'textCommand': stack('messaging_errorLayer_notesLimitReached_text', _notesLimit_=NOT_SINIRI)})]
+                                                       'textCommand': stack('messaging_errorLayer_notesLimitReached_text', _notesLimit_=self.not_siniri())})]
             with self.p.lock:
                 nid = self.d['sira']
                 self.d['sira'] += 1
@@ -273,6 +289,9 @@ class Posta:
         return []
 
     # -------------------------------------------------------- kara liste
+    def not_siniri(self):
+        return NOT_SINIRI_PREMIUM if self.p.premium else NOT_SINIRI
+
     def blacklist(self, name, f):
         bl = self.d['kara_liste']
         uid = int(f.get('blackUserId') or 0)

@@ -173,7 +173,7 @@ class PlutusDeney:
             if not e['ipucu'] and t >= D['ipucu_sn']:
                 e['ipucu'] = True
                 msgs.append(KAPI.screen('key:msg_npc_spawning_beacon_10_sec'))
-            if not e['uyari'] and t >= D['dalga_sn'] - 5:
+            if not e['uyari'] and t >= D['dalga_sn'] - 10:       # 45 sn'lik sayacın 35. saniyesi (forum 143093)
                 e['uyari'] = True
                 msgs.append(KAPI.screen('key:msg_npc_spawning_beacon_35_sec'))
             if t >= D['dalga_sn']:

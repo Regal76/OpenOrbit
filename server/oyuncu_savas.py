@@ -1,4 +1,4 @@
-"""Shared-map player laser and ordinary rocket attacks; no PvP reward policy.
+"""Shared-map player laser and ordinary rocket attacks and the PvP reward policy (on_kill: resmî forum pushing, dost ateşi).
 
 World owns request routing, firing visuals, damage/kill attribution and map locks.
 Selection is independent of these hostility and protection checks.
@@ -41,8 +41,59 @@ def attack_error(w, other, now):
         return _denied('friendlyfire_disabled')
     faction = int(a.get('factionId') or 0)
     if faction and faction == int(b.get('factionId') or 0) and 3 not in relations:
-        return _denied('friendlyfire_disabled')
+        import harita as H                   # resmî forum 127509: kendi şirketine saldırı serbest (cezalı), ilk iki haritada yasak
+        if H.company(w.map_id) == faction and H.name(w.map_id).split('-')[-1] in ('1', '2'):
+            return _denied('no_attack_on_start_maps')
+        if not getattr(w, 'dost_uyarildi', False):
+            w.dost_uyarildi = True
+            w.send([legacy('0|A|STM|friendlyfire')])
     return []
+
+
+def on_kill(killer, victim):
+    """Oyuncu oyuncuyu yok etti (dunya.hero_death source_player): kendi şirketi ise ceza; değilse günlük sayaca göre azalan şeref/TP,
+    rütbe sayacı, görev olayı ve dron puanı (resmî forum 127379, 127509, 127526)."""
+    import rutbe as RT
+    import dunya as D
+    C = D.ESYA['oyuncu_oldurme']
+    kp, vp = killer.p, victim.p
+    ship = vp.ship()['lootId']
+    vf, kf = vp.d['pilot'].get('factionId'), kp.d['pilot'].get('factionId')
+    name = vp.d['pilot'].get('userName', '')
+    msgs = []
+    if vf == kf:
+        with kp.lock:
+            n = kp.d.setdefault('dost_oldurme', 0) + 1
+            kp.d['dost_oldurme'] = n
+            RT.counters(kp)['dost'] += 1
+            kp.dirty = True
+        onur = int(C['dost_onur'] * 2 ** (n - 1))
+        kredi = -min(-C['dost_kredi'], kp.d['pilot'].get('credits', 0))
+        tot = kp.gain(onur=onur, kredi=kredi, neden='friendly_kill')
+        RT.note(kp, 'history_friendly_kill', name)
+        return killer.reward_msgs(tot, onur=onur, kredi=kredi) + [legacy('0|A|STM|friendlyfire')]
+    with kp.lock:
+        g = kp.d.setdefault('pvp_gunluk', {})
+        if g.get('gun') != RT.today():
+            g.clear()
+            g['gun'] = RT.today()
+        k = str(vp.user_id)
+        cnt = g.setdefault('kurban', {}).get(k, 0) + 1
+        g['kurban'][k] = cnt
+        kp.dirty = True
+    f = max(0.0, 1 - C['itme_adim'] * max(0, cnt - C['itme_esik']))
+    if f <= 0:
+        return [legacy('0|A|STM|msg_pusher_no_pushing')] + [D.stm('pusher_info_no_reward', '%NAME%', name)]
+    pts = RT.R.get('gemi_puan', {}).get(ship, {}).get('puan', 1)
+    ep, onur = int(C['ep_puan'] * pts * f), int(C['onur_puan'] * pts * f)
+    tot = kp.gain(ep=ep, onur=onur, neden='bonus_abschussPlayer')
+    msgs += killer.reward_msgs(tot, ep=ep, onur=onur)
+    if f < 1:
+        msgs.append(D.stm('pusher_info_less_reward', '%NAME%', name))
+    msgs += kp.ach('kill', avatar='PLAYER', gemi=ship) or []
+    msgs += killer.quest('kill_player', ship=ship, faction=vf)
+    msgs += killer.pvp_drone_points(ship)
+    return msgs
 
 
 def _hit(w, other, now, normal, shield=0, atype=1):
@@ -126,7 +177,8 @@ def rocket(w, other, now):
             cooldownType=D.mod('CooldownTypeModule', typeValue=4), maxTime=ms, time=ms))])
     r = D.ESYA['roketler'][rocket]
     damage = int(r.get('pvp_hasar', r.get('hasar', 1000)) * random.uniform(0.85, 1.0)         # BDR-1211 oyunculara en çok 4.000
-                 * (1 + mods.get('roket', 0)) * (1 + w.p.lab_bonus(1)))
+                 * (1 + mods.get('roket', 0) + (mods.get('ev_roket', 0) if getattr(getattr(other, 'p', None), 'd', {}).get('pilot', {}).get('factionId') != w.p.d['pilot'].get('factionId') else 0))
+                 * (1 + w.p.lab_bonus(1)))
     if w.p.lab_bonus(1):
         w.lab_spend(1)
 

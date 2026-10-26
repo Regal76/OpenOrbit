@@ -331,16 +331,17 @@ class Kapilar:
         return [mod('GalaxyGateBuilderBonusGGRewardModule', claimed=key in self.bonus_taken(now),
                     countdown=max(0, int(bonus_period(now)[1] - now)), lootId=loot, amount=n)]
 
-    def claim_bonus(self, key, now=None):
+    def claim_bonus(self, key, now=None, mark=True):
         """Kapı tamamlandı: dönemin bonusu bu kapıdaysa ve alınmadıysa verilir; ayrıca Cyborg / Hammerclaw / Mimesis gemisi şansı (sahip
         olunan gemi yerine 10.000 uridyum; istemci msg_bonus_gg_reward_info, wiki) -> (mesajlar, (lootId, adet) | None, (gemi, sahipti) | None)."""
         sel, taken = bonus_selection(now), self.bonus_taken(now)
         if key not in sel or key in taken:
             return [], None, None
         loot, n = sel[key]
-        with self.p.lock:                              # bonus_taken kilidi kendisi alıyor (kilit yeniden girilemez)
-            taken.append(key)
-            self.p.dirty = True
+        if mark:
+            with self.p.lock:                          # bonus_taken kilidi kendisi alıyor (kilit yeniden girilemez)
+                taken.append(key)
+                self.p.dirty = True
         self.log('   %s: kapı bonusu %s x%d' % (KAPI[key]['ad'], loot, n))
         msgs, ship, S = (self.m.reward(loot, n) if self.m else []), None, K['bonus'].get('gemi_sansi')
         if S and random.random() < AY.chance('dusme', S['olasilik'], 'kapi'):
@@ -666,6 +667,9 @@ class Kapilar:
         a = math.atan2(cy - sy, cx - sx) + (-0.45, 0, 0.45, 0.9, -0.9)[slot]
         dist = K['portal_uzaklik'] + ring * 1400
         x, y = int(sx + math.cos(a) * dist), int(sy + math.sin(a) * dist)
+        fix = K.get('x1_konum', {}).get({1: '1', 5: '2', 9: '3'}.get(self.home(), ''), {}).get(key)
+        if fix:                                         # forum 127536: firmanın X-1'inde sabit yer
+            x, y = fix
         dest = wave_map(g, G['dalga'])
         return dict(gateId=PORTAL_BASE + g['kimlik'], x=x, y=y, hedef=dest, designId=g['portal'], kapi=key, varis=center(dest))
 
@@ -688,14 +692,15 @@ class Kapilar:
         return dict(gateId=PORTAL_BASE + NEXT_PORTAL + g['kimlik'], x=x - 700, y=y, hedef=dest, designId=g['portal'], kapi=key,
                     varis=center(dest))
 
-    def kronos_part(self, key):
-        """Kapı tamamlandı: Kronos parçası (her tamamlamada 1, Kronos günü 2; kapı başına en çok wiki'deki sayı) -> (gelen, toplam)."""
+    def kronos_part(self, key, dispatch=False):
+        """Kapı tamamlandı: Kronos parçası (her tamamlamada 1, Kronos günü 2, Sevkiyatla hep 1 (forum 160334); kapı başına en çok wiki'deki
+        sayı) -> (gelen, toplam)."""
         kr = next((k for k, g in KAPI.items() if key in g.get('kaynaklar', {})), None)
         if not kr:
             return None
         g, G = KAPI[kr], self.gate(kr)
         import takvim as TK
-        n = 2 if TK.is_active('kronos_gunu') else 1     # cumartesi (takvim.py)
+        n = 2 if TK.is_active('kronos_gunu') and not dispatch else 1     # cumartesi (takvim.py)
         with self.p.lock:
             have = G['kaynak'].get(key, 0)
             got = min(n, g['kaynaklar'][key] - have)
@@ -708,36 +713,66 @@ class Kapilar:
         self.log('   Kronos parçası: %s +%d (%d/%d)' % (KAPI[key]['ad'], got, len(G['parcalar']), g['parca']))
         return got, len(G['parcalar'])
 
-    def finish(self, key, reward_msgs=None, dispatch=False):
+    def finish(self, key, reward_msgs=None, dispatch=False, carpan=1):
         """Kapı tamamlandı (kapı haritasında son dalga ya da Dispatch'in kapı gönderimi): ödüller (wiki; şanslı ödüller olasılığıyla),
         Kronos parçası, kapı sıfırlanır (ödüldeki parça yeni kapının ilk parçası). reward_msgs: dünyanın ödül mesajları (yoksa para
         güncellemesi). dispatch: görevler saymaz, N.O.V.A. bonusu yok (darkorbitwiki dispatch-gate: "boosters don't apply and missions
-        don't count"; başarım sayılır). Pazar GG Double Rewards (takvim.py gg_cift_odul; Dispatch'te değil): EP, onur, Xenomit, log
-        diski, kupon, Assembly kaynakları ve şanslı ödüllerin olasılığı iki kat -> (mesajlar, {yeni, kronos, sans}). Dispatch'te etkinliğin
+        don't count"; başarım sayılır). Pazar GG Double Rewards (takvim.py gg_cift_odul; Dispatch'te de): EP, onur, Xenomit, log
+        diski, kupon, yeşil anahtar, Kronos cephanesi/enerjisi ve şanslı ödüllerin adedi iki kat -> (mesajlar, {yeni, kronos, sans}). Dispatch'te etkinliğin
         kapı ödülleri (Empyrian, Prosperous, Galaxy Trek …) ve Booty Günü Schism'i yok (wiki dispatch-gate: "will not include rewards
         from special events"; Special Booty Days: "This will not be dropped from Dispatch"); bonus ödülü ve Çift Ödül Günü bunun dışında."""
         import takvim as TK
         import ganimet as GN
         g, R = KAPI[key], KAPI[key]['odul']
-        x2 = 1 if dispatch or not TK.is_active('gg_cift_odul') else 2
-        rm = reward_msgs or (lambda tot, **kw: self.m.money_msgs() if self.m else [])
+        # Çifte Ödül Günü Dispatch'te de (toplama anına göre; istemci dispatch_gate_description, forum 160341). Kalemler: forum ve oyun
+        # içi pencereler: UCB-100, ABR ve Schism x1; Kronos'un RSB-75/UBR-100/enerjisi x2; şanslı ödülde olasılık aynı, adet x2
+        x2 = 2 if TK.is_active('gg_cift_odul') else 1
+        first = self.gate(key).get('tamam', 0) == 0         # ilk tamamlama: Epsilon LF-4, Zeta Havoc, Kronos Spartan kesin (forum)
+        rm =reward_msgs or (lambda tot, **kw: self.m.money_msgs() if self.m else [])
         self.p.ach('gate', tur='%s_GATE' % key.upper(), dispatch=dispatch)      # istemcinin GalaxyGateType'ı (STREUNER_GATE …)
+        if TK.is_active('battle_for_influence') and not dispatch:          # Nüfuz Savaşı: kapı zaferinin puanı (resmî forum 131012)
+            self.p.ach('influence', puan=TK.EVENTS['battle_for_influence']['nufuz'].get(key, 0))
+        ev_msgs = []
+        if not dispatch and self.m:                                         # etkinlik puanı (Hatching Out: Alpha/Beta/Gamma 160 VPP)
+            import olay_puani as OP
+            ev_msgs = OP.gate(self.p, key, lambda l, n: self.m.prize(l, n, 'kapi'))
         cbs = self.p.cbs_mods() if not dispatch and getattr(self.p, 'cbs_mods', None) else {}
-        ep = int(R['ep'] * x2 * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0)) + cbs.get('ep', 0)))
-        onur = int(R['onur'] * x2 * (1 + cbs.get('onur', 0)))
-        ep, onur, uri = AY.miktar('ep', ep, 'kapi'), AY.miktar('onur', onur, 'kapi'), AY.miktar('uridyum', R['uridyum'], 'kapi')   # panel
+        ep = int(R['ep'] * x2 * carpan * (1 + (0 if dispatch else self.p.mods().get('kapi_ep', 0)) + cbs.get('ep', 0)))
+        onur = int(R['onur'] * x2 * carpan * (1 + cbs.get('onur', 0)))
+        ep, onur, uri = AY.miktar('ep', ep, 'kapi'), AY.miktar('onur', onur, 'kapi'), AY.miktar('uridyum', int(R['uridyum'] * carpan), 'kapi')   # panel
         tot = self.p.gain(ep=ep, onur=onur, uridyum=uri, neden='galaxy_gate_done')
-        msgs = rm(tot, ep=ep, onur=onur, uridyum=uri)
-        q = lambda v: AY.miktar('mod_odul', v, 'kapi')      # panel: kapı/mod ödülü çarpanı
-        grants = {k: q(v) for k, v in R['cephane'].items()}
-        grants.update(xenomit=q(R['xenomit'] * x2), kupon=q(R['kupon'] * x2), log_disk=q(R['log_disk'] * x2), enerji=q(R['enerji']),
-                      ganimet={k: q(v * x2) for k, v in (R['ganimet'] or {}).items()})
-        if not dispatch and key in K.get('schism', {}) and 'AllGatesSchism' in TK.ALWAYS:   # Booty Günü Schism'i (giriş bayrağı; wiki aralığı)
-            grants['ganimet']['schism'] = q(random.randint(*K['schism'][key]))
+        msgs = rm(tot, ep=ep, onur=onur, uridyum=uri) + ev_msgs
+        pet = getattr(self.m, 'pet', None) if self.m else None
+        msgs += (pet.gain_xp(ep) or []) if pet and not dispatch else []      # forum 127074: P.E.T. kapı EP'sinin %5'ini de kazanır
+        q = lambda v: AY.miktar('mod_odul', int(round(v * carpan)), 'kapi')      # panel: kapı/mod ödülü çarpanı; Sevkiyat Günü x1,5
+        grants = {k: q(v * (1 if k == 'ammunition_laser_ucb-100' else x2)) for k, v in R['cephane'].items()}
+        grants.update(xenomit=q(R['xenomit'] * x2), kupon=q(R['kupon'] * x2), log_disk=q(R['log_disk'] * x2), enerji=q(R['enerji'] * x2),
+                      ganimet={k: q(v * (x2 if k == 'yesil_anahtar' else 1)) for k, v in (R['ganimet'] or {}).items()})
+        if not dispatch and key in K.get('schism', {}) and 'AllGatesSchism' in TK.ALWAYS:   # Booty Günü Schism'i sabitin üstüne (forum 160341)
+            grants['ganimet']['schism'] = grants['ganimet'].get('schism', 0) + q(random.randint(*K['schism'][key]))
         msgs += self.give(grants)
+        for loot, n in R.get('esyalar', []) if self.m else []:      # Delta 450 Promerium (forum, oyun içi pencere)
+            msgs += self.m.prize(loot, q(n * x2), 'kapi')
         got = []
         owned = {x['lootId'] for x in self.p.d['gemiler'].values()}
-        for s in [s for s in R['sans'] if random.random() < AY.chance('dusme', s['olasilik'] * x2, 'kapi')]:
+        rows = [s for s in R['sans'] if not (x2 > 1 and s.get('cift_odulde_yok'))]        # Hermes çifte günde çıkmaz
+        tek = [s for s in rows if s.get('tek_cekilis')]                                   # Kappa: tek çekiliş (LF-4 / Hercules / MultiBooster)
+        r, pick = random.random(), None
+        for s in tek:
+            r -= AY.chance('dusme', s['olasilik'], 'kapi')
+            if r < 0:
+                pick = s
+                break
+        hit = [s for s in rows if s is pick or not s.get('tek_cekilis') and (
+            first and s.get('ilk_kesin') or random.random() < AY.chance('dusme', s['olasilik'], 'kapi'))]
+        for s in hit:
+            kat = 1 if s['esya'].startswith('ship_') or s['esya'] == 'tasarim_secimi' else x2   # gemi ve gemi tasarımı 1; öteki x2
+            if s['esya'] == 'cevher_paketi':                 # forum 129125: Kyhalon %5 / Tetrathrin %25 / Bifenon %70, adet çifte günde x2
+                u = random.random() * sum(r[2] for r in s['paket'])
+                l, n, _ = next((r for r in s['paket'] if (u := u - r[2]) < 0), s['paket'][-1])
+                msgs += self.m.prize(l, kat * random.randint(*n), 'kapi') if self.m else []
+                got.append(l)
+                continue
             loot = random.choice(s['secenekler']) if s['esya'] == 'tasarim_secimi' else s['esya']
             got.append(loot)
             if loot in owned and s.get('yoksa_uridyum'):                # Kuiper: tasarım zaten varsa 10.000 uridyum (wiki)
@@ -747,7 +782,7 @@ class Kapilar:
             elif self.m:
                 for l, n in [(loot, [s['adet'], s['adet_en_cok']] if s.get('adet_en_cok') else s['adet'])] + (
                         [random.choice(s['birlikte'])] if s.get('birlikte') else []):
-                    msgs += self.m.prize(l, random.randint(*n) if isinstance(n, list) else n, 'kapi')     # aralıklı miktar; birlikte: Diametrion + üçünden biri
+                    msgs += self.m.prize(l, kat * (random.randint(*n) if isinstance(n, list) else n), 'kapi')     # aralıklı miktar; birlikte: Diametrion + üçünden biri
                     if l != loot:
                         got.append(l)
         for loot, n, chance in [] if dispatch else TK.gate_rewards(key):    # etkinliğin kapı ödülü (Empyrian / Prosperous Fragment, Lucent Key)
@@ -756,8 +791,14 @@ class Kapilar:
                 got.append(loot)
         for s in [] if dispatch else TK.gate_choices(key):    # GG Special Rewards Weekend, LF-4 günü: olasılıkla paketten biri
             rows = [r for r in s['secim'] if not (s.get('yinelenmez') and GN.gone(self.p, r))]       # sahip olunan gemi, tasarım ya da bütün parçaları sahip olunan paket
+            if s.get('yoksa_uridyum'):                       # Astral Keşif: hepsinden çekilir, sahip olunan çıkarsa uridyum (forum 162019)
+                rows = s['secim']
             if rows and random.random() < AY.chance('dusme', s['olasilik'], 'kapi') and self.m:
                 row = random.choices(rows, [r[2] if len(r) > 2 else 1 for r in rows])[0]               # ağırlık yoksa eşit (Empyrian Reward Package)
+                if s.get('yoksa_uridyum') and GN.gone(self.p, row):
+                    msgs += self.m.prize('currency_uridium', s['yoksa_uridyum'], 'kapi')
+                    got.append('currency_uridium')
+                    continue
                 for loot, n in row[1] if row[0] == GN.PAKET else [row[:2]]:      # ['paket', [[lootId, adet], …]]: kalemlerin hepsi (Collector's Joy 10+1)
                     msgs += self.m.prize(loot, n, 'kapi')
                     got.append(loot)
@@ -774,8 +815,8 @@ class Kapilar:
             new['parcalar'] = random.sample(range(1, g['parca'] + 1), min(R['parca'], g['parca']))
             self.d['kapilar'][key] = new
             self.p.dirty = True
-        kr = self.kronos_part(key)
-        bm, bonus, ship = self.claim_bonus(key)        # süreli kapı bonusu (pencerede "Bonus reward")
+        kr = self.kronos_part(key, dispatch)
+        bm, bonus, ship = self.claim_bonus(key, mark=not dispatch)   # süreli kapı bonusu; Dispatch'le alınan "alındı" sayılmaz (forum 160334)
         msgs += bm
         if g.get('unvan') and self.titles:             # Kappa All-Star, Lambda Boss of Bosses, Hades Emperor of Hades
             msgs += self.titles(g['unvan'])
@@ -783,9 +824,9 @@ class Kapilar:
             g['ad'], R['ep'], R['onur'], R['uridyum'], grants, ', şanslı: %s' % got if got else ''))
         return msgs, dict(yeni=new, kronos=kr, sans=got, bonus=bonus, bonus_gemi=ship, para=dict(ep=ep, onur=onur, uridyum=uri))
 
-    def dispatch_complete(self, key):
-        """Dispatch'in kapı gönderimi bitti: tamamlama ödülleri ve ganimet iletisi (DispatchLootMessageCommand)."""
-        msgs, info = self.finish(key, dispatch=True)
+    def dispatch_complete(self, key, carpan=1):
+        """Dispatch'in kapı gönderimi bitti: tamamlama ödülleri ve ganimet iletisi (DispatchLootMessageCommand); carpan: Sevkiyat Günü."""
+        msgs, info = self.finish(key, dispatch=True, carpan=carpan)
         P = info['para']                                   # verilen (panelin çarpanlarıyla), iletide de o
         loots = [mod('LootModule', lootId=l, amount=n, modifier='') for l, n in
                  (('currency_experience', P['ep']), ('currency_honour', P['onur']), ('currency_uridium', P['uridyum'])) if n]
@@ -820,6 +861,7 @@ class Kosu:
         self.boss = ''               # kalıcı uzaylının adı (mesajlar)
         self.guarding = False        # kalkanlı patron (Zeta Devourer): refakat grubu yaşıyor, patron hasar almaz (boss_tick)
         self.next_group = 0          # kalkanı inen patronun sonraki refakat grubunun saati
+        self.korunan = {}            # Delta: korunan uzaylı -> grubundaki refakat (yaşarken Insta-Shield)
         now = time.time()
         if not G['hazir'] or G['can'] <= 0:
             self.phase, self.t = 'void', now          # kapı yok: yalnız çıkış portalı
@@ -926,6 +968,11 @@ class Kosu:
             if self.boss_wave():
                 self.boss_tick(now)
                 return
+            for nid, ids in list(self.korunan.items()):  # korunanın refakati bitti: Insta-Shield iner
+                if not any(j in w.npcs for j in ids):
+                    del self.korunan[nid]
+                    if nid in w.npcs:
+                        w.send(self.shield(w.npcs[nid], False))
             alive = sum(1 for i in self.npcs - self.keep if i in w.npcs)
             if self.timed():
                 self.timed_tick(now, alive)
@@ -955,7 +1002,7 @@ class Kosu:
             return
         if self.phase in ('intro', 'break'):
             self.sub, self.counted, self.exposed, self.cleared, self.groups = 0, None, False, 0, []
-            self.guarding, self.next_group = False, 0
+            self.guarding, self.next_group, self.korunan = False, 0, {}
             self.npcs.clear()
             self.keep.clear()
             w.remove_gate(self.k.exit_portal(self.key, self.map)['gateId'])
@@ -1001,6 +1048,7 @@ class Kosu:
             spots = ring(*w.hero_pos(), bosses, w.map_w, w.map_h) if bosses else []
         else:
             spots = ring(*w.hero_pos(), counts, w.map_w, w.map_h)
+        prot = []
         for i, x, y in spots:
             a = wave['uzaylilar'][i]
             model = self.k.p.ship_look() if a['tur'] == 'oyuncu' else None
@@ -1009,6 +1057,8 @@ class Kosu:
             n.next_think = hold                  # halkada bekler; sonra peşine düşer (dunya.think: hunt)
             self.npcs.add(n.id)
             group.add(n.id)
+            if a.get('korunan'):
+                prot.append((n, a['ad']))
             if a.get('kalici'):
                 self.keep.add(n.id)
                 n.invulnerable = (lambda: self.guarding) if guarded else \
@@ -1016,6 +1066,11 @@ class Kosu:
                 self.boss = a['ad']
                 if not guarded:
                     w.send(self.say('koruma', ad=a['ad']))
+        escorts = frozenset(group) - {n.id for n, _ in prot}
+        for n, ad in prot if escorts else []:          # Delta: grubun ötekileri yaşarken Insta-Shield'lı (forum 127543)
+            n.invulnerable = lambda ids=escorts: any(j in self.w.npcs for j in ids)
+            self.korunan[n.id] = escorts
+            w.send(self.shield(n, True) + self.say('koruma', ad=ad))
         if not guarded:
             return
         # kalkanlı patron (Zeta Devourer): refakat grubu patronun çevresinde doğar (de.fandom Zeta Gate: Devourer "sendet"), grup
@@ -1104,7 +1159,9 @@ class Kosu:
         """Son dalga: ödüller (Kapilar.finish), çıkış portalı, ekran mesajları."""
         k, w = self.k, self.w
         msgs, info = k.finish(self.key, w.reward_msgs)
-        w.add_gate(k.exit_portal(self.key, self.map))
+        out = k.exit_portal(self.key, self.map)
+        w.add_gate(out)
+        w.auto_jump(out, K.get('cikis_bekleme_sn', 5))      # forum 127543: ödüllerden sonra X-1'e kendiliğinden
         msgs += [('GalaxyGateBuilderGateCompleteCommand', dict(gateId=self.g['kimlik'], currPart=len(info['yeni']['parcalar'])))]
         msgs += self.say('dalga_bitti', dalga=len(self.g['dalgalar']), sn=0)[:1] + self.say('tamam')
         if info['kronos']:

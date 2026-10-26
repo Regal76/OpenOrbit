@@ -379,9 +379,9 @@
      "ship_berserker"
     ],
     "restabilize": {
-     "geri": 4,
-     "bedel": 20,
-     "hak": 8
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
     },
     "aralik": {
      "buyuk": [
@@ -392,7 +392,14 @@
       15,
       21
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov",
+     "ship_piranha",
+     "ship_nostromo"
+    ]
    }
   },
   "equipment_shipupgrade_dmg-xof01": {
@@ -414,7 +421,12 @@
       13,
       21
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov"
+    ]
    }
   },
   "equipment_shipupgrade_dmg-xof02": {
@@ -430,9 +442,12 @@
     "aralik": {
      "buyuk": [
       5,
-      11
+      10
      ],
-     "kucuk": null
+     "kucuk": [
+      16,
+      24
+     ]
     }
    }
   },
@@ -939,9 +954,9 @@
     "en_az": null,
     "tercih": [],
     "restabilize": {
-     "geri": 4,
-     "bedel": 20,
-     "hak": 8
+     "geri": 16,
+     "bedel": 80,
+     "hak": 5
     },
     "aralik": {
      "buyuk": [
@@ -1034,9 +1049,9 @@
      "ship_berserker"
     ],
     "restabilize": {
-     "geri": 4,
-     "bedel": 20,
-     "hak": 8
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
     },
     "aralik": {
      "buyuk": [
@@ -1047,7 +1062,12 @@
       25,
       32
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov"
+    ]
    }
   },
   "equipment_shipupgrade_hp-xof01": {
@@ -1069,7 +1089,12 @@
       25,
       32
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov"
+    ]
    }
   },
   "equipment_shipupgrade_hp-xof02": {
@@ -1085,9 +1110,12 @@
     "aralik": {
      "buyuk": [
       5,
-      11
+      10
      ],
-     "kucuk": null
+     "kucuk": [
+      25,
+      32
+     ]
     }
    }
   },
@@ -1677,9 +1705,9 @@
      "ship_berserker"
     ],
     "restabilize": {
-     "geri": 4,
-     "bedel": 20,
-     "hak": 8
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
     },
     "aralik": {
      "buyuk": [
@@ -1690,7 +1718,14 @@
       12,
       20
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov",
+     "ship_piranha",
+     "ship_nostromo"
+    ]
    }
   },
   "equipment_shipupgrade_shd-xof01": {
@@ -1712,7 +1747,12 @@
       12,
       20
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov"
+    ]
    }
   },
   "equipment_shipupgrade_shd-xof02": {
@@ -1728,9 +1768,12 @@
     "aralik": {
      "buyuk": [
       5,
-      11
+      10
      ],
-     "kucuk": null
+     "kucuk": [
+      16,
+      24
+     ]
     }
    }
   },
@@ -2264,9 +2307,9 @@
     "en_az": null,
     "tercih": [],
     "restabilize": {
-     "geri": 4,
-     "bedel": 20,
-     "hak": 8
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
     },
     "aralik": {
      "buyuk": [
@@ -2383,9 +2426,9 @@
      "ship_berserker"
     ],
     "restabilize": {
-     "geri": 4,
-     "bedel": 20,
-     "hak": 8
+     "geri": 2,
+     "bedel": 10,
+     "hak": 10
     },
     "aralik": {
      "buyuk": [
@@ -2396,7 +2439,14 @@
       12,
       20
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov",
+     "ship_piranha",
+     "ship_nostromo"
+    ]
    }
   },
   "equipment_shipupgrade_spc-xof01": {
@@ -2418,7 +2468,12 @@
       12,
       20
      ]
-    }
+    },
+    "haric": [
+     "ship_phoenix",
+     "ship_yamato",
+     "ship_leonov"
+    ]
    }
   },
   "equipment_shipupgrade_spc-xof02": {
@@ -2434,9 +2489,12 @@
     "aralik": {
      "buyuk": [
       5,
-      11
+      10
      ],
-     "kucuk": null,
+     "kucuk": [
+      15,
+      23
+     ],
      "nitelik": {
       "speed": {
        "buyuk": [

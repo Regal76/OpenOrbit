@@ -3,7 +3,9 @@
 CBS-1 Kurma: X-3..X-7, 4-1..4-5 ve X-BL'deki 23 asteroit (AssetCreateCommand tür 35). Klanlı oyuncu yaklaşınca (600) pencere verisi
 (BattleStationBuildingUiInitializationCommand); tıklayınca istemci pencereyi (76) kendisi açar. Modüller sürükle-bırakla 10 yuvaya
 (0 Hull, 1 Deflector merkez; 2-9 uydu), her biri 50 sn'de kurulur (aynı anda tek); on modül takılınca Build (5-60 dk). Kurulunca
-merkez (36) ve uydular (37), deflector 30 dk kapalı.
+merkez (36) ve uydular (37), deflector açık ve 1440 dk yüklü (resmî forum 127469).
+Klandan ayrılan/atılan üyenin modülleri istasyondan envanterine döner (merkezi çıkarılan istasyon düşer); klan dağılınca istasyonları
+yıkılır, asteroit boşalır (forum 127469; uye_ayrildi, klan_dagildi).
 CBS-2 Yönetim: Deflector açıkken istasyon dokunulmaz ve süre harcar; kapalıyken süre dolar (saatte 120 dk, prime time 18-21'de 600;
 en çok 48 sa); biterse 120 dk zorunlu kapalı; Deactivate 30 dk-8 sa. Boosterlar (onur, EP: her yerde; hasar: istasyonun haritasında)
 takılınca %1'den 20 saatte azamiye (%3-10). İstasyonda maden satışı (%10 pahalı), acil onarım (500 U; 20 sn x 7.500), Engineering Bay
@@ -13,7 +15,7 @@ silah modülleri menzildeki uzaylılara ateş eder. Merkez yıkılırsa istasyon
 CBS-4 Sanal rakip klanlar: boş asteroitlerde zamanla ilerleyen rakip (Progress of leading Clan); rakip önce bitirirse düşman istasyonu
 (HOSTILE); deflector'u prime time dışında açık. Rakip modüllerini yıkmak 500-2.600 U, merkezi 5.000 U + 50.000 kredi.
 İstemci: istekler Equip/UnequipModule, BuildStation, DeflectorShieldStatusChange, EmergencyRepair, MapAssetActivation, TradeRequest
-(istasyonda), HangarShipRepairModule; klan penceresi ClanBattleStationInfo / BattleStationHistoryList; galaksi haritası
+(istasyonda), HangarShipRepairModule; acil onarım 20 dk x 7.500 (forum 127469); klan penceresi ClanBattleStationInfo / BattleStationHistoryList; galaksi haritası
 StarmapStationCommand. Profilde: cbs {moduller {iid: {loot, seviye, can, kalkan}}, asteroitler {id: …}, gunluk [...], istatistik}.
 Çok oyunculu sunucuda (çoklu istemci, arkadaş sunucusu) asteroitler herkes için tek: sunucunun oyuncusunun kaydında (ortak); önce her
 oyuncunun kendi asteroitleri vardı, rakip ve istasyonlar istemciden istemciye farklı görünüyordu (kullanıcı 2026-10-24). İstasyon
@@ -1007,7 +1009,7 @@ class Cbs:
         ist, asts = self.stats(a), self.asts
         with self.lock:
             a.update(durum='kurulu', kurulus=now)
-            a['deflector'] = {'acik': False, 'sn': 0.0, 'kapali_bitis': now + D['kurulunca_kapali_dk'] * 60, 'son': now}
+            a['deflector'] = {'acik': True, 'sn': D['kurulunca_deflector_dk'] * 60.0, 'kapali_bitis': 0.0, 'son': now}   # forum 127469
             ist['tum'] = ist.get('tum', 0) + 1
             ist['en_cok'] = max(ist.get('en_cok', 0), sum(1 for b in asts.values() if b.get('durum') == 'kurulu'
                                                        and b.get('sahip') != 'rakip' and b.get('klan') == a.get('klan')))
@@ -1248,6 +1250,43 @@ class Cbs:
         elif self.world:
             msgs += self.refresh_assets(aid)
             self.seen[aid] = (a.get('surum', 0), a.get('durum'))
+        return msgs
+
+    def klan_asteroitleri(self, k):
+        """Klanın modül takılı ya da kurulu asteroitleri (tek oyunculuda oyuncunun rakip dışındakileri)."""
+        for aid, a in list(self.asts.items()):
+            if a.get('sahip') == 'rakip' or not (a.get('yuvalar') or a.get('durum') in ('kurma', 'kurulu')):
+                continue
+            if self.host is not None and a.get('klan') != k['id']:
+                continue
+            yield int(aid), a
+
+    def uye_ayrildi(self, k, who):
+        """Klandan ayrılan ya da atılan üyenin modülleri istasyonlardan envanterine döner (forum 127469). Merkezi (Hull) çıkan kurulu
+        istasyon düşer (unequip'teki kural; forumda 1 canla kalır: uyarlama)."""
+        me, msgs = KL.ad(self.p), []
+        for aid, a in self.klan_asteroitleri(k):
+            for s, y in list(a['yuvalar'].items()):
+                if y.get('sahip', me) != who:
+                    continue
+                with self.lock:
+                    a['yuvalar'].pop(s, None)
+                    self.bump(a)
+                    self.mark()
+                self.give_back(y)
+                self.note(aid, 'MODULE_REMOVED', slot=int(s) if int(s) > DEFLECTOR else -1)
+                if a['durum'] == 'kurulu' and int(s) == HULL:
+                    msgs += self.destroy(aid, 'hull removed')
+                    break
+            if a.get('durum') == 'bos' and not a.get('yuvalar'):
+                a.pop('klan', None)
+        return msgs + (self.starmap_msgs() if msgs else [])
+
+    def klan_dagildi(self, k):
+        """Klan silindi: istasyonları yıkılır, modülleri (yok olmuş) sahiplerine, asteroit boş (forum 127469)."""
+        msgs = []
+        for aid, a in list(self.klan_asteroitleri(k)):
+            msgs += self.destroy(aid, 'clan disbanded')
         return msgs
 
     def destroy(self, aid, by=''):

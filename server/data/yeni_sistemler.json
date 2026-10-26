@@ -229,53 +229,53 @@
    "pet_fuel-consumption": {
     "ad": "P.E.T. Conservationist",
     "taban": [
-     0.4,
-     0.8,
-     1.2,
-     1.6,
-     2.0,
-     2.4
+     0.9,
+     1.8,
+     2.7,
+     3.6,
+     4.5,
+     5.4
     ],
-    "artis": 0.4,
+    "artis": 0.9,
     "harcama": 35
    },
    "pet_heat-up": {
     "ad": "P.E.T. Ignition",
     "taban": [
-     0.4,
-     0.8,
-     1.2,
-     1.6,
-     2.0,
-     2.4
+     0.9,
+     1.8,
+     2.7,
+     3.6,
+     4.5,
+     5.4
     ],
-    "artis": 0.4,
+    "artis": 0.9,
     "harcama": 20
    },
    "pet_range-up": {
     "ad": "P.E.T. Ranger",
     "taban": [
-     1.2,
-     2.4,
-     3.6,
-     4.8,
-     6.0,
-     7.2
+     1.7,
+     3.4,
+     5.1,
+     6.8,
+     8.5,
+     10.2
     ],
-    "artis": 1.2,
+    "artis": 1.7,
     "harcama": 20
    },
    "pet_hp": {
     "ad": "P.E.T. Provision",
     "taban": [
-     0.4,
-     0.8,
-     1.2,
-     1.6,
-     2.0,
-     2.4
+     0.9,
+     1.8,
+     2.7,
+     3.6,
+     4.5,
+     5.4
     ],
-    "artis": 0.4,
+    "artis": 0.9,
     "harcama": 30
    },
    "sp_mission-points-gp": {
@@ -454,7 +454,8 @@
     "hepsi"
    ]
   },
-  "_uyarlama": "Taban kademe (BASE I-VI) olasılıkları, ilk adlar (istemci ad listesi göndermiyor; soyadı ailenin çevirisi), U.P.S. bölümlerinin ikinci yeteneği (Neo havuzundan), Bonus Hunter değerleri, mağazadaki N.O.V.A.'nın Neo/Eos olasılığı (yarı yarıya). Takılı N.O.V.A. yalnız oyundayken enerji harcar (çevrimdışı süre sayılmaz); dinlenenler çevrimdışı da dolar."
+  "_uyarlama": "Taban kademe (BASE I-VI) olasılıkları, ilk adlar (istemci ad listesi göndermiyor; soyadı ailenin çevirisi), U.P.S. bölümlerinin ikinci yeteneği (Neo havuzundan), Bonus Hunter değerleri, mağazadaki N.O.V.A.'nın Neo/Eos olasılığı (yarı yarıya). Takılı N.O.V.A. yalnız oyundayken enerji harcar (çevrimdışı süre sayılmaz); dinlenenler çevrimdışı da dolar.",
+  "_pet_artis": "P.E.T. yeteneklerinin seviye başına artışı 0,9 / 0,9 / 1,7 (Ranger) / 0,9: resmî Türk forumu 163881 (N.O.V.A. 2023)"
  },
  "armory": {
   "jeton": "resource_collectable_armory-token",

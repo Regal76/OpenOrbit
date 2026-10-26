@@ -41,7 +41,8 @@ KINDS = {'Currency': 'gain', 'AvatarTypeKill': 'kill', 'NpcTypeDestroyed': 'kill
          'LevelAbsolute': 'season_level', 'Dispatch': 'dispatch', 'NPCSelectionKill': 'kill', 'EventScore': 'event_score',
          'BuildRecipe': 'assembly_collect', 'TriggerMine': 'shot', 'CollectPackage': 'package', 'ClearGalaxyGateWave': 'gate_wave',
          # E6
-         'Uses3D': 'display', 'EggTriggerCount': 'egg', 'PublicWorldBossCondition': ('wb_heal', 'wb_damage')}
+         'Uses3D': 'display', 'EggTriggerCount': 'egg', 'PublicWorldBossCondition': ('wb_heal', 'wb_damage'),
+         'Influence': 'influence'}       # Battle for Influence: kapı zaferinin nüfuz puanı (kapi.py; resmî forum 131012)
 # takvimsiz etkinlik grupları: hep açık (Eternal Black Light'ın eski adı Eternal Gate; mod her gün açık; gizli Easter Egg'ler)
 ALWAYS_GROUPS = {'EVENT_ETERNALGATE', 'EVENT_SECRET'}
 # istemcinin ShipIcon adı uzaylının adından çıkmıyorsa (NPCSelectionKill)
@@ -146,6 +147,8 @@ def measure(c, kind, kw):
         return ('item', str(kw.get('map')))
     if s == 'Gatejumps':
         return ('add', 1)
+    if s == 'Influence':
+        return ('add', int(kw.get('puan', 0))) if kw.get('puan') else None
     if s in ('Distance', 'Damage'):
         return ('add', int(kw.get('adet', 0))) if kw.get('adet', 0) >= 1 else None
     if s == 'AmmoShots':
@@ -280,6 +283,15 @@ class Basarimlar:
                 m = ('add', 1) if c['sinif'] == 'IgnoredCondition' else measure(c, kind, kw)
                 if not m:
                     continue
+                ev = ACH[aid].get('donem_sifir')             # "ilerleme bir sonraki etkinliğe taşınmaz" (Ölümsüz Tutku; resmî forum)
+                if ev:
+                    import takvim as TK
+                    span = TK.period(ev)
+                    key = int(span[0]) if span else 0
+                    if st.setdefault('donem', {}).get(aid) != key:
+                        st['donem'][aid] = key
+                        st['skor'][aid] = 0
+                        st['kume'].pop(aid, None)
                 op, v = m
                 if op == 'add':
                     st['skor'][aid] = st['skor'].get(aid, 0) + v

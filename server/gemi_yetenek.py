@@ -170,6 +170,22 @@ def timer_fields(p, item, now=None):
     return dict(activatable=True, timerState=READY, maxTime=0, time=0)
 
 
+HECATE_ISIN = {k: dict(sure_sn=5, ilk=8050, artis=6000, yavas=0.1, npc=('deney_isaret',))      # forum 143093 (Plutus Deneyleri)
+               for k in ('ability_hecate_particle-beam', 'ability_hecate-plus_particle-beam-plus')}
+GRUP_MENZIL = 1000          # grup yeteneklerinin menzili (kaynakta yok: uyarlama)
+PVP_YAVAS = 0.4             # forum 160373: Hyperion Çapa oyuncuyu %40 yavaşlatır
+DOST_ONARIM = {'ability_aegis_hp-repair': {'can_onar': 280000}, 'ability_aegis_shield-repair': {'kalkan_onar': 125000}}
+TEKRAR_BITIR = ('ability_retiarus-plus_chsp', 'ability_solaris-plus_incinerate-plus')
+
+
+def tartarus_set(p, pet):
+    """Tartarus tam set: Chimera P.E.T. tasarımı ve bütün dronlarda aynı renkte Phantom tasarımı (forum 160373)."""
+    es = p.d['esyalar']
+    pet = pet.design() or ''
+    designs = {es.get(str(p.drone_design_id(d, 'design', p.aktif_konfig)), '') for d in p.d.get('dronlar', [])}
+    return 'chimera' in pet and len(p.d.get('dronlar', [])) >= 10 and len(designs) == 1 and 'phantom' in next(iter(designs))
+
+
 def timer_msg(p, item, now=None):
     f = timer_fields(p, item, now)
     return ('MenuItemTimerCommand', dict(activatable=f['activatable'], timerState=mod('TimerStateModule', timerStateValue=f['timerState']),
@@ -208,6 +224,7 @@ class Motor:
         self.pods = {}             # yetenek -> haritadaki nesnesinin kimliği (Repair Pod)
         self.ending = {}           # yetenek -> bitiş anı (bitince görsel kaldırılır, bekleme başlar)
         self.charging = {}         # yetenek -> [hedef, başlangıç] (Charge Shot dolumu)
+        self.beams = {}            # Hecate Particle Beam: yetenek -> {hedef, basla, son}
         self.waiting = set()       # beklemesi süren: bitince READY
         self.next_heal = 0.0
         self.flags = dict(gizlen=False, gorus=1.0, roket=None)   # sık sorulanlar: döngüde bir kez hesaplanır (refresh)
@@ -283,6 +300,46 @@ class Motor:
             return [('AbilityStopCommand', dict(selectedAbilityId=g['baslat'], activatorId=self.w.hid, targetIds=[target or self.w.hid]))]
         return []
 
+    def mates(self, now, radius=GRUP_MENZIL):
+        """Aynı haritada, radius içinde, grubundaki öteki oyuncular (yerel çok istemci)."""
+        w = self.w
+        if not w.ortak:
+            return []
+        hx, hy = w.hero_pos(now)
+        return [o for o in w.ortak.uyeler if o is not w and o.running and not o.hero_dead and w.grup_uyesi(o.hid)
+                and math.hypot(*(a - b for a, b in zip(o.hero_pos(now), (hx, hy)))) <= radius]
+
+    def foes(self, now, e=None, radius=None):
+        """Yeteneğin etkilediği düşman oyuncular: alan (radius ya da alan_yavaslat) içindekiler, saldırı kuralı geçerliyse."""
+        w = self.w
+        if not w.ortak:
+            return []
+        import oyuncu_savas as OS_
+        r = radius or ((e or {}).get('alan_yavaslat') or {}).get('yaricap') or (self.range if (e or {}).get('hedef_yavaslat') else 0)
+        if not r:
+            return []
+        hx, hy = w.hero_pos(now)
+        return [o for o in w.ortak.uyeler if o is not w and not OS_.attack_error(w, o, now)
+                and math.hypot(*(a - b for a, b in zip(o.hero_pos(now), (hx, hy)))) <= r]
+
+    def foe_target(self, now):
+        """Seçili hedef bir oyuncuysa onun dünyası."""
+        return self.w.oyuncu(self.w.target) if self.w.target is not None else None
+
+    def heal_mates(self, item, key, dur, now):
+        """Aegis / Hammerclaw onarımı menzildeki grup üyelerine de (dosta Aegis HP 280.000, kalkan 125.000: wiki GEMILER-4)."""
+        amount = DOST_ONARIM.get(item, {}).get(key) or etki(self.p, item)[key]
+        for o in self.mates(now):
+            og = o.p.d['gemi']
+            if key == 'can_onar':
+                h0 = og.get('hitPoints', 0)
+                o.p.set_hull(hp=h0 + amount / dur)
+                o.send([o.hp_msg()] + o.heal_msgs(h0))
+            else:
+                s0 = og.get('shield', 0)
+                o.p.set_hull(shield=s0 + amount / dur)
+                o.send([('AttributeShieldUpdateCommand', {'shieldNow': int(og['shield']), 'shieldMax': og.get('shieldMax', 0)})])
+
     def near(self, radius, now, center=None):
         """Gemiye (ya da center noktasına) radius içindeki canlı uzaylılar."""
         hx, hy = center or self.w.hero_pos(now)
@@ -339,6 +396,10 @@ class Motor:
             w.log('   yetenek bu gemide yok: %s' % item)
             return False
         st = state(p).get(item, {})
+        if item in TEKRAR_BITIR and is_active(p, item, now):    # forum 160989: Hyper Charge Shot ve Incinerate Plus yeniden basınca biter
+            self.end_now(item, now)
+            w.log('   yetenek erken bitirildi: %s' % item)
+            return True
         if w.hero_dead or w.jumping or (not a.get('ac_kapa') and is_active(p, item, now)) or now < st.get('hazir', 0):
             self.send([timer_msg(p, item, now)])
             w.log('   yetenek kullanılamaz: %s (bekliyor ya da etkin)' % item)
@@ -374,6 +435,9 @@ class Motor:
             self.refresh(now)
             msgs = (self.visual_on(item, None) if st['acik'] else self.visual_off(item, None)) + [timer_msg(p, item, now)] +                 line(item, stop=not st['acik'])
             self.waiting.add(item)                # iki basış arası bekleme bitince düğme yine basılabilir
+            pet = getattr(w, 'pet', None)
+            if st['acik'] and p.ship()['lootId'] == 'ship_tartarus' and pet and pet.active and tartarus_set(p, pet):
+                pet.select(1)                     # forum 160373 Tartarus tam seti: Hız Desteğinde P.E.T. yanaşır ve pasif moda geçer
             self.send(msgs + self.stats())
             w.log('   yetenek %s: %s' % (a['ad'], 'açık' if st['acik'] else 'kapalı'))
             if st['acik']:
@@ -394,6 +458,11 @@ class Motor:
             hp0 = g.get('hitPoints', 0)
             p.set_hull(hp=hp0 + g.get('hitMax', 0) * e['can_yuzde'] * factor(p, item, 'etki'))
             msgs += [w.hp_msg()] + w.heal_msgs(hp0)
+            for o in self.mates(now):            # forum 160373: Nano-Cluster grup üyelerini de onarır
+                og = o.p.d['gemi']
+                h0 = og.get('hitPoints', 0)
+                o.p.set_hull(hp=h0 + og.get('hitMax', 0) * e['can_yuzde'] * factor(p, item, 'etki'))
+                o.send([o.hp_msg()] + o.heal_msgs(h0))
         if 'hedef_kalkan_hasari' in e:            # Diminisher Weaken Shields: süre boyunca hedefin kalkanına giden hasar artar (dunya.hit_npc)
             target.etki.add('kalkan_hasari', dur, e['hedef_kalkan_hasari'], item, now)
         if e.get('hedefe_isinla'):                # Keres Sleight: hedefin konumuna ışınlan (Phase Out'taki anlık MoveCommand yolu), ardından hedef yavaşlar
@@ -422,12 +491,21 @@ class Motor:
             for n in w.npcs.values():
                 if n.engaged:
                     w.disengage(n, now)
+        if item in HECATE_ISIN and w.target is not None:     # forum 143093: ışın 5 sn, oyunculara ve işaret kulelerine
+            self.beams[item] = dict(hedef=w.target, basla=now, son=now)
         if 'dolum' in e:                          # Retiarus Charge Shot: süre boyunca dolar (tick), sonra vurur
             self.charging[item] = [target.id, now]
         if 'hedef_dondur' in e:                   # Goliath-X Frozen Claw
             target.etki.add('donuk', e['hedef_dondur'], 1.0, item, now)
         if 'hedef_yavaslat' in e:                 # Pusat Plus Speed Sap
             target.etki.add('yavas', dur, e['hedef_yavaslat'], item, now)
+        for o in self.foes(now, e):               # forum 160373: oyunculara da (Keres, Pusat Plus, Hyperion)
+            if 'hedef_yavaslat' in e and o is self.foe_target(now):
+                o.hero_etki.add('yavas', dur, e['hedef_yavaslat'], item, now)
+                o.send(o.effect_stats_msgs(now))
+            if 'alan_yavaslat' in e:
+                o.hero_etki.add('yavas', dur, PVP_YAVAS, item, now)
+                o.send(o.effect_stats_msgs(now))
         if 'alan_yavaslat' in e:                  # Hyperion Gravitational Anchor: alan hedefin konumunda
             for n in self.near(e['alan_yavaslat']['yaricap'], now, target.mover.pos(now) if target else None):
                 n.etki.add('yavas', dur, e['alan_yavaslat']['oran'], item, now)
@@ -563,10 +641,14 @@ class Motor:
                     dmg = a['saniyede'] + (w.laser_damage(None)[0] * a['lazer_payi'] if a.get('lazer_payi') else 0)
                     for n in self.near(a['yaricap'], now):
                         w.hit_npc(n.id, int(dmg), 1)
+                    for o in self.foes(now, None, a['yaricap']):     # forum 160373: Ripper/Incinerate oyunculara da
+                        import oyuncu_savas as OS
+                        OS._hit(w, o, now, int(dmg))
                 if 'can_onar' in e and not w.hero_dead:
                     hp0 = g.get('hitPoints', 0)
                     p.set_hull(hp=hp0 + e['can_onar'] * factor(p, i, 'etki') / dur)
                     self.send([w.hp_msg()] + w.heal_msgs(hp0))
+                    self.heal_mates(i, 'can_onar', dur, now)
                 if 'kalkan_erit' in e and not w.hero_dead:     # Scramble, Supercharge Plus: saniyede azami kalkanın %10'u
                     sh = max(0, g.get('shield', 0) - g.get('shieldMax', 0) * e['kalkan_erit'])
                     p.set_hull(shield=sh)
@@ -585,6 +667,25 @@ class Motor:
                     p.set_hull(shield=sh0 + e['kalkan_onar'] * factor(p, i, 'etki') / dur)
                     self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})]
                               + w.heal_msgs(sh0=sh0))
+                    self.heal_mates(i, 'kalkan_onar', dur, now)
+        for i, b in list(self.beams.items()):          # Hecate: saniyede 8.050 + 6.000 x geçen sn (forum 143093)
+            h = HECATE_ISIN[i]
+            if now - b['basla'] > h['sure_sn'] or w.hero_dead:
+                del self.beams[i]
+                continue
+            if now - b['son'] < 1:
+                continue
+            b['son'] = now
+            dmg = int(h['ilk'] + h['artis'] * int(now - b['basla']))
+            n = w.npcs.get(b['hedef'])
+            if n and n.alive and n.tip in h['npc']:
+                w.hit_npc(n.id, dmg, 1)
+                n.etki.add('yavas', 1.5, h['yavas'], i, now)
+            o = w.oyuncu(b['hedef'])
+            if o:
+                import oyuncu_savas as OS
+                OS._hit(w, o, now, dmg)
+                o.hero_etki.add('yavas', 1.5, h['yavas'], i, now)
         for i, t in list(self.ending.items()):
             if now >= t:
                 self.finish(i, now)

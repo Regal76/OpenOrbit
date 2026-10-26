@@ -696,7 +696,7 @@
  "acil_onarim": {
   "bedel": 500,
   "can_sn": 7500,
-  "sure_sn": 20
+  "sure_sn": 1200
  },
  "pasif_onarim": {
   "can_sn": 260,
@@ -814,5 +814,7 @@
   "deflector_prime_disinda": true,
   "can_carpani": 1.0,
   "hasar_carpani": 1.0
- }
+ },
+ "kurulunca_deflector_dk": 1440,
+ "_forum_127469": "Resmî Türk forumu 127469 (KSİ SSS): acil tamir 20 dakika x 7.500 dp/s; yeni kurulan istasyonda deflektör açık ve 1440 dakika yüklü (kurulunca_kapali_dk artık kullanılmıyor)"
 }

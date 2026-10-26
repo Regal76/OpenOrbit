@@ -65,8 +65,8 @@
    "_ad": "Battleray",
    "vurulunca_cagir": {
     "tur": "111",
-    "adet": 3,
-    "en_cok": 3,
+    "adet": 7,
+    "en_cok": 7,
     "bekleme_sn": 15
    },
    "cagrilar_yasarken_dokunulmaz": true,
@@ -81,7 +81,7 @@
     "onarim_can_sn": 30000
    },
    "_kaynak": "aliens.md: Interceptor çağırır; çağırdıkları yaşarken anında kalkan (ISH) ve saniyede 600 onarım; iki ya da daha çok saldıran (P.E.T. 10 sayılır) öfkelendirir: UCB-100 yerine RSB-75, daha çok Interceptor, 30.000 onarım",
-   "_uyarlama": "çağrıda 3 Interceptor (fandom: Deadly Battleray en çok 2 ile \"daha az\" çağırır), 15 sn bekleme; öfke son 10 sn'deki saldıranlarla; RSB-75/UCB-100 = x1,5 hasar"
+   "_uyarlama": "çağrıda 7 Interceptor (resmî Türk forumu 1885: oyuncu başına 7) (fandom: Deadly Battleray en çok 2 ile \"daha az\" çağırır), 15 sn bekleme; öfke son 10 sn'deki saldıranlarla; RSB-75/UCB-100 = x1,5 hasar"
   },
   "167": {
    "_ad": "Uber Battleray",
@@ -450,10 +450,10 @@
     "bekleme_sn": 3,
     "menzil": 1500,
     "hedef": [
-     "streuner"
+     "streuner soldier"
     ]
    },
-   "_kaynak": "fandom (Streuner Specialist, Healing Wave): 3 sn'de bir öteki Streuner'ların gövdesini 6.000 onarır; kendini onarmaz, öteki Specialist'in dalgası onu onarır",
+   "_kaynak": "fandom (Streuner Specialist, Healing Wave): 3 sn'de bir öteki Streuner'ların gövdesini 6.000 onarır; kendini onarmaz, öteki Specialist'in dalgası onu onarır; resmî Türk forumu 127494: \"sadece Streuner Soldierleri tamir etmektedir\"",
    "_uyarlama": "dalganın menzili 1.500 birim (kaynakta yok)"
   },
   "153": {
@@ -574,6 +574,54 @@
    },
    "_kaynak": "fandom (Hooligan, Critical Health): kritik canda hızı oyuncununkine eşitlenir",
    "_uyarlama": "kritik can %20; Hooligan kaçmaz (dusuk_can), oyuncuyla aynı hızda savaşır"
+  },
+  "147": {
+   "_ad": "Streuner Emperor",
+   "periyodik_cagir": {
+    "bekleme_sn": 30,
+    "cagrilar": [
+     {
+      "tur": "gg_streuner_3_0",
+      "adet": 1,
+      "en_cok": 1
+     }
+    ]
+   },
+   "roket": {
+    "hasar": 4000,
+    "bekleme_sn": 8
+   },
+   "_kaynak": "Resmî Türk forumu 127494 (Kuiper): \"Streuner Emperor sizinle savaşmaya başladıktan belli bir süre sonra Streuner Turret çıkarmaktadır. Ayrıca size SAR-02 roketi de atmaktadır.\"",
+   "_uyarlama": "Turret 30 sn'de bir, aynı anda en çok 1 (Kuiper IV'ün Turret türü gg_streuner_3_0); SAR-02 salvosu 8 sn'de bir 4.000 hasar (kaynakta sayı yok)"
+  },
+  "150": {
+   "_ad": "Streuner Soldier",
+   "roket": {
+    "hasar": 2000,
+    "bekleme_sn": 6
+   },
+   "_kaynak": "Resmî Türk forumu 127494 (Kuiper): \"Streuner Soldier ... lazerle beraber normal olarak roket de atmaktadır.\"",
+   "_uyarlama": "6 sn'de bir 2.000 (StreuneR'un 1.000-3.000 ölçüsünde; kaynakta sayı yok)"
+  },
+  "120": {
+   "_ad": "Century Falcon",
+   "yenilenme": {
+    "can_sn": 120000,
+    "kalkan_sn": 0,
+    "bekleme_sn": 10
+   },
+   "_kaynak": "Resmî Türk forumu 126411 (LoW): Century Falcon hasar almazken kendini onarır",
+   "_uyarlama": "vurulmadan 10 sn sonra saniyede azami canın %1'i (12.000.000 x 0,01; kaynakta sayı yok)"
+  },
+  "53": {
+   "_ad": "Uber Protegit",
+   "yavaslatan_atis": {
+    "hiz": 120,
+    "sn": 5,
+    "menzil": 300
+   },
+   "_kaynak": "Resmî Türk forumu 127347 (??? haritası): Uber Protegit'ler yavaşlatır",
+   "_uyarlama": "Saboteur'ün yavaşlatan atışı (hız 120, 5 sn, 300 menzil)"
   }
  },
  "kapsul_turleri": [

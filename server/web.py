@@ -180,8 +180,26 @@ def login_node(o=None):
     }
 
 
+BILGI = {      # Ayarlar -> Support / Hesap Merkezi … (resmî forum 127724, 150766): resmî sitelerin yerine yerel bilgi sayfası (uyarlama)
+    'forum': ('Forum', 'Bu yerel sunucunun forumu yok. Oyun kuralları ve açıklamalar için belgeler/forum_tr klasörüne bak.'),
+    'help': ('Yardım', 'Oyun içi yardım için panelin "Nasıl Oynanır" bölümüne bak.'),
+    'credits': ('Emeği geçenler', 'OpenOrbit: tek oyunculu yerel sunucu.'),
+    'imprint': ('Künye', 'OpenOrbit: tek oyunculu yerel sunucu; ticari bir hizmet değildir.'),
+    'support': ('Destek', 'Destek bileti yerine panelin günlüklerine (server/logs) bak; sohbetteki /report raporları '
+                'server/logs/sohbet_raporlari.jsonl dosyasına yazılır.'),
+    'accountCenter': ('Hesap Merkezi', 'Hesap ayarları (ad, şifre, bülten) yerel profilde tutulur; pilot adını oyundaki Pilot Profili '
+                      'penceresinden değiştirebilirsin.'),
+}
+
+
 def links():
-    return {'forum': BASE, 'help': BASE, 'credits': BASE, 'imprint': BASE, 'support': BASE, 'accountCenter': BASE}
+    return {k: BASE + 'bilgi/' + k for k in BILGI}
+
+
+def bilgi_page(kind):
+    title, text = BILGI.get(kind, ('OpenOrbit', ''))
+    return ('<!doctype html><html><head><meta charset="utf-8"><title>%s</title></head><body style="background:#000;color:#9cf;'
+            'font-family:Verdana;padding:24px"><h2>%s</h2><p>%s</p></body></html>' % (title, title, text))
 
 
 def login(sid=None):
@@ -241,6 +259,9 @@ def gate_rewards_xml():
         rows += [(GATE_LOOT[k], R.get(k, 0), 1.0) for k in ('xenomit', 'log_disk', 'kupon', 'enerji')]
         rows += [(GATE_LOOT.get(k, k), n, 1.0) for k, n in sorted((R.get('ganimet') or {}).items())]
         for s in R.get('sans', []):
+            if s.get('esya') == 'cevher_paketi':        # forum 129125: kapının cevher paketi, kalemleri ağırlığıyla
+                rows += [(loot, n[0], s.get('olasilik', 0) * w) for loot, n, w in s['paket']]
+                continue
             opts = s.get('secenekler') if s.get('esya') == 'tasarim_secimi' else [s.get('esya')]
             rows += [(loot, s.get('adet', 1), s.get('olasilik', 0) / max(1, len(opts))) for loot in opts or []]
             # Diametrion'la birlikte gelen üç kaynaktan biri (kapi.finish 'birlikte'): rehberin "min" alanı en az miktar (70-80 ve 8-14 gibi
@@ -350,6 +371,8 @@ class H(BaseHTTPRequestHandler):
         elif port == 8090 and base == '/':
             q = parse_qs(path.split('?', 1)[1]) if '?' in path else {}
             ctype, out = 'text/html; charset=utf-8', redirect_page((q.get('oturum') or [None])[0])
+        elif base.startswith('/bilgi/'):
+            ctype, out = 'text/html; charset=utf-8', bilgi_page(base[len('/bilgi/'):])
         elif 'indexInternal.es' in path:
             o = oturum(cerez(self, 'dosid'))
             ctype, out = 'text/plain', o[0] if o else 'gecersiz'

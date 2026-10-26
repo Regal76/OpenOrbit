@@ -1782,7 +1782,7 @@
     ],
     [
      "2023-07-28",
-     "2023-08-04"
+     "2023-08-01"
     ],
     [
      "2023-08-28",
@@ -1821,8 +1821,8 @@
      "2024-04-30"
     ],
     [
-     "2024-05-30",
-     "2024-06-04"
+     "2024-05-24",
+     "2024-05-31"
     ],
     [
      "2024-06-21",
@@ -1988,54 +1988,6 @@
      }
     },
     "dusme": {
-     "etk_agatus_x3": {
-      "resource_collectable_agate-splinter": [
-       13,
-       15
-      ],
-      "ammunition_rocket_plt-2021": {
-       "adet": [
-        200,
-        600
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_ubr-100": {
-       "adet": [
-        50,
-        150
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_sar-02": {
-       "adet": [
-        100,
-        300
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_specialammo_pld-8": {
-       "adet": [
-        30,
-        90
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_laser_mcb-50": {
-       "adet": [
-        300,
-        900
-       ],
-       "olasilik": 0.25
-      },
-      "resource_extra-energy": {
-       "adet": [
-        2,
-        6
-       ],
-       "olasilik": 0.25
-      }
-     },
      "etk_spinel_x3": {
       "resource_collectable_agate-splinter": {
        "adet": [
@@ -2047,54 +1999,6 @@
       "resource_logfile": {
        "adet": 1,
        "olasilik": 0.1
-      }
-     },
-     "etk_agatus_x4": {
-      "resource_collectable_agate-splinter": [
-       20,
-       30
-      ],
-      "ammunition_rocket_plt-2021": {
-       "adet": [
-        200,
-        600
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_ubr-100": {
-       "adet": [
-        50,
-        150
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_sar-02": {
-       "adet": [
-        100,
-        300
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_specialammo_pld-8": {
-       "adet": [
-        30,
-        90
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_laser_mcb-50": {
-       "adet": [
-        300,
-        900
-       ],
-       "olasilik": 0.25
-      },
-      "resource_extra-energy": {
-       "adet": [
-        2,
-        6
-       ],
-       "olasilik": 0.25
       }
      },
      "etk_spinel_x4": {
@@ -2110,54 +2014,6 @@
        "olasilik": 0.1
       }
      },
-     "etk_agatus_x5": {
-      "resource_collectable_agate-splinter": [
-       36,
-       50
-      ],
-      "ammunition_rocket_plt-2021": {
-       "adet": [
-        200,
-        600
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_ubr-100": {
-       "adet": [
-        50,
-        150
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_sar-02": {
-       "adet": [
-        100,
-        300
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_specialammo_pld-8": {
-       "adet": [
-        30,
-        90
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_laser_mcb-50": {
-       "adet": [
-        300,
-        900
-       ],
-       "olasilik": 0.25
-      },
-      "resource_extra-energy": {
-       "adet": [
-        2,
-        6
-       ],
-       "olasilik": 0.25
-      }
-     },
      "etk_spinel_x5": {
       "resource_collectable_agate-splinter": {
        "adet": [
@@ -2169,54 +2025,6 @@
       "resource_logfile": {
        "adet": 1,
        "olasilik": 0.1
-      }
-     },
-     "etk_agatus_x6": {
-      "resource_collectable_agate-splinter": [
-       40,
-       62
-      ],
-      "ammunition_rocket_plt-2021": {
-       "adet": [
-        200,
-        600
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_ubr-100": {
-       "adet": [
-        50,
-        150
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_sar-02": {
-       "adet": [
-        100,
-        300
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_specialammo_pld-8": {
-       "adet": [
-        30,
-        90
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_laser_mcb-50": {
-       "adet": [
-        300,
-        900
-       ],
-       "olasilik": 0.25
-      },
-      "resource_extra-energy": {
-       "adet": [
-        2,
-        6
-       ],
-       "olasilik": 0.25
       }
      },
      "etk_spinel_x6": {
@@ -2232,54 +2040,6 @@
        "olasilik": 0.1
       }
      },
-     "etk_agatus_x7": {
-      "resource_collectable_agate-splinter": [
-       55,
-       72
-      ],
-      "ammunition_rocket_plt-2021": {
-       "adet": [
-        200,
-        600
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_ubr-100": {
-       "adet": [
-        50,
-        150
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_sar-02": {
-       "adet": [
-        100,
-        300
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_specialammo_pld-8": {
-       "adet": [
-        30,
-        90
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_laser_mcb-50": {
-       "adet": [
-        300,
-        900
-       ],
-       "olasilik": 0.25
-      },
-      "resource_extra-energy": {
-       "adet": [
-        2,
-        6
-       ],
-       "olasilik": 0.25
-      }
-     },
      "etk_spinel_x7": {
       "resource_collectable_agate-splinter": {
        "adet": [
@@ -2291,54 +2051,6 @@
       "resource_logfile": {
        "adet": 1,
        "olasilik": 0.1
-      }
-     },
-     "etk_agatus_x8": {
-      "resource_collectable_agate-splinter": [
-       60,
-       92
-      ],
-      "ammunition_rocket_plt-2021": {
-       "adet": [
-        200,
-        600
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_ubr-100": {
-       "adet": [
-        50,
-        150
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_rocketlauncher_sar-02": {
-       "adet": [
-        100,
-        300
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_specialammo_pld-8": {
-       "adet": [
-        30,
-        90
-       ],
-       "olasilik": 0.25
-      },
-      "ammunition_laser_mcb-50": {
-       "adet": [
-        300,
-        900
-       ],
-       "olasilik": 0.25
-      },
-      "resource_extra-energy": {
-       "adet": [
-        2,
-        6
-       ],
-       "olasilik": 0.25
       }
      },
      "etk_spinel_x8": {
@@ -2359,13 +2071,401 @@
     "saatler": [
      [
       8,
-      16
-     ],
-     [
-      18,
       24
      ]
-    ]
+    ],
+    "kutu_dusme": {
+     "etk_agatus_x3": {
+      "tur": "AGATUS_BOX",
+      "olasilik": 1.0,
+      "omur_sn": 300,
+      "mod": "hepsi",
+      "kesin": [
+       [
+        "resource_collectable_agate-splinter",
+        [
+         13,
+         15
+        ]
+       ]
+      ],
+      "icerik": [
+       [
+        "ammunition_rocket_plt-2021",
+        [
+         200,
+         600
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_ubr-100",
+        [
+         50,
+         150
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_sar-02",
+        [
+         100,
+         300
+        ],
+        25
+       ],
+       [
+        "ammunition_specialammo_pld-8",
+        [
+         30,
+         90
+        ],
+        25
+       ],
+       [
+        "ammunition_laser_mcb-50",
+        [
+         300,
+         900
+        ],
+        25
+       ],
+       [
+        "resource_extra-energy",
+        [
+         2,
+         6
+        ],
+        25
+       ]
+      ]
+     },
+     "etk_agatus_x4": {
+      "tur": "AGATUS_BOX",
+      "olasilik": 1.0,
+      "omur_sn": 300,
+      "mod": "hepsi",
+      "kesin": [
+       [
+        "resource_collectable_agate-splinter",
+        [
+         20,
+         30
+        ]
+       ]
+      ],
+      "icerik": [
+       [
+        "ammunition_rocket_plt-2021",
+        [
+         200,
+         600
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_ubr-100",
+        [
+         50,
+         150
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_sar-02",
+        [
+         100,
+         300
+        ],
+        25
+       ],
+       [
+        "ammunition_specialammo_pld-8",
+        [
+         30,
+         90
+        ],
+        25
+       ],
+       [
+        "ammunition_laser_mcb-50",
+        [
+         300,
+         900
+        ],
+        25
+       ],
+       [
+        "resource_extra-energy",
+        [
+         2,
+         6
+        ],
+        25
+       ]
+      ]
+     },
+     "etk_agatus_x5": {
+      "tur": "AGATUS_BOX",
+      "olasilik": 1.0,
+      "omur_sn": 300,
+      "mod": "hepsi",
+      "kesin": [
+       [
+        "resource_collectable_agate-splinter",
+        [
+         36,
+         50
+        ]
+       ]
+      ],
+      "icerik": [
+       [
+        "ammunition_rocket_plt-2021",
+        [
+         200,
+         600
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_ubr-100",
+        [
+         50,
+         150
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_sar-02",
+        [
+         100,
+         300
+        ],
+        25
+       ],
+       [
+        "ammunition_specialammo_pld-8",
+        [
+         30,
+         90
+        ],
+        25
+       ],
+       [
+        "ammunition_laser_mcb-50",
+        [
+         300,
+         900
+        ],
+        25
+       ],
+       [
+        "resource_extra-energy",
+        [
+         2,
+         6
+        ],
+        25
+       ]
+      ]
+     },
+     "etk_agatus_x6": {
+      "tur": "AGATUS_BOX",
+      "olasilik": 1.0,
+      "omur_sn": 300,
+      "mod": "hepsi",
+      "kesin": [
+       [
+        "resource_collectable_agate-splinter",
+        [
+         40,
+         62
+        ]
+       ]
+      ],
+      "icerik": [
+       [
+        "ammunition_rocket_plt-2021",
+        [
+         200,
+         600
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_ubr-100",
+        [
+         50,
+         150
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_sar-02",
+        [
+         100,
+         300
+        ],
+        25
+       ],
+       [
+        "ammunition_specialammo_pld-8",
+        [
+         30,
+         90
+        ],
+        25
+       ],
+       [
+        "ammunition_laser_mcb-50",
+        [
+         300,
+         900
+        ],
+        25
+       ],
+       [
+        "resource_extra-energy",
+        [
+         2,
+         6
+        ],
+        25
+       ]
+      ]
+     },
+     "etk_agatus_x7": {
+      "tur": "AGATUS_BOX",
+      "olasilik": 1.0,
+      "omur_sn": 300,
+      "mod": "hepsi",
+      "kesin": [
+       [
+        "resource_collectable_agate-splinter",
+        [
+         55,
+         72
+        ]
+       ]
+      ],
+      "icerik": [
+       [
+        "ammunition_rocket_plt-2021",
+        [
+         200,
+         600
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_ubr-100",
+        [
+         50,
+         150
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_sar-02",
+        [
+         100,
+         300
+        ],
+        25
+       ],
+       [
+        "ammunition_specialammo_pld-8",
+        [
+         30,
+         90
+        ],
+        25
+       ],
+       [
+        "ammunition_laser_mcb-50",
+        [
+         300,
+         900
+        ],
+        25
+       ],
+       [
+        "resource_extra-energy",
+        [
+         2,
+         6
+        ],
+        25
+       ]
+      ]
+     },
+     "etk_agatus_x8": {
+      "tur": "AGATUS_BOX",
+      "olasilik": 1.0,
+      "omur_sn": 300,
+      "mod": "hepsi",
+      "kesin": [
+       [
+        "resource_collectable_agate-splinter",
+        [
+         60,
+         92
+        ]
+       ]
+      ],
+      "icerik": [
+       [
+        "ammunition_rocket_plt-2021",
+        [
+         200,
+         600
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_ubr-100",
+        [
+         50,
+         150
+        ],
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_sar-02",
+        [
+         100,
+         300
+        ],
+        25
+       ],
+       [
+        "ammunition_specialammo_pld-8",
+        [
+         30,
+         90
+        ],
+        25
+       ],
+       [
+        "ammunition_laser_mcb-50",
+        [
+         300,
+         900
+        ],
+        25
+       ],
+       [
+        "resource_extra-energy",
+        [
+         2,
+         6
+        ],
+        25
+       ]
+      ]
+     }
+    }
    },
    "para": [
     "resource_collectable_agate-splinter"
@@ -5939,187 +6039,187 @@
    "ad": "Chromin Rush",
    "donemler": [
     [
-     "2023-01-06",
+     "2023-01-06 10:00",
      "2023-01-12"
     ],
     [
-     "2023-02-03",
+     "2023-02-03 10:00",
      "2023-02-09"
     ],
     [
-     "2023-03-03",
+     "2023-03-03 10:00",
      "2023-03-09"
     ],
     [
-     "2023-04-05",
+     "2023-04-05 10:00",
      "2023-04-11"
     ],
     [
-     "2023-05-05",
+     "2023-05-05 10:00",
      "2023-05-11"
     ],
     [
-     "2023-06-02",
+     "2023-06-02 10:00",
      "2023-06-08"
     ],
     [
-     "2023-07-05",
+     "2023-07-05 10:00",
      "2023-07-11"
     ],
     [
-     "2023-08-04",
+     "2023-08-04 10:00",
      "2023-08-10"
     ],
     [
-     "2023-09-06",
+     "2023-09-06 10:00",
      "2023-09-12"
     ],
     [
-     "2023-10-05",
+     "2023-10-05 10:00",
      "2023-10-11"
     ],
     [
-     "2023-11-02",
+     "2023-11-02 10:00",
      "2023-11-08"
     ],
     [
-     "2023-12-01",
+     "2023-12-01 10:00",
      "2023-12-07"
     ],
     [
-     "2024-01-04",
+     "2024-01-04 10:00",
      "2024-01-10"
     ],
     [
-     "2024-02-01",
+     "2024-02-01 10:00",
      "2024-02-07"
     ],
     [
-     "2024-03-01",
+     "2024-03-01 10:00",
      "2024-03-07"
     ],
     [
-     "2024-04-03",
+     "2024-04-03 10:00",
      "2024-04-09"
     ],
     [
-     "2024-05-01",
+     "2024-05-01 10:00",
      "2024-05-07"
     ],
     [
-     "2024-06-05",
+     "2024-06-05 10:00",
      "2024-06-11"
     ],
     [
-     "2024-07-03",
+     "2024-07-03 10:00",
      "2024-07-09"
     ],
     [
-     "2024-08-01",
+     "2024-08-01 10:00",
      "2024-08-07"
     ],
     [
-     "2024-09-02",
+     "2024-09-02 10:00",
      "2024-09-08"
     ],
     [
-     "2024-10-01",
+     "2024-10-01 10:00",
      "2024-10-07"
     ],
     [
-     "2024-11-01",
+     "2024-11-01 10:00",
      "2024-11-07"
     ],
     [
-     "2024-12-03",
+     "2024-12-03 10:00",
      "2024-12-09"
     ],
     [
-     "2025-01-02",
+     "2025-01-02 10:00",
      "2025-01-08"
     ],
     [
-     "2025-02-04",
+     "2025-02-04 10:00",
      "2025-02-10"
     ],
     [
-     "2025-02-28",
+     "2025-02-28 10:00",
      "2025-03-06"
     ],
     [
-     "2025-04-01",
+     "2025-04-01 10:00",
      "2025-04-07"
     ],
     [
-     "2025-05-01",
+     "2025-05-01 10:00",
      "2025-05-07"
     ],
     [
-     "2025-06-02",
+     "2025-06-02 10:00",
      "2025-06-08"
     ],
     [
-     "2025-07-02",
+     "2025-07-02 10:00",
      "2025-07-08"
     ],
     [
-     "2025-08-01",
+     "2025-08-01 10:00",
      "2025-08-07"
     ],
     [
-     "2025-09-02",
+     "2025-09-02 10:00",
      "2025-09-08"
     ],
     [
-     "2025-10-01",
+     "2025-10-01 10:00",
      "2025-10-07"
     ],
     [
-     "2025-11-04",
+     "2025-11-04 10:00",
      "2025-11-10"
     ],
     [
-     "2025-12-03",
+     "2025-12-03 10:00",
      "2025-12-09"
     ],
     [
-     "2026-01-01",
+     "2026-01-01 10:00",
      "2026-01-07"
     ],
     [
-     "2026-02-03",
+     "2026-02-03 10:00",
      "2026-02-09"
     ],
     [
-     "2026-03-02",
+     "2026-03-02 10:00",
      "2026-03-08"
     ],
     [
-     "2026-04-01",
+     "2026-04-01 10:00",
      "2026-04-07"
     ],
     [
-     "2026-05-01",
+     "2026-05-01 10:00",
      "2026-05-07"
     ],
     [
-     "2026-06-01",
+     "2026-06-01 10:00",
      "2026-06-07"
     ],
     [
-     "2026-07-01",
+     "2026-07-01 10:00",
      "2026-07-07"
     ],
     [
-     "2026-08-04",
+     "2026-08-04 10:00",
      "2026-08-10"
     ],
     [
-     "2026-09-02",
+     "2026-09-02 10:00",
      "2026-09-08"
     ],
     [
-     "2026-10-01",
+     "2026-10-01 10:00",
      "2026-10-07"
     ]
    ],
@@ -6128,7 +6228,7 @@
    "para": [
     "resource_collectable_chromin"
    ],
-   "_kaynak": "hitac_chromin.json chromin.schedule_board: 2025-2026 aylık koşular (gün 10:00 - 6 gün sonra 23:59); tools/ek_etkinlikler.py",
+   "_kaynak": "hitac_chromin.json chromin.schedule_board: 2025-2026 aylık koşular (gün 10:00 - 6 gün sonra 23:59); tools/ek_etkinlikler.py; resmî Türk forumu: her koşu ilk gün 10:00 - son gün 23:59 (YSS)",
    "_takvim": "board-en.darkorbit.com duyuruları 2023-2026 (belgeler/arastirma/tarama_2026-10-22/web_takvim.md)",
    "haber": [
     "chrominrush{mon}{Y}"
@@ -6148,7 +6248,431 @@
     "chrominrushmar2023"
    ],
    "haber_ek": [],
-   "haber_varsayilan": "chrominRush"
+   "haber_varsayilan": "chrominRush",
+   "kosu_tarifleri": {
+    "2023-01-06": [
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-cyborg",
+     "recipe_blueprint-chromin-disruptor-ullrin",
+     "recipe_blueprint-chromin-solaris-plus-ullrin"
+    ],
+    "2023-02-03": [
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-hecate",
+     "recipe_blueprint-chromin-zephyr-ullrin",
+     "recipe_blueprint-chromin-diminisher-ullrin"
+    ],
+    "2023-03-03": [
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-berserker",
+     "recipe_blueprint-chromin-sentinel-ullrin"
+    ],
+    "2023-04-05": [
+     "recipe_blueprint-chromin-dmg-mtch01",
+     "recipe_blueprint-chromin-zephyr",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-goliath-plus-ullrin",
+     "recipe_blueprint-chromin-solace-ullrin"
+    ],
+    "2023-05-05": [
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-spc-spe01",
+     "recipe_blueprint-chromin-centurion",
+     "recipe_blueprint-chromin-venom-ullrin",
+     "recipe_blueprint-chromin-orcus-ullrin",
+     "recipe_blueprint-chromin-quickcoupon"
+    ],
+    "2023-06-02": [
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-diminisher",
+     "recipe_blueprint-chromin-berserker-ullrin",
+     "recipe_blueprint-chromin-solace-plus-ullrin",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-osmium"
+    ],
+    "2023-07-05": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-mimesis",
+     "recipe_blueprint-chromin-berserker-ullrin",
+     "recipe_blueprint-chromin-solaris-plus-ullrin",
+     "recipe_blueprint-chromin-spectrum-ullrin"
+    ],
+    "2023-08-04": [
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-hammerclaw",
+     "recipe_blueprint-chromin-c-elite-ullrin",
+     "recipe_blueprint-chromin-zephyr-ullrin"
+    ],
+    "2023-09-06": [
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-cyborg",
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-holo-ullrin",
+     "recipe_blueprint-chromin-pusat-plus-ullrin"
+    ],
+    "2023-10-05": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-hecate",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-dmg-mtch01",
+     "recipe_blueprint-chromin-solaris-ullrin",
+     "recipe_blueprint-chromin-goliath-plus-ullrin"
+    ],
+    "2023-11-02": [
+     "recipe_blueprint-chromin-spc-spe01",
+     "recipe_blueprint-chromin-berserker",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-hecate-ullrin",
+     "recipe_blueprint-chromin-venom-ullrin"
+    ],
+    "2023-12-01": [
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-solace-plus-ullrin",
+     "recipe_blueprint-chromin-cyborg-ullrin"
+    ],
+    "2024-01-04": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-mimesis",
+     "recipe_blueprint-chromin-spectrum-ullrin",
+     "recipe_blueprint-chromin-solaris-plus-ullrin"
+    ],
+    "2024-02-01": [
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-hammerclaw",
+     "recipe_blueprint-chromin-zephyr-ullrin",
+     "recipe_blueprint-chromin-c-elite-ullrin",
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-seprom"
+    ],
+    "2024-03-01": [
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-cyborg",
+     "recipe_blueprint-chromin-holo-ullrin",
+     "recipe_blueprint-chromin-pusat-plus-ullrin"
+    ],
+    "2024-04-03": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-hecate",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-dmg-mtch01",
+     "recipe_blueprint-chromin-solaris-ullrin",
+     "recipe_blueprint-chromin-goliath-plus-ullrin"
+    ],
+    "2024-05-01": [
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-spc-spe01",
+     "recipe_blueprint-chromin-berserker",
+     "recipe_blueprint-chromin-venom-ullrin",
+     "recipe_blueprint-chromin-hecate-ullrin"
+    ],
+    "2024-06-05": [
+     "recipe_blueprint-chromin-zephyr",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-centurion",
+     "recipe_blueprint-chromin-cyborg-ullrin",
+     "recipe_blueprint-chromin-solace-plus-ullrin"
+    ],
+    "2024-07-03": [
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-hammerclaw-ullrin",
+     "recipe_blueprint-chromin-solaris-plus-ullrin",
+     "recipe_blueprint-chromin-diminisher",
+     "recipe_blueprint-chromin-cyborg",
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-seprom"
+    ],
+    "2024-08-01": [
+     "recipe_blueprint-chromin-zephyr-ullrin",
+     "recipe_blueprint-chromin-disruptor-ullrin",
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-hecate",
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-osmium"
+    ],
+    "2024-09-02": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-berserker",
+     "recipe_blueprint-chromin-diminisher-ullrin",
+     "recipe_blueprint-chromin-pusat-plus-ullrin"
+    ],
+    "2024-10-01": [
+     "recipe_blueprint-chromin-goliath-plus-ullrin",
+     "recipe_blueprint-chromin-sentinel-ullrin",
+     "recipe_blueprint-chromin-dmg-mtch01",
+     "recipe_blueprint-chromin-zephyr",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-mindfire-cerebrum"
+    ],
+    "2024-11-01": [
+     "recipe_blueprint-chromin-venom-ullrin",
+     "recipe_blueprint-chromin-solace-ullrin",
+     "recipe_blueprint-chromin-spc-spe01",
+     "recipe_blueprint-chromin-centurion",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-quickcoupon"
+    ],
+    "2024-12-03": [
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-diminisher",
+     "recipe_blueprint-chromin-orcus-ullrin",
+     "recipe_blueprint-chromin-berserker-ullrin",
+     "recipe_blueprint-chromin-solace-plus-ullrin"
+    ],
+    "2025-01-02": [
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-mimesis",
+     "recipe_blueprint-chromin-spectrum-ullrin",
+     "recipe_blueprint-chromin-solaris-plus-ullrin"
+    ],
+    "2025-02-04": [
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-zephyr-ullrin",
+     "recipe_blueprint-chromin-c-elite-ullrin",
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-hammerclaw",
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-mindfire-cerebrum"
+    ],
+    "2025-02-28": [
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-cyborg",
+     "recipe_blueprint-chromin-holo-ullrin",
+     "recipe_blueprint-chromin-pusat-plus-ullrin"
+    ],
+    "2025-04-01": [
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-emp01",
+     "recipe_blueprint-chromin-hecate",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-dmg-mtch01",
+     "recipe_blueprint-chromin-solaris-ullrin",
+     "recipe_blueprint-chromin-goliath-plus-ullrin"
+    ],
+    "2025-05-01": [
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-berserker",
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-spc-spe01",
+     "recipe_blueprint-chromin-orcus-ullrin",
+     "recipe_blueprint-chromin-venom-ullrin"
+    ],
+    "2025-06-02": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-zephyr",
+     "recipe_blueprint-chromin-emp01",
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-berserker-ullrin",
+     "recipe_blueprint-chromin-hecate-ullrin"
+    ],
+    "2025-07-02": [
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-centurion",
+     "recipe_blueprint-chromin-spectrum-ullrin",
+     "recipe_blueprint-chromin-cyborg-ullrin"
+    ],
+    "2025-08-01": [
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-diminisher",
+     "recipe_blueprint-chromin-c-elite-ullrin",
+     "recipe_blueprint-chromin-hammerclaw-ullrin"
+    ],
+    "2025-09-02": [
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-holo-ullrin",
+     "recipe_blueprint-chromin-disruptor-ullrin",
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-mimesis",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-blacklight-trace"
+    ],
+    "2025-10-01": [
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-hammerclaw",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-dmg-mtch01",
+     "recipe_blueprint-chromin-diminisher-ullrin",
+     "recipe_blueprint-chromin-solaris-ullrin"
+    ],
+    "2025-11-04": [
+     "recipe_blueprint-chromin-spc-spe01",
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-emp01",
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-cyborg",
+     "recipe_blueprint-chromin-orcus-ullrin",
+     "recipe_blueprint-chromin-sentinel-ullrin"
+    ],
+    "2025-12-03": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-hecate",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-berserker-ullrin",
+     "recipe_blueprint-chromin-solace-ullrin"
+    ],
+    "2026-01-01": [
+     "recipe_blueprint-chromin-diminisher",
+     "recipe_blueprint-chromin-emp01",
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-hammerclaw-ullrin",
+     "recipe_blueprint-chromin-solace-plus-ullrin",
+     "recipe_blueprint-chromin-berserker-ullrin",
+     "recipe_blueprint-chromin-solaris-ullrin"
+    ],
+    "2026-02-03": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-mimesis",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-disruptor-ullrin",
+     "recipe_blueprint-chromin-solaris-plus-ullrin",
+     "recipe_blueprint-chromin-spectrum-ullrin"
+    ],
+    "2026-03-02": [
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-hammerclaw",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-c-elite-ullrin",
+     "recipe_blueprint-chromin-diminisher-ullrin",
+     "recipe_blueprint-chromin-zephyr-ullrin"
+    ],
+    "2026-04-01": [
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-cyborg",
+     "recipe_blueprint-chromin-zephyr",
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-holo-ullrin",
+     "recipe_blueprint-chromin-sentinel-ullrin",
+     "recipe_blueprint-chromin-pusat-plus-ullrin"
+    ],
+    "2026-05-01": [
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-hecate",
+     "recipe_blueprint-chromin-dmg-mtch01",
+     "recipe_blueprint-chromin-permit",
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-goliath-plus-ullrin",
+     "recipe_blueprint-chromin-solace-ullrin"
+    ],
+    "2026-06-01": [
+     "recipe_blueprint-chromin-seprom",
+     "recipe_blueprint-chromin-berserker",
+     "recipe_blueprint-chromin-spc-spe01",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-orcus-ullrin",
+     "recipe_blueprint-chromin-venom-ullrin",
+     "recipe_blueprint-chromin-solaris-ullrin"
+    ],
+    "2026-07-01": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-quickcoupon",
+     "recipe_blueprint-chromin-emp01",
+     "recipe_blueprint-chromin-dmg-zep01",
+     "recipe_blueprint-chromin-berserker-ullrin",
+     "recipe_blueprint-chromin-hecate-ullrin"
+    ],
+    "2026-08-04": [
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-rinusk",
+     "recipe_blueprint-chromin-centurion",
+     "recipe_blueprint-chromin-dmg-cht01",
+     "recipe_blueprint-chromin-polychromium",
+     "recipe_blueprint-chromin-spectrum-ullrin",
+     "recipe_blueprint-chromin-cyborg-ullrin",
+     "recipe_blueprint-chromin-solaris-plus-ullrin"
+    ],
+    "2026-09-02": [
+     "recipe_blueprint-chromin-osmium",
+     "recipe_blueprint-chromin-diminisher",
+     "recipe_blueprint-chromin-mindfire-cerebrum",
+     "recipe_blueprint-chromin-hp-cht01",
+     "recipe_blueprint-chromin-c-elite-ullrin",
+     "recipe_blueprint-chromin-hammerclaw-ullrin",
+     "recipe_blueprint-chromin-zephyr-ullrin",
+     "recipe_blueprint-chromin-solaris-ullrin"
+    ],
+    "2026-10-01": [
+     "recipe_blueprint-chromin-permit-plus",
+     "recipe_blueprint-chromin-rcb140",
+     "recipe_blueprint-chromin-blacklight-trace",
+     "recipe_blueprint-chromin-zephyr",
+     "recipe_blueprint-chromin-mimesis",
+     "recipe_blueprint-chromin-spc-cht01",
+     "recipe_blueprint-chromin-holo-ullrin",
+     "recipe_blueprint-chromin-disruptor-ullrin",
+     "recipe_blueprint-chromin-pusat-plus-ullrin"
+    ]
+   },
+   "_kosu_tarifleri": "Koşunun ilk günü -> o koşuda açık etkinlik tarifleri (tarifler.json; her koşuda 6-9 tarif, koşu başına bir kez): resmî Türk forumu Chromin Rush duyuruları (39 koşu) ve EN panosu (7 koşu); belgeler/forum_tr/karsilastirma/BAG1_chromin_kosular.json. Bilinen son günden sonra koşular 52 haftada bir tekrarlanır"
   },
   "unvan_avi": {
    "ad": "Pursuit of Prestige",
@@ -6943,7 +7467,7 @@
       "lambda",
       "streuner"
      ],
-     "olasilik": 0.2,
+     "olasilik": 1.0,
      "secim": [
       [
        "equipment_weapon_laser_lf-4",
@@ -6956,7 +7480,7 @@
      ]
     }
    ],
-   "_kaynak": "bp-calendar: Pazarları dönüşümlü (hangi haftanın hangisi olduğu uyarlama); olasılık %20 uyarlama; wiki: Delta/Epsilon/Lambda/Kuiper LF-4 ya da 10.000 UCB-100"
+   "_kaynak": "bp-calendar: Pazarları dönüşümlü (hangi haftanın hangisi olduğu uyarlama); wiki: Delta/Epsilon/Lambda/Kuiper LF-4 ya da 10.000 UCB-100; resmî Türk forumu (Delta/Epsilon/Lambda/Kuiper SSS): LF-4 Günü ek ödül kesin; Geliştirilmiş: HP, MD, PD ya da 10.000 UCB-100"
   },
   "lf4_gelismis": {
    "ad": "Enhanced LF-4 Day",
@@ -6971,13 +7495,28 @@
    "kapi_odulu": [
     {
      "kapilar": [
-      "delta"
+      "delta",
+      "epsilon",
+      "lambda",
+      "streuner"
      ],
-     "olasilik": 0.2,
+     "olasilik": 1.0,
      "secim": [
       [
        "equipment_weapon_laser_lf-4-hp",
        1
+      ],
+      [
+       "equipment_weapon_laser_lf-4-md",
+       1
+      ],
+      [
+       "equipment_weapon_laser_lf-4-pd",
+       1
+      ],
+      [
+       "ammunition_laser_ucb-100",
+       10000
       ]
      ]
     },
@@ -6985,7 +7524,7 @@
      "kapilar": [
       "kappa"
      ],
-     "olasilik": 0.2,
+     "olasilik": 1.0,
      "secim": [
       [
        "equipment_weapon_laser_lf-4-pd",
@@ -6997,7 +7536,7 @@
      "kapilar": [
       "zeta"
      ],
-     "olasilik": 0.2,
+     "olasilik": 1.0,
      "secim": [
       [
        "equipment_weapon_laser_lf-4-md",
@@ -7006,7 +7545,7 @@
      ]
     }
    ],
-   "_kaynak": "bp-calendar: Pazarları dönüşümlü (hangi haftanın hangisi olduğu uyarlama); olasılık %20 uyarlama; istemci: Delta HP-LF-4, Kappa PD-LF-4, Zeta MD-LF-4",
+   "_kaynak": "bp-calendar: Pazarları dönüşümlü (hangi haftanın hangisi olduğu uyarlama); istemci: Delta HP-LF-4, Kappa PD-LF-4, Zeta MD-LF-4; resmî Türk forumu (Delta/Epsilon/Lambda/Kuiper SSS): LF-4 Günü ek ödül kesin; Geliştirilmiş: HP, MD, PD ya da 10.000 UCB-100; Lazer Fırtınası (forum 2018): Delta HP, Kappa PD, Zeta MD %100",
    "haber": [
     "eLf4Day"
    ],
@@ -7934,6 +8473,10 @@
      "2023-09-07"
     ],
     [
+     "2024-09-04",
+     "2024-09-10"
+    ],
+    [
      "2025-09-10",
      "2025-09-16"
     ],
@@ -8101,6 +8644,10 @@
         ],
         [
          "resource_repairvoucher",
+         1
+        ],
+        [
+         "resource_jumpvoucher",
          1
         ]
        ],
@@ -8547,11 +9094,324 @@
     "BattlePassKeyExchange"
    ],
    "basarim": [],
-   "_kaynak": "wiki events/spacecup (2022 koşusunda Battle Pass; dönem uyarlama: başka Battle Pass'le çakışmayan 1-14 Aralık; Spaceball / PvP yok, hedefler PvE karşılığıyla)"
+   "_kaynak": "wiki events/spacecup (2022 koşusunda Battle Pass; dönem uyarlama: başka Battle Pass'le çakışmayan 1-14 Aralık; Spaceball / PvP yok, hedefler PvE karşılığıyla). Resmî Türk forumu: Referee-Bot X-2..X-8 ve 4-1..4-5 (135026; yalnız CBO-100 ve CBR), ödül paketi FOOTBALL_BOX (127757, 2022), 4-4'te Gezgin Futbol Korsanları; Futbol Lordakia görünümü istemcide yok, Serüven Kutuları Spaceball'a bağlı (tek oyunculuda yok), görevler (506401-506410) koşulsuz yalnız başlık: eklenmedi",
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_hakem_{x}",
+       "adet": 1
+      }
+     ],
+     "kutu_dusme": {
+      "etk_hakem": {
+       "tur": "FOOTBALL_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "ammunition_specialammo_rc-100",
+         [
+          1,
+          3
+         ],
+         28
+        ],
+        [
+         "resource_collectable_scrapium",
+         [
+          5,
+          25
+         ],
+         10
+        ],
+        [
+         "ammunition_laser_spacecup_group-a",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-b",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-c",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-d",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-e",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-f",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-g",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-h",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_cbo-100",
+         [
+          1000,
+          2000
+         ],
+         12
+        ],
+        [
+         "ammunition_laser_cbo-100",
+         [
+          100,
+          500
+         ],
+         16
+        ],
+        [
+         "ammunition_specialammo_wiz-x",
+         [
+          1,
+          3
+         ],
+         10
+        ]
+       ],
+       "_kaynak": "resmî Türk forumu 127757 (Uzay Kupası 2022): Hakem Binary Bot'un ödül paketi; iki RC-100 satırı (%18 + %10) birleşik; miktarlar forumda yok (\"farklı miktar aralıkları\"): uyarlama"
+      }
+     },
+     "_kaynak": "resmî Türk forumu 135026 (Hakem Botu: 5-X ve X-1 dışında bütün haritalar) ve 127757 (ödül paketi)"
+    },
+    {
+     "haritalar": [
+      "4-1",
+      "4-2",
+      "4-3",
+      "4-4",
+      "4-5"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_hakem_4x",
+       "adet": 1
+      }
+     ],
+     "kutu_dusme": {
+      "etk_hakem_4x": {
+       "tur": "FOOTBALL_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "ammunition_specialammo_rc-100",
+         [
+          1,
+          3
+         ],
+         28
+        ],
+        [
+         "resource_collectable_scrapium",
+         [
+          5,
+          25
+         ],
+         10
+        ],
+        [
+         "ammunition_laser_spacecup_group-a",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-b",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-c",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-d",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-e",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-f",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-g",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_spacecup_group-h",
+         [
+          500,
+          1500
+         ],
+         3
+        ],
+        [
+         "ammunition_laser_cbo-100",
+         [
+          1000,
+          2000
+         ],
+         12
+        ],
+        [
+         "ammunition_laser_cbo-100",
+         [
+          100,
+          500
+         ],
+         16
+        ],
+        [
+         "ammunition_specialammo_wiz-x",
+         [
+          1,
+          3
+         ],
+         10
+        ]
+       ],
+       "_kaynak": "resmî Türk forumu 127757 (Uzay Kupası 2022): Hakem Binary Bot'un ödül paketi; iki RC-100 satırı (%18 + %10) birleşik; miktarlar forumda yok (\"farklı miktar aralıkları\"): uyarlama"
+      }
+     },
+     "_kaynak": "resmî Türk forumu 135026 (4-X satırı) ve 127757 (2021-2022: Hakem Binary Botlar 4-1..4-4)"
+    },
+    {
+     "haritalar": [
+      "4-4"
+     ],
+     "grup": {
+      "turler": [
+       [
+        "115",
+        1
+       ],
+       [
+        "113",
+        2
+       ],
+       [
+        "112",
+        2
+       ],
+       [
+        "114",
+        2
+       ],
+       [
+        "111",
+        4
+       ]
+      ],
+      "aralik_sn": 600
+     },
+     "_kaynak": "resmî Türk forumu 127757: Uzay Futbolu maçında 4-4'te her 10 dakikada 11 Gezgin Futbol Korsanı (1 Battleray, 2 Sabotajcı, 2 Barracuda, 2 Annihilator, 4 Interceptor); sonraki grup bütün grup yok edilince. Uzay Futbolu (Spaceball) tek oyunculuda yok: grup etkinlik boyunca"
+    }
+   ]
   },
   "fever_black_light": {
    "ad": "Black Light Fever (BL haritaları)",
    "donemler": [
+    [
+     "2025-03-12",
+     "2025-03-18"
+    ],
+    [
+     "2025-03-20",
+     "2025-03-26"
+    ],
+    [
+     "2025-11-12",
+     "2025-11-18"
+    ],
+    [
+     "2025-11-20",
+     "2025-11-26"
+    ],
     [
      "2026-09-17",
      "2026-09-23"
@@ -8654,6 +9514,2003 @@
    "basarim": [],
    "_kaynak": "wiki birthday-event / winter-event: WIZ-X Snowman modeli 31 Aralık - 4 Ocak (esyalar.json gorunum_sansli)",
    "_takvim": "board-en.darkorbit.com duyuruları 2023-2026 (belgeler/arastirma/tarama_2026-10-22/web_takvim.md)"
+  },
+  "sunburst": {
+   "ad": "Sunburst Lordakium (özel gün)",
+   "donemler": [
+    [
+     "06-21",
+     "06-21"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "harita": {
+    "haritalar": [
+     "X-2",
+     "X-3",
+     "X-4",
+     "X-5",
+     "X-6",
+     "X-7",
+     "X-8",
+     "4-1",
+     "4-2",
+     "4-3",
+     "4-4",
+     "4-5"
+    ],
+    "uzaylilar": [
+     {
+      "tur": "etk_sunburst_lordakium",
+      "adet": 3
+     }
+    ],
+    "_kaynak": "Resmî Türk forumu 1885: özel günlerde X-2..X-8 ve 4-X haritalarında"
+   },
+   "_kaynak": "Resmî Türk forumu 1885 (Sunburst Lordakium 'özel günlerde'); tarih yok: yaz gündönümü (21 Haziran) uyarlama; panelden de başlatılabilir"
+  },
+  "masque_expo": {
+   "ad": "M.A.S.Q.U.E. Space Tech Summit",
+   "donemler": [
+    [
+     "2016-04-18",
+     "2016-05-01"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "kapi_odulu": [
+    {
+     "kapilar": [
+      "streuner"
+     ],
+     "olasilik": 1.0,
+     "secim": [
+      [
+       "ship_yamato_design_yamato-expo2016",
+       1
+      ],
+      [
+       "ship_defcom_design_defcom-expo2016",
+       1
+      ]
+     ]
+    }
+   ],
+   "_kaynak": "Resmî Türk forumu 127753 (M.A.S.Q.U.E. Uzay Teknolojisi Zirvesi, 18 Nisan - 1 Mayıs 2016): Kuiper'de İmparator Streuner Yamato Expo ya da Defcom Expo tasarımı bırakır (kapı bitince; yalnız görsel). Geçmiş tek dönem: panelden başlatılabilir; Expo görevleri (512054-512067) eklenmedi"
+  },
+  "battle_for_influence": {
+   "ad": "Battle for Influence",
+   "donemler": [
+    [
+     "2017-05-18",
+     "2017-05-31"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_BATTLE_FOR_INFLUENCE"
+   ],
+   "nufuz": {
+    "alpha": 15,
+    "beta": 20,
+    "gamma": 25,
+    "delta": 30,
+    "epsilon": 35,
+    "zeta": 40,
+    "kappa": 45,
+    "lambda": 50,
+    "kronos": 60,
+    "hades": 40
+   },
+   "_kaynak": "Resmî Türk forumu 131012 (Nüfuz Savaşı SSS): kapı zaferi nüfuz puanı (Alpha 15 … Kronos 60, Hades 40) -> Influence başarımları (2.500 / 10.000 / 20.000). Dönem uyarlama (şirket bonusu 1-13 Haziran 2017'den önceki iki hafta); panelden başlatılabilir. Oyuncu öldürme ve Karşılaşma zaferleri, şirket bonusu ve Influence Mission görevleri eklenmedi"
+  },
+  "saimon_rebellion": {
+   "ad": "Saimon Rebellion",
+   "donemler": [
+    [
+     "2017-09-12",
+     "2017-09-26"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "kapi_odulu": [
+    {
+     "kapilar": [
+      "alpha"
+     ],
+     "olasilik": 1.0,
+     "yinelenmez": true,
+     "secim": [
+      [
+       "drone_designs_drone-pusat-ocean",
+       1
+      ]
+     ]
+    },
+    {
+     "kapilar": [
+      "beta"
+     ],
+     "olasilik": 0.75,
+     "yinelenmez": true,
+     "secim": [
+      [
+       "pet_designs_pet-pusat-ocean",
+       1
+      ]
+     ]
+    },
+    {
+     "kapilar": [
+      "gamma"
+     ],
+     "olasilik": 0.5,
+     "yinelenmez": true,
+     "secim": [
+      [
+       "ship_pusat_design_pusat-ocean",
+       1
+      ]
+     ]
+    },
+    {
+     "kapilar": [
+      "zeta"
+     ],
+     "olasilik": 0.25,
+     "yinelenmez": true,
+     "secim": [
+      [
+       "recipe_blueprint-pusat-legend",
+       1
+      ]
+     ]
+    }
+   ],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-1",
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "kutular": [
+      {
+       "tur": "SAIMON_REBELLION",
+       "adet": 3,
+       "mod": "biri",
+       "yeniden_sn": [
+        240,
+        600
+       ],
+       "icerik": [
+        [
+         "currency_uridium",
+         [
+          20,
+          100
+         ],
+         4
+        ],
+        [
+         "ammunition_rocket_plt-2026",
+         [
+          5,
+          15
+         ],
+         9
+        ],
+        [
+         "ammunition_rocketlauncher_ubr-100",
+         [
+          5,
+          15
+         ],
+         4
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         [
+          5,
+          50
+         ],
+         15
+        ],
+        [
+         "currency_credits",
+         [
+          200,
+          1000
+         ],
+         16
+        ],
+        [
+         "resource_ore_xenomit",
+         [
+          5,
+          20
+         ],
+         6
+        ],
+        [
+         "resource_extra-energy",
+         1,
+         5
+        ],
+        [
+         "ammunition_rocketlauncher_eco-10",
+         [
+          5,
+          15
+         ],
+         5
+        ],
+        [
+         "ammunition_mine_slm-01",
+         1,
+         4
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          5,
+          15
+         ],
+         6
+        ],
+        [
+         "ammunition_mine_ddm-01",
+         1,
+         5
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          5,
+          15
+         ],
+         7
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          50,
+          150
+         ],
+         7
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         7
+        ]
+       ]
+      }
+     ],
+     "kutu_dusme": {
+      "75": {
+       "tur": "LEGEND_SPECTRUM_BP_BOX",
+       "olasilik": 0.00015,
+       "omur_sn": 300,
+       "kesin": [
+        [
+         "recipe_blueprint-spectrum-legend",
+         1
+        ]
+       ]
+      },
+      "25": {
+       "tur": "LEGEND_SPECTRUM_BP_BOX",
+       "olasilik": 0.00015,
+       "omur_sn": 300,
+       "kesin": [
+        [
+         "recipe_blueprint-spectrum-legend",
+         1
+        ]
+       ]
+      },
+      "38": {
+       "tur": "LEGEND_SPECTRUM_BP_BOX",
+       "olasilik": 0.00015,
+       "omur_sn": 300,
+       "kesin": [
+        [
+         "recipe_blueprint-spectrum-legend",
+         1
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "_kaynak": "resmî Türk forumu 124840 (Saimon İsyanı, 12 Eylül'den iki hafta): Alpha Ocean Pusat diroit tasarımı %100, Beta P.E.T. tasarımı %75, Gamma gemi tasarımı %50; X-1..X-8'de 14 kalemli Saimon Kutusu (şanslar forumdan, \"asıl miktar değişmedi\": miktarlar bonus kutusu ve öteki etkinlik kutularının aralıkları, uyarlama); görevler 506156-506160 (gorev_ekleri). Geçmiş tek dönem: panelden başlatılabilir. Zeta'da %25 Legend Pusat planı, Saimon / Boss Saimon / UberSaimon'dan %0,015 Legend Spectrum planı kutusu (LEGEND_SPECTRUM_BP_BOX; iki planın tek kaynağı). UBA sezon ödülleri ve ödeme paketleri eklenmedi"
+  },
+  "pirate_raid": {
+   "ad": "Defense: Pirate Raid",
+   "donemler": [
+    [
+     "2017-09-12",
+     "2017-09-26"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "yeniden_dogma": {
+    "255": [
+     150,
+     150
+    ],
+    "258": [
+     150,
+     150
+    ],
+    "254": [
+     150,
+     150
+    ],
+    "256": [
+     300,
+     300
+    ]
+   },
+   "harita_ek": [
+    {
+     "haritalar": [
+      "5-1",
+      "5-2",
+      "5-3"
+     ],
+     "kutu_dusme": {
+      "257": {
+       "tur": "UBERINTERCEPTOR_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "mod": "biri",
+       "icerik": [
+        [
+         "resource_ore_xenomit",
+         [
+          25,
+          50
+         ],
+         60
+        ],
+        [
+         "resource_ore_palladium",
+         [
+          1,
+          3
+         ],
+         20
+        ],
+        [
+         "resource_collectable_tetrathrin",
+         1,
+         20
+        ]
+       ]
+      },
+      "255": {
+       "tur": "UBERBARRACUDA_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "kesin": [
+        [
+         "resource_collectable_kyhalon",
+         1
+        ],
+        [
+         "resource_collectable_tetrathrin",
+         2
+        ]
+       ]
+      },
+      "258": {
+       "tur": "UBERSABOTEUR_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "kesin": [
+        [
+         "resource_collectable_kyhalon",
+         1
+        ],
+        [
+         "resource_collectable_tetrathrin",
+         3
+        ]
+       ]
+      },
+      "254": {
+       "tur": "UBERANNIHILATOR_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "kesin": [
+        [
+         "resource_collectable_kyhalon",
+         2
+        ],
+        [
+         "resource_collectable_tetrathrin",
+         3
+        ]
+       ]
+      },
+      "256": {
+       "tur": "UBERBATTLERAY_BOX",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "kesin": [
+        [
+         "resource_collectable_kyhalon",
+         5
+        ],
+        [
+         "resource_collectable_tetrathrin",
+         9
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "puanlama": {
+    "npc": {
+     "58": 1,
+     "59": 2,
+     "60": 5,
+     "61": 6,
+     "62": 8,
+     "121": 10,
+     "163": 4,
+     "164": 8,
+     "165": 20,
+     "166": 24,
+     "167": 32
+    },
+    "siralama": [
+     {
+      "den": 1,
+      "e": 1,
+      "esyalar": [
+       [
+        "resource_premium-days-90",
+        1
+       ],
+       [
+        "ammunition_laser_ucb-100",
+        100000
+       ],
+       [
+        "resource_booty-key",
+        25
+       ],
+       [
+        "currency_uridium",
+        30000
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        20
+       ],
+       [
+        "equipment_weapon_laser_lf-4-hp",
+        1
+       ],
+       [
+        "resource_collectable_indoctrineoil",
+        250
+       ]
+      ],
+      "unvan": "title_pirateRaid-champion"
+     },
+     {
+      "den": 2,
+      "e": 2,
+      "esyalar": [
+       [
+        "resource_premium-days-60",
+        1
+       ],
+       [
+        "ammunition_laser_ucb-100",
+        50000
+       ],
+       [
+        "resource_booty-key",
+        15
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        15
+       ],
+       [
+        "currency_uridium",
+        20000
+       ],
+       [
+        "resource_collectable_indoctrineoil",
+        175
+       ],
+       [
+        "equipment_weapon_laser_lf-4-md",
+        1
+       ]
+      ]
+     },
+     {
+      "den": 3,
+      "e": 3,
+      "esyalar": [
+       [
+        "resource_premium-days-30",
+        1
+       ],
+       [
+        "ammunition_laser_ucb-100",
+        25000
+       ],
+       [
+        "resource_booty-key",
+        10
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        10
+       ],
+       [
+        "currency_uridium",
+        10000
+       ],
+       [
+        "resource_collectable_indoctrineoil",
+        150
+       ],
+       [
+        "equipment_weapon_laser_lf-4-pd",
+        1
+       ]
+      ]
+     },
+     {
+      "den": 4,
+      "e": 10,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        20000
+       ],
+       [
+        "resource_booty-key",
+        10
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        8
+       ],
+       [
+        "currency_uridium",
+        10000
+       ],
+       [
+        "equipment_weapon_laser_lf-4",
+        1
+       ],
+       [
+        "resource_collectable_indoctrineoil",
+        100
+       ]
+      ]
+     },
+     {
+      "den": 11,
+      "e": 30,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        10000
+       ],
+       [
+        "resource_booty-key",
+        10
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        6
+       ],
+       [
+        "currency_uridium",
+        5000
+       ],
+       [
+        "equipment_weapon_laser_sll-03",
+        1
+       ],
+       [
+        "resource_collectable_indoctrineoil",
+        50
+       ]
+      ]
+     },
+     {
+      "den": 31,
+      "e": 50,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        5000
+       ],
+       [
+        "resource_booty-key",
+        5
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        4
+       ],
+       [
+        "currency_uridium",
+        2000
+       ],
+       [
+        "resource_collectable_indoctrineoil",
+        25
+       ]
+      ]
+     },
+     {
+      "den": 51,
+      "e": 100,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        3000
+       ],
+       [
+        "resource_booty-key",
+        3
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        2
+       ],
+       [
+        "currency_uridium",
+        2000
+       ],
+       [
+        "resource_collectable_indoctrineoil",
+        10
+       ]
+      ]
+     }
+    ]
+   },
+   "_kaynak": "resmî Türk forumu 133215 (Savunma: Korsan Baskını, 12-26 Eylül 2017): Uber korsanlar (5-1..5-3) her zaman baskın kutusu düşürür (istemcinin UBER*_BOX kutuları; içerik forumdan), yeniden doğma 150 / 300 sn; korsan puanı (yalnız öldüren) ve bireysel sıralama ödülü (tek oyunculuda 1., unvan Raid Warlord). Klan ödülleri (Raid Battler) ve görevler (istemcide kimliği yok) eklenmedi; geçmiş tek dönem: panelden başlatılabilir"
+  },
+  "demaner_hunt": {
+   "ad": "DemaNeR Freighter Hunt",
+   "donemler": [
+    [
+     "2020-02-21",
+     "2020-03-04"
+    ]
+   ],
+   "turler": [],
+   "basarim": [
+    "EVENT_DEMANER_HUNT"
+   ],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8",
+      "4-1",
+      "4-2",
+      "4-3",
+      "4-4",
+      "4-5"
+     ],
+     "saatler": [
+      [
+       11,
+       23
+      ]
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_demaner_freighter",
+       "adet": 1
+      },
+      {
+       "tur": "etk_demaner",
+       "adet": 4
+      }
+     ],
+     "kutu_dusme": {
+      "etk_demaner_freighter": {
+       "tur": "DEMANER_BOX",
+       "adet": 10,
+       "olasilik": 1.0,
+       "omur_sn": 600,
+       "mod": "biri",
+       "ayrica": [
+        [
+         "resource_collectable_axion-beam-regulator",
+         100,
+         0.05
+        ],
+        [
+         "drone_designs_havoc",
+         1,
+         0.05
+        ],
+        [
+         "ship_berserker_design_berserker-neikos",
+         1,
+         0.5
+        ],
+        [
+         "ship_berserker_design_berserker-arios",
+         1,
+         0.5
+        ],
+        [
+         "resource_booty-key",
+         20,
+         20
+        ],
+        [
+         "resource_extra-energy",
+         50,
+         60
+        ],
+        [
+         "ammunition_specialammo_emp-01",
+         10,
+         50
+        ],
+        [
+         "resource_collectable_indoctrineoil",
+         1,
+         15
+        ],
+        [
+         "resource_ore_osmium",
+         2,
+         10
+        ],
+        [
+         "ammunition_laser_rcb-140",
+         20,
+         10
+        ],
+        [
+         "equipment_aiprotocol_ai-sm1",
+         1,
+         5
+        ],
+        [
+         "equipment_aiprotocol_ai-s1",
+         1,
+         5
+        ],
+        [
+         "equipment_aiprotocol_ai-al1",
+         1,
+         5
+        ],
+        [
+         "equipment_aiprotocol_ai-lm1",
+         1,
+         5
+        ]
+       ],
+       "icerik": [
+        [
+         "currency_uridium",
+         20000
+        ],
+        [
+         "resource_logfile",
+         30
+        ],
+        [
+         "ammunition_laser_rb-214",
+         100000
+        ],
+        [
+         "ammunition_rocket_plt-2021",
+         10000
+        ]
+       ]
+      },
+      "etk_demaner": {
+       "tur": "DEMANER_INVADER_BOX",
+       "olasilik": 0.3,
+       "mod": "biri",
+       "icerik": [
+        [
+         "ammunition_laser_mcb-25",
+         800,
+         30
+        ],
+        [
+         "ammunition_laser_rb-214",
+         20,
+         20
+        ],
+        [
+         "resource_ore_seprom",
+         1,
+         20
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         300,
+         25
+        ],
+        [
+         "resource_extra-energy",
+         1,
+         5
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "_kaynak": "resmî Türk forumu 132357 (Demaner, 21 Şubat - 4 Mart 2020; günde 11:00-23:00): haritada bir Demaner Freighter (en çok üç gemi, 20 dakikada bir yenisi: tek oyunculuda harita başına bir), yok olunca 10 Özel Demaner Kutusu (en çok hasar verene; kalemler kendi şanslarıyla, ilk 10'un dört ödülünden biri), küçük Demaner'ın %30 kutusu; başarımlar (EVENT_DEMANER_HUNT). AI protokolleri forumda Lv4 (seviye 1 verilir), Demaner Escort ve grup yük gemisinin değerleri kaynakta yok, görevler istemcide kimliksiz: eklenmedi; geçmiş tek dönem: panelden başlatılabilir"
+  },
+  "hatching_out": {
+   "ad": "Hatching Out!",
+   "donemler": [
+    [
+     "2018-03-24",
+     "2018-04-09"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-1",
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_i_egg",
+       "adet": 4
+      }
+     ],
+     "kargo_yok": [
+      "etk_i_egg",
+      "etk_i_gygerthrall",
+      "etk_i_hitac"
+     ],
+     "olunce_dogur": {
+      "etk_i_egg": [
+       {
+        "tur": "etk_i_gygerthrall",
+        "adet": [
+         2,
+         5
+        ],
+        "olasilik": 0.5
+       }
+      ]
+     },
+     "kutu_dusme": {
+      "etk_i_egg": {
+       "tur": "VIRAL_BOX_AAA",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "mod": "hepsi",
+       "icerik": [
+        [
+         "olay_puani:hatching_out",
+         1,
+         20
+        ],
+        [
+         "resource_collectable_indoctrineoil",
+         1,
+         0.5
+        ],
+        [
+         "resource_collectable_scrapium",
+         1,
+         30
+        ],
+        [
+         "resource_collectable_prismatium",
+         1,
+         5
+        ],
+        [
+         "resource_collectable_boltrum",
+         1,
+         10
+        ],
+        [
+         "resource_collectable_mucosum",
+         1,
+         20
+        ],
+        [
+         "ammunition_laser_mcb-50",
+         [
+          10,
+          30
+         ],
+         35
+        ]
+       ],
+       "kesin": [
+        [
+         "resource_ore_prometium",
+         [
+          5,
+          15
+         ]
+        ],
+        [
+         "resource_ore_endurium",
+         [
+          5,
+          15
+         ]
+        ],
+        [
+         "resource_ore_terbium",
+         [
+          5,
+          15
+         ]
+        ]
+       ]
+      },
+      "etk_i_gygerthrall": {
+       "tur": "VIRAL_BOX_AA",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "mod": "hepsi",
+       "icerik": [
+        [
+         "olay_puani:hatching_out",
+         2,
+         40
+        ],
+        [
+         "resource_collectable_indoctrineoil",
+         1,
+         2
+        ],
+        [
+         "resource_extra-energy",
+         2,
+         10
+        ],
+        [
+         "resource_logfile",
+         1,
+         20
+        ],
+        [
+         "resource_collectable_scrapium",
+         2,
+         100
+        ],
+        [
+         "resource_collectable_mucosum",
+         2,
+         30
+        ],
+        [
+         "resource_collectable_prismatium",
+         1,
+         30
+        ],
+        [
+         "resource_collectable_boltrum",
+         1,
+         30
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "haritalar": [
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_i_hitac",
+       "adet": 1
+      }
+     ],
+     "cagir": {
+      "etk_i_hitac": {
+       "tur": "etk_i_egg",
+       "adet": 1,
+       "en_cok": 3,
+       "aralik_sn": 30,
+       "omur_sn": 90
+      }
+     },
+     "kutu_dusme": {
+      "etk_i_hitac": {
+       "tur": "VIRAL_BOX_A",
+       "olasilik": 1.0,
+       "omur_sn": 300,
+       "mod": "hepsi",
+       "icerik": [
+        [
+         "olay_puani:hatching_out",
+         50,
+         100
+        ],
+        [
+         "olay_puani:hatching_out",
+         25,
+         20
+        ],
+        [
+         "resource_collectable_indoctrineoil",
+         1,
+         40
+        ],
+        [
+         "resource_extra-energy",
+         5,
+         5
+        ],
+        [
+         "ammunition_laser_ucb-100",
+         5000,
+         70
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "puanlama": {
+    "kapi": {
+     "alpha": 160,
+     "beta": 160,
+     "gamma": 160
+    },
+    "sifirla": true,
+    "esikler": [
+     [
+      1000,
+      [
+       [
+        "resource_extra-energy",
+        100
+       ]
+      ]
+     ],
+     [
+      5000,
+      [
+       [
+        "ammunition_laser_rsb-75",
+        5000
+       ]
+      ]
+     ],
+     [
+      6000,
+      [
+       [
+        "resource_collectable_kyhalon",
+        15
+       ],
+       [
+        "resource_collectable_bifenon",
+        50
+       ]
+      ]
+     ],
+     [
+      12000,
+      [
+       [
+        "resource_collectable_kyhalon",
+        40
+       ],
+       [
+        "resource_collectable_tetrathrin",
+        60
+       ]
+      ]
+     ],
+     [
+      20000,
+      [
+       [
+        "equipment_weapon_laser_lf-4",
+        1
+       ]
+      ]
+     ]
+    ]
+   },
+   "_kaynak": "resmî Türk forumu 129632 (Toplama Zamanı / Hatching Out, 24 Mart - 9 Nisan): I-Hitac (X-4..X-8, 30 sn'de bir 90 sn ömürlü yumurta), yumurtalar haritalarda da (X-1..X-8), yumurtadan %50 2-5 I-Gygerthrall, Viral Kutular (A: I-Hitac, AA: I-Gygerthrall, AAA: yumurta; içerik ve şanslar forumdan, 'Temel Cevherler Paketi' uyarlama), Viral Temizlik Puanı (kutulardan ve Alpha/Beta/Gamma 160) ve 20.000 VPP'lik sıfırlanabilir kilometre taşları. Etkinlik ilerleme penceresi istemcide ölü: puan EPP satırı, ödül ekran iletisiyle. Harita seçimi ve I-Hitac'ın 15-20 dk yeniden doğması uyarlama; RM-800 / RC-800 ve görevler (forumda yalnız ödül havuzu) eklenmedi; geçmiş tek dönem: panelden başlatılabilir"
+  },
+  "blacklight_surge": {
+   "ad": "Blacklight Surge",
+   "donemler": [
+    [
+     "2019-08-16",
+     "2019-08-30"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "puanlama": {
+    "npc": {
+     "174": [
+      2,
+      1
+     ],
+     "175": [
+      4,
+      2
+     ],
+     "176": [
+      8,
+      4
+     ],
+     "177": [
+      20,
+      10
+     ],
+     "178": [
+      50,
+      25
+     ]
+    },
+    "ilerleme": {
+     "174": 15,
+     "175": 20,
+     "176": 74,
+     "177": 168,
+     "178": 1650
+    },
+    "esikler": [
+     [
+      3250,
+      [
+       [
+        "ammunition_specialammo_sr-5",
+        100
+       ]
+      ]
+     ],
+     [
+      6700,
+      [
+       [
+        "resource_ore_seprom",
+        35000
+       ]
+      ]
+     ],
+     [
+      33000,
+      [
+       [
+        "booster_dmg-dlb",
+        120
+       ],
+       [
+        "booster_shd-dlb",
+        120
+       ]
+      ]
+     ],
+     [
+      135000,
+      [
+       [
+        "ammunition_laser_idb-125",
+        30000
+       ]
+      ]
+     ],
+     [
+      295000,
+      [
+       [
+        "ship_centurion_design_centurion-tyrannos",
+        1
+       ],
+       [
+        "resource_premium-weeks-2",
+        1
+       ]
+      ]
+     ]
+    ],
+    "siralama": [
+     {
+      "den": 1,
+      "e": 1,
+      "esyalar": [
+       [
+        "ship_cyborg_design_cyborg-tyrannos",
+        1
+       ],
+       [
+        "ship_hammerclaw_design_hammerclaw-tyrannos",
+        1
+       ],
+       [
+        "ship_mimesis_design_mimesis-tyrannos",
+        1
+       ],
+       [
+        "ship_hecate_design_hecate-tyrannos",
+        1
+       ],
+       [
+        "resource_premium-days-90",
+        1
+       ],
+       [
+        "ammunition_laser_ucb-100",
+        200000
+       ],
+       [
+        "resource_booty-key",
+        25
+       ],
+       [
+        "currency_uridium",
+        75000
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        100
+       ],
+       [
+        "booster_dmg-dlb",
+        336
+       ],
+       [
+        "booster_shd-dlb",
+        336
+       ]
+      ],
+      "unvan": "title_blacklightSurge-champion"
+     },
+     {
+      "den": 2,
+      "e": 2,
+      "esyalar": [
+       [
+        "resource_premium-days-60",
+        1
+       ],
+       [
+        "ammunition_laser_ucb-100",
+        150000
+       ],
+       [
+        "resource_booty-key",
+        15
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        50
+       ],
+       [
+        "currency_uridium",
+        35000
+       ],
+       [
+        "booster_dmg-dlb",
+        240
+       ],
+       [
+        "booster_shd-dlb",
+        240
+       ]
+      ]
+     },
+     {
+      "den": 3,
+      "e": 3,
+      "esyalar": [
+       [
+        "resource_premium-days-30",
+        1
+       ],
+       [
+        "ammunition_laser_ucb-100",
+        135000
+       ],
+       [
+        "resource_booty-key",
+        10
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        25
+       ],
+       [
+        "currency_uridium",
+        20000
+       ],
+       [
+        "booster_dmg-dlb",
+        168
+       ],
+       [
+        "booster_shd-dlb",
+        168
+       ]
+      ]
+     },
+     {
+      "den": 4,
+      "e": 10,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        120000
+       ],
+       [
+        "resource_booty-key",
+        10
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        8
+       ],
+       [
+        "currency_uridium",
+        10000
+       ],
+       [
+        "booster_dmg-dlb",
+        72
+       ],
+       [
+        "booster_shd-dlb",
+        72
+       ]
+      ]
+     },
+     {
+      "den": 11,
+      "e": 30,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        100000
+       ],
+       [
+        "resource_booty-key",
+        10
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        6
+       ],
+       [
+        "currency_uridium",
+        5000
+       ]
+      ]
+     },
+     {
+      "den": 31,
+      "e": 50,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        50000
+       ],
+       [
+        "resource_booty-key",
+        5
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        4
+       ],
+       [
+        "currency_uridium",
+        2000
+       ]
+      ]
+     },
+     {
+      "den": 51,
+      "e": 100,
+      "esyalar": [
+       [
+        "ammunition_laser_ucb-100",
+        30000
+       ],
+       [
+        "resource_booty-key",
+        3
+       ],
+       [
+        "ammunition_specialammo_emp-01",
+        2
+       ],
+       [
+        "currency_uridium",
+        2000
+       ]
+      ]
+     }
+    ]
+   },
+   "_kaynak": "resmî Türk forumu 145819 (Karaşimşek Dalgası, Ağustos 2019): Karaşimşek uzaylısı başına puan (kendi firma haritasında çift: 1-BL/1-8 MMO …) ve İlerleme Puanı, beş ilerleme ödülü (bir kez, sıfırlanmaz), oyuncu sıralaması (tek oyunculuda 1.: unvan Primary Regulator of Blacklight), 17+ günlük görevler 517306-517315 (gorev_ekleri). Dönem uyarlama (forum 16 Ağustos 2019 duyurusu, iki hafta); klan sıralaması (The Defiant), A-BL x8 ve RM-B00 eklenmedi"
+  },
+  "astral_discovery": {
+   "ad": "Astral Discovery",
+   "donemler": [
+    [
+     "2022-06-09",
+     "2022-06-16"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "kapi_odulu": [
+    {
+     "kapilar": [
+      "alpha",
+      "beta",
+      "gamma"
+     ],
+     "olasilik": 0.05,
+     "yoksa_uridyum": 10000,
+     "secim": [
+      [
+       "ship_sentinel_design_sentinel-inferno",
+       1,
+       30
+      ],
+      [
+       "ship_diminisher_design_diminisher-inferno",
+       1,
+       30
+      ],
+      [
+       "ship_pusat_design_pusat-inferno",
+       1,
+       30
+      ],
+      [
+       "ship_berserker_design_berserker-inferno",
+       1,
+       10
+      ]
+     ]
+    }
+   ],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-1",
+      "X-2",
+      "X-3",
+      "X-4",
+      "X-5",
+      "X-6",
+      "X-7",
+      "X-8",
+      "4-1",
+      "4-2",
+      "4-3",
+      "4-4",
+      "4-5",
+      "5-1",
+      "5-2",
+      "5-3"
+     ],
+     "kutular": [
+      {
+       "tur": "SOLAR_CLASH",
+       "adet": 3,
+       "mod": "biri",
+       "yeniden_sn": [
+        240,
+        600
+       ],
+       "icerik": [
+        [
+         "ammunition_specialammo_wiz-x",
+         [
+          1,
+          3
+         ],
+         1
+        ],
+        [
+         "ammunition_firework_fwx-s",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-m",
+         1,
+         1
+        ],
+        [
+         "ammunition_firework_fwx-l",
+         1,
+         1
+        ],
+        [
+         "currency_uridium",
+         [
+          20,
+          132
+         ],
+         1
+        ],
+        [
+         "currency_credits",
+         [
+          200,
+          1398
+         ],
+         1
+        ],
+        [
+         "resource_extra-energy",
+         [
+          5,
+          9
+         ],
+         1
+        ],
+        [
+         "resource_pet-fuel",
+         [
+          37,
+          49
+         ],
+         1
+        ],
+        [
+         "resource_repairvoucher",
+         1,
+         1
+        ],
+        [
+         "resource_jumpvoucher",
+         [
+          2,
+          3
+         ],
+         1
+        ],
+        [
+         "ammunition_specialammo_pld-8",
+         [
+          6,
+          13
+         ],
+         1
+        ],
+        [
+         "ammunition_rocket_r-310",
+         [
+          3,
+          27
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_sar-02",
+         [
+          5,
+          14
+         ],
+         1
+        ],
+        [
+         "ammunition_rocketlauncher_eco-10",
+         [
+          8,
+          14
+         ],
+         1
+        ]
+       ]
+      }
+     ]
+    }
+   ],
+   "_kaynak": "resmî Türk forumu 162019 (Astral Keşif, 9-16 Haziran 2022): Güneş Kutuları şirket, korsan ve savaş haritalarında (istemcide adı yok: Chaos Omen'in güneş kutusu SOLAR_CLASH; içerik forumun listesi, eşit ağırlık, miktarlar uyarlama), Alpha/Beta/Gamma özel ödülü Inferno Sentinel / Diminisher / Pusat %30, Berserker %10 (sahip olunan çıkarsa 10.000 U; özel ödülün şansı \"küçük\": %5 uyarlama), WIZ-X'in %30 Inferno dönüşümü (esyalar.json gorunum_sansli), görevler 506649-506652 / 512653-512654. Ödeme bölümünün Inferno Berserker'i ve oyuncu dönüştürme başarımları kapsam dışı; geçmiş tek dönem: panelden başlatılabilir"
+  },
+  "europa_siralama": {
+   "ad": "Global 4 - Europa Ranking",
+   "donemler": [
+    [
+     "2025-10-29 11:00",
+     "2025-11-28",
+     "tek"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "puanlama": {
+    "sira_olcut": "katilim",
+    "katilim": {
+     "unvan": "title_europa-202510-2",
+     "esyalar": [
+      [
+       "currency_uridium",
+       100000
+      ],
+      [
+       "equipment_weapon_laser_pr-l",
+       3
+      ],
+      [
+       "drone_designs_spartan",
+       1
+      ],
+      [
+       "resource_premium-weeks-2",
+       1
+      ]
+     ]
+    },
+    "siralama": [
+     {
+      "den": 1,
+      "e": 1,
+      "esyalar": [
+       [
+        "currency_uridium",
+        1000000
+       ],
+       [
+        "resource_premium-days-90",
+        1
+       ],
+       [
+        "equipment_weapon_laser_os-l",
+        3
+       ],
+       [
+        "ammunition_laser_a-bl",
+        30000
+       ],
+       [
+        "equipment_shipupgrade_dmg-xu02",
+        3
+       ],
+       [
+        "equipment_shipupgrade_hp-xu02",
+        3
+       ],
+       [
+        "equipment_shipupgrade_shd-xu02",
+        3
+       ],
+       [
+        "equipment_shipupgrade_spc-xu02",
+        3
+       ]
+      ],
+      "unvan": "title_europa-202510-1"
+     },
+     {
+      "den": 2,
+      "e": 2,
+      "esyalar": [
+       [
+        "currency_uridium",
+        750000
+       ],
+       [
+        "resource_premium-days-60",
+        1
+       ],
+       [
+        "equipment_weapon_laser_am-l",
+        3
+       ],
+       [
+        "ammunition_laser_a-bl",
+        20000
+       ],
+       [
+        "equipment_shipupgrade_dmg-xu02",
+        2
+       ],
+       [
+        "equipment_shipupgrade_hp-xu02",
+        2
+       ],
+       [
+        "equipment_shipupgrade_shd-xu02",
+        2
+       ],
+       [
+        "equipment_shipupgrade_spc-xu02",
+        2
+       ]
+      ],
+      "unvan": "title_europa-202510-1"
+     },
+     {
+      "den": 3,
+      "e": 3,
+      "esyalar": [
+       [
+        "currency_uridium",
+        500000
+       ],
+       [
+        "resource_premium-days-30",
+        1
+       ],
+       [
+        "equipment_weapon_laser_pr-l",
+        3
+       ],
+       [
+        "ammunition_laser_a-bl",
+        15000
+       ],
+       [
+        "equipment_shipupgrade_dmg-xu02",
+        2
+       ],
+       [
+        "equipment_shipupgrade_hp-xu02",
+        2
+       ],
+       [
+        "equipment_shipupgrade_shd-xu02",
+        2
+       ],
+       [
+        "equipment_shipupgrade_spc-xu02",
+        2
+       ]
+      ],
+      "unvan": "title_europa-202510-1"
+     },
+     {
+      "den": 4,
+      "e": 5,
+      "esyalar": [
+       [
+        "currency_uridium",
+        300000
+       ],
+       [
+        "resource_premium-days-30",
+        1
+       ],
+       [
+        "equipment_weapon_laser_os-l",
+        1
+       ],
+       [
+        "ammunition_laser_a-bl",
+        15000
+       ],
+       [
+        "equipment_shipupgrade_dmg-xu02",
+        1
+       ],
+       [
+        "equipment_shipupgrade_hp-xu02",
+        1
+       ],
+       [
+        "equipment_shipupgrade_shd-xu02",
+        1
+       ],
+       [
+        "equipment_shipupgrade_spc-xu02",
+        1
+       ]
+      ],
+      "unvan": "title_europa-202510-1"
+     },
+     {
+      "den": 6,
+      "e": 10,
+      "esyalar": [
+       [
+        "currency_uridium",
+        200000
+       ],
+       [
+        "resource_premium-days-30",
+        1
+       ],
+       [
+        "equipment_weapon_laser_os-l",
+        1
+       ],
+       [
+        "ammunition_laser_a-bl",
+        12500
+       ],
+       [
+        "equipment_shipupgrade_dmg-xu02",
+        1
+       ]
+      ]
+     },
+     {
+      "den": 11,
+      "e": 25,
+      "esyalar": [
+       [
+        "currency_uridium",
+        100000
+       ],
+       [
+        "resource_premium-weeks-2",
+        1
+       ],
+       [
+        "equipment_weapon_laser_am-l",
+        1
+       ],
+       [
+        "ammunition_laser_a-bl",
+        10000
+       ],
+       [
+        "equipment_shipupgrade_dmg-xu02",
+        1
+       ]
+      ]
+     },
+     {
+      "den": 26,
+      "e": 50,
+      "esyalar": [
+       [
+        "currency_uridium",
+        50000
+       ],
+       [
+        "resource_premium-weeks-2",
+        1
+       ],
+       [
+        "equipment_weapon_laser_am-l",
+        1
+       ],
+       [
+        "ammunition_laser_a-bl",
+        8000
+       ],
+       [
+        "equipment_shipupgrade_dmg-xu02",
+        1
+       ]
+      ]
+     },
+     {
+      "den": 51,
+      "e": 100,
+      "esyalar": [
+       [
+        "currency_uridium",
+        25000
+       ],
+       [
+        "resource_premium-weeks-2",
+        1
+       ],
+       [
+        "equipment_weapon_laser_am-l",
+        1
+       ],
+       [
+        "ammunition_laser_a-bl",
+        5000
+       ]
+      ]
+     }
+    ]
+   },
+   "_kaynak": "resmî Türk forumu 177655 (Evrensel 4 - Europa sıralama etkinliği, 29 Ekim 11:00 - 28 Kasım 2025): etkinlikte giriş yapan herkese katılım ödülü (Europa Vanguard), seviye ve EP sırasına göre ödül (ilk 5 Europa Conqueror; forumun 3. satırındaki 'Titan Fatihi' yazım hatası); ödüller etkinlik bitince (talep penceresi yerine EventRewardConfirmationCommand). Tek oyunculuda pilot 1.; geçmiş tek dönem: panelden başlatılabilir"
+  },
+  "onuncu_yil": {
+   "ad": "DarkOrbit 10th Anniversary",
+   "donemler": [
+    [
+     "2016-12-01",
+     "2016-12-31"
+    ]
+   ],
+   "turler": [],
+   "basarim": [],
+   "_kaynak": "resmî Türk forumu 126560 (10. Yıl Yıldönümü, 1-31 Aralık 2016): 13 öykü görevi (506217-506229; 506222 istemcide başlıksız), 16 günlük görev (506201-506216) gorev_ekleri'nde; Demaner yenilemesi demaner_hunt, Kış Takvimi ve Goliath-X zaten var. Üç yan görev istemcide kimliksiz: eklenmedi; geçmiş tek dönem: panelden başlatılabilir"
+  },
+  "plague_mutation": {
+   "ad": "Plague Mutation",
+   "donemler": [
+    [
+     "2020-06-22",
+     "2020-07-06"
+    ]
+   ],
+   "turler": [
+    "BattlePass"
+   ],
+   "basarim": [
+    "EVENT_PLAGUE"
+   ],
+   "harita_ek": [
+    {
+     "haritalar": [
+      "X-3",
+      "X-4"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_gygerthrall",
+       "adet": 5
+      }
+     ],
+     "_kaynak": "resmî Türk forumu 130098: 6+ görevlerinin Gygerthrall'ları (harita forumda yok: görevlerin X-3/X-4'ü, uyarlama)"
+    },
+    {
+     "haritalar": [
+      "X-6"
+     ],
+     "olunce_dogur": {
+      "252": [
+       {
+        "tur": "etk_plagued_gygerthrall",
+        "adet": 1
+       }
+      ]
+     },
+     "_kaynak": "resmî Türk forumu 130098: Plagued Gygerthrall'lar Plagued Kristallin öldürülünce doğar (X-6)"
+    }
+   ],
+   "_kaynak": "resmî Türk forumu 130098 (Epidemi Alarmı: 40 görev 506248-506267 / 512248-512267) ve 154610 (Veba Mutasyonu, Haziran 2020: 22 hedefli Savaş Bileti, biletli ödüller istemcinin bpReward'ı). Blighted Kristallon, Karantina Bölgesi ve Immunizer CPU kalıcı (pve_modlari / etkinlik_kapilari). Dönem uyarlama (iki hafta); geçmiş tek dönem: panelden başlatılabilir"
   }
  },
  "_kutu_avlari": "harita_ek kutuları, kapi_odulu, gezgin ve yeni etkinlikler tools/etkinlik_kutulari.py ile (Aşama 7b).",

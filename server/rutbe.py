@@ -93,7 +93,17 @@ def days_registered(p, now=None):
 
 
 def ship_type(p):
-    return R['gemi_turu'].get(p.ship()['lootId'], 1)
+    return R['gemi_turu'].get(p.ship()['lootId'], 0)        # tabloda olmayan (klasik olmayan) gemi 0 (gerçek kayıt: Sentinel 0)
+
+
+def user_score(p):
+    """Şeref Salonu 'En iyi kullanıcı' puanı: TP / 1000 + Şeref / 100 (resmî forum 127509; gerçek kayıt 416.032.909 TP, 27.810 ŞP -> 416.311)."""
+    pl = p.d['pilot']
+    return int(pl.get('ep', 0) / 1000 + pl.get('honourPoints', 0) / 100)
+
+
+def user_score_since(p, days, now=None):
+    return int(_since(p, 'ep', days, now) / 1000 + _since(p, 'onur', days, now) / 100)
 
 
 def npc_points(p):
@@ -262,7 +272,7 @@ def _ranked(p, value, extra=None):
 
 def hof_sira(p, now=None):
     """Pilot kartının sırası: sunucudaki oyuncular arasında rütbe puanına göre."""
-    _, mine = _ranked(p, lambda x: breakdown(x, now)['rankPoints'])
+    _, mine = _ranked(p, user_score)
     return mine[0]['rank'] if mine else 1
 
 
@@ -279,22 +289,23 @@ def hof_top(p, f, now=None):
         out.update(myRankingPoints=ranking_points(p, now),
                    pages=[_page('npcPointsDetails', pg, len(pages), i + 1) for i, pg in enumerate(pages)] + [_page('playerPointsDetails', ships)])
     elif t == 18:                                                    # ana sayfa: puan, ad, sıra; value firma simgesi
-        rows, mine = _ranked(p, lambda x: breakdown(x, now)['rankPoints'], lambda x, v: x.d['pilot'].get('factionId', 0))
+        rows, mine = _ranked(p, user_score, lambda x, v: x.d['pilot'].get('factionId', 0))
         out.update(allRankList=rows[:50], myRankList=mine)
-    elif t in TOP['klan']:                                           # sunucunun klanları (klan.py): üyelerin rütbe puanları
+    elif t in TOP['klan']:        # sunucunun klanları (klan.py): üyelerin en iyi kullanıcı puanları (forum 127471); gerçek kayıt: points 0,
+        #                             value klan puanı
         import klan as KL
         span = {14: 7, 15: 7}.get(t)                                 # 14 haftalık, 15 yükselenler (kullanıcıdaki 2/3 gibi)
         if span:
             who = {KL.ad(x): x for x in oyuncular(p)}
             with KL.LOCK:
-                lst = sorted(((k, sum(_since(who[a], 'puan', span, now) for a in k['uyeler'] if a in who)) for k in KL.KLANLAR.values()),
+                lst = sorted(((k, sum(user_score_since(who[a], span, now) for a in k['uyeler'] if a in who)) for k in KL.KLANLAR.values()),
                              key=lambda kv: (-kv[1], kv[0]['id']))
         else:
             lst = KL.siralama()
         own = KL.klani(p)
         rows, mine = [], []
         for i, (k, v) in enumerate(lst):
-            row = dict(_row(p, i + 1, v, k.get('firma', 0)), userId=k['id'], userName='[%s] %s' % (k['etiket'], k['ad']))
+            row = dict(_row(p, i + 1, 0, v), userId=k['id'], userName='[%s] %s' % (k['etiket'], k['ad']))
             rows.append(row)
             if k is own:
                 mine = [row]
@@ -303,12 +314,12 @@ def hof_top(p, f, now=None):
         field = 'ep' if t in TOP['exp'] else 'onur' if t in TOP['onur'] else 'puan'
 
         def value(x):
-            if t in TOP_WEEK + TOP_CLIMB:
-                return _since(x, field, 7, now)
-            if t in TOP_MONTH:
-                return _since(x, field, 30, now)
-            return (breakdown(x, now)['rankPoints'] if field == 'puan'
-                    else int(x.d['pilot'].get('ep' if field == 'ep' else 'honourPoints', 0)))
+            days = 7 if t in TOP_WEEK + TOP_CLIMB else 30 if t in TOP_MONTH else None
+            if field == 'puan':                                          # En iyi kullanıcı: TP/1000 + ŞP/100 (forum 127509)
+                return user_score_since(x, days, now) if days else user_score(x)
+            if days:
+                return _since(x, field, days, now)
+            return int(x.d['pilot'].get('ep' if field == 'ep' else 'honourPoints', 0))
         rows, mine = _ranked(p, value)
         out.update(allRankList=rows[:50], myRankList=mine)
     return [('HallOfFameTopDataListCommand', out)]
@@ -317,7 +328,7 @@ def hof_top(p, f, now=None):
 def hof_pages(p, f, now=None):
     """HallOfFamePagesRequest {type 1 kullanıcı, 2 EP, 3 onur; page} -> HallOfFamePages (satır: sıra, ad, puan, rütbe)."""
     t = int(f.get('type') or 1)
-    value = ((lambda x: breakdown(x, now)['rankPoints']) if t == 1 else (lambda x: int(x.d['pilot'].get('ep', 0))) if t == 2
+    value = (user_score if t == 1 else (lambda x: int(x.d['pilot'].get('ep', 0))) if t == 2
              else (lambda x: int(x.d['pilot'].get('honourPoints', 0))))
     rows, mine = _ranked(p, value, lambda x, v: x.d['pilot'].get('dailyRank', 1))
     size = 50

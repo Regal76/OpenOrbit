@@ -47,8 +47,8 @@ NO_LIMIT = 'ALWAYS_USABLE'
 NO_SOURCE = {'resource_collectable_flower-token'}
 CHAMPION = 'resource_collectable_champion-token'                  # aylık ödül (rutbe.py): jetonlu tarifler elde jeton varken
 TEST = 'recipe_recipe-test'
-BOT = {'recipe_blueprint-ss-cpu'}                                 # Saturn Transmitter: Satürn uzaylıları oyuncu sayılır (bot oyuncular;
-                                                                  # resmî sunucunun listesinde var, burada gizli: botlar yok)
+BOT = set()                       # Saturn Transmitter (recipe_blueprint-ss-cpu) açık: Saturn uzaylıları PvP görevinde oyuncu sayılır
+                                  # (resmî forum 127576; savas_esya uzayli_cpu ss-cpu, dunya npc_reward)
 # resmî sunucu kaydı (2026-10-25): girişte tarif listesinden sonra iki boş liste ve pencerenin üç süzgeci (filterType 2, 1, 0;
 # saklanmamışsa bütün kategoriler)
 FILTER_TYPES = (2, 1, 0)
@@ -67,14 +67,34 @@ def event_recipes(p, now=None):
     import takvim as TKV
     para = {l for e in TKV.EVENTS.values() for l in e.get('para', [])} | {CHAMPION}
     cur = {l for k in TKV.active(now) for l in TKV.EVENTS[k].get('para', [])} | {l for l in para if p.resource(l) > 0}
+    run, chromin = chromin_recipes(now), set(TKV.EVENTS.get('chromin', {}).get('para', []))
     out = []
     for k, r in T.items():
         ps = set(r['parcalar'])
         if 'kayitta' in r or k in UNLOCK or k in BOT or k.startswith(TEST) or ps & NO_SOURCE:
             continue
+        if run is not None and ps & chromin and k not in run:          # Chromin koşusu: yalnız o koşunun tarifleri
+            continue
         if ps & cur or not ps & para:
             out.append(k)
     return sorted(out)
+
+
+def chromin_recipes(now=None):
+    """Süren Chromin Rush koşusunun tarifleri (etkinlikler.json chromin.kosu_tarifleri: resmî forum, her koşuda 6-9 tarif) ya da
+    None (koşu yok ya da listesi bilinmiyor). Bilinen son günden sonraki koşular 52 haftada bir: önceki yılların günü aranır."""
+    import datetime
+    import takvim as TKV
+    span = TKV.period('chromin', now)
+    runs = TKV.EVENTS.get('chromin', {}).get('kosu_tarifleri') or {}
+    if not span or not runs:
+        return None
+    start = datetime.date.fromtimestamp(span[0])
+    for k in range(40):
+        d = (start - datetime.timedelta(days=364 * k)).isoformat()
+        if d in runs:
+            return set(runs[d])
+    return None
 
 
 def recipe_event(key, now=None):

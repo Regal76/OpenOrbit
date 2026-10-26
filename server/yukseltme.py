@@ -276,6 +276,9 @@ class Yukseltme:
         if key not in DIS or not loot or loot not in DIS[key]['esyalar']:
             self.log('   Disassembly yok: %s eşya %s' % (key, iid))
             return [self.update(key, iid)] if key in DIS else []
+        if any(k.endswith('|%d' % iid) and (now or time.time()) < b['bitis'] for k, b in self.st.items()):
+            self.log('   Disassembly yok: eşya %s yükseltiliyor' % iid)               # forum 150401
+            return [self.update(key, iid)]
         if iid in self.p.equipped_ids():
             from eski_protokol import legacy
             return [legacy('0|A|STM|msg_cannot_disassemble_equipped_item'), self.update(key, iid)]

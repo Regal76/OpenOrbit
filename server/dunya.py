@@ -74,6 +74,7 @@ DRONE_LEVELS = ESYA['dron_seviyeleri']
 ORE = ESYA['cevherler']
 ORE_EVENT_FINISHED, ORE_EVENT_CARGO_FULL = 1, 2       # MapEventOreCommand.EventType (istemci)
 TRADE_INACTIVE, TRADE_STATION, TRADE_DRONE, TRADE_PET, TRADE_PIRATE = 0, 1, 2, 3, 5     # OreTradeInfoCommand.TradeType (istemci)
+PIRATE_PRICE = 1.05
 PALLADIUM, PIRATE_MARKET = 8, '92'          # Palladium yalnız 5-2'deki korsan tüccarında kapı enerjisine çevrilir
 
 
@@ -101,7 +102,7 @@ def mod(name, **f):
     return f
 
 
-REPAIR_VOUCHERS = 1              # tamir istasyonunda bir anında onarımın kupon bedeli (uyarlama; kaynak yok)
+REPAIR_VOUCHERS = 10             # tamir istasyonunda bir anında onarımın kupon bedeli (resmî forum 127572/127585: 10 kupon)
 # CombatStateCommand.combatState (istemcinin CombatStateType'ı; Ö1)
 COMBAT_OUT_OF_RANGE, COMBAT_CONTINUES, COMBAT_ESCAPED = 0, 1, 2
 
@@ -371,7 +372,7 @@ class World:
             self.hero_etki.d['enfeksiyon'] = [infection]
         else:
             self.p._infection_effect = None
-        self.p.world_mods = self.hero_etki.mods
+        self.p.world_mods = self.all_mods
         self.ammo_seen = {}                                           # cephane -> son atış (başarım: 60 sn içinde türler)
         self.next_radiation = 0.0
         self.gg_energy = None          # bonus kutusundan kapı enerjisi (kapi.py)
@@ -530,8 +531,37 @@ class World:
         self._batch.extend(msgs)
         return True
 
+    def all_mods(self, now=None):
+        """Durum etkileri + Amor/Psyche eşleşmesi (profil.mods'un world_mods kancası)."""
+        out = dict(self.hero_etki.mods(now))
+        for k, v in self.pair_mods().items():
+            out[k] = out.get(k, 0) + v
+        return out
+
+    def pair_mods(self):
+        """Amor tasarımı aynı haritada grubundaki bir Psyche'yle +%10 kalkan +%5 can, Psyche bir Amor'la +%10 hasar (resmî forum
+        160373 Orcus/Solaris; istemci tasarım metinleri)."""
+        look = self.p.ship_look()
+        amor = '-amor' in look
+        if not (amor or '-psyche' in look) or not self.ortak:
+            return {}
+        want = '-psyche' if amor else '-amor'
+        if not any(o is not self and o.running and self.grup_uyesi(o.hid) and want in o.p.ship_look() for o in self.ortak.uyeler):
+            return {}
+        return {'kalkan': 0.10, 'can': 0.05} if amor else {'lazer': 0.10, 'roket': 0.10}
+
     def later(self, delay, fn):
         self.timers.append((time.time() + delay, fn))
+
+    def auto_jump(self, g, delay=5):
+        """Kapı ya da LoW bitti: oyuncu delay sn sonra portal g'den kendiliğinden eve atlar (resmî forum 127543/126411: son
+        dalgadan sonra X-1'e gönderilir); portal yedek olarak açık kalır."""
+        def go():
+            if self.running and not self.hero_dead and not self.jumping and self.on_jump:
+                self.jumping, self.attacking, self.target = True, False, None
+                self.send([('JumpInitiatedCommand', {'mapId': g['hedef'], 'gateId': g['gateId']})])
+                self.later(H.JUMP_DELAY_SN, lambda: self.on_jump(g['hedef'], g))
+        self.later(delay, go)
 
     def schedule(self, delay, kind, value=None):
         """Yeniden doğma (uzaylı, bonus kutusu, cevher): harita durumuyla birlikte saklanır (WORLD_CACHE)."""
@@ -546,6 +576,8 @@ class World:
             if kind == 'npc':
                 if not str(value).startswith('etk_') or self.etkinlik.active_type(value):     # etkinlik bittiyse doğmaz
                     self.spawn_npc(value)
+                    if value == 'npc121' and self.p.gameplay('showBattlerayNotifications'):   # forum 127431: Deadly Battleray bildirimi
+                        self.send([legacy('0|A|STM|strikeandexit_message_boss_spawn')])
             elif kind == 'bonus':
                 self.spawn_bonus_box()
             elif kind == 'booty':
@@ -628,7 +660,7 @@ class World:
     def in_station(self, now=None):
         now = time.time() if now is None else now
         return (not self.hero_dead and not self.jumping and now - self.last_combat >= ESYA['savas_disi_sn']
-                and self.in_peace(*self.hero_pos(now)))
+                and (self.in_peace(*self.hero_pos(now)) or bool(self.low and self.low.docking_station(*self.hero_pos(now)))))
 
     def reload_ship(self):
         """Hangarda gemi değişti: yeni gemiyle ShipInitializationCommand; istemci haritayı yeniden yükler,
@@ -1029,7 +1061,7 @@ class World:
                 self.hero_etki.remove(kind)      # haritaya özgü etkiler kalkar; enfeksiyon kalan süresiyle taşınır
             if self.stats_msgs:
                 self.send(self.stats_msgs())
-        if getattr(self.p, 'world_mods', None) == self.hero_etki.mods:
+        if getattr(self.p, 'world_mods', None) == self.all_mods:
             self.p.world_mods = None
 
     def cinematic(self, x, y, hold=3.0):
@@ -1271,6 +1303,8 @@ class World:
     def at_station(self):
         s = self.home_station()
         hx, hy = self.hero_pos()
+        if self.low and self.low.docking_station(hx, hy):        # LoW: son röleden sonra HQ istasyonu (forum 126411)
+            return True
         return bool(s) and math.hypot(hx - s['posX'], hy - s['posY']) <= s['peaceRadius']
 
     def at_trade(self):
@@ -1357,6 +1391,8 @@ class World:
         if cbs:                                                             # kendi Battle Station'ında (Ö5): %10 pahalı
             kind = 4
             pr = {k: int(v * cbs) for k, v in pr.items()}
+        if pirate:                                                          # forum 127532: 5-2 korsan tüccarı x1,05 (21/31/52/420/420/1.050)
+            pr = {k: int(v * PIRATE_PRICE) for k, v in pr.items()}
         return ('OreTradeInfoCommand', dict(
             prometiumPrice=pr[0], enduriumPrice=pr[1], terbiumPrice=pr[2], prometidPrice=pr[4], duraniumPrice=pr[5],
             promeriumPrice=pr[6], sepromPrice=pr[7], osmiumPrice=pr[28],
@@ -1398,6 +1434,8 @@ class World:
             cbs = self.cbs_trade() if self.cbs_trade and not self.at_trade() else None
             if cbs and price is not None:                                   # kendi Battle Station'ında (Ö5)
                 price = int(price * cbs)
+            if price is not None and self.at_trade() and self.map_id == PIRATE_MARKET:
+                price = int(price * PIRATE_PRICE)                           # 5-2 korsan tüccarı (forum 127532)
             by_pet = not self.at_trade() and not cbs and self.pet_trade()
             by_hm7 = not self.at_trade() and not by_pet and not cbs and self.hm7_ready()     # HM-7: her yerde, 100 satış
             if not (self.at_trade() or cbs or by_pet or by_hm7) or price is None or n <= 0 or n > have:
@@ -1570,6 +1608,8 @@ class World:
         with self.lock:
             n = self.npcs.get(f.get('targetId'))
             if n and n.alive:
+                if self.target not in (None, n.id) and self.p.ship()['lootId'] == 'ship_cyborg' and                         GY.is_active(self.p, 'ability_venom'):           # forum 160373: Cyborg Tekillik II başka hedefe tıklanınca biter
+                    self.abilities.end_now('ability_venom', time.time())
                 self.target = n.id
                 self.send([self.selection(n)] + ([] if n.d.get('dost') else self.p.hint(IP.ATTACK)))
             elif self.own_pet(f.get('targetId')):           # kendi P.E.T.'i: vurulabilir (Kamikaze'nin can eşiği için; pet_laser)
@@ -1681,11 +1721,12 @@ class World:
                        ('MenuItemCooldownGroupTimerCommand', dict(timerState=mod('TimerStateModule', timerStateValue=2),
                                                                   cooldownType=mod('CooldownTypeModule', typeValue=4), maxTime=ms, time=ms))])
             dmg = int(ESYA['roketler'].get(rocket, {'hasar': 1000})['hasar'] * random.uniform(0.85, 1.0)   # kayıt: R-310 853/991
-                      * (1 + self.p.mods().get('roket', 0) + (self.p.mods().get('npc', 0) if n else 0)) * (1 + self.p.lab_bonus(1)))
+                      * (1 + self.p.mods().get('roket', 0) + self.p.mods().get('ev_roket', 0) + (self.p.mods().get('npc', 0) if n else 0))
+                      * (1 + self.p.lab_bonus(1)))
             if self.p.lab_bonus(1):
                 self.lab_spend(1)                   # roket yükseltmesi: roket başına 1
             if hit:
-                self.later(SAVAS['roket_ucus_sn'], lambda: self.hit_asset(uid, dmg, 0) if asset else self.hit_npc(uid, dmg, 0))
+                self.later(SAVAS['roket_ucus_sn'], lambda: self.hit_asset(uid, dmg, 0) if asset else self.hit_npc(uid, dmg, 0, ammo=rocket))
             else:
                 self.later(SAVAS['roket_ucus_sn'], lambda: self.send([('AttackMissedCommand', dict(
                     attackType=attack_type(0), targetUserId=uid, skillColorId=0))]))
@@ -1806,6 +1847,12 @@ class World:
                 seq = self.rules.get('bonus_dizisi')
                 if seq:                                  # Cubikon Mezarlığı: ilki 1.000 UCB-100, sonra giderek LCB-10 (wiki)
                     what, amount = seq[min(self.boxes_taken, len(seq) - 1)]
+                    self.boxes_taken += 1
+                cap = self.rules.get('bonus_ucb_tavan')
+                if cap:                                  # ??? haritası: 100.000 UCB-100'e dek 1.000'er, sonra LCB-10 (forum 127347)
+                    (what, amount), lim, rest = cap[0], cap[1], cap[2]
+                    if self.boxes_taken * amount >= lim:
+                        what, amount = rest
                     self.boxes_taken += 1
                 x1 = self.x1_reward()            # kendi X-1'inde yüksek seviyede bonus kutusu da azalır (fandom 1-1, 2-1, Lowers)
                 amount = int(amount * boost * (1 + m.get('bonus_kutusu', 0)) * (1 + (m.get('bonus_uridyum', 0) if what == 'uridyum' else 0))
@@ -1990,16 +2037,20 @@ class World:
                                                             star=0, isNew=False, hangarId=0, extAttributes=[], inventoryItemAttributes=[])})
 
     def hit_npc(self, uid, dmg, atype, shield_only=False, attacker=None, hull_only=False, split=None, strike=False, cannon=0,
-                engage=True, source_asset=False):
+                engage=True, source_asset=False, ammo=None):
         """Kahramanın (ya da P.E.T.'in) vuruşu: kalkan hasarın %70'ini emer (kayıttan), kalan HP'ye. SAB-50 gibi cephane yalnız
         kalkanı vurur. split=(kalkana, gövdeye): mayın gibi oranı belli hasar (emme yok). engage=False: vuran oyuncunun değil
-        (Clan Battle Station'ın uyduları): uzaylı oyuncuya dönmez."""
+        (Clan Battle Station'ın uyduları): uzaylı oyuncuya dönmez. ammo: lazerin ya da roketin cephanesi; türün 'sadece_cephane'si
+        varsa yalnız o cephaneler hasar verir (Referee-Bot: CBO-100 ve CBR; P.E.T., mayın, yetenek de vuramaz)."""
         with self.lock:
             n = self.npcs.get(uid)
             if not n or not n.alive or n.d.get('dost'):         # dost gemi (Deep Space Echoes: korunan/eşlik edilen) vurulmaz
                 return
             now = time.time()
             immune = (n.invulnerable and n.invulnerable()) or n.etki.invulnerable(now) or self.guarded(n)
+            only = n.d.get('sadece_cephane')            # resmî Türk forumu 135026: "CBO-100 & CBR HSTM Rockets hariç tüm cephanelere karşı dayanıklı"
+            if only and ammo not in only:
+                immune = True
             if immune:
                 dmg = 0
             k = 1.0 if source_asset else AY.carpan('oyuncu_hasar')                       # panelin hasar çarpanı (lazer, roket, mayın, top, P.E.T. …)
@@ -2072,7 +2123,11 @@ class World:
         """Yeniden doğma süresi: sıradan uzaylı 12-25 sn; Boss, Uber, Cubikon, Behemoth daha uzun (npc.json yeniden_dogma_ozel);
         panelin yeniden doğma çarpanıyla."""
         o = SAVAS.get('yeniden_dogma_ozel', {})
-        if n.tip in o:
+        ev = next((TKV.EVENTS[k]['yeniden_dogma'][n.tip] for k in sorted(TKV.active())
+                   if n.tip in TKV.EVENTS[k].get('yeniden_dogma', {})), None)     # etkinlikte (Korsan Baskını: Uber korsanlar 150/300 sn)
+        if ev:
+            r = ev
+        elif n.tip in o:
             r = o[n.tip]
         elif 'Uber' in n.d['ad'] and 'uber' in o:
             r = o['uber']
@@ -2095,6 +2150,9 @@ class World:
         if loot == 'resource_key_access-flb':                              # Labyrinth Key (Ice Box): profildeki sayaç, kaynak deposunda değil
             import labirent as LB
             return LB.add_keys(self.p, n)
+        if loot.startswith('olay_puani:'):                                 # etkinlik puanı (Hatching Out'un Viral Kutuları: VPP)
+            import olay_puani as OP
+            return OP.add(self.p, loot.split(':', 1)[1], n, self.grant)
         cur = {'currency_credits': 'kredi', 'currency_uridium': 'uridyum', 'currency_experience': 'ep', 'currency_honour': 'onur'}
         n = AY.miktar(cur.get(loot, 'toplama'), n, kaynak)                 # panelin çarpanları
         if loot in cur:
@@ -2122,7 +2180,7 @@ class World:
                 cnt = int(cnt * (1 + bm.get('agat_miktar', 0)))          # AS-B01: Agate Splinter x2
             if cnt <= 0:
                 continue
-            if loot.startswith(('equipment_', 'ammunition_', 'tech_')) or loot == 'resource_extra-energy':
+            if loot.startswith(('equipment_', 'ammunition_', 'tech_')) or loot == 'resource_extra-energy' or                     (loot == 'resource_logfile' and self.grant):     # günlük dosyası kapı üreticisinin sayacına (yetenek ağacı)
                 msgs += self.grant(loot, cnt) if self.grant else []      # The Stinger'ın Caucasus lazeri (%0,5), A-BL, kaos paketleri (cephane, NPC Nuke, EE)
                 continue
             cnt = AY.miktar('toplama', cnt, 'ek')                        # panelin toplama çarpanı
@@ -2267,6 +2325,15 @@ class World:
             points = self.kapi.points(n) if own and n.d.get('puan') and hasattr(self.kapi, 'points') else []    # Plutus'un puanı
             quest = self.quest('kill', npc=n.d.get('npc_kimlik')) if own else \
                 self.quest('kill', npc=n.d.get('npc_kimlik'), avatar='NPC', radyasyon=in_rad, ad=n.d.get('ad'), grup=True)
+            g_ = n.d.get('guclendir')
+            if g_ and own:                                   # Plutus kaçağı: geçici hasar ve hız gücü, yeniden öldürünce süre yenilenir
+                self.hero_etki.remove('yetenek', source='kacak')
+                self.hero_etki.add('yetenek', g_['sure_sn'], {'mods': {'lazer': g_['hasar'], 'roket': g_['hasar'], 'hiz': g_['hiz']}}, 'kacak',
+                                   time.time())
+                quest += self.stats_msgs() if self.stats_msgs else []
+            if getattr(n, 'saturn', False) and own:          # Saturn Verici CPU'nun uzaylısı: PvP görevinde düşman oyuncu (forum 127576)
+                fac = self.p.d['pilot'].get('factionId', 1)
+                quest += self.quest('kill_player', ship=n.model, faction=random.choice([f for f in (1, 2, 3) if f != fac]))
             self.send(self.kill_notice(self.reward_msgs(tot, ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum']))
                       + (self.drone_points(n) if own else []) + quest + (self.pet.gain_xp(o['ep']) if self.pet else [])
                       + self.booster_drop(n) + self.extra_loot(n) + points
@@ -2321,6 +2388,15 @@ class World:
         return {'gizli': bool(self.abilities.cloaked() or self.items.cloaked()), 'radyasyon': self.radiation_since is not None,
                 'az_can': g.get('hitPoints', 0) < 0.1 * g.get('hitMax', 0)}
 
+    def pvp_drone_points(self, victim_ship):
+        """Oyuncu öldürmede dron puanı (resmî forum 127526 tablosu: satır öldürülen, sütun öldüren gemi; bilinmeyen Goliath sınıfı)."""
+        t = DRONE_POINTS.get('oyuncu') or {}
+        order = t.get('_gemi_sirasi', [])
+        mine = self.p.ship()['lootId']
+        row = t.get(victim_ship) or t.get('ship_goliath') or []
+        col = order.index(mine) if mine in order else len(order) - 1
+        return self.add_drone_points(AY.miktar('dron_puan', row[col] if row else 0))
+
     def drone_points(self, n):
         """Dronlar öldürülen uzaylıdan puan alır; puan gemiye göre (wiki tablosu, güçlü gemide az). Seviye eşiğini geçen dron
         seviye atlar: lazer/kalkan bonusu artar, uzaydaki görünümü değişir."""
@@ -2333,7 +2409,10 @@ class World:
         ship = self.p.ship()['lootId']
         col = order.index(ship) if ship in order else len(order) - 1
         pts = AY.miktar('dron_puan', (DRONE_POINTS.get(name) or [0] * len(order))[col])     # panel: dron deneyimi
-        if not pts:
+        return self.add_drone_points(pts)
+
+    def add_drone_points(self, pts):
+        if not pts or not self.p.d.get('dronlar'):
             return []
         up = []
         with self.p.lock:
@@ -2375,7 +2454,7 @@ class World:
             msgs.insert(0, ('MenuItemStatusCommand', st))
         return msgs
 
-    def laser_damage(self, ammo, target=None, now=None, pvp=False):
+    def laser_damage(self, ammo, target=None, now=None, pvp=False, ev=True):
         """Toplam lazer hasarı = toplam lazer hasarı x cephane çarpanı x rastgele (kayıt: 65 x 0,76-1,0).
         Lazerlerin özel nitelikleri lazer.py'de (Unstable LF-4 rastgele, Prometheus x3,5, set bonusları, Odysseus kritiği, SL-01 ek hasarı).
         -> (HP+kalkan hasarı, yalnız kalkan hasarı)"""
@@ -2400,11 +2479,14 @@ class World:
                        for j, l in enumerate(loots) if l in lz)
             base += (hits * (1 + DRONE_LEVELS[level - 1]['lazer'] + mods.get('dron_lazer', 0))      # Havoc, Cerberus: dron lazerine
                      * YK.factor(dloot, dup, YK.DRONE_DAMAGE))
-        base *= ((1 + mods.get('lazer', 0) + ((mods.get('pvp_lazer', 0) + mods.get('pvp_hasar', 0)) if pvp else (mods.get('npc', 0) + mods.get('npc_lazer', 0))))       # formasyon, dron tasarımı
+        base *= ((1 + mods.get('lazer', 0) + (mods.get('ev_lazer', 0) if ev else 0)                 # Leonov ev avantajı (dostta değil)
+                  + ((mods.get('pvp_lazer', 0) + mods.get('pvp_hasar', 0)) if pvp else (mods.get('npc', 0) + mods.get('npc_lazer', 0))))       # formasyon, dron tasarımı
                  * (1 + self.p.lab_bonus(0)))                                                   # lazer yükseltmesi
         a = ESYA['lazer_cephane'].get(ammo, {'carpan': 1})
         r = random.uniform(*ESYA['hasar_rastgele'])
         carpan = a.get('pvp_carpan', a.get('carpan', 1)) if pvp else (LAZER.name_match(a.get('hedef_carpan', {}), target) or a.get('carpan', 1))   # SBL-100 x8 Sibelon'a …
+        if not pvp and LAZER.name_match(a.get('hedef_carpan', {}), target) and time.strftime('%m-%d') in a.get('gun_carpan', {}):
+            carpan = a['gun_carpan'][time.strftime('%m-%d')]          # VB-142: 14 Şubat x8 (forum 161430)
         ramp = a.get('artan')
         if ramp:                                                  # IDB-125: x1'den isabet başına +1,25, en çok x6; 3 sn'de sıfırlanır
             carpan = 1.0 if now - self.artan[1] > ramp['sifirlama_sn'] else self.artan[0]
@@ -2413,7 +2495,7 @@ class World:
             carpan = LAZER.event_ammo(ammo, target, TKV.is_active) or carpan
         if target is not None and ammo in (target.d.get('cephane_carpani') or {}):          # Ö4: etkinlik uzaylısının cephane bonusu
             carpan = target.d['cephane_carpani'][ammo]
-        flat = LAZER.flat_extra(ship + self.drone_lasers(), pvp) if carpan else 0       # Paritydrill / Magmadrill +5: çarpanlardan sonra
+        flat = LAZER.flat_extra(ship + self.drone_lasers(), pvp) if carpan and (pvp or target is not None) else 0       # Paritydrill / Magmadrill +5, LF-3 +15: çarpanlardan sonra
         return int(base * carpan * r) + flat, int(base * a.get('kalkan_carpan', 0) * r)
 
     def laser_range(self):
@@ -2623,7 +2705,8 @@ class World:
             if defender:
                 aim *= 1 - max(0.0, min(1.0, defender.p.mods().get('kacinma', 0)))
         if random.random() < aim:
-            dmg, shield = self.laser_damage(ammo, pvp=pvp)
+            same = pvp and defender and defender.p.d['pilot'].get('factionId') == self.p.d['pilot'].get('factionId')
+            dmg, shield = self.laser_damage(ammo, pvp=pvp, ev=not same)
             if pvp or asset:
                 hit(dmg, shield)
             else:
@@ -2692,13 +2775,13 @@ class World:
             dmg, shield_dmg = self.laser_damage(ammo, n)
             if shield_dmg:
                 self.last_shield_hit = 0
-                self.hit_npc(n.id, shield_dmg, 1, shield_only=True)
+                self.hit_npc(n.id, shield_dmg, 1, shield_only=True, ammo=ammo)
                 if self.last_shield_hit:                 # Shield Leech (SAB-50 x2, CBO-100 x1): çekilen kalkan oyuncuya
                     g = self.p.d['gemi']
                     self.p.set_hull(shield=g.get('shield', 0) + self.last_shield_hit)
                     self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
             if dmg:
-                self.hit_npc(n.id, dmg, 1, strike=self.crit)
+                self.hit_npc(n.id, dmg, 1, strike=self.crit, ammo=ammo)
                 self.tech.leech(ammo, dmg)               # Energy Leech
             proc = LAZER.slow_proc(self.lasers())        # LF-5 Anchorlock: adede göre şansla yavaşlatma
             if proc and n.alive and random.random() < proc[0]:
@@ -3375,6 +3458,9 @@ class World:
             RT.note(self.p, key)                        # seyir defteri
         if self.olum:
             self.olum()                                 # grup üyelerine "vuruldu"
+        if source_player is not None:                   # PvP ödülü / dost ateşi cezası (oyuncu_savas.on_kill)
+            import oyuncu_savas as OS
+            source_player.send(OS.on_kill(source_player, self))
 
     def raid_gate(self):
         """Hades'te canı kalan oyuncu kapı haritasında yeniden doğabilir (ölümden sonra HADES_RESPAWN_SN içinde)."""
@@ -3649,6 +3735,11 @@ class World:
         """NPC yapay zekâsı: dolaş; saldırıya uğrayan ya da saldırgan türse oyuncuyu kovala ve ateş et."""
         if n.d.get('dost'):
             return                              # dost gemiyi modu yönetir (echoes.py)
+        if n.d.get('kacak'):                    # Plutus taretinin kaçak uzaylısı: oyuncudan uzaklaşır, ateş etmez (forum 143902)
+            n.engaged, n.next_think = False, now + 3
+            tx, ty = self.alien.flee_spot(n, now)
+            self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=n.mover.go(tx, ty, n.speed(), now)))])
+            return
         if getattr(n, 'pasif', False):
             n.engaged = False                   # ateş etmeyen uzaylı (Infiltration komandosu: sizma.py)
         hx, hy = self.hero_pos(now)

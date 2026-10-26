@@ -181,6 +181,7 @@ class Pet:
         self.release_end = 0.0       # G-HR1 (Heat Release) çalışıyorsa bitişi
         self.release_ready = 0.0     # G-HR1 bekleme bitişi
         self.link_end = 0.0          # G-HPL1 (HP Link) bağlıysa bitişi
+        self.csr_end = self.csr_ready = 0.0     # C-SR2 onarım penceresinin bitişi (5 sn) ve beklemenin bitişi (15 sn)
         self.beacon = None           # G-BC1/G-BH1 işareti: (tür, x, y, bitiş)
         self.in_beacon = False       # gemi işaretin menzilinde: bonusu gemide
         self.ready = {}              # beklemedeki dişliler (TIMED): tür -> bekleme bitişi
@@ -309,11 +310,19 @@ class Pet:
         lv = self.d['seviye']
         return [t for need, t in PET['gemi_turu'] if lv >= need][-1]
 
-    def fuel_per_min(self):
+    def fuel_per_min(self, now=None):
+        """Seviye tablosu (gerçek kayıt: seviye 7 33, 13 44; forumun 1 + 2 x seviye + 2 x protokol + 4 x dişli formülü tek sayı verir,
+        13. seviyenin 44'ünü üretemez: kayıt esas) x yakıt protokolü, Kombo Koruma, HP Link / beacon x1,3, ısı seviyesi başına +%5."""
         rate = self.row()['yakit_dk'] * (1 + self.proto('yakit'))
         g = self.d.get('disli')
         if g == COMBO_GUARD:
             rate *= 1 + self.gear(COMBO_GUARD).get('ek_yakit', 0)
+        now = time.time() if now is None else now
+        if self.link_end > now:
+            rate *= self.gear(HP_LINK).get('yakit_carpan', 1)
+        if self.beacon and self.beacon[3] > now:
+            rate *= self.gear(self.beacon[0]).get('yakit_carpan', 1)
+        rate *= 1 + 0.05 * self.heat_lv()
         return rate * AY.carpan('pet_yakit')                 # panel: P.E.T. yakıtı (C-SR2'nin ek yakıtı onarım başına: each_second)
 
     def open_slots(self, slot):
@@ -384,10 +393,20 @@ class Pet:
         return COOLING if self.d.get('isi', 0) > 0 and now >= (self.d.get('isi_bekleme') or 0) else STABLE
 
     def heat_bonuses(self):
-        """HEAT seviyesinin bonusları; Goliath Plus'ta her biri HEAT seviyesi başına +%1 (esyalar.json isi_basina, wiki)."""
+        """HEAT seviyesinin bonusları; Goliath Plus'ta her biri ve geminin altı temel istatistiği (NPC ve PvP hasarı, can, kalkan delme,
+        lazer isabeti, kaçınma) HEAT seviyesi başına +%1 (esyalar.json isi_basina; resmî forum 160989)."""
         lv = self.heat_lv()
         per = self.p.ship_row().get('isi_basina', 0) * lv
-        return {k: v + per for k, v in heat_bonus(lv).items()}
+        out = {k: v + per for k, v in heat_bonus(lv).items()}
+        if per:
+            for k in ('npc', 'pvp_hasar', 'can', 'kalkan_delme', 'isabet', 'kacinma'):
+                out.setdefault(k, per)
+        return out
+
+    def in_fight(self, now=None):
+        """P.E.T. savaşta: kendisi ya da gemi savas_disi_sn içinde ateş etti / vuruldu."""
+        now = time.time() if now is None else now
+        return bool(self.w) and now - max(self.w.last_combat, self.last_fight) < ESYA['savas_disi_sn']
 
     def heat_mods(self):
         """Gemiye HEAT bonusları (profil.mods): yalnız P.E.T. uzaydayken; can bonusu P.E.T.'in kendisine (hp_max). G-BC1/G-BH1
@@ -624,6 +643,8 @@ class Pet:
                 self.launch()
                 if self.active:
                     self.send([legacy('0|A|STM|msg_pet_activated')])     # oyuncunun isteğiyle (harita değişiminde değil)
+            elif (kind == DEACTIVATE or kind == TOGGLE) and self.in_fight():
+                self.send([legacy('0|A|STM|msg_pet_in_combat')])     # forum 127074: savaşta kapatılamaz (pasif ve hasarsızken olur)
             elif kind == DEACTIVATE or kind == TOGGLE:
                 self.deactivate(msg='msg_pet_deactivated')
             elif kind == HOTKEY_GUARD:
@@ -643,6 +664,15 @@ class Pet:
         with lock:
             self.select(t, f.get('optParam') or 0)
 
+    def hidden(self, now):
+        """Sahibi kamuflajdayken P.E.T. de gizli; ateş ederken (son 3 sn) görünür (resmî forum 127074)."""
+        w = self.w
+        if not w:
+            return False
+        cloaked = (w.items.cloaked() if getattr(w, 'items', None) else False) or \
+            (w.abilities.cloaked(now) if getattr(w, 'abilities', None) else False)
+        return bool(cloaked) and now - self.last_fight >= 3
+
     def view_msgs(self, now):
         """Öteki oyuncunun istemcisinde bu P.E.T. (ortak harita; kayıt: başka oyuncunun P.E.T.'i PetActivationCommand, petDesignId
         game.xml türü) ve süren hareketi."""
@@ -651,7 +681,7 @@ class Pet:
             ownerId=self.p.user_id, petId=self.pid, petDesignId=self.look, expansionStage=1, petName=self.d['ad'],
             petFactionId=pl.get('factionId', 1), petClanID=pl.get('clanId', 0), petLevel=self.d['seviye'], clanTag=pl.get('clanTag', ''),
             clanRelationship=mod('ClanRelationModule', type=0), x=int(x), y=int(y), petSpeed=self.speed(), isInIdleMode=False,
-            isVisible=True, minimapStrategyModule=mod('MinimapStrategyModule', minimapStrategy=0)))]
+            isVisible=not self.hidden(now), minimapStrategyModule=mod('MinimapStrategyModule', minimapStrategy=0)))]
         if m.t1 > now:
             msgs.append(('MoveCommand', dict(userId=self.pid, x=int(m.x1), y=int(m.y1), timeToTarget=m.ms_left(now))))
         return msgs
@@ -689,6 +719,18 @@ class Pet:
         self.send([self.activation_msg(x, y), self.status_msg()] + self.gear_msgs() + [self.heat_msg(now)] + self.stats_msgs())
         self.log('   P.E.T. çıktı: seviye %d, can %d/%d, kalkan %d, yakıt %d, %d lazer, dişli %d' % (
             self.d['seviye'], self.d['can'], self.hp_max(), self.d['kalkan'], self.d['yakit'], len(self.lasers()), self.d['disli']))
+
+    def disrupt(self, now, sn=5):
+        """EMP: P.E.T. sn saniye etkin dışı (log_msg_pet_disruption_on/off), sonra kendiliğinden yeniden çıkar (süre uyarlama)."""
+        self.deactivate(msg='log_msg_pet_disruption_on')
+        w = self.w
+
+        def back():
+            if self.w is w and not self.active and self.owned and self.d['yakit'] > 0:
+                self.launch()
+                self.send([legacy('0|A|STM|log_msg_pet_disruption_off')])
+        if w:
+            w.later(sn, back)
 
     def deactivate(self, notify=True, msg=None):
         if not self.active:
@@ -1011,7 +1053,9 @@ class Pet:
             msgs += self.release_step(now)
         else:                                    # HEAT: etkinken ısınır, savaşta daha hızlı; AI-AH protokolü artırır
             fighting = self.shooting or now - max(w.last_combat, self.last_fight) < HEAT['savas_sn']
-            gain = (HEAT['kazanc_dk'] / 60.0 + (HEAT['savas_kazanc_sn'] if fighting else 0)) * (1 + self.proto('isi'))
+            lo = self.loadout()                        # forum 156747: daha fazla ekipmanla daha hızlı ısınır (oran uyarlama: parça başına %10)
+            gain = (HEAT['kazanc_dk'] / 60.0 + (HEAT['savas_kazanc_sn'] if fighting else 0)) * (1 + self.proto('isi')) * \
+                (1 + 0.1 * (len(lo.get('gears', [])) + len(lo.get('protocols', []))))
             if self.add_heat(gain):
                 self.log('   P.E.T. HEAT seviyesi %d (%d puan)' % (heat_level(d['isi']), d['isi']))
                 msgs += [self.heat_msg(now), self.hp_msg()] + self.stats_msgs()          # HEAT'in can bonusu: azami can
@@ -1034,7 +1078,7 @@ class Pet:
             self.fuel_sent, self.next_fuel_msg = int(d['yakit']), now + 10      # yakıt göstergesi en çok 10 sn'de bir
             msgs.append(self.fuel_msg())
         g = d.get('disli')
-        if g == REPAIR_PET and d['can'] < self.hp_max():
+        if g == REPAIR_PET and d['can'] < self.hp_max() and not self.in_fight(now):     # forum 127074: savaşta çalışmaz
             with self.p.lock:
                 d['can'] = min(self.hp_max(), d['can'] + self.gear(REPAIR_PET).get('can_sn', 0))
                 self.p.dirty = True
@@ -1046,13 +1090,18 @@ class Pet:
             msgs.append(self.shield_msg())
         if g == COMBO_REPAIR:
             ship = self.p.d['gemi']
-            cost = self.gear(COMBO_REPAIR).get('ek_yakit', 0) * AY.carpan('pet_yakit')     # istemci: "Uses extra fuel for each repair"
-            if ship.get('hitPoints', 0) < ship.get('hitMax', 0) and now - w.last_hurt >= ESYA['savas_disi_sn'] and d['yakit'] >= cost:
-                hp0 = ship['hitPoints']
-                self.p.set_hull(hp=hp0 + self.gear(COMBO_REPAIR).get('can_sn', 0))
+            cg = self.gear(COMBO_REPAIR)
+            cost = cg.get('ek_yakit', 0) * AY.carpan('pet_yakit')     # forum 127074: 5 sn onarım, 15 sn bekleme, yakıt etkinleştirmede
+            hurt = ship.get('hitPoints', 0) < ship.get('hitMax', 0) and now - w.last_hurt >= ESYA['savas_disi_sn']
+            if hurt and now >= self.csr_end and now >= self.csr_ready and d['yakit'] >= cost:
+                self.csr_end = now + cg.get('sure_sn', 5)
+                self.csr_ready = self.csr_end + cg.get('bekleme_sn', 15)
                 with self.p.lock:
                     d['yakit'] -= cost
                     self.p.dirty = True
+            if hurt and now < self.csr_end:
+                hp0 = ship['hitPoints']
+                self.p.set_hull(hp=hp0 + cg.get('can_sn', 0))
                 msgs.append(('HitpointInfoCommand', dict(hitpoints=int(ship['hitPoints']), hitpointsMax=ship.get('hitMax', 0),
                                                          nanoHull=ship.get('nanoHull', 0), nanoHullMax=ship.get('maxNanoHull', 0))))
                 msgs += w.heal_msgs(hp0)                                  # "+can" sayısı (Ö1)
@@ -1338,7 +1387,8 @@ class Pet:
                    and math.hypot(n.mover.pos(now)[0] - px, n.mover.pos(now)[1] - py) <= kk['menzil'] for n in list(w.npcs.values()))
 
     def start_map(self):
-        return bool(self.w) and H.name(self.w.map_id) in START_MAPS
+        """Kamikaze kullanılamayan harita: başlangıç haritaları ve LoW (resmî forum 126411 "Kapıda kamikaze modülü kullanılmayacaktır")."""
+        return bool(self.w) and (H.name(self.w.map_id) in START_MAPS or bool(getattr(self.w, 'low', None)))
 
     def kamikaze_armed(self, now):
         """G-KK1 seçili, beklemede değil, başlangıç haritasında değil."""

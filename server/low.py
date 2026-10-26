@@ -198,6 +198,8 @@ class Low:
         if r['ilerleme'] < cfg['sn']:
             return
         msgs = [UZ.asset_remove(r['kimlik'], RELAY_STATION), legacy('0|A|STM|msg_relaisstation_activated')]
+        if no >= 2 and cfg.get('korsanlar'):                        # forum 126411: 2-4. röle etkinleşince çevresinde korsanlar
+            self.spawn(cfg['korsanlar'][0], cfg['korsanlar'][1], at=(r['x'], r['y']))
         self.relay = None
         self.save(role=no)
         msgs += self.zone_msgs() if no == 1 else []                 # ilk röle HQ iyileştirme bölgesini açar
@@ -209,6 +211,14 @@ class Low:
         s = self.step()
         self.save(asama=s[0])
         w.log('   LoW röle istasyonu %d etkin' % no)
+
+    def docking_station(self, x, y):
+        """Son röle etkinleşince HQ istasyonu hangar ve ticaret verir (forum 126411); öncesinde yanaşılmaz."""
+        cx, cy = self.hq()
+        cfg = L['role']
+        if self.st['role'] >= cfg['adet'] and math.hypot(x - cx, y - cy) <= cfg['merkez']['yaricap']:
+            return dict(posX=cx, posY=cy, peaceRadius=cfg['merkez']['yaricap'], pvpPeace=False)
+        return None
 
     # ------------------------------------------------------------ HQ iyileştirme bölgesi
     def zone_msgs(self):
@@ -289,11 +299,13 @@ class Low:
     def finish(self):
         w = self.w
         self.save(asama='bitti')
-        dest = L['cikis'].get(str(self.p.d['pilot'].get('factionId')), 7)
-        w.add_gate(dict(gateId=EXIT_ID, x=w.map_w // 2, y=w.map_h // 2, hedef=dest, designId=1))
+        dest = L['cikis'].get(str(self.p.d['pilot'].get('factionId')), 5)       # firmanın X-1'i (forum 126411: herkes X-1'e atılır)
+        g = dict(gateId=EXIT_ID, x=w.map_w // 2, y=w.map_h // 2, hedef=dest, designId=1, varis='istasyon')
+        w.add_gate(g)
+        w.auto_jump(g, L.get('cikis_bekleme_sn', 5))
         self.say('bitti')
         self.tell('bitti')
-        w.log('   LoW tamamlandı: X-3 portalı açık')
+        w.log('   LoW tamamlandı: X-1 istasyonuna dönüş')
         self.boss = -1
 
     # ------------------------------------------------------------ dünya olayları

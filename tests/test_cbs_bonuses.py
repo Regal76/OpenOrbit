@@ -187,6 +187,7 @@ class CbsBonuses(unittest.TestCase):
         booster.add(self.p, 'booster_qr-01', hours=1)
         session = game.Session.__new__(game.Session)
         session.profil, session.world = self.p, self.w
+        session.pet = SimpleNamespace(gain_xp=lambda n: [])  # P.E.T. share of quest EP is outside this check
         session.magaza = SimpleNamespace(prize=lambda loot, n, src: [])  # item rewards (Log Disk ...) are outside this check
         quests = gorev.Gorevler(self.p, lambda _: None)
         quests.grant = session.quest_reward
@@ -198,7 +199,7 @@ class CbsBonuses(unittest.TestCase):
         self.assertEqual(pilot['ep'] - before['ep'], 293260)  # 133300 * QR(2) * CBS(1.1)
         self.assertEqual(pilot['honourPoints'] - before['honourPoints'], 2200)
         self.assertEqual(pilot['credits'] - before['credits'], 200000)  # QR applies, CBS does not
-        self.assertEqual(pilot['uridium'] - before['uridium'], 50)  # neither applies
+        self.assertEqual(pilot['uridium'] - before['uridium'], 1000)  # neither applies (Turkish board quest table: 1,000 U)
         ep_messages = [f for n, f in messages if n == 'LegacyModule' and '|ST|EP|' in str(f)]
         self.assertEqual(len(ep_messages), 1)
         self.assertIn('293260', str(ep_messages[0]))
@@ -223,6 +224,7 @@ class CbsBonuses(unittest.TestCase):
     def test_quest_and_event_reward_bases_remain_unchanged_without_cbs(self):
         session = game.Session.__new__(game.Session)
         session.profil, session.world = self.p, self.w
+        session.pet = SimpleNamespace(gain_xp=lambda n: [])  # P.E.T. share of quest EP is outside this check
         before = dict(self.p.d['pilot'])
         with patch.object(game.AY, 'carpan', return_value=1):
             session.quest_reward('currency_experience', 133300)

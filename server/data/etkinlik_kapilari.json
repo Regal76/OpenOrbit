@@ -13,7 +13,8 @@
     "gunluk": true,
     "grup": "plutus",
     "rastgele": true,
-    "sure": true
+    "sure": true,
+    "giris_sn": 15
    },
    "haritalar": [
     450,
@@ -55,7 +56,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -98,7 +102,10 @@
        "puan": [
         4,
         6
-       ]
+       ],
+       "menzil": 400,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -141,7 +148,10 @@
        "puan": [
         4,
         6
-       ]
+       ],
+       "menzil": 400,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -263,6 +273,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -306,7 +319,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -409,22 +425,22 @@
           1
          ],
          [
-          "equipment_shipupgrade_dmg-xhd01",
+          "equipment_shipupgrade_dmg-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_hp-xhd01",
+          "equipment_shipupgrade_hp-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_shd-xhd01",
+          "equipment_shipupgrade_shd-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_spc-xhd01",
+          "equipment_shipupgrade_spc-xu01",
           1,
           1
          ]
@@ -473,7 +489,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -654,22 +673,22 @@
           1
          ],
          [
-          "equipment_shipupgrade_dmg-xhd01",
+          "equipment_shipupgrade_dmg-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_hp-xhd01",
+          "equipment_shipupgrade_hp-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_shd-xhd01",
+          "equipment_shipupgrade_shd-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_spc-xhd01",
+          "equipment_shipupgrade_spc-xu01",
           1,
           1
          ]
@@ -764,6 +783,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -807,7 +829,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -856,7 +881,10 @@
        "puan": [
         4,
         6
-       ]
+       ],
+       "menzil": 400,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -1044,6 +1072,9 @@
         94,
         114
        ],
+       "menzil": 550,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "kutu": {
         "tur": "GOP_EASY_BOX",
         "olasilik": 1.0,
@@ -1106,22 +1137,22 @@
           1
          ],
          [
-          "equipment_shipupgrade_dmg-xhd01",
+          "equipment_shipupgrade_dmg-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_hp-xhd01",
+          "equipment_shipupgrade_hp-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_shd-xhd01",
+          "equipment_shipupgrade_shd-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_spc-xhd01",
+          "equipment_shipupgrade_spc-xu01",
           1,
           1
          ]
@@ -1170,7 +1201,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -1255,6 +1289,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -1298,7 +1335,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -1420,6 +1460,9 @@
         94,
         114
        ],
+       "menzil": 550,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "kutu": {
         "tur": "GOP_EASY_BOX",
         "olasilik": 1.0,
@@ -1482,22 +1525,22 @@
           1
          ],
          [
-          "equipment_shipupgrade_dmg-xhd01",
+          "equipment_shipupgrade_dmg-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_hp-xhd01",
+          "equipment_shipupgrade_hp-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_shd-xhd01",
+          "equipment_shipupgrade_shd-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_spc-xhd01",
+          "equipment_shipupgrade_spc-xu01",
           1,
           1
          ]
@@ -1585,7 +1628,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -1628,7 +1674,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -1711,6 +1760,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -1834,6 +1886,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -1957,6 +2012,9 @@
         94,
         114
        ],
+       "menzil": 550,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "kutu": {
         "tur": "GOP_EASY_BOX",
         "olasilik": 1.0,
@@ -2019,22 +2077,22 @@
           1
          ],
          [
-          "equipment_shipupgrade_dmg-xhd01",
+          "equipment_shipupgrade_dmg-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_hp-xhd01",
+          "equipment_shipupgrade_hp-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_shd-xhd01",
+          "equipment_shipupgrade_shd-xu01",
           1,
           1
          ],
          [
-          "equipment_shipupgrade_spc-xhd01",
+          "equipment_shipupgrade_spc-xu01",
           1,
           1
          ]
@@ -2083,7 +2141,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -2205,7 +2266,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -2276,7 +2340,15 @@
         "uridyum": 0
        },
        "kargo": {},
-       "adet": 1
+       "adet": 1,
+       "davranis": {
+        "vurulunca_cagir": {
+         "tur": "eg_plutus_kolay_ek_kacak",
+         "adet": 1,
+         "en_cok": 3,
+         "bekleme_sn": 20
+        }
+       }
       },
       {
        "tur": "265",
@@ -2300,6 +2372,9 @@
         2600
        ],
        "kalici": true,
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.5,
        "davranis": {
         "vurulunca_cagir": {
          "tur": "eg_plutus_kolay_ek_warhead",
@@ -2388,7 +2463,7 @@
       "olasilik": 1.0,
       "omur_sn": 600,
       "mod": "biri",
-      "_kaynak": "wiki \"Bountiful Alien CPU content\"; adetler uyarlama",
+      "_kaynak": "wiki \"Bountiful Alien CPU content\"; adetler uyarlama (Normal Kolay'ın iki katı: forum 143902)",
       "icerik": [
        [
         "equipment_weapon_laser_lf-4-hp",
@@ -2442,6 +2517,38 @@
        ]
       ]
      }
+    },
+    "kacak": {
+     "tur": "260",
+     "ad": "Cote Lo",
+     "gorunen_ad": "-=[ Fleeing Cote Lo ]=-",
+     "hp": 80000,
+     "kalkan": 29000,
+     "hasar": 1750,
+     "hiz": 400,
+     "npc_kimlik": 213,
+     "odul": {
+      "ep": 8000,
+      "onur": 40,
+      "kredi": 41000,
+      "uridyum": 20
+     },
+     "kargo": {
+      "0": 30,
+      "2": 30,
+      "1": 30,
+      "4": 12,
+      "5": 12,
+      "6": 1
+     },
+     "adet": 1,
+     "saldirgan": false,
+     "kacak": true,
+     "guclendir": {
+      "hasar": 0.1,
+      "hiz": 0.1,
+      "sure_sn": 60
+     }
     }
    },
    "cpu": {
@@ -2489,7 +2596,8 @@
     "gunluk": true,
     "grup": "plutus",
     "rastgele": true,
-    "sure": true
+    "sure": true,
+    "giris_sn": 1
    },
    "haritalar": [
     410,
@@ -2531,7 +2639,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -2574,7 +2685,10 @@
        "puan": [
         4,
         6
-       ]
+       ],
+       "menzil": 400,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -2617,7 +2731,10 @@
        "puan": [
         4,
         6
-       ]
+       ],
+       "menzil": 400,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -2739,6 +2856,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -2782,7 +2902,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -2939,7 +3062,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -3220,6 +3346,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -3263,7 +3392,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -3312,7 +3444,10 @@
        "puan": [
         4,
         6
-       ]
+       ],
+       "menzil": 400,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -3500,6 +3635,9 @@
         94,
         114
        ],
+       "menzil": 550,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "kutu": {
         "tur": "GOP_NORMAL_BOX",
         "olasilik": 1.0,
@@ -3616,7 +3754,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -3701,6 +3842,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -3744,7 +3888,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -3866,6 +4013,9 @@
         94,
         114
        ],
+       "menzil": 550,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "kutu": {
         "tur": "GOP_NORMAL_BOX",
         "olasilik": 1.0,
@@ -4021,7 +4171,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -4064,7 +4217,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -4147,6 +4303,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -4270,6 +4429,9 @@
         15,
         25
        ],
+       "menzil": 350,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "cpu_artis": 0.005
       }
      ],
@@ -4393,6 +4555,9 @@
         94,
         114
        ],
+       "menzil": 550,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7,
        "kutu": {
         "tur": "GOP_NORMAL_BOX",
         "olasilik": 1.0,
@@ -4509,7 +4674,10 @@
        "puan": [
         8,
         14
-       ]
+       ],
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -4631,7 +4799,10 @@
        "puan": [
         70,
         90
-       ]
+       ],
+       "menzil": 800,
+       "isabet": 0.8,
+       "kalkan_emme": 0.7
       }
      ],
      "gruplar": [
@@ -4702,7 +4873,15 @@
         "uridyum": 0
        },
        "kargo": {},
-       "adet": 1
+       "adet": 1,
+       "davranis": {
+        "vurulunca_cagir": {
+         "tur": "eg_plutus_ek_kacak",
+         "adet": 1,
+         "en_cok": 3,
+         "bekleme_sn": 20
+        }
+       }
       },
       {
        "tur": "265",
@@ -4726,6 +4905,9 @@
         2600
        ],
        "kalici": true,
+       "menzil": 450,
+       "isabet": 0.8,
+       "kalkan_emme": 0.5,
        "davranis": {
         "vurulunca_cagir": {
          "tur": "eg_plutus_ek_warhead",
@@ -4837,6 +5019,11 @@
           "ship_mimesis_design_mimesis-nobilis",
           1,
           1
+         ],
+         [
+          "ammunition_mine_acm-01",
+          50,
+          1
          ]
         ]
        }
@@ -4906,69 +5093,101 @@
       "olasilik": 1.0,
       "omur_sn": 600,
       "mod": "biri",
-      "_kaynak": "wiki \"Bountiful Alien CPU content\"; adetler uyarlama",
+      "_kaynak": "wiki \"Bountiful Alien CPU content\"; adetler uyarlama (Normal Kolay'ın iki katı: forum 143902)",
       "icerik": [
        [
         "equipment_weapon_laser_lf-4-hp",
-        1,
+        2,
         1
        ],
        [
         "equipment_weapon_laser_lf-4-md",
-        1,
+        2,
         1
        ],
        [
         "equipment_weapon_laser_lf-4-pd",
-        1,
+        2,
         1
        ],
        [
         "equipment_weapon_laser_lf-px01",
-        1,
+        2,
         1
        ],
        [
         "equipment_generator_shield_sg3n-px01",
-        1,
+        2,
         1
        ],
        [
         "resource_collectable_evocation-chip",
-        10,
+        20,
         1
        ],
        [
         "resource_collectable_diametrion",
-        10,
+        20,
         1
        ],
        [
         "resource_collectable_permit",
-        3,
+        6,
         1
        ],
        [
         "equipment_shipupgrade_dmg-xhd01",
-        1,
+        2,
         1
        ],
        [
         "equipment_shipupgrade_hp-xhd01",
-        1,
+        2,
         1
        ],
        [
         "equipment_shipupgrade_shd-xhd01",
-        1,
+        2,
         1
        ],
        [
         "equipment_shipupgrade_spc-xhd01",
-        1,
+        2,
         1
        ]
       ]
+     }
+    },
+    "kacak": {
+     "tur": "260",
+     "ad": "Cote Lo",
+     "gorunen_ad": "-=[ Fleeing Cote Lo ]=-",
+     "hp": 160000,
+     "kalkan": 58000,
+     "hasar": 3500,
+     "hiz": 400,
+     "npc_kimlik": 213,
+     "odul": {
+      "ep": 16000,
+      "onur": 80,
+      "kredi": 82000,
+      "uridyum": 40
+     },
+     "kargo": {
+      "0": 60,
+      "2": 60,
+      "1": 60,
+      "4": 25,
+      "5": 25,
+      "6": 3
+     },
+     "adet": 1,
+     "saldirgan": false,
+     "kacak": true,
+     "guclendir": {
+      "hasar": 0.1,
+      "hiz": 0.1,
+      "sure_sn": 60
      }
     }
    },
@@ -8731,7 +8950,7 @@
        "hp": 25000,
        "kalkan": 20000,
        "hasar": 750,
-       "hiz": 300,
+       "hiz": 420,
        "npc_kimlik": 12,
        "odul": {
         "ep": 6400,
@@ -9092,13 +9311,6 @@
       20
      ],
      [
-      "resource_collectable_indoctrineoil",
-      [
-       0,
-       20
-      ]
-     ],
-     [
       "resource_collectable_kyhalon",
       5
      ],
@@ -9135,7 +9347,72 @@
       1,
       0.05
      ]
-    ]
+    ],
+    "ruller": [
+     "resource_collectable_indoctrineoil",
+     [
+      [
+       1,
+       1.0
+      ],
+      [
+       2,
+       0.59
+      ],
+      [
+       2,
+       0.2
+      ],
+      [
+       [
+        10,
+        15
+       ],
+       0.0001
+      ]
+     ]
+    ],
+    "buyuk_paket": {
+     "olasilik": 1e-05,
+     "esyalar": [
+      [
+       "currency_uridium",
+       30000
+      ],
+      [
+       "premium_30",
+       1
+      ],
+      [
+       "resource_collectable_greenkey",
+       20
+      ],
+      [
+       "resource_extra-energy",
+       200
+      ],
+      [
+       "equipment_extra_cpu_sll-3",
+       2
+      ],
+      [
+       "equipment_extra_cpu_sl-3",
+       2
+      ],
+      [
+       "equipment_generator_shield_fs-03",
+       2
+      ],
+      [
+       "equipment_weapon_laser_lf-4",
+       1
+      ],
+      [
+       "equipment_weapon_laser_lf-4-md",
+       1
+      ]
+     ]
+    }
    },
    "_kaynak": "darkorbitwiki quarantine-zone, resmî SSS: Immunizer CPU, tek can, 50 Viral Kristallon sonra Gygerim Overlord, Quarantine Box",
    "_uyarlama": "tek oyunculu (2-8 oyuncu yerine), ek dalga sayıları, Overlord’un ölüm ışını uzaylı yeteneği (uzayli_yetenekleri.json 128), uzaktakini seçmesi yok",
@@ -10663,7 +10940,7 @@
    "etkinlik": null,
    "giris": "X-1",
    "portal": 83,
-   "can": 3,
+   "can": 2,
    "kural": {
     "cpu": "ammunition_ggportal_permafrost-fissure-cpu",
     "cpu_can": 2
@@ -11117,51 +11394,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       },
       {
@@ -11669,51 +11938,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -12176,51 +12437,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -12766,51 +13019,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -13399,51 +13644,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -13678,51 +13915,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -13822,13 +14051,13 @@
         "tur": "PERMAFROST_AAA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           20000,
-          22.5
+          37.5
          ],
          [
           "ammunition_rocketlauncher_cbr",
@@ -13843,30 +14072,22 @@
          [
           "ammunition_laser_rsb-75",
           8000,
-          6.5
+          12.5
          ],
          [
           "ammunition_rocket_plt-2021",
           4000,
-          14.5
-         ],
-         [
-          "ammunition_specialammo_dcr-250",
-          7,
-          9
-         ],
-         [
-          "ammunition_specialammo_emp-01",
-          7,
-          8
-         ],
+          12.5
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           15,
           20
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"UFO drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -14281,51 +14502,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -14655,51 +14868,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       }
      ],
@@ -15083,51 +15288,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       },
       {
@@ -15429,51 +15626,43 @@
         "tur": "PERMAFROST_AA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           10000,
-          12.22
+          2
          ],
          [
           "ammunition_rocket_plt-2021",
           1500,
-          11.11
+          1
          ],
          [
           "ammunition_specialammo_emp-01",
           5,
-          12.22
+          2
          ],
          [
           "ammunition_rocketlauncher_sar-02",
           1500,
-          22.22
+          2
          ],
          [
           "ammunition_rocketlauncher_hstrm-01",
           1500,
-          22.22
-         ],
-         [
-          "ammunition_laser_sab-50",
-          8000,
-          10
-         ],
-         [
-          "ammunition_laser_mcb-50",
-          8000,
-          10
-         ],
+          2
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           7,
           10
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"Ufonit drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       },
       {
@@ -15774,13 +15963,13 @@
         "tur": "PERMAFROST_AAA",
         "olasilik": 1.0,
         "omur_sn": 900,
-        "mod": "hepsi",
+        "mod": "biri",
         "proxium": true,
         "icerik": [
          [
           "ammunition_laser_ucb-100",
           20000,
-          22.5
+          37.5
          ],
          [
           "ammunition_rocketlauncher_cbr",
@@ -15795,30 +15984,22 @@
          [
           "ammunition_laser_rsb-75",
           8000,
-          6.5
+          12.5
          ],
          [
           "ammunition_rocket_plt-2021",
           4000,
-          14.5
-         ],
-         [
-          "ammunition_specialammo_dcr-250",
-          7,
-          9
-         ],
-         [
-          "ammunition_specialammo_emp-01",
-          7,
-          8
-         ],
+          12.5
+         ]
+        ],
+        "ayrica": [
          [
           "resource_collectable_proxium",
           15,
           20
          ]
         ],
-        "_kaynak": "fandom Permafrost Fissure \"UFO drops\"; kutu türü PERMAFROST_AA/AAA hangisinin hangi uzaylıya ait olduğu tahmin"
+        "_kaynak": "resmî Türk forumu 128431: cephanelerden biri (oranlar) ve ayrıca Proxium"
        }
       },
       {
@@ -15976,7 +16157,14 @@
    "giris": "X-1",
    "portal": 77,
    "can": 20,
-   "kural": {},
+   "kural": {
+    "donem": [
+     [
+      "12-11",
+      "01-01"
+     ]
+    ]
+   },
    "haritalar": [
     77
    ],
@@ -16200,6 +16388,33 @@
        },
        "adet": 1,
        "saldirgan": false
+      },
+      {
+       "tur": "33",
+       "ad": "Super Ice Meteoroid",
+       "gorunen_ad": "Super Ice Meteoroid",
+       "hp": 640000,
+       "kalkan": 480000,
+       "hasar": 0,
+       "hiz": 40,
+       "npc_kimlik": 55,
+       "odul": {
+        "ep": 400000,
+        "onur": 1600,
+        "kredi": 1310720,
+        "uridyum": 720
+       },
+       "kargo": {
+        "0": 2400,
+        "2": 2400,
+        "1": 2400,
+        "4": 1024,
+        "5": 1024,
+        "6": 128,
+        "3": 512
+       },
+       "adet": 1,
+       "saldirgan": false
       }
      ],
      "gruplar": [
@@ -16210,7 +16425,11 @@
        ],
        [
         1,
-        2
+        1
+       ],
+       [
+        2,
+        1
        ]
       ]
      ]
@@ -16252,6 +16471,12 @@
    "portal": 78,
    "can": 20,
    "kural": {
+    "donem": [
+     [
+      "12-11",
+      "01-01"
+     ]
+    ],
     "seviye": 16
    },
    "haritalar": [
@@ -16477,6 +16702,33 @@
        },
        "adet": 1,
        "saldirgan": false
+      },
+      {
+       "tur": "33",
+       "ad": "Super Ice Meteoroid",
+       "gorunen_ad": "Super Ice Meteoroid",
+       "hp": 3200000,
+       "kalkan": 2400000,
+       "hasar": 0,
+       "hiz": 40,
+       "npc_kimlik": 55,
+       "odul": {
+        "ep": 2000000,
+        "onur": 8000,
+        "kredi": 6553600,
+        "uridyum": 3600
+       },
+       "kargo": {
+        "0": 2400,
+        "2": 2400,
+        "1": 2400,
+        "4": 1024,
+        "5": 1024,
+        "6": 128,
+        "3": 512
+       },
+       "adet": 1,
+       "saldirgan": false
       }
      ],
      "gruplar": [
@@ -16487,7 +16739,11 @@
        ],
        [
         1,
-        2
+        1
+       ],
+       [
+        2,
+        1
        ]
       ]
      ]
@@ -19867,6 +20123,14 @@
        100
       ],
       [
+       "ammunition_rocketlauncher_bdr1212",
+       [
+        500,
+        1000
+       ],
+       100
+      ],
+      [
        "ammunition_rocket_bdr-1211",
        [
         1000,
@@ -19875,14 +20139,46 @@
        100
       ]
      ],
-     "_kaynak": "wiki: Synk ödül kutusu (BDR-1212 -> BDR-1211; unvan başarımla)"
+     "_kaynak": "wiki ve resmî Türk forumu 158403: Synk ödül kutusu (BDR-1212 500-1.000 ve BDR-1211 1.000-2.000; unvan başarımla)"
     }
+   },
+   "lab_iceterion": {
+    "tur": "271",
+    "ad": "Iceterion",
+    "gorunen_ad": "-=[ Iceterion ]=-",
+    "hp": 1000000,
+    "kalkan": 0,
+    "hasar": 0,
+    "hiz": 120,
+    "npc_kimlik": 228,
+    "odul": {
+     "ep": 0,
+     "onur": 0,
+     "kredi": 0,
+     "uridyum": 0
+    },
+    "kargo": {},
+    "adet": 1,
+    "saldirgan": false,
+    "dokunulmaz": true,
+    "mayin": {
+     "tur": "ammunition_mine_slm-01",
+     "aralik_sn": 30,
+     "en_cok": 2,
+     "menzil": 1500,
+     "yaricap": [
+      300,
+      600
+     ]
+    },
+    "_uyarlama": "IceMine istemcide ayrı eşya değil: yavaşlatan mayın (SLM-01) görünümü; aralık, sayı ve menzil uyarlama"
    }
   },
   "anahtar_ucreti": 1,
   "skoll": {
    "aralik_sn": 300,
-   "olasilik": 0.35
+   "olasilik": 1.0,
+   "adet": 3
   },
   "synk": {
    "yeniden_sn": [
@@ -19891,13 +20187,49 @@
    ],
    "haber_sn": 300
   },
+  "saatler": [
+   [
+    7,
+    9
+   ],
+   [
+    10,
+    14
+   ],
+   [
+    17,
+    19
+   ],
+   [
+    21,
+    23
+   ]
+  ],
+  "saatler_hafta_sonu": [
+   [
+    8,
+    10
+   ],
+   [
+    11,
+    13
+   ],
+   [
+    15,
+    19
+   ],
+   [
+    21,
+    23
+   ]
+  ],
   "_kaynak": "wiki (bölgeler, uzaylılar, anahtar olasılıkları, Skoll, Synk ödülü), fandom 2019 kapı tablosu (bölge köşe kapıları; 2020 tablosu da belgede), istemci FrozenLabyrinth* komutları",
   "_uyarlama": "nüfus (kaynak yalnız meteorları sayıyor), Skoll her 5 dakikada %35 olasılıkla bulunulan haritada, Synk 5-10 dakikada rastgele harita ve bölgede; açık saatler tek oyunculuda bütün gün; Iceterion yok (değeri bilinmiyor)"
  },
  "deney": {
   "etkinlik": "plutus",
   "atis_sn": 120,
-  "dalga_sn": 35,
+  "dalga_sn": 45,
   "ipucu_sn": 10,
   "isaret": {
    "tur": "deney_isaret",

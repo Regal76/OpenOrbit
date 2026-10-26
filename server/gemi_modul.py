@@ -103,7 +103,7 @@ def roll(loot, rng=random):
     vals += [[a, rng.randint(1, 3) / 100.0] for a in rng.sample([a for a in IKINCIL if a != main], rng.choices((0, 1, 2), (6, 3, 1))[0])]
     rng.shuffle(vals)                      # kayıtta ana nitelik ilk olmayabiliyor (DMG-XT10: DMG_NPC sonuncu)
     pref = list(kz.get('tercih', []))
-    rest = [s for s in all_ships() if s not in pref]
+    rest = [s for s in all_ships() if s not in pref and s not in kz.get('haric', ())]      # serinin çıkmadığı gemiler (forum 162335)
     picks = []
     for _ in range(rng.choice((1, 1, 2, 3))):
         pool = [s for s in (pref if pref and rng.random() < ONCELIK_SANS else rest) if s not in picks] or [s for s in rest + pref if s not in picks]
@@ -295,10 +295,16 @@ class Moduller:
                     self.p.add_resource(l, n)
             self.log('   geri dönüşüm: %s -> %s' % (loot, got))
             return msgs + [('UnstableModuleRecycleResultCommand', dict(itemId=iid, shardCommand=shard_cmd(self.p))), list_cmd(self.p)]
-        if not loot or not unstable(loot) or iid in self.p.equipped_ids():
+        if not loot or not unstable(loot):
             from eski_protokol import legacy
             return [legacy('0|A|STM|msg_reroll_error_item')]
+        worn = iid in self.p.equipped_ids()                  # forum 162335: takılıyken de geri dönüşür; önce yuvasından çıkar
         with self.p.lock:
+            for s in self.p.d['gemiler'].values():
+                for cfg in s.get('konfigler', {}).values():
+                    for lst in cfg.values():
+                        if isinstance(lst, list) and iid in lst:
+                            lst.remove(iid)
             del self.p.d['esyalar'][str(iid)]
             self.p.d.get('kararsiz', {}).pop(str(iid), None)
             self.p.dirty = True
@@ -308,6 +314,8 @@ class Moduller:
             self.p.add_resource(SHARD, back)
         self.log('   geri dönüşüm: %s -> %d shard' % (loot, back))
         RT.note(self.p, 'his_recycled_unstable_module', loot, back)
+        if worn and self.m:
+            msgs += [self.m.equipment_cmd()] + self.m.apply_stats()
         return msgs + [('UnstableModuleRecycleResultCommand', dict(itemId=iid, shardCommand=shard_cmd(self.p))), list_cmd(self.p)]
 
     def after(self, iid, msgs):

@@ -6419,7 +6419,9 @@
      "puan": 100,
      "unvan": "title_achievement_event_valentine_1"
     }
-   ]
+   ],
+   "donem_sifir": "immortal_union",
+   "_donem_sifir": "Resmî Türk forumu (Ölümsüz Birlik SSS): FWX-COM'u tek bir Ölümsüz Birlik etkinliğinde 142 kez üret; ilerleme sonraki etkinliğe taşınmaz"
   },
   "achievement_destroy_venerable-battleray": {
    "grup": "DESTROY",

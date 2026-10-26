@@ -15,7 +15,8 @@ Seviyeler data/sosyal.json rakipler'de. Her lotun her döneminde olasılıkla bi
 adı lot, dönem ve seviye tohumlu (yeniden hesaplanır, saklanmaz).
   Çekingen, Ilımlı ('gecer' yok): birkaç küçük teklif verir; oyuncu teklif verince donar, oyuncuyu hiç geçmez -> lot oyuncunun.
   Rekabetçi, Agresif: oyuncu geçince bir tepki süresi sonra karşılık verir (oyuncunun teklifi + artış, bütçeye kadar; dönemin
-  son 5 saniyesine kalmadan). Bütçeyi aşan teklif kazanır; kaybedilen lotun kredisi dönem sonunda geri gelir.
+  son 5 saniyesine kalmadan). Bütçeyi aşan teklif kazanır. Teklifi geçilen oyuncunun kredisi hemen geri gelir, teklif kaydı düşer
+  (yeniden tam tutarla teklif verir; resmî forum 127234) ve onay postası açıksa "geçildin" postası.
 Bot oyuncular gelince (Aşama 11) teklifleri rival() döndürecek.
 Çok oyunculu sunucuda lotlar herkes için aynı: öteki oyuncuların teklifleri de yarışır (en yüksek teklif; eşitse önce veren), dönemin
 kazananı ilk hesaplayan oturumda bir kez belirlenir (SONUC): önce her oyuncu kendi teklifiyle aynı lotu kazanabiliyordu.
@@ -266,10 +267,31 @@ class Muzayede:
             (self.m.money_msgs() if self.m else []) + msgs
 
     # -------------------------------------------------------- dönem sonu
+    def outbid(self, now):
+        """Süren dönemde teklifi geçilen lotlar: kredi hemen iade, kayıt düşer (forum 127234) -> (postalar, iade var mı)."""
+        msgs, back = [], False
+        for key, b in list(self.d['teklifler'].items()):
+            kind, loot = key.split('|', 1)
+            lot = LOTS.get((kind, loot))
+            if b['bitis'] <= now or not lot:
+                continue
+            riv = rival(lot, b['bitis'], now, b)[0]
+            o = best(bids(lot, b['bitis'], self.p))
+            if riv <= b['teklif'] and not (o and (o[0] > b['teklif'] or (o[0] == b['teklif'] and o[1] < b.get('zaman', 0)))):
+                continue
+            with self.p.lock:
+                self.d['teklifler'].pop(key, None)
+                self.p.dirty = True
+            self.p.gain(kredi=b['teklif'], neden='auction_bookMoneyBack', detay=loot)
+            self.log('   müzayede teklifi geçildi: %s (%d kredi geri)' % (loot, b['teklif']))
+            msgs += self.mail(lot, b, 1)
+            back = True
+        return msgs, back
+
     def settle(self, now=None):
-        """Biten dönemlerdeki teklifler: kazanılan eşya verilir -> mesajlar (oturum gönderir)."""
+        """Biten dönemlerdeki teklifler: kazanılan eşya verilir; süren dönemde geçilen teklifin kredisi geri -> mesajlar."""
         now = now or time.time()
-        msgs = []
+        msgs, back = self.outbid(now)
         for key, b in list(self.d['teklifler'].items()):
             if b['bitis'] > now:
                 continue
@@ -307,7 +329,7 @@ class Muzayede:
                 self.p.dirty = True
             self.log('   müzayede kazanıldı: %s x%d (%d kredi)' % (loot, lot['adet'], b['teklif']))
             msgs += (self.m.reward(loot, lot['adet']) if self.m else []) + self.mail(lot, b, 2)
-        if msgs and self.m:
+        if (msgs or back) and self.m:
             msgs += self.m.money_msgs()
         return msgs
 

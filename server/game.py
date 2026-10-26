@@ -36,6 +36,7 @@ import yollar as YOL       # noqa: E402
 from profil import Profil  # noqa: E402
 from dunya import World    # noqa: E402
 from magaza import Magaza  # noqa: E402
+import magaza as MG  # noqa: E402
 from gorev import Gorevler  # noqa: E402
 import dunya               # noqa: E402
 import kapi as KAPI        # noqa: E402
@@ -309,7 +310,9 @@ HOME_MAP = {1: 1, 2: 5, 3: 9}     # firma -> ana harita (X-1)
 # BL-1..3); kapı, mod, etkinlik, labirent ve LoW haritaları her oyuncunun kendi kopyası
 PAYLASILAN = {k for k in dunya.CFG['haritalar'] if k.isdigit() and re.match(r'(\d|BL)-\d$', H.name(k)) and int(k) not in KAPI.BY_MAP
               and int(k) not in EKP.BY_MAP and int(k) not in LAB.MAPS and int(k) != LOW.MAP}
-NAME_MIN, NAME_MAX, STATUS_MAX = 3, 20, 200    # pilot adı ve durum yazısı (uyarlama: istemci sınır göndermiyor)
+NAME_MIN, NAME_MAX, STATUS_MAX = 4, 20, 200    # pilot adı 4-20 (istemci change_pilotname_error_signs_number); durum yazısı uyarlama
+NAME_ILLEGAL = set(' <>@+\'"&%;/\\?|')          # istemci change_pilotname_error_signs_illegal (+ protokolün ayırıcısı |)
+NAME_WAIT_SN = 48 * 3600                         # istemci change_pilotname_error_time: "once every 48 hours"
 
 
 def achievement_groups(now=None):
@@ -574,19 +577,36 @@ class Session:
         Geçersiz ad ya da sunucudaki başka oyuncunun adı (sohbet, posta, grup, klan oyuncuyu adıyla bulur):
         InternalPilotBioUpdateResultsCommand success=False."""
         name = str(name or '').strip()
-        ok = NAME_MIN <= len(name) <= NAME_MAX and '|' not in name and name.isprintable()
-        o = TP.bul(ad=name) if ok else None
-        ok = ok and (o is None or o.profil is self.profil)
-        if ok:
+        last = self.profil.d.get('ad_degisim', 0)
+        o = TP.bul(ad=name)
+        if not NAME_MIN <= len(name) <= NAME_MAX:
+            why = 'change_pilotname_error_signs_number'
+        elif set(name) & NAME_ILLEGAL or '--' in name or not name.isprintable():
+            why = 'change_pilotname_error_signs_illegal'
+        elif KL.yasakli(name):                                    # Oyun Kuralları 7 (resmî forum 131990): personel adı, küfür
+            why = 'ad_yasak'
+        elif o is not None and o.profil is not self.profil:
+            why = 'change_pilotname_error_inUse'
+        elif AY.get('klan_bekleme') and time.time() - last < NAME_WAIT_SN:
+            why = 'ad_bekleme'
+        else:
+            why = None
+        if why is None:
             old = self.profil.d['pilot'].get('userName', '')
             with self.profil.lock:
                 self.profil.d['pilot']['userName'] = name
+                self.profil.d['ad_degisim'] = time.time()
                 self.profil.dirty = True
             KL.ad_degisti(old, name)
             log('   pilot adı: %s' % name)
+            return ('InternalPilotBioUpdateResultsCommand', {'success': True, 'baseStackCommand': MG.stack_msg('change_pilotname_success')})
+        log('   pilot adı değişmedi: %r (%s)' % (name, why))
+        if why in MG.NEDENLER:                                    # BaseKey'de yok: istemcinin metni ham (change_pilotname_error_*)
+            en, tr = MG.NEDENLER[why]
+            msg = MG.raw_msg((tr if self.magaza.dil == 'tr' else en).replace('%DATETIME%', time.strftime('%d.%m.%Y %H:%M', time.localtime(last))))
         else:
-            log('   pilot adı değişmedi: %r' % name)
-        return ('InternalPilotBioUpdateResultsCommand', {'success': ok, 'baseStackCommand': None})
+            msg = MG.stack_msg(why)
+        return ('InternalPilotBioUpdateResultsCommand', {'success': False, 'baseStackCommand': msg})
 
     def pilot_bio(self, resp, uid=None):
         """InternalPilotBioRequest: kayıttaki profil kartı + oyuncunun kaydettiği bilgiler (InternalPilotBioUpdateRequest). uid:
@@ -805,6 +825,11 @@ class Session:
                 self.cal_sent = cur
                 BSM.set_events(achievement_groups(now))
         self.gorev.tick(now)                          # süreli görevler
+        if self.profil.d.get('booster_abonelik') and now >= getattr(self, 'abone_next', 0):
+            self.abone_next = now + 5.0
+            msgs = self.magaza.subscription_tick(now)     # booster aboneliği (forum 127558)
+            if msgs:
+                self.send(msgs, 'booster aboneliği')
         if now >= self.ek_next:
             self.ek_next = now + 1.0
             msgs = self.ek.tick(now)                  # Ö3'ün etkinlikleri: dönem sonları, zamanlı olaylar
@@ -831,7 +856,8 @@ class Session:
                 n = int(n * (1 + cbs.get(cur[loot], 0)))
             n = AY.miktar(cur[loot], n, 'gorev')           # panelin ödül çarpanları
             tot = self.profil.gain(neden='quest_won', **{cur[loot]: n})
-            return self.world.reward_msgs(tot, **{cur[loot]: n}) if self.world else []
+            pet = self.pet.gain_xp(n) if cur[loot] == 'ep' else []        # forum 127074: P.E.T. görev EP'sinin %5'ini de kazanır
+            return (self.world.reward_msgs(tot, **{cur[loot]: n}) if self.world else []) + (pet or [])
         return self.magaza.prize(loot, n, 'gorev')         # eşya ödülü: panelin mod/görev ödülü çarpanı
 
     def respawn_home(self):

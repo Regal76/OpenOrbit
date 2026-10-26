@@ -47,8 +47,9 @@ def client_filter(msgs):
 
 def free_items(p, loot):
     """Takılı olmayan eşya örnekleri (itemId listesi)."""
-    eq = p.equipped_ids()
-    return [int(i) for i, l in p.d['esyalar'].items() if l == loot and int(i) not in eq]
+    eq, lv = p.equipped_ids(), p.d.get('yukseltme_seviye', {})
+    ids = [int(i) for i, l in p.d['esyalar'].items() if l == loot and int(i) not in eq]
+    return sorted(ids, key=lambda i: (int(lv.get(str(i), 0)), i))      # forum 160116: harcanan "stoğundaki en düşük seviyeli"
 
 
 def count(p, loot):

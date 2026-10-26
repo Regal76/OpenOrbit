@@ -117,9 +117,10 @@ class PlayerDamage(unittest.TestCase):
 
     def test_player_kill_screen_has_player_cause_and_killer_name(self):
         from types import SimpleNamespace
-        attacker=SimpleNamespace(hid=self.w.hid+1,p=SimpleNamespace(d={'pilot':{'userName':'EnemyPilot'}},mods=lambda: {}))
+        attacker=SimpleNamespace(hid=self.w.hid+1,p=SimpleNamespace(d={'pilot':{'userName':'EnemyPilot'}},mods=lambda: {}),send=lambda m: None)
         self.p.d['gemi'].update(hitPoints=1,shield=0,nanoHull=0)
-        msgs=self.w.hurt_hero(1000,now=self.now,source_player=attacker)
+        with patch('oyuncu_savas.on_kill', return_value=[]):     # PvP reward policy is covered by server/test/test_forum_pvp.py
+            msgs=self.w.hurt_hero(1000,now=self.now,source_player=attacker)
         screen=next(f for n,f in msgs if n=='KillScreenPostCommand')
         self.assertEqual(screen['cause']['cause'],0)
         self.assertEqual(screen['killerName'],'EnemyPilot')

@@ -109,7 +109,11 @@
    "_kaynak": "wiki; hız kayıtla doğrulandı (489 birim / 2.020 ms = 242); saldırganlık uyarlama",
    "npc_kimlik": 15,
    "ek_odul": {
-    "resource_collectable_mucosum": 6
+    "resource_collectable_mucosum": 6,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "23": {
@@ -131,7 +135,13 @@
     "1": 40
    },
    "_kaynak": "wiki; tip kimliği istemcinin lib_ships.xml'inden (23 = StreunerBoss); hız uyarlama",
-   "npc_kimlik": 14
+   "npc_kimlik": 14,
+   "ek_odul": {
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
+   }
   },
   "72": {
    "ad": "-=[ Devolarium ]=-",
@@ -238,7 +248,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_mordon); hız, saldırganlık uyarlama",
    "npc_kimlik": 16,
    "ek_odul": {
-    "resource_collectable_scrapium": 6
+    "resource_collectable_scrapium": 6,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "25": {
@@ -266,7 +280,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_saimon); hız, saldırganlık uyarlama",
    "npc_kimlik": 17,
    "ek_odul": {
-    "resource_collectable_scrapium": 6
+    "resource_collectable_scrapium": 6,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "26": {
@@ -294,7 +312,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_devolarium); hız, saldırganlık uyarlama",
    "npc_kimlik": 18,
    "ek_odul": {
-    "resource_collectable_boltrum": 3
+    "resource_collectable_boltrum": 3,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "74": {
@@ -349,7 +371,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_sibelon); hız, saldırganlık uyarlama",
    "npc_kimlik": 20,
    "ek_odul": {
-    "resource_collectable_boltrum": 3
+    "resource_collectable_boltrum": 3,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "76": {
@@ -431,7 +457,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_sibelonit); hız, saldırganlık uyarlama",
    "npc_kimlik": 19,
    "ek_odul": {
-    "resource_collectable_mucosum": 6
+    "resource_collectable_mucosum": 6,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "28": {
@@ -459,7 +489,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_lordakium); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 21,
    "ek_odul": {
-    "resource_collectable_mucosum": 6
+    "resource_collectable_mucosum": 6,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "78": {
@@ -572,7 +606,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallin); hız, saldırganlık uyarlama",
    "npc_kimlik": 22,
    "ek_odul": {
-    "resource_collectable_prismatium": 3
+    "resource_collectable_prismatium": 3,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "35": {
@@ -601,7 +639,11 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_kristallon); hız uyarlama; vurulmadıkça saldırmaz (fandom)",
    "npc_kimlik": 23,
    "ek_odul": {
-    "resource_collectable_prismatium": 3
+    "resource_collectable_prismatium": 3,
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
    }
   },
   "252": {
@@ -668,14 +710,20 @@
     "3": 4
    },
    "_kaynak": "wiki (belgeler/wiki/aliens.md: boss_streuner_r); hız, saldırganlık uyarlama",
-   "npc_kimlik": 24
+   "npc_kimlik": 24,
+   "ek_odul": {
+    "resource_logfile": {
+     "adet": 1,
+     "olasilik": 0.05
+    }
+   }
   },
   "213": {
    "ad": "\\\\ Impulse II //",
    "hp": 1200000,
    "kalkan": 750000,
    "hasar": 12000,
-   "hiz": 300,
+   "hiz": 450,
    "saldirgan": true,
    "odul": {
     "ep": 55000,
@@ -691,7 +739,7 @@
     "5": 80,
     "6": 20
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: impulse_ii); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: impulse_ii); hız, saldırganlık uyarlama; hız resmî Türk forumu 141806 (450)",
    "npc_kimlik": 175,
    "ek_odul": {
     "resource_collectable_rinusk": [
@@ -1031,7 +1079,7 @@
    "ek_odul": {
     "resource_collectable_bifenon": {
      "adet": 1,
-     "olasilik": 0.25
+     "olasilik": 0.2
     },
     "resource_collectable_aurus": 1
    }
@@ -1176,7 +1224,7 @@
    "_kaynak": "wiki (belgeler/wiki/aliens.md: deadly_battleray); hız darkorbitwiki Vortex of Greed (base_stats_normal_version); saldırganlık uyarlama",
    "npc_kimlik": 121,
    "ek_odul": {
-    "resource_collectable_bifenon": 1,
+    "resource_collectable_bifenon": 2,
     "resource_ore_palladium": 6,
     "resource_collectable_aurus": 3
    },
@@ -1385,7 +1433,7 @@
    "hp": 9000000,
    "kalkan": 4800000,
    "hasar": 17000,
-   "hiz": 250,
+   "hiz": 150,
    "saldirgan": true,
    "odul": {
     "ep": 350000,
@@ -1401,7 +1449,7 @@
     "5": 200,
     "6": 26
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: attend_ix); hız, saldırganlık uyarlama",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: attend_ix); hız, saldırganlık uyarlama; hız resmî Türk forumu 141806 (150)",
    "npc_kimlik": 176,
    "ek_odul": {
     "resource_collectable_rinusk": [
@@ -1571,7 +1619,7 @@
    "hp": 50000,
    "kalkan": 40000,
    "hasar": 1500,
-   "hiz": 300,
+   "hiz": 420,
    "saldirgan": true,
    "odul": {
     "ep": 6400,
@@ -1814,7 +1862,7 @@
    "hp": 85000000,
    "kalkan": 70000000,
    "hasar": 100000,
-   "hiz": 200,
+   "hiz": 350,
    "saldirgan": true,
    "odul": {
     "ep": 6000000,
@@ -1831,7 +1879,7 @@
     "6": 256,
     "3": 1024
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: stinger); hız, saldırganlık uyarlama; ödül = normal ödül + ilk 8 hasar vereni ödülü (tek oyunculuk uyarlaması); kalkan emme, isabet fandom",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: stinger); hız, saldırganlık uyarlama; ödül = normal ödül + ilk 8 hasar vereni ödülü (tek oyunculuk uyarlaması); kalkan emme, isabet fandom; hız resmî Türk forumu 160525",
    "npc_kimlik": 281,
    "ek_odul": {
     "resource_collectable_darksilver-coin": 75,
@@ -1862,14 +1910,15 @@
     }
    },
    "isabet": 0.7,
-   "kalkan_emme": 0.9
+   "kalkan_emme": 0.9,
+   "menzil": 800
   },
   "331": {
    "ad": "-=[: Pike :]=-",
    "hp": 4000000,
    "kalkan": 1500000,
    "hasar": 60000,
-   "hiz": 240,
+   "hiz": 500,
    "saldirgan": true,
    "odul": {
     "ep": 800000,
@@ -1886,7 +1935,7 @@
     "6": 64,
     "3": 256
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: pike); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: pike); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom; hız resmî Türk forumu 160525",
    "npc_kimlik": 282,
    "ek_odul": {
     "resource_collectable_darksilver-coin": 5,
@@ -1895,7 +1944,7 @@
      "olasilik": 0.25
     }
    },
-   "isabet": 0.8,
+   "isabet": 0.85,
    "kalkan_emme": 0.9,
    "menzil": 400
   },
@@ -1904,7 +1953,7 @@
    "hp": 1800000,
    "kalkan": 1000000,
    "hasar": 45000,
-   "hiz": 260,
+   "hiz": 450,
    "saldirgan": true,
    "odul": {
     "ep": 350000,
@@ -1921,7 +1970,7 @@
     "6": 8,
     "3": 16
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: barb); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: barb); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom; hız resmî Türk forumu 160525",
    "npc_kimlik": 283,
    "ek_odul": {
     "resource_collectable_darksilver-coin": {
@@ -1938,7 +1987,7 @@
    "hp": 1500000,
    "kalkan": 800000,
    "hasar": 30000,
-   "hiz": 280,
+   "hiz": 450,
    "saldirgan": true,
    "odul": {
     "ep": 250000,
@@ -1955,7 +2004,7 @@
     "6": 4,
     "3": 8
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanternfish); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: lanternfish); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom; hız resmî Türk forumu 160525",
    "npc_kimlik": 284,
    "ek_odul": {
     "resource_collectable_darksilver-coin": {
@@ -1972,7 +2021,7 @@
    "hp": 800000,
    "kalkan": 500000,
    "hasar": 20000,
-   "hiz": 320,
+   "hiz": 450,
    "saldirgan": true,
    "odul": {
     "ep": 150000,
@@ -1988,7 +2037,7 @@
     "5": 32,
     "6": 2
    },
-   "_kaynak": "wiki (belgeler/wiki/aliens.md: spookfish); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom",
+   "_kaynak": "wiki (belgeler/wiki/aliens.md: spookfish); hız, saldırganlık uyarlama; \"CHANCE:\" ek ödüllerinin oranı wiki'de yok: %25 (uyarlama); kalkan emme, isabet, menzil fandom; hız resmî Türk forumu 160525",
    "npc_kimlik": 285,
    "ek_odul": {
     "resource_collectable_darksilver-coin": {
@@ -7649,6 +7698,371 @@
    },
    "haritalar": [],
    "etkinlik": true
+  },
+  "etk_sunburst_lordakium": {
+   "ad": "-=[ Sunburst Lordakium ]=-",
+   "hp": 400000,
+   "kalkan": 600000,
+   "hasar": 4000,
+   "hiz": 200,
+   "saldirgan": true,
+   "odul": {
+    "ep": 51200,
+    "onur": 156,
+    "kredi": 409600,
+    "uridyum": 128
+   },
+   "kargo": {
+    "0": 300,
+    "1": 300,
+    "2": 300,
+    "4": 128,
+    "5": 128,
+    "6": 16,
+    "3": 4
+   },
+   "npc_kimlik": 76,
+   "model": "77",
+   "ek_odul": {
+    "ammunition_specialammo_wiz-x": {
+     "adet": 1,
+     "olasilik": 0.25
+    }
+   },
+   "_kaynak": "Resmî Türk forumu 1885 (NPC'ler ve Verdikleri Ödüller): Sunburst Lordakium, özel günlerde X-2..X-8 ve 4-X; DP 400.000, kalkan 600.000, hasar 3.500-4.500 + WIZ-X roketi; 51.200 TP, 156 şeref, 409.600 kredi, 128 U; kargo P/E/T 300, Pd/Du 128, Pr 16, Xe 4. İstemci npc_name_76",
+   "_uyarlama": "görünüm Lordakium (model 77); WIZ-X düşmesi %25 (forum 'Vız roketi' saldırısı: oyuncuya WIZ-X etkisi yerine ganimet)"
+  },
+  "etk_hakem_x2": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 350000,
+   "kalkan": 0,
+   "hasar": 1800,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 512000,
+    "onur": 1560,
+    "kredi": 819200,
+    "uridyum": 1280
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_hakem_x3": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 525000,
+   "kalkan": 0,
+   "hasar": 2828,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 768000,
+    "onur": 2340,
+    "kredi": 1228800,
+    "uridyum": 1920
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_hakem_x4": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 700000,
+   "kalkan": 0,
+   "hasar": 3857,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 1024000,
+    "onur": 3120,
+    "kredi": 1638400,
+    "uridyum": 2560
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_hakem_4x": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 1050000,
+   "kalkan": 0,
+   "hasar": 4885,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 1536000,
+    "onur": 4680,
+    "kredi": 2457600,
+    "uridyum": 3840
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_hakem_x5": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 1400000,
+   "kalkan": 0,
+   "hasar": 5914,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 2048000,
+    "onur": 6240,
+    "kredi": 3276800,
+    "uridyum": 5120
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_hakem_x6": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 2100000,
+   "kalkan": 0,
+   "hasar": 6942,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 3072000,
+    "onur": 9360,
+    "kredi": 4915200,
+    "uridyum": 7680
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_hakem_x7": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 2800000,
+   "kalkan": 0,
+   "hasar": 7971,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 4096000,
+    "onur": 12480,
+    "kredi": 6553600,
+    "uridyum": 10240
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_hakem_x8": {
+   "ad": "Referee-Bot",
+   "model": "32",
+   "npc_kimlik": 75,
+   "hp": 3500000,
+   "kalkan": 0,
+   "hasar": 9000,
+   "hiz": 150,
+   "saldirgan": true,
+   "etkinlik": true,
+   "sadece_cephane": [
+    "ammunition_laser_cbo-100",
+    "ammunition_rocketlauncher_cbr"
+   ],
+   "odul": {
+    "ep": 5120000,
+    "onur": 15600,
+    "kredi": 8192000,
+    "uridyum": 12800
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 135026 (Hakem Botu): harita başına can ve ödül (4-X satırı 4-1..4-5); yalnız CBO-100 ve CBR hasar verir; saldırgan, \"oldukça yavaş\" (hız 150 uyarlama); kalkan forumda yok (0); hasar aynı haritanın Santa-1100101'inden (uyarlama). Görünüm: istemcide Referee-Bot modeli yok (npc_name_75 yalnız adı), forum 127755 \"Refeere BOT (Santa BOT)\": Santa modeli 32"
+  },
+  "etk_demaner_freighter": {
+   "ad": "DemaNeR Freighter",
+   "model": "126",
+   "npc_kimlik": 116,
+   "hp": 20000000,
+   "kalkan": 180000000,
+   "hasar": 15000,
+   "hiz": 120,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 3000000,
+    "onur": 30000,
+    "kredi": 12000000,
+    "uridyum": 30000
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 132357 (Demaner Freighter Avı 2016-2020): DP 20.000.000, kalkan 180.000.000, hız 120, lazer 15.000, ödül 30.000 U / 12 M kredi / 3 M TP / 30.000 şeref (sıralama puanı rutbe.json'da); model istemcinin game.xml'i (type 126, npcId 116). Yapılmayan: çevredeki oyuncu başına %3,33 kalkan azalması (tek oyunculu), DCR-250 roketi (hasarı kaynakta yok)"
+  },
+  "etk_demaner": {
+   "ad": "-=[ DemaNeR ]=-",
+   "model": "11",
+   "npc_kimlik": 39,
+   "hp": 400000,
+   "kalkan": 300000,
+   "hasar": 5000,
+   "hiz": 300,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 0,
+    "onur": 0,
+    "kredi": 50000,
+    "uridyum": 24
+   },
+   "kargo": {
+    "0": 100,
+    "1": 100,
+    "2": 100
+   },
+   "_kaynak": "resmî Türk forumu 132357 (2020): küçük Demaner'ın imha ödülü 24 U / 50.000 kredi, kargosu 100 Prometium / Endurium / Terbium; can, kalkan, hasar ve hız Delta kapısının DemaNeR'inden (kapilar.json; uyarlama)"
+  },
+  "etk_i_hitac": {
+   "ad": "I-Hitac",
+   "model": "245",
+   "npc_kimlik": 125,
+   "hp": 60000000,
+   "kalkan": 35000000,
+   "kalkan_emme": 0.8,
+   "hasar": 15000,
+   "hiz": 120,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 3000000,
+    "onur": 30000,
+    "kredi": 12000000,
+    "uridyum": 30000
+   },
+   "kargo": {
+    "0": 10000,
+    "1": 10000,
+    "2": 10000,
+    "3": 5000,
+    "4": 5000,
+    "5": 550,
+    "6": 1500
+   },
+   "_kaynak": "resmî Türk forumu 129632 (Toplama Zamanı / Hatching Out 2018): Hastalıklı HITAC 60 M can, 35 M kalkan, %80 yayılım, hız 120, lazer 15.000; ödül ve cevherler forumdan; model istemcinin game.xml'i (Infected Hitac Mothership 245, npcId 125)"
+  },
+  "etk_i_egg": {
+   "ad": "Biomech Egg",
+   "model": "247",
+   "npc_kimlik": 126,
+   "hp": 12000,
+   "kalkan": 0,
+   "hasar": 0,
+   "hiz": 0,
+   "saldirgan": false,
+   "etkinlik": true,
+   "odul": {
+    "ep": 10,
+    "onur": 1,
+    "kredi": 500,
+    "uridyum": 2
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 129632: yumurta DP 12.000, ödül 2 U / 500 kredi / 10 TP / 1 şeref; I-Hitac 30 sn'de bir bırakır, 90 sn kalır; model game.xml (Infected alien egg 247, npcId 126)"
+  },
+  "etk_i_gygerthrall": {
+   "ad": "I-Gygerthrall",
+   "model": "246",
+   "npc_kimlik": 127,
+   "hp": 35000,
+   "kalkan": 30000,
+   "kalkan_emme": 0.7,
+   "hasar": 1200,
+   "hiz": 340,
+   "menzil": 500,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 6000,
+    "onur": 30,
+    "kredi": 5000,
+    "uridyum": 20
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 129632: I-Gygerthrall DP 35.000, kalkan 30.000, %70 yayılım, hız 340, menzil 500, lazer 1.200; ödül 20 U / 5.000 kredi / 6.000 TP / 30 şeref; model game.xml (246, npcId 127)"
+  },
+  "etk_gygerthrall": {
+   "ad": "-=[ Gygerthrall ]=-",
+   "model": "128",
+   "npc_kimlik": 123,
+   "hp": 60000,
+   "kalkan": 50000,
+   "hasar": 1500,
+   "hiz": 320,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 130098 (Epidemi Alarmı): Gygerthrall DP 60.000, kalkan 50.000, ödül 16 U / 12.800 kredi / 6.400 TP / 32 şeref; hasar ve hız Karantina Bölgesi'nin Gygerthrall'ından (pve_modlari.json pm_gygerthrall; uyarlama)"
+  },
+  "etk_plagued_gygerthrall": {
+   "ad": "-=[ Plagued Gygerthrall ]=-",
+   "model": "246",
+   "npc_kimlik": 154,
+   "hp": 90000,
+   "kalkan": 75000,
+   "hasar": 1500,
+   "hiz": 320,
+   "saldirgan": true,
+   "etkinlik": true,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {},
+   "_kaynak": "resmî Türk forumu 130098: Plagued Gygerthrall (X-6) DP 90.000, kalkan 75.000, ödül 16 U / 12.800 kredi / 6.400 TP / 32 şeref; Plagued Kristallin öldürülünce doğar; hasar ve hız uyarlama; model game.xml (246, npcId 154)"
   }
  },
  "haritalar": {
@@ -7812,6 +8226,10 @@
     {
      "tip": "46",
      "adet": 1
+    },
+    {
+     "tip": "252",
+     "adet": 2
     }
    ],
    "bonus_kutu": 15,
@@ -7878,6 +8296,10 @@
     {
      "tip": "46",
      "adet": 1
+    },
+    {
+     "tip": "252",
+     "adet": 2
     }
    ],
    "bonus_kutu": 15,
@@ -7994,6 +8416,10 @@
     {
      "tip": "46",
      "adet": 1
+    },
+    {
+     "tip": "252",
+     "adet": 2
     }
    ],
    "bonus_kutu": 15,
@@ -8069,6 +8495,10 @@
     {
      "tip": "28",
      "adet": 1
+    },
+    {
+     "tip": "252",
+     "adet": 2
     }
    ],
    "bonus_kutu": 12,
@@ -8239,6 +8669,10 @@
     {
      "tip": "28",
      "adet": 1
+    },
+    {
+     "tip": "252",
+     "adet": 2
     }
    ],
    "bonus_kutu": 12,
@@ -8409,6 +8843,10 @@
     {
      "tip": "28",
      "adet": 1
+    },
+    {
+     "tip": "252",
+     "adet": 2
     }
    ],
    "bonus_kutu": 12,
@@ -8953,32 +9391,21 @@
    ],
    "bonus_kutu": 40,
    "_kaynak": "türler wiki (belgeler/wiki/maps.md); adetler uyarlama (???)",
-   "bonus_dizisi": [
+   "gizlenme_yok": true,
+   "_kurallar": "Cubikon Mezarlığı (wiki, belgeler/arastirma/pve_icerik.md 2.38): girişte gizlenme kalkar ve kullanılamaz, yavaşlatan hava (oran uyarlama), her yerde bonus kutusu (ilki 1.000 UCB-100, değeri giderek LCB-10'a düşer); çıkış yalnız atlama CPU'su ya da ölüm. Giriş: atlama CPU'su (esyalar.json mezarlik_sansi) ya da 4-5'teki gizli, yer değiştiren solucan deliği. Onarımlar ücretsiz (fandom Cubikon's Graveyard: \"repairs are free\"): ölüm ekranındaki yerinde onarım da bedelsiz (onarim_ucretsiz; dunya.repair_offers).",
+   "onarim_ucretsiz": true,
+   "bonus_ucb_tavan": [
     [
      "ammunition_laser_ucb-100",
      1000
     ],
-    [
-     "ammunition_laser_ucb-100",
-     500
-    ],
-    [
-     "ammunition_laser_mcb-50",
-     500
-    ],
-    [
-     "ammunition_laser_mcb-25",
-     500
-    ],
+    100000,
     [
      "ammunition_laser_lcb-10",
-     500
+     1000
     ]
    ],
-   "yavaslatma": 0.3,
-   "gizlenme_yok": true,
-   "_kurallar": "Cubikon Mezarlığı (wiki, belgeler/arastirma/pve_icerik.md 2.38): girişte gizlenme kalkar ve kullanılamaz, yavaşlatan hava (oran uyarlama), her yerde bonus kutusu (ilki 1.000 UCB-100, değeri giderek LCB-10'a düşer); çıkış yalnız atlama CPU'su ya da ölüm. Giriş: atlama CPU'su (esyalar.json mezarlik_sansi) ya da 4-5'teki gizli, yer değiştiren solucan deliği. Onarımlar ücretsiz (fandom Cubikon's Graveyard: \"repairs are free\"): ölüm ekranındaki yerinde onarım da bedelsiz (onarim_ucretsiz; dunya.repair_offers).",
-   "onarim_ucretsiz": true
+   "_bonus_ucb_tavan": "Resmî Türk forumu 127347 (Sürpriz ??? Harita): kutular 1.000'er UCB-100 verir, bu ziyarette toplanan UCB-100 100.000'e ulaşınca LCB-10 (adet uyarlama). Haritanın kalıcı yavaşlatması yok: Uber Protegit'ler yavaşlatan atış yapar"
   },
   "94": {
    "_ad": "5-4",
@@ -9142,9 +9569,17 @@
    "330": [
     7200,
     7200
+   ],
+   "etk_demaner_freighter": [
+    1200,
+    1200
+   ],
+   "etk_i_hitac": [
+    900,
+    1200
    ]
   },
-  "_yeniden_dogma_ozel": "Boss/Uber, Cubikon (80), Battleray (115), Deadly Battleray (npc121), Invoke XVI (221) ve Mindfire Behemoth (225) sıradan uzaylı gibi 12-25 sn'de dönmesin. Anahtar: tür ya da ada göre \"boss\" (..::{), \"uber\". Battleray 7-10 dk, Deadly Battleray 5-5,5 dk, Behemoth 15-16 dk fandom, Invoke XVI 15 dk (board-fr 127829 s. 69; en çok 3 Invoke); Strokelight Barrage (320) Behemoth gibi; Boss/Uber ve Cubikon uyarlama; The Stinger (330) fandom (Stinger): yok edilince 2 saat sonra yeniden doğar (haritada en çok 1; 85 milyon canlı patron 12 sn'de dönmesin)",
+  "_yeniden_dogma_ozel": "Boss/Uber, Cubikon (80), Battleray (115), Deadly Battleray (npc121), Invoke XVI (221) ve Mindfire Behemoth (225) sıradan uzaylı gibi 12-25 sn'de dönmesin. Anahtar: tür ya da ada göre \"boss\" (..::{), \"uber\". Battleray 7-10 dk, Deadly Battleray 5-5,5 dk, Behemoth 15-16 dk fandom, Invoke XVI 15 dk (board-fr 127829 s. 69; en çok 3 Invoke); Strokelight Barrage (320) Behemoth gibi; Boss/Uber ve Cubikon uyarlama; The Stinger (330) fandom (Stinger): yok edilince 2 saat sonra yeniden doğar (haritada en çok 1; 85 milyon canlı patron 12 sn'de dönmesin) Demaner Freighter 20 dk (resmî Türk forumu 132357: \"Her 20 dakikada bir\"), I-Hitac 15-20 dk (uyarlama).",
   "zamanli_sure_sn": 3600,
   "_zamanli": "Zaman çizelgeli Black Light başıboşları (haritalar.zamanli; wiki saatleri, yerel saat): saatinden sonra bu kadar saniye içinde haritaya gelinirse doğar (uyarlama); ölünce o saat bir daha doğmaz (profil zamanli)."
  },
@@ -9309,5 +9744,7 @@
  "_davranis": "Tür başına isteğe bağlı alanlar (yoksa savas değerleri): fark_mesafe (saldırgan türün oyuncuyu fark ettiği uzaklık), atis_aralik_sn, isabet, menzil; davranis: olunce_dogur [{tur, adet}] (ölünce doğanlar, yeniden doğmaz), vurulunca_cagir {tur, adet, en_cok, bekleme_sn}, yenilenme {can_sn, kalkan_sn, bekleme_sn} (vurulmadan geçen süre), cagrilar_yasarken_dokunulmaz (bool). İçerik (Cubikon, Lordakium sporları, Battleray …) yol haritasının 4. aşamasında.",
  "_ek_odul": "tipler.ek_odul: ölünce ek ödül {lootId: adet} (aliens.md \"Extra destroy rewards\"; Palladium kargoya, ötekiler kaynak deposuna). Olasılıklı ödüller (Stinger: 20-40 Isochronate, %45 …) henüz yok.",
  "_etkinlik_turleri": "etk_* türleri tools/etkinlik_uzaylilari.py ile (harita etkinlikleri, Aşama 7).",
- "_etkinlik_kutulari": "etk_santa_*, etk_hitac_* tools/etkinlik_kutulari.py ile."
+ "_etkinlik_kutulari": "etk_santa_*, etk_hitac_* tools/etkinlik_kutulari.py ile.",
+ "_forum_tr": "Resmî Türk forumu (2026-10-26): Darksilver hızları ve Stinger/Pike (160525), Impulse II/Attend IX hızları (141806), LF-4 geliştirme Bifenon tablosu (129125: Interceptor %20, Deadly Battleray 2, Uber Kristallon %30, Uber Kristallin %25), Boss'larda 1 ve Uber Kristallon'da 2 günlük dosyası (127585; oran %5 uyarlama), Protegit hızı 420 (127543)",
+ "_forum_tr_plagued": "Plagued Kristallin X-4, X-5 ve X-6'da sık doğar (resmî Türk forumu 154610 Veba Mutasyonu, Haziran 2020): X-4 ve X-5'e 2'şer (adet uyarlama)"
 }

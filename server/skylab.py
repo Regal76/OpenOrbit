@@ -358,6 +358,8 @@ class Skylab:
             return 42
         if key != 'BASE_MODULE' and self.level(key) + 1 > self.level('BASE_MODULE'):
             return 31
+        if key == 'PROMERIUM_REFINERY' and self.level(key) + 1 > self.level('XENO_MODULE'):     # resmî forum: Xeno-Modül sınırı
+            return self.raw('skylab_message_upgrade_xenomoduleLevel')
         if key != 'SOLAR_MODULE' and self.module(key)['etkin'] and \
                 self.consumption() - (self.energy(key) if self.working(key) else 0) + self.energy(key, self.level(key) + 1) > self.solar():
             return 41
@@ -494,6 +496,12 @@ class Skylab:
         return [], [52, 53] if mode == 'fast' else [52], msgs
 
     # ------------------------------------------------------------ robotlar
+    def raw(self, key):
+        """BaseKey'lerde olmayan istemci metni: ham "XXX" + çevrilen değeri (magaza.RES_YERINE gibi)."""
+        import magaza as MG
+        return mod('BaseStackCommand', type=1, enumBaseKey=0, stringBasekey='XXX', argsList=[
+            mod('ArgStackCommand', type=0, value2=None, key=MG.ARG_KEYS['XXX'], value=MG.res(key))])
+
     def robots_bought(self):
         """"Skylab robots bought" (istemcinin metni; BaseKey'lerde yok: ham "XXX" + çevrilen değeri, magaza.RES_YERINE gibi)."""
         import magaza as MG

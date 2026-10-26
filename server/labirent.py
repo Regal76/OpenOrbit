@@ -29,7 +29,7 @@ ZONES = ['TL', 'TR', 'BL', 'BR']
 PORTAL_BASE = 152900000               # + harita * 100 + bölge * 10 + köşe (0-3), merkez + 4
 INSET = 1800                          # köşe portallarının bölge kenarından uzaklığı
 FLB_KEY = 'resource_key_access-flb'   # Pass görevlerinin anahtar kimliği (anahtar profilde state['anahtar'] sayısı)
-SKOLL, SYNK = 'lab_skoll', 'lab_synk'
+SKOLL, SYNK, ICETERION = 'lab_skoll', 'lab_synk', 'lab_iceterion'
 
 
 def zone_rect(map_id, z):
@@ -152,7 +152,7 @@ class Labirent:
         """Köşe portalı: bir Labyrinth Key -> (geçebilir mi, mesajlar)."""
         if not g.get('ucretli'):
             return True, []
-        if not TK.is_active(L['etkinlik']):                       # etkinlik bitti: yalnız ortadaki portal (X-1'e)
+        if not TK.is_active(L['etkinlik']) or not self.open_hours(time.time()):    # etkinlik bitti ya da kapı saati değil
             return False, [KAPI.screen('key:log_msg_flb_not_running')]
         need = L.get('anahtar_ucreti', 1)
         if keys(self.p) < need:
@@ -192,15 +192,49 @@ class Labirent:
 
     # ------------------------------------------------------------ Skoll ve Synk
     def tick(self, now):
+        self.iceterion_tick(now)
         if now >= self.next_skoll:
             self.next_skoll = now + L['skoll']['aralik_sn']
             if not any(n.tip == SKOLL for n in self.w.npcs.values()) and random.random() < L['skoll']['olasilik']:
                 z = random.choice(ZONES)
-                self.spawn(SKOLL, z)
+                for _ in range(L['skoll'].get('adet', 1)):   # forum 158403: 5 dakikada üç Skoll
+                    self.spawn(SKOLL, z)
                 self.w.send([KAPI.screen('key:msg_npc_skoll-labyrinth_spawn_now', big=True, MAP=MAPS[self.map]['ad'],
                                          ZONE=ZONES.index(z) + 1)])
                 self.log('   labirent: Skoll doğdu (%s %s)' % (MAPS[self.map]['ad'], z))
         self.synk_check(now)
+
+    def iceterion_tick(self, now):
+        """Iceterion (forum 158403): haritada bir tane; öldürülemez; oyuncu yakınındayken aralıkla çevresine IceMine bırakır."""
+        cfg = (L.get('uzaylilar') or {}).get(ICETERION, {}).get('mayin')
+        if not cfg:
+            return
+        ice = next((n for n in self.w.npcs.values() if n.tip == ICETERION and n.alive), None)
+        if not ice:
+            ice = self.spawn(ICETERION, random.choice(ZONES))
+            ice.invulnerable = lambda: True
+            ice.next_mine = now + cfg['aralik_sn']
+            return
+        if now < getattr(ice, 'next_mine', 0) or self.w.items is None:
+            return
+        ice.next_mine = now + cfg['aralik_sn']
+        hx, hy = self.w.hero_pos(now)
+        if math.hypot(*(a - b for a, b in zip(ice.mover.pos(now), (hx, hy)))) > cfg['menzil']:
+            return
+        if sum(1 for k in self.w.items.mines.values() if k['sahip'] == ice.id) >= cfg['en_cok']:
+            return
+        a, r = random.uniform(0, 2 * math.pi), random.uniform(*cfg['yaricap'])
+        self.w.items.alien_mine(cfg['tur'], hx + math.cos(a) * r, hy + math.sin(a) * r, ice.id, now)
+
+    def open_hours(self, now):
+        """Labirent kapıları saatlerde açık (forum 158403; hafta içi / hafta sonu dilimleri); panelin 'seans_hep_acik' ayarıyla ya da
+        etkinlik zorla açılmışsa (--etkinlik) hep."""
+        import ayar as AY
+        if AY.get('seans_hep_acik') or not L.get('saatler') or TK.forced(L['etkinlik']):
+            return True
+        t = time.localtime(now)
+        h = t.tm_hour + t.tm_min / 60.0
+        return any(a <= h < b for a, b in (L['saatler_hafta_sonu'] if t.tm_wday >= 5 else L['saatler']))
 
     def synk_state(self, now):
         s = state(self.p).get('synk')

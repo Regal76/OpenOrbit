@@ -22,6 +22,12 @@ Takvimde etkin bir etkinliğin harita bölümü bu haritanın sınıfını (X-2 
   - gezgin uzaylı (etkinliğin 'gezgin'i, tek ya da liste: Hitac 2.5 ve E8'den Hitac 2.0): rotadaki haritalarda sırayla sure_sn
     kalır, oyuncu o haritadaysa belirir, süresi dolunca sonraki haritaya geçer; öldürülünce bekleme_sn sonra rotanın başından
     (oturum boyunca)
+  - grup ('grup': {turler [[tür, adet]], aralik_sn}): haritanın rastgele bir yerinde bir arada doğan grup; bir sonraki grup ancak
+    hepsi yok edilince ve aralik_sn dolunca (Space Cup'ın 4-4'teki 11 Gezgin Futbol Korsanı, resmî Türk forumu 127757)
+  - ölünce doğanlar ('olunce_dogur': tür -> [{tur, adet (ya da [en az, en çok]), olasilik}]): etkinlik sürerken o tür ölünce yanında
+    doğarlar ve öldüreni hedeflerler (Hatching Out'un yumurtasından 2-5 I-Gygerthrall, Epidemi'de Plagued Kristallin'den Plagued
+    Gygerthrall); kutu_dusme'nin 'adet'i: bir ölümde düşen kutu sayısı (Demaner Freighter: 10 Özel Demaner Kutusu); çağıranın
+    'omur_sn'si: çağrılan bu kadar saniye sonra kaybolur (I-Hitac'ın 30 sn'de bir bıraktığı yumurta 90 sn)
 """
 import math, random, time
 
@@ -65,6 +71,7 @@ def roll(spec, mods=None):
     amount = lambda a, l=None: int((random.randint(*a) if isinstance(a, list) else a) * (1 + bonus.get('proxium', 0) if l == PROXIUM else 1))
     pct = lambda l, c: c + bonus.get('proxium_sans', 0) * 100 if l == PROXIUM else c
     out = [(l, amount(a, l)) for l, a, *c in spec.get('kesin', [])]
+    out += [(l, amount(a, l)) for l, a, c in spec.get('ayrica', []) if random.random() * 100 < pct(l, c)]   # ayrı olasılıklı (Permafrost Proxium)
     if spec.get('mod', 'biri') == 'hepsi':
         return out + [(l, amount(a, l)) for l, a, *c in rows if random.random() * 100 < pct(l, c[0] if c and c[0] is not None else 100)]
     weights = [pct(l, c[0] if c and c[0] is not None else 1) for l, a, *c in rows]
@@ -217,8 +224,20 @@ class HaritaEtkinlik:
             kd = by_tip(s.get('kutu_dusme', {}))
             for v in pay if kd and not trick else ():
                 if random.random() < AY.chance('dusme', kd.get('olasilik', 1.0), 'etkinlik'):    # uzaylının kutusu (Treat …)
-                    h = v.drop_box(kd['tur'], x, y, None, kd.get('omur_sn', 300), sahip(v))
-                    v.boxes[h]['etk'] = kd
+                    for j in range(kd.get('adet', 1)):                   # Demaner Freighter: 10 kutu, yan yana
+                        h = v.drop_box(kd['tur'], x + 60 * (j % 5), y + 60 * (j // 5), None, kd.get('omur_sn', 300), sahip(v))
+                        v.boxes[h]['etk'] = kd
+            for sp in by_tip(s.get('olunce_dogur', {})) or []:            # etkinlikte ölünce doğanlar: öldüreni hedeflerler
+                if random.random() >= sp.get('olasilik', 1.0) or sp['tur'] not in w.CFG_TYPES:
+                    continue
+                cnt = random.randint(*sp['adet']) if isinstance(sp.get('adet'), list) else sp.get('adet', 1)
+                for j in range(cnt):
+                    a = 2 * math.pi * j / max(1, cnt)
+                    c = w.spawn_npc_at(sp['tur'], x + math.cos(a) * 150, y + math.sin(a) * 150)
+                    c.summoned = True
+                    c.engaged = True
+                    c.next_think = now
+                w.log('   %s öldü: %d x %s doğdu (%s)' % (n.d['ad'], cnt, sp['tur'], k))
         for rk, g in [r for k in sorted(TK.active(now)) for r in rovers(k)]:
             if n.tip == g['tur']:
                 ROVER[rk] = now + g.get('bekleme_sn', 1800)
@@ -302,6 +321,25 @@ class HaritaEtkinlik:
         text = BOSS_TEXT.get((s.get('bilgi') or {}).get('metin'), (None, None))[0]
         return [legacy('0|A|STM|%s' % text)] if text else []
 
+    def group(self, k, g, now):
+        """Grubu haritanın rastgele bir yerinde doğurur; sonraki grup ancak bu grup yok edilince ve aralik_sn dolunca."""
+        w, st = self.w, self.state(k).setdefault('grup', {'uyeler': [], 'sonraki': 0})
+        st['uyeler'] = [i for i in st['uyeler'] if i in w.npcs and w.npcs[i].alive]
+        if st['uyeler'] or now < st['sonraki']:
+            return []
+        x, y = w.random_spot()
+        kinds = [fmt(t, self.mc) for t, c in g['turler'] for _ in range(c)]
+        for i, tip in enumerate(kinds):
+            if tip not in w.CFG_TYPES:
+                continue
+            a = 2 * math.pi * i / len(kinds)
+            c = w.spawn_npc_at(tip, x + math.cos(a) * 250, y + math.sin(a) * 250)
+            c.summoned = True                            # dünya yeniden doğurmaz; grup yok edilince yenisi
+            st['uyeler'].append(c.id)
+        st['sonraki'] = now + g.get('aralik_sn', 600)
+        w.log('   etkinlik grubu doğdu (%s): %d uzaylı (%d,%d)' % (k, len(st['uyeler']), x, y))
+        return []
+
     def tick(self, now):
         if now < self.next_tick:
             return
@@ -310,6 +348,8 @@ class HaritaEtkinlik:
         here = self.here(now)
         for k, s in here:
             st = self.state(k)
+            if s.get('grup'):
+                msgs += self.group(k, s['grup'], now)
             if st['patron'] and st['bitis'] and now >= st['bitis']:          # süre doldu: patronlar kaçar
                 for i in st['patron']:
                     n = w.npcs.get(i)
@@ -340,6 +380,8 @@ class HaritaEtkinlik:
                     ch = w.spawn_npc_at(tip, nx + math.cos(a) * 150, ny + math.sin(a) * 150)
                     ch.summoned = True
                     ch.engaged = n.engaged
+                    if c.get('omur_sn'):                     # I-Hitac'ın yumurtası 90 sn sonra kaybolur (uzayli.tick 'omur')
+                        ch.ab['omur'] = now + c['omur_sn']
                     n.children.add(ch.id)
         msgs += self.rover(now)
         if here != getattr(self, 'last_here', None):        # etkinlik başladı/bitti: uzaylılar ve gösterge

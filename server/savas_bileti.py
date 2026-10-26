@@ -14,7 +14,9 @@ Mesajlar (istemcinin kodu ve kayıt):
               BattlePassKeyExchangeUpdateCommand {numOfKeys, claimCount, exchangeReward, lootId}; anahtar sayısı değişince de (kayıt)
   süzgeç      BattlePassSetFilterRequest {battlePassWindowSettingsModule}
 Battle Pass etkinliğin (takvim.py: 'BattlePass' türü olan, pass'i olan etkinlik) süresince; anahtar değişimi de. Battle Pass mağazada
-(resource_battle-pass 200.000 U): alınınca o ana dek toplanan görevlerin anahtarları da verilir (uyarlama).
+(resource_battle-pass 200.000 U): alınınca o ana dek toplanan görevlerin anahtarları da verilir (uyarlama). Anahtarsız pass ('anahtarsiz':
+Veba Mutasyonu 2020, resmî Türk forumu 154610): Battle Pass'in ödülü hedefin biletli ödülü ('bilet_odul', XML'in bpReward'ı); anahtar
+değişimi yok.
 Profilde: savas_bileti {donem, satin, deger, tamam, toplanacak, toplandi, degisim, suzgec}.
 """
 import json, os, time
@@ -123,6 +125,8 @@ class SavasBileti:
     def exchanges(self):
         """Dönemin anahtar değişimi (ensure'dan sonra): etkinliğin kendi tablosu; yoksa (Halloween) tasarımları, ardından kayıttaki liste."""
         k = self.st['donem'].rsplit('-', 1)[0]
+        if self.bp.get('anahtarsiz'):
+            return {}
         return dict(PASS_EXCHANGE[k]) if k in PASS_EXCHANGE else dict(EVENT_EXCHANGE.get(k, {}), **EXCHANGE)
 
     def exchange_cmd(self):
@@ -179,6 +183,14 @@ class SavasBileti:
     def keys_for(self, q):
         return self.bp['oduller'].get(q, {}).get('anahtar', 0)
 
+    def ticket_rewards(self, qs):
+        """Biletli ödüller (anahtarsız pass): Battle Pass alınmışsa toplanan hedeflerinki."""
+        msgs = []
+        for q in qs:
+            for loot, n in self.bp['oduller'].get(q, {}).get('bilet_odul', []):
+                msgs += self.m.reward(loot, n) if self.m else []
+        return msgs
+
     def collect(self, f=None):
         st = self.st
         if not self.ensure() or not st['toplanacak']:
@@ -189,6 +201,7 @@ class SavasBileti:
                 msgs += self.m.reward(loot, n) if self.m else []
             if st.get('satin'):
                 keys += self.keys_for(q)
+                msgs += self.ticket_rewards([q])
         with self.p.lock:
             st['toplandi'] += st['toplanacak']
             st['toplanacak'] = []
@@ -213,8 +226,9 @@ class SavasBileti:
             self.p.dirty = True
         if keys:
             self.p.add_resource(KEY, keys)
+        msgs = self.ticket_rewards(st['toplandi'])                  # forum 154610: önceki hedeflerin biletli ödülleri de
         self.log('   Battle Pass alındı (+%d anahtar)' % keys)
-        return [self.info_cmd(), self.key_update()]
+        return msgs + [self.info_cmd(), self.key_update()]
 
     def exchange(self, f):
         name = f.get('exchangeReward') or ''

@@ -788,6 +788,209 @@
   "_uyarlama": "Asıl oyunda PvP haritalarında: tek oyunculuda Hitac'ın normal haritaları (X-2..X-8), Black Light ve Gauntlet of Plutus; oyuncu gemisine hasar yerine uzaylı hasarı. Black Light haftaları (fever_black_light takvimi) kendi setiyle ve yalnız BL haritalarında; yılda bir (52 haftada bir) tekrarlanır.",
   "setler": [
    {
+    "bas": "2026-09-25",
+    "bit": "2026-10-01",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Basilisk",
+       "Berserker",
+       "Cyborg",
+       "Citadel Plus",
+       "Goliath Plus",
+       "Hecate Plus",
+       "Solaris",
+       "Spearhead Plus",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "EVASION": 25,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ]
+   },
+   {
     "bas": "2026-09-17",
     "bit": "2026-09-23",
     "haritalar": [
@@ -991,8 +1194,768 @@
     ]
    },
    {
-    "bas": "2026-09-25",
-    "bit": "2026-10-01",
+    "bas": "2026-07-25",
+    "bit": "2026-08-02",
+    "haritalar": [],
+    "harita_kimlikleri": [
+     450,
+     451,
+     452,
+     453,
+     454,
+     455
+    ],
+    "olaylar": [
+     "ship_boost_event_gop_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Hammerclaw Plus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ],
+    "_kaynak": "forum 143902 Temmuz 2026 Set 2"
+   },
+   {
+    "bas": "2026-07-15",
+    "bit": "2026-07-23",
+    "haritalar": [],
+    "harita_kimlikleri": [
+     450,
+     451,
+     452,
+     453,
+     454,
+     455
+    ],
+    "olaylar": [
+     "ship_boost_event_gop_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Sentinel",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ],
+    "_kaynak": "forum 143902 Temmuz 2026 Set 1"
+   },
+   {
+    "bas": "2026-01-22",
+    "bit": "2026-01-28",
+    "haritalar": [],
+    "harita_kimlikleri": [
+     450,
+     451,
+     452,
+     453,
+     454,
+     455
+    ],
+    "olaylar": [
+     "ship_boost_event_gop_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath Plus",
+       "Citadel Plus",
+       "Spearhead Plus",
+       "Paladin",
+       "Disruptor",
+       "Centurion",
+       "Tartarus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ],
+    "_kaynak": "forum 1452929 Ocak 2026 Set 2"
+   },
+   {
+    "bas": "2026-01-14",
+    "bit": "2026-01-20",
+    "haritalar": [],
+    "harita_kimlikleri": [
+     450,
+     451,
+     452,
+     453,
+     454,
+     455
+    ],
+    "olaylar": [
+     "ship_boost_event_gop_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Hammerclaw Plus",
+       "Centurion",
+       "Berserker",
+       "Paladin",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ],
+    "_kaynak": "forum 1452929 Ocak 2026 Set 1"
+   },
+   {
+    "bas": "2025-11-20",
+    "bit": "2025-11-26",
     "haritalar": [
      "BL-1",
      "BL-2",
@@ -1007,19 +1970,18 @@
       "bas": "19:00",
       "bit": "21:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1028,19 +1990,18 @@
       "bas": "19:00",
       "bit": "21:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1049,19 +2010,18 @@
       "bas": "19:00",
       "bit": "21:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1070,19 +2030,18 @@
       "bas": "19:00",
       "bit": "21:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1091,19 +2050,18 @@
       "bas": "19:00",
       "bit": "21:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1112,19 +2070,18 @@
       "bas": "13:00",
       "bit": "15:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1133,19 +2090,18 @@
       "bas": "19:00",
       "bit": "21:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1154,19 +2110,18 @@
       "bas": "13:00",
       "bit": "15:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      },
@@ -1175,23 +2130,1175 @@
       "bas": "19:00",
       "bit": "21:00",
       "gemiler": [
-       "Basilisk",
-       "Berserker",
-       "Cyborg",
-       "Citadel Plus",
+       "Paladin",
+       "Orcus",
        "Goliath Plus",
-       "Hecate Plus",
-       "Solaris",
-       "Spearhead Plus",
-       "Tartarus"
+       "Berserker",
+       "Tartarus",
+       "Solace Plus",
+       "Disruptor",
+       "Centurion"
       ],
       "etkiler": {
        "DAMAGE": 25,
-       "EVASION": 25,
+       "SPEED": 10,
        "ABILITY_COOLDOWN_TIME": -25
       }
      }
-    ]
+    ],
+    "_kaynak": "forum 151229 Mimesis Kasım 2025 Hararet Seti 2"
+   },
+   {
+    "bas": "2025-11-12",
+    "bit": "2025-11-18",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Paladin",
+       "Orcus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ],
+    "_kaynak": "forum 151229 Mimesis Kasım 2025 Hararet Seti 1"
+   },
+   {
+    "bas": "2025-03-20",
+    "bit": "2025-03-26",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Goliath Plus",
+       "Berserker",
+       "V-Lightning",
+       "Tartarus",
+       "Solace",
+       "Disruptor",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE": 25,
+       "SPEED": 10,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ],
+    "_kaynak": "forum 151229 Mimesis Mart 2025 Hararet Seti 2"
+   },
+   {
+    "bas": "2025-03-12",
+    "bit": "2025-03-18",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Diminisher",
+       "Zephyr",
+       "Hecate Plus",
+       "Sentinel",
+       "Berserker",
+       "Mimesis",
+       "Solaris Plus",
+       "Solace Plus"
+      ],
+      "etkiler": {
+       "EVASION": 25,
+       "HITPOINTS": 20,
+       "ABILITY_COOLDOWN_TIME": -25
+      }
+     }
+    ],
+    "_kaynak": "forum 151229 Mimesis Mart 2025 Hararet Seti 1"
+   },
+   {
+    "bas": "2021-11-22",
+    "bit": "2021-11-29",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Berserker",
+       "Venom",
+       "Mimesis",
+       "Keres",
+       "Retiarus",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "ABILITY_COOLDOWN_TIME": -25,
+       "DAMAGE_NPC": 10
+      }
+     }
+    ],
+    "_kaynak": "forum 157472 Set 3"
+   },
+   {
+    "bas": "2021-11-14",
+    "bit": "2021-11-21",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Goliath",
+       "Goliath-X",
+       "Vengeance",
+       "V-Lightning",
+       "Tartarus",
+       "Hecate",
+       "Zephyr",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "DAMAGE_NPC": 20,
+       "SPEED": 10
+      }
+     }
+    ],
+    "_kaynak": "forum 157472 Set 2 (\"Tortu\": Tartarus)"
+   },
+   {
+    "bas": "2021-11-06",
+    "bit": "2021-11-13",
+    "haritalar": [
+     "BL-1",
+     "BL-2",
+     "BL-3"
+    ],
+    "olaylar": [
+     "ship_boost_event_blacklight_maps"
+    ],
+    "gunler": [
+     {
+      "gun": 1,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 2,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 3,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 4,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 5,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 6,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "13:00",
+      "bit": "15:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     },
+     {
+      "gun": 7,
+      "bas": "19:00",
+      "bit": "21:00",
+      "gemiler": [
+       "Aegis",
+       "Hammerclaw",
+       "Spectrum",
+       "Sentinel",
+       "Citadel",
+       "Centurion",
+       "Orcus"
+      ],
+      "etkiler": {
+       "EVASION": 20,
+       "HITPOINTS": 20
+      }
+     }
+    ],
+    "_kaynak": "forum 157472 Set 1"
    }
   ]
  },
@@ -11435,7 +13542,8 @@
         "adet": 1,
         "hp": 3200000,
         "kalkan": 2400000,
-        "hasar": 10000
+        "hasar": 10000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -11515,7 +13623,8 @@
         "adet": 1,
         "hp": 3200000,
         "kalkan": 2400000,
-        "hasar": 10000
+        "hasar": 10000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -12888,7 +14997,8 @@
         "adet": 1,
         "hp": 3200000,
         "kalkan": 2400000,
-        "hasar": 10000
+        "hasar": 10000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -12968,7 +15078,8 @@
         "adet": 1,
         "hp": 3200000,
         "kalkan": 2400000,
-        "hasar": 10000
+        "hasar": 10000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -14341,7 +16452,8 @@
         "adet": 1,
         "hp": 3200000,
         "kalkan": 2400000,
-        "hasar": 10000
+        "hasar": 10000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -14421,7 +16533,8 @@
         "adet": 1,
         "hp": 3200000,
         "kalkan": 2400000,
-        "hasar": 10000
+        "hasar": 10000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -14515,9 +16628,9 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 600,
-         "onur": 3,
-         "kredi": 600,
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
          "uridyum": 1
         },
         "kargo": {
@@ -14556,10 +16669,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -14598,10 +16711,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 9600,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -14643,10 +16756,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 2400,
-         "onur": 12,
-         "kredi": 2400,
-         "uridyum": 6
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -14687,10 +16800,10 @@
         "hiz": 150,
         "npc_kimlik": 3,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 76800,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 51200,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -14732,10 +16845,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -14777,10 +16890,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -14822,10 +16935,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 19200,
-         "uridyum": 18
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -14867,10 +16980,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 76800,
-         "onur": 384,
-         "kredi": 614400,
-         "uridyum": 192
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -14912,10 +17025,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -14957,10 +17070,10 @@
         "hiz": 300,
         "npc_kimlik": 11,
         "odul": {
-         "ep": 9000,
-         "onur": 45,
-         "kredi": 18000,
-         "uridyum": 22
+         "ep": 6000,
+         "onur": 30,
+         "kredi": 12000,
+         "uridyum": 15
         },
         "kargo": {
          "0": 160,
@@ -14983,9 +17096,9 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 600,
-         "onur": 3,
-         "kredi": 600,
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
          "uridyum": 1
         },
         "kargo": {
@@ -15028,10 +17141,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -15050,10 +17163,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 2400,
-         "onur": 12,
-         "kredi": 2400,
-         "uridyum": 6
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -15074,10 +17187,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 9600,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -15135,10 +17248,10 @@
         "hiz": 200,
         "npc_kimlik": 8,
         "odul": {
-         "ep": 38400,
-         "onur": 192,
-         "kredi": 307200,
-         "uridyum": 96
+         "ep": 25600,
+         "onur": 128,
+         "kredi": 204800,
+         "uridyum": 64
         },
         "kargo": {
          "0": 300,
@@ -15160,10 +17273,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -15206,10 +17319,10 @@
         "hiz": 240,
         "npc_kimlik": 15,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 4800,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 3200,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -15230,10 +17343,10 @@
         "hiz": 250,
         "npc_kimlik": 17,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 9600,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 6400,
+         "uridyum": 16
         },
         "kargo": {
          "0": 160,
@@ -15256,10 +17369,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 38400,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -15318,10 +17431,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -15343,10 +17456,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 19200,
-         "uridyum": 18
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -15392,10 +17505,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 38400,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -15418,10 +17531,10 @@
         "hiz": 280,
         "npc_kimlik": 19,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 72
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 48
         },
         "kargo": {
          "0": 400,
@@ -15444,10 +17557,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -15505,10 +17618,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 76800,
-         "onur": 384,
-         "kredi": 614400,
-         "uridyum": 192
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -15530,10 +17643,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -15579,10 +17692,10 @@
         "hiz": 180,
         "npc_kimlik": 21,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -15605,10 +17718,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -15658,10 +17771,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -15704,10 +17817,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -15730,10 +17843,10 @@
         "hiz": 180,
         "npc_kimlik": 37,
         "odul": {
-         "ep": 735000,
-         "onur": 3072,
-         "kredi": 4915200,
-         "uridyum": 1536
+         "ep": 490000,
+         "onur": 2048,
+         "kredi": 3276800,
+         "uridyum": 1024
         },
         "kargo": {
          "0": 2400,
@@ -15794,7 +17907,8 @@
         "adet": 1,
         "hp": 10000000,
         "kalkan": 6000000,
-        "hasar": 30000
+        "hasar": 30000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -15874,7 +17988,8 @@
         "adet": 1,
         "hp": 10000000,
         "kalkan": 6000000,
-        "hasar": 30000
+        "hasar": 30000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -15968,9 +18083,9 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 600,
-         "onur": 3,
-         "kredi": 600,
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
          "uridyum": 1
         },
         "kargo": {
@@ -16009,10 +18124,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -16051,10 +18166,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 9600,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -16096,10 +18211,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 2400,
-         "onur": 12,
-         "kredi": 2400,
-         "uridyum": 6
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -16140,10 +18255,10 @@
         "hiz": 150,
         "npc_kimlik": 3,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 76800,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 51200,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -16185,10 +18300,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -16230,10 +18345,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -16275,10 +18390,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 19200,
-         "uridyum": 18
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -16320,10 +18435,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 76800,
-         "onur": 384,
-         "kredi": 614400,
-         "uridyum": 192
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -16365,10 +18480,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -16410,10 +18525,10 @@
         "hiz": 300,
         "npc_kimlik": 11,
         "odul": {
-         "ep": 9000,
-         "onur": 45,
-         "kredi": 18000,
-         "uridyum": 22
+         "ep": 6000,
+         "onur": 30,
+         "kredi": 12000,
+         "uridyum": 15
         },
         "kargo": {
          "0": 160,
@@ -16436,9 +18551,9 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 600,
-         "onur": 3,
-         "kredi": 600,
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
          "uridyum": 1
         },
         "kargo": {
@@ -16481,10 +18596,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -16503,10 +18618,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 2400,
-         "onur": 12,
-         "kredi": 2400,
-         "uridyum": 6
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -16527,10 +18642,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 9600,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -16588,10 +18703,10 @@
         "hiz": 200,
         "npc_kimlik": 8,
         "odul": {
-         "ep": 38400,
-         "onur": 192,
-         "kredi": 307200,
-         "uridyum": 96
+         "ep": 25600,
+         "onur": 128,
+         "kredi": 204800,
+         "uridyum": 64
         },
         "kargo": {
          "0": 300,
@@ -16613,10 +18728,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -16659,10 +18774,10 @@
         "hiz": 240,
         "npc_kimlik": 15,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 4800,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 3200,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -16683,10 +18798,10 @@
         "hiz": 250,
         "npc_kimlik": 17,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 9600,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 6400,
+         "uridyum": 16
         },
         "kargo": {
          "0": 160,
@@ -16709,10 +18824,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 38400,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -16771,10 +18886,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -16796,10 +18911,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 19200,
-         "uridyum": 18
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -16845,10 +18960,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 38400,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -16871,10 +18986,10 @@
         "hiz": 280,
         "npc_kimlik": 19,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 72
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 48
         },
         "kargo": {
          "0": 400,
@@ -16897,10 +19012,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -16958,10 +19073,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 76800,
-         "onur": 384,
-         "kredi": 614400,
-         "uridyum": 192
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -16983,10 +19098,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -17032,10 +19147,10 @@
         "hiz": 180,
         "npc_kimlik": 21,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -17058,10 +19173,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -17111,10 +19226,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -17157,10 +19272,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -17183,10 +19298,10 @@
         "hiz": 180,
         "npc_kimlik": 37,
         "odul": {
-         "ep": 735000,
-         "onur": 3072,
-         "kredi": 4915200,
-         "uridyum": 1536
+         "ep": 490000,
+         "onur": 2048,
+         "kredi": 3276800,
+         "uridyum": 1024
         },
         "kargo": {
          "0": 2400,
@@ -17247,7 +19362,8 @@
         "adet": 1,
         "hp": 10000000,
         "kalkan": 6000000,
-        "hasar": 30000
+        "hasar": 30000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -17327,7 +19443,8 @@
         "adet": 1,
         "hp": 10000000,
         "kalkan": 6000000,
-        "hasar": 30000
+        "hasar": 30000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -17421,9 +19538,9 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 600,
-         "onur": 3,
-         "kredi": 600,
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
          "uridyum": 1
         },
         "kargo": {
@@ -17462,10 +19579,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -17504,10 +19621,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 9600,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -17549,10 +19666,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 2400,
-         "onur": 12,
-         "kredi": 2400,
-         "uridyum": 6
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -17593,10 +19710,10 @@
         "hiz": 150,
         "npc_kimlik": 3,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 76800,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 51200,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -17638,10 +19755,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -17683,10 +19800,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -17728,10 +19845,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 19200,
-         "uridyum": 18
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -17773,10 +19890,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 76800,
-         "onur": 384,
-         "kredi": 614400,
-         "uridyum": 192
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -17818,10 +19935,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -17863,10 +19980,10 @@
         "hiz": 300,
         "npc_kimlik": 11,
         "odul": {
-         "ep": 9000,
-         "onur": 45,
-         "kredi": 18000,
-         "uridyum": 22
+         "ep": 6000,
+         "onur": 30,
+         "kredi": 12000,
+         "uridyum": 15
         },
         "kargo": {
          "0": 160,
@@ -17889,9 +20006,9 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 600,
-         "onur": 3,
-         "kredi": 600,
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
          "uridyum": 1
         },
         "kargo": {
@@ -17934,10 +20051,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -17956,10 +20073,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 2400,
-         "onur": 12,
-         "kredi": 2400,
-         "uridyum": 6
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -17980,10 +20097,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 9600,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -18041,10 +20158,10 @@
         "hiz": 200,
         "npc_kimlik": 8,
         "odul": {
-         "ep": 38400,
-         "onur": 192,
-         "kredi": 307200,
-         "uridyum": 96
+         "ep": 25600,
+         "onur": 128,
+         "kredi": 204800,
+         "uridyum": 64
         },
         "kargo": {
          "0": 300,
@@ -18066,10 +20183,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1200,
-         "onur": 6,
-         "kredi": 1200,
-         "uridyum": 3
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -18112,10 +20229,10 @@
         "hiz": 240,
         "npc_kimlik": 15,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 4800,
-         "uridyum": 12
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 3200,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -18136,10 +20253,10 @@
         "hiz": 250,
         "npc_kimlik": 17,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 9600,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 6400,
+         "uridyum": 16
         },
         "kargo": {
          "0": 160,
@@ -18162,10 +20279,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 38400,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -18224,10 +20341,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -18249,10 +20366,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 4800,
-         "onur": 24,
-         "kredi": 19200,
-         "uridyum": 18
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -18298,10 +20415,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 38400,
-         "uridyum": 48
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -18324,10 +20441,10 @@
         "hiz": 280,
         "npc_kimlik": 19,
         "odul": {
-         "ep": 19200,
-         "onur": 96,
-         "kredi": 153600,
-         "uridyum": 72
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 48
         },
         "kargo": {
          "0": 400,
@@ -18350,10 +20467,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -18411,10 +20528,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 76800,
-         "onur": 384,
-         "kredi": 614400,
-         "uridyum": 192
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -18436,10 +20553,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -18485,10 +20602,10 @@
         "hiz": 180,
         "npc_kimlik": 21,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -18511,10 +20628,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 9600,
-         "onur": 48,
-         "kredi": 19200,
-         "uridyum": 24
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -18564,10 +20681,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -18610,10 +20727,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 153600,
-         "onur": 768,
-         "kredi": 1228800,
-         "uridyum": 384
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -18636,10 +20753,10 @@
         "hiz": 180,
         "npc_kimlik": 37,
         "odul": {
-         "ep": 735000,
-         "onur": 3072,
-         "kredi": 4915200,
-         "uridyum": 1536
+         "ep": 490000,
+         "onur": 2048,
+         "kredi": 3276800,
+         "uridyum": 1024
         },
         "kargo": {
          "0": 2400,
@@ -18700,7 +20817,8 @@
         "adet": 1,
         "hp": 10000000,
         "kalkan": 6000000,
-        "hasar": 30000
+        "hasar": 30000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -18780,7 +20898,8 @@
         "adet": 1,
         "hp": 10000000,
         "kalkan": 6000000,
-        "hasar": 30000
+        "hasar": 30000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -18874,10 +20993,10 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 800,
-         "onur": 4,
-         "kredi": 800,
-         "uridyum": 2
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
+         "uridyum": 1
         },
         "kargo": {
          "0": 10,
@@ -18915,10 +21034,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -18957,10 +21076,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 12800,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -19002,10 +21121,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 3200,
-         "onur": 16,
-         "kredi": 3200,
-         "uridyum": 8
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -19046,10 +21165,10 @@
         "hiz": 150,
         "npc_kimlik": 3,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 102400,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 51200,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -19091,10 +21210,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -19136,10 +21255,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -19181,10 +21300,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 25600,
-         "uridyum": 24
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -19226,10 +21345,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 102400,
-         "onur": 512,
-         "kredi": 819200,
-         "uridyum": 256
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -19271,10 +21390,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -19316,10 +21435,10 @@
         "hiz": 300,
         "npc_kimlik": 11,
         "odul": {
-         "ep": 12000,
-         "onur": 60,
-         "kredi": 24000,
-         "uridyum": 30
+         "ep": 6000,
+         "onur": 30,
+         "kredi": 12000,
+         "uridyum": 15
         },
         "kargo": {
          "0": 160,
@@ -19342,10 +21461,10 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 800,
-         "onur": 4,
-         "kredi": 800,
-         "uridyum": 2
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
+         "uridyum": 1
         },
         "kargo": {
          "0": 10,
@@ -19387,10 +21506,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -19409,10 +21528,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 3200,
-         "onur": 16,
-         "kredi": 3200,
-         "uridyum": 8
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -19433,10 +21552,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 12800,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -19494,10 +21613,10 @@
         "hiz": 200,
         "npc_kimlik": 8,
         "odul": {
-         "ep": 51200,
-         "onur": 256,
-         "kredi": 409600,
-         "uridyum": 128
+         "ep": 25600,
+         "onur": 128,
+         "kredi": 204800,
+         "uridyum": 64
         },
         "kargo": {
          "0": 300,
@@ -19519,10 +21638,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -19565,10 +21684,10 @@
         "hiz": 240,
         "npc_kimlik": 15,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 6400,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 3200,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -19589,10 +21708,10 @@
         "hiz": 250,
         "npc_kimlik": 17,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 12800,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 6400,
+         "uridyum": 16
         },
         "kargo": {
          "0": 160,
@@ -19615,10 +21734,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 51200,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -19677,10 +21796,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -19702,10 +21821,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 25600,
-         "uridyum": 24
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -19751,10 +21870,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 51200,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -19777,10 +21896,10 @@
         "hiz": 280,
         "npc_kimlik": 19,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 96
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 48
         },
         "kargo": {
          "0": 400,
@@ -19803,10 +21922,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -19864,10 +21983,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 102400,
-         "onur": 512,
-         "kredi": 819200,
-         "uridyum": 256
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -19889,10 +22008,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -19938,10 +22057,10 @@
         "hiz": 180,
         "npc_kimlik": 21,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -19964,10 +22083,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -20017,10 +22136,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -20063,10 +22182,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -20089,10 +22208,10 @@
         "hiz": 180,
         "npc_kimlik": 37,
         "odul": {
-         "ep": 980000,
-         "onur": 4096,
-         "kredi": 6553600,
-         "uridyum": 2048
+         "ep": 490000,
+         "onur": 2048,
+         "kredi": 3276800,
+         "uridyum": 1024
         },
         "kargo": {
          "0": 2400,
@@ -20153,7 +22272,8 @@
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
-        "hasar": 50000
+        "hasar": 50000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -20233,7 +22353,8 @@
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
-        "hasar": 50000
+        "hasar": 50000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -20327,10 +22448,10 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 800,
-         "onur": 4,
-         "kredi": 800,
-         "uridyum": 2
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
+         "uridyum": 1
         },
         "kargo": {
          "0": 10,
@@ -20368,10 +22489,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -20410,10 +22531,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 12800,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -20455,10 +22576,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 3200,
-         "onur": 16,
-         "kredi": 3200,
-         "uridyum": 8
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -20499,10 +22620,10 @@
         "hiz": 150,
         "npc_kimlik": 3,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 102400,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 51200,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -20544,10 +22665,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -20589,10 +22710,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -20634,10 +22755,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 25600,
-         "uridyum": 24
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -20679,10 +22800,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 102400,
-         "onur": 512,
-         "kredi": 819200,
-         "uridyum": 256
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -20724,10 +22845,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -20769,10 +22890,10 @@
         "hiz": 300,
         "npc_kimlik": 11,
         "odul": {
-         "ep": 12000,
-         "onur": 60,
-         "kredi": 24000,
-         "uridyum": 30
+         "ep": 6000,
+         "onur": 30,
+         "kredi": 12000,
+         "uridyum": 15
         },
         "kargo": {
          "0": 160,
@@ -20795,10 +22916,10 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 800,
-         "onur": 4,
-         "kredi": 800,
-         "uridyum": 2
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
+         "uridyum": 1
         },
         "kargo": {
          "0": 10,
@@ -20840,10 +22961,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -20862,10 +22983,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 3200,
-         "onur": 16,
-         "kredi": 3200,
-         "uridyum": 8
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -20886,10 +23007,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 12800,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -20947,10 +23068,10 @@
         "hiz": 200,
         "npc_kimlik": 8,
         "odul": {
-         "ep": 51200,
-         "onur": 256,
-         "kredi": 409600,
-         "uridyum": 128
+         "ep": 25600,
+         "onur": 128,
+         "kredi": 204800,
+         "uridyum": 64
         },
         "kargo": {
          "0": 300,
@@ -20972,10 +23093,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -21018,10 +23139,10 @@
         "hiz": 240,
         "npc_kimlik": 15,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 6400,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 3200,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -21042,10 +23163,10 @@
         "hiz": 250,
         "npc_kimlik": 17,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 12800,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 6400,
+         "uridyum": 16
         },
         "kargo": {
          "0": 160,
@@ -21068,10 +23189,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 51200,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -21130,10 +23251,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -21155,10 +23276,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 25600,
-         "uridyum": 24
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -21204,10 +23325,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 51200,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -21230,10 +23351,10 @@
         "hiz": 280,
         "npc_kimlik": 19,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 96
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 48
         },
         "kargo": {
          "0": 400,
@@ -21256,10 +23377,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -21317,10 +23438,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 102400,
-         "onur": 512,
-         "kredi": 819200,
-         "uridyum": 256
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -21342,10 +23463,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -21391,10 +23512,10 @@
         "hiz": 180,
         "npc_kimlik": 21,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -21417,10 +23538,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -21470,10 +23591,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -21516,10 +23637,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -21542,10 +23663,10 @@
         "hiz": 180,
         "npc_kimlik": 37,
         "odul": {
-         "ep": 980000,
-         "onur": 4096,
-         "kredi": 6553600,
-         "uridyum": 2048
+         "ep": 490000,
+         "onur": 2048,
+         "kredi": 3276800,
+         "uridyum": 1024
         },
         "kargo": {
          "0": 2400,
@@ -21606,7 +23727,8 @@
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
-        "hasar": 50000
+        "hasar": 50000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -21686,7 +23808,8 @@
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
-        "hasar": 50000
+        "hasar": 50000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -21780,10 +23903,10 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 800,
-         "onur": 4,
-         "kredi": 800,
-         "uridyum": 2
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
+         "uridyum": 1
         },
         "kargo": {
          "0": 10,
@@ -21821,10 +23944,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -21863,10 +23986,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 12800,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -21908,10 +24031,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 3200,
-         "onur": 16,
-         "kredi": 3200,
-         "uridyum": 8
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -21952,10 +24075,10 @@
         "hiz": 150,
         "npc_kimlik": 3,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 102400,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 51200,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -21997,10 +24120,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -22042,10 +24165,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -22087,10 +24210,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 25600,
-         "uridyum": 24
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -22132,10 +24255,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 102400,
-         "onur": 512,
-         "kredi": 819200,
-         "uridyum": 256
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -22177,10 +24300,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -22222,10 +24345,10 @@
         "hiz": 300,
         "npc_kimlik": 11,
         "odul": {
-         "ep": 12000,
-         "onur": 60,
-         "kredi": 24000,
-         "uridyum": 30
+         "ep": 6000,
+         "onur": 30,
+         "kredi": 12000,
+         "uridyum": 15
         },
         "kargo": {
          "0": 160,
@@ -22248,10 +24371,10 @@
         "hiz": 172,
         "npc_kimlik": 1,
         "odul": {
-         "ep": 800,
-         "onur": 4,
-         "kredi": 800,
-         "uridyum": 2
+         "ep": 400,
+         "onur": 2,
+         "kredi": 400,
+         "uridyum": 1
         },
         "kargo": {
          "0": 10,
@@ -22293,10 +24416,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -22315,10 +24438,10 @@
         "hiz": 280,
         "npc_kimlik": 6,
         "odul": {
-         "ep": 3200,
-         "onur": 16,
-         "kredi": 3200,
-         "uridyum": 8
+         "ep": 1600,
+         "onur": 8,
+         "kredi": 1600,
+         "uridyum": 4
         },
         "kargo": {
          "0": 40,
@@ -22339,10 +24462,10 @@
         "hiz": 200,
         "npc_kimlik": 4,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 12800,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 6400,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -22400,10 +24523,10 @@
         "hiz": 200,
         "npc_kimlik": 8,
         "odul": {
-         "ep": 51200,
-         "onur": 256,
-         "kredi": 409600,
-         "uridyum": 128
+         "ep": 25600,
+         "onur": 128,
+         "kredi": 204800,
+         "uridyum": 64
         },
         "kargo": {
          "0": 300,
@@ -22425,10 +24548,10 @@
         "hiz": 242,
         "npc_kimlik": 2,
         "odul": {
-         "ep": 1600,
-         "onur": 8,
-         "kredi": 1600,
-         "uridyum": 4
+         "ep": 800,
+         "onur": 4,
+         "kredi": 800,
+         "uridyum": 2
         },
         "kargo": {
          "0": 20,
@@ -22471,10 +24594,10 @@
         "hiz": 240,
         "npc_kimlik": 15,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 6400,
-         "uridyum": 16
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 3200,
+         "uridyum": 8
         },
         "kargo": {
          "0": 80,
@@ -22495,10 +24618,10 @@
         "hiz": 250,
         "npc_kimlik": 17,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 12800,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 6400,
+         "uridyum": 16
         },
         "kargo": {
          "0": 160,
@@ -22521,10 +24644,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 51200,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -22583,10 +24706,10 @@
         "hiz": 150,
         "npc_kimlik": 5,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 32
         },
         "kargo": {
          "0": 200,
@@ -22608,10 +24731,10 @@
         "hiz": 300,
         "npc_kimlik": 7,
         "odul": {
-         "ep": 6400,
-         "onur": 32,
-         "kredi": 25600,
-         "uridyum": 24
+         "ep": 3200,
+         "onur": 16,
+         "kredi": 12800,
+         "uridyum": 12
         },
         "kargo": {
          "0": 100,
@@ -22657,10 +24780,10 @@
         "hiz": 180,
         "npc_kimlik": 16,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 51200,
-         "uridyum": 64
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 25600,
+         "uridyum": 32
         },
         "kargo": {
          "0": 320,
@@ -22683,10 +24806,10 @@
         "hiz": 280,
         "npc_kimlik": 19,
         "odul": {
-         "ep": 25600,
-         "onur": 128,
-         "kredi": 204800,
-         "uridyum": 96
+         "ep": 12800,
+         "onur": 64,
+         "kredi": 102400,
+         "uridyum": 48
         },
         "kargo": {
          "0": 400,
@@ -22709,10 +24832,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -22770,10 +24893,10 @@
         "hiz": 200,
         "npc_kimlik": 10,
         "odul": {
-         "ep": 102400,
-         "onur": 512,
-         "kredi": 819200,
-         "uridyum": 256
+         "ep": 51200,
+         "onur": 256,
+         "kredi": 409600,
+         "uridyum": 128
         },
         "kargo": {
          "0": 300,
@@ -22795,10 +24918,10 @@
         "hiz": 300,
         "npc_kimlik": 9,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -22844,10 +24967,10 @@
         "hiz": 180,
         "npc_kimlik": 21,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -22870,10 +24993,10 @@
         "hiz": 300,
         "npc_kimlik": 12,
         "odul": {
-         "ep": 12800,
-         "onur": 64,
-         "kredi": 25600,
-         "uridyum": 32
+         "ep": 6400,
+         "onur": 32,
+         "kredi": 12800,
+         "uridyum": 16
         },
         "kargo": {
          "0": 100,
@@ -22923,10 +25046,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -22969,10 +25092,10 @@
         "hiz": 150,
         "npc_kimlik": 34,
         "odul": {
-         "ep": 204800,
-         "onur": 1024,
-         "kredi": 1638400,
-         "uridyum": 512
+         "ep": 102400,
+         "onur": 512,
+         "kredi": 819200,
+         "uridyum": 256
         },
         "kargo": {
          "0": 1200,
@@ -22995,10 +25118,10 @@
         "hiz": 180,
         "npc_kimlik": 37,
         "odul": {
-         "ep": 980000,
-         "onur": 4096,
-         "kredi": 6553600,
-         "uridyum": 2048
+         "ep": 490000,
+         "onur": 2048,
+         "kredi": 3276800,
+         "uridyum": 1024
         },
         "kargo": {
          "0": 2400,
@@ -23059,7 +25182,8 @@
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
-        "hasar": 50000
+        "hasar": 50000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -23139,7 +25263,8 @@
         "adet": 1,
         "hp": 20000000,
         "kalkan": 20000000,
-        "hasar": 50000
+        "hasar": 50000,
+        "kalici": true
        },
        {
         "tur": "119",
@@ -23222,7 +25347,8 @@
    ]
   ],
   "_kaynak": "diger_etkinlikler.json invasion: kapılar X-1 (5-9), X-3 (10-14), X-5 (15+), 22 dalga (Streuner .. Boss Kucurbium; sonra baştan), uzaylı başına firmaya 1 puan, kazanan firmalara 1 hafta +%10/+%5/+%3 hasar, çıkış yalnız ölerek, ücretsiz onarım; Kucurbium değerleri darkorbitwiki",
-  "_uyarlama": "Haritalar firma ve kademeyle (61-69: MMO/EIC/VRU sırasıyla). Dalga adetleri, kademe çarpanları (x1/x2/x3, ödül x1/x1,5/x2), \"SaNeJiEwZ\" dalgaları yerine Uber Sibelon / Kristallon. Öteki firmaların puanı sanal (dakikada 20-60); oyuncunun firması da sanal ekip puanı alır, oyuncunun her öldürmesi +1. Hasar ödülü DMG-B01 booster'ı (168 / 84 / 48 saat). Kucurbium görünümü Curcubitor'unki."
+  "_uyarlama": "Haritalar firma ve kademeyle (61-69: MMO/EIC/VRU sırasıyla). Dalga adetleri, kademe çarpanları (can/kalkan/hasar x1/x2/x3; ödül her kademede aynı: resmî forum 127530), \"SaNeJiEwZ\" dalgaları yerine Uber Sibelon / Kristallon. Öteki firmaların puanı sanal (dakikada 20-60); oyuncunun firması da sanal ekip puanı alır, oyuncunun her öldürmesi +1. Hasar ödülü DMG-B01 booster'ı (168 / 84 / 48 saat). Kucurbium görünümü Curcubitor'unki.",
+  "_forum_tr": "Resmî Türk forumu 127530 (İstila Haritası): ödüller kademeler arasında eşit (x1/x1,5/x2 kaldırıldı); Boss Kucurbium küçükleri yaşarken Insta-Shield'lı (kalici)"
  },
  "acil_gorevler": {
   "oynama_sn": 2700,

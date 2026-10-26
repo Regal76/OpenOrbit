@@ -75,6 +75,7 @@ ENDURANCE, DAMAGE, COORDINATES, MISCELLANEOUS = 3, 7, 11, 19
 MISC_STATE = {3: ('gizli', False), 4: ('gizli', True), 5: ('radyasyon', True), 7: ('az_can', True)}
 START = '_bas'               # etkin görevin değerlerinde başlangıç zamanı (süreli görevler ve meydan okumalar)
 PERIOD = '_donem'            # günlük/haftalık görevin alındığı dönem
+KABUL = '_kabul'             # havuzlu görevin kabul anı (haftalık GG cevher görevinin 14 günü)
 NOT_ACCEPTABLE, NOT_STARTED, RUNNING, COMPLETED = 0, 1, 2, 3
 REQ_LEVEL, REQ_PRE_QUEST, REQ_EXCLUSIVE_POOL = 0, 3, 6      # QuestRequirementType (6: EXCLUSIVE_POOL_QUEST_RUNNING)
 MARK_GIVER, MARK_TRADE = 1, 2            # işaret kimliği quest_<görev>_<n> (kayıt: dönüşte 1)
@@ -126,6 +127,10 @@ def maps_for(spec, faction):
     ids = {v: k for k, v in H.NAMES.items()}
     if spec.endswith(' Gate') and spec.split()[0].lower() in KAPI.KAPI:
         return list(KAPI.KAPI[spec.split()[0].lower()]['haritalar'])
+    import etkinlik_kapi as EKP
+    g = next((g for g in EKP.GATES.values() if g.get('ad') == spec), None)       # etkinlik kapısı adıyla (Quarantine Zone: Epidemi 512263)
+    if g:
+        return list(g['haritalar'])
     if spec.endswith(' X-BL'):                           # Blacklight: BL-n n. firmanın (harita.company)
         facs = {'own': [faction], 'enemy': [f for f in (1, 2, 3) if f != faction], 'any': [1, 2, 3]}[spec.split()[0]]
         names = ['BL-%d' % f for f in facs]
@@ -137,6 +142,8 @@ def maps_for(spec, faction):
         names = ['%d-%s' % (faction, spec[6:])]
     elif spec.startswith('enemy X-'):
         names = ['%d-%s' % (f, spec[8:]) for f in (1, 2, 3) if f != faction]
+    elif spec.startswith('any X-'):                     # herhangi firmanın X-n'i (resmî forum 149871: 111006)
+        names = ['%d-%s' % (f, spec[6:]) for f in (1, 2, 3)]
     elif spec == 'any enemy map':
         names = ['%d-%d' % (f, n) for f in (1, 2, 3) if f != faction for n in range(1, 9)]
     else:
@@ -145,8 +152,12 @@ def maps_for(spec, faction):
 
 
 def period_key(qid, now=None):
-    """Günlük görevin günü ya da haftalık görevin haftası (yerel saat; hafta pazartesi başlar)."""
-    d = datetime.date.fromtimestamp(time.time() if now is None else now)
+    """Günlük görevin günü ya da haftalık görevin haftası (yerel saat; hafta pazartesi başlar). Zorluk havuzlu GG cevher görevleri
+    06:30'da (haftalık pazartesi 06:30) yenilenir (resmî forum 129125)."""
+    t = time.time() if now is None else now
+    if 'zorluk' in QUESTS[qid]['havuz']:
+        t -= 6.5 * 3600
+    d = datetime.date.fromtimestamp(t)
     return d.isoformat() if QUESTS[qid]['havuz']['tur'] == 'gunluk' else '%d-W%02d' % d.isocalendar()[:2]
 
 
@@ -351,9 +362,15 @@ class Gorevler:
         if s != NOT_STARTED or not self.free_slots(event) or not self.visible(qid, offered()):
             self.log('   görev alınamadı: %s (durum %s, etkin %d/%d)' % (qid, s, self.running(event), AY.get('en_cok_gorev')))
             return [self.list_cmd()]
+        if q.get('havuz') and 'zorluk' in q['havuz'] and any(
+                'zorluk' in (QUESTS.get(int(a), {}).get('havuz') or {}) and QUESTS[int(a)]['havuz']['tur'] == q['havuz']['tur']
+                for a in self.st['aktif']):
+            self.log('   görev alınamadı: %s (aynı anda tek %s cevher görevi)' % (qid, q['havuz']['tur']))    # forum 129125
+            return [self.list_cmd()]
         vals = {START: time.time()} if q.get('sure_sn') or q.get('meydan_okuma') else {}
         if q.get('havuz'):
             vals[PERIOD] = period_key(qid)
+            vals[KABUL] = time.time()
         elif q.get('tekrar'):
             vals[PERIOD] = repeat_key(qid)
         with self.p.lock:
@@ -494,8 +511,9 @@ class Gorevler:
             if q and q.get('etkinlik') and not event_open(q, now):
                 msgs += self.fail(int(qs), 'etkinlik bitti')
                 continue
-            if q and q.get('havuz') and 'zorluk' in q['havuz'] and self.st['aktif'][qs].get(PERIOD) != period_key(int(qs), now):
-                msgs += self.fail(int(qs), 'dönem bitti')          # seviye havuzlu günlükler dönemle değil kabulden 24 saatle sona erer
+            if (q and q.get('havuz') and 'zorluk' in q['havuz'] and q['havuz']['tur'] != 'gunluk'
+                    and now - self.st['aktif'][qs].get(KABUL, now) > 14 * 86400):
+                msgs += self.fail(int(qs), '14 gün geçti')        # forum 129125: kabul edilen görev dönem bitince düşmez; haftalık 14 gün
                 continue
             if not q or not q.get('sure_sn'):
                 continue
@@ -546,7 +564,7 @@ class Gorevler:
         msgs += [('RemoveMinimapMark', {'uid': 'quest_%d_%d' % (qid, n)}) for n in sorted(self.marks.pop(qid, set()))]
         mult = 1 + BOOSTER.mods(self.p).get('gorev_odulu', 0)        # QR-01 / NQR-B01: görev ödülleri x2 (uridyum hariç; Ö6)
         for loot, n in QUESTS[qid]['oduller']:
-            n = n if loot == 'currency_uridium' else int(n * mult)
+            n = n if loot == 'currency_uridium' or loot.startswith('resource_premium-days') else int(n * mult)   # Titan SSS: Premium günü katlanmaz
             msgs += self.grant(loot, n) if self.grant else []
         self.log('   görev tamamlandı: %d %s (%s)' % (qid, QUESTS[qid]['ad'], ', '.join('%s x%d' % (l, n) for l, n in QUESTS[qid]['oduller'])))
         return msgs + [self.list_cmd()]

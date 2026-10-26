@@ -82,6 +82,7 @@ def menu_status(p, item, st):
         return st
     maps = ITEMS[item].get('yalniz_harita')
     usable = not maps or str(p.d['konum'].get('mapId', 0)) in map(str, maps)        # Versus Laser Overdrive: yalnız Vortex of Greed haritasında
+    usable = usable and not echoes_map(p.d['konum'].get('mapId', 0))              # forum 177095: Yankılar'da teknoloji yok
     lines = [{'_': 'MessageKeyListWildcardModule', 'baseKey': item, 'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 3},
               'textStyle': 0, 'wildCardReplacements': []},
              {'_': 'MessageKeyListWildcardModule', 'baseKey': 'ttip_count', 'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 5},
@@ -93,6 +94,12 @@ def menu_status(p, item, st):
     st.update(visible=True, available=usable, activatable=usable and timer_fields(p, item)['activatable'], counterValue=n,
               counterStyle=0)
     return st
+
+
+def echoes_map(map_id):
+    """Uzayın Derinliklerindeki Yankılar haritaları ve salonu: teknoloji eşyaları kullanılamaz (resmî forum 177095)."""
+    import echoes as EC
+    return int(map_id or 0) in set(EC.D['haritalar']) | {EC.D['salon']}
 
 
 class Teknoloji:
@@ -168,7 +175,7 @@ class Teknoloji:
         w, p = self.w, self.p
         now = now or time.time()
         c = ITEMS.get(item)
-        if not c or count(p, item) <= 0 or w.hero_dead or w.jumping or (c.get('yalniz_harita') and str(w.map_id) not in map(str, c['yalniz_harita'])):
+        if not c or count(p, item) <= 0 or w.hero_dead or w.jumping or echoes_map(w.map_id) or                 (c.get('yalniz_harita') and str(w.map_id) not in map(str, c['yalniz_harita'])):
             w.log('   teknoloji kullanılamaz: %s' % item)
             return False
         if is_active(p, item, now) or now < state(p).get(item, {}).get('hazir', 0):

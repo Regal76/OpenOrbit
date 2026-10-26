@@ -1695,7 +1695,7 @@
   "ship_pusat": 8,
   "ship_s-elite": 13,
   "ship_s-veteran": 13,
-  "ship_sentinel": 10,
+  "ship_sentinel": 0,
   "ship_solace": 10,
   "ship_spearhead": 13,
   "ship_spectrum": 10,
@@ -1753,5 +1753,6 @@
   "onur": -500,
   "simge": 5000,
   "_not": "onur -500 ve altı: gemide 5000 simgesi (istemcide yalnız simge; Outlaw olduğu çıkarım). Tek oyunculuda onur eksiye düşmüyor (PvP ile, Aşama 11)"
- }
+ },
+ "_gemi_turu_forum": "Tabloda olmayan ve klasik olmayan gemi 0 (gerçek kayıt: Sentinel 0); Goliath 10 (resmî forum 127585)"
 }

@@ -6,11 +6,14 @@ RankRewardRequest {ranking: aralığın başı, rankType} gönderir -> reward():
 rankType: 2 Gauntlet of Plutus, 7 Eternal Black Light, 9 Astral Ascension. Tek oyunculuda sıralamada yalnız oyuncu var: tablolar
 pencerede görünür, dağıtım bot oyuncularla (Aşama 11).
 """
-import json, os
+import json, os, re, time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _P = os.path.join(HERE, 'data', 'sira_odulleri.json')
-TABLES = {int(k): v for k, v in json.load(open(_P, encoding='utf8'))['tablolar'].items()} if os.path.exists(_P) else {}
+_D = json.load(open(_P, encoding='utf8')) if os.path.exists(_P) else {}
+TABLES = {int(k): v for k, v in _D.get('tablolar', {}).items()}
+SET_TITLES = {t for k, v in _D.get('unvan_setleri', {}).items() if not k.startswith('_') for t in v}
+MONTHS = ('jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec')
 PLUTUS, EBL, ASTRAL = 2, 7, 9
 DEFAULT_REWARD, PAYLOAD_ESCORT_REWARD = 3, 6                 # EventRewardConfirmationCommand.RewardType
 
@@ -41,10 +44,24 @@ def reward(f):
     return [('RankRewardCommand', dict(rankType=int(f['rankType']), rewardContentModuleList=items(r), rewardRange=range_mod(r)))]
 
 
-def items(r):
+def set_title(key, now=None):
+    """Sete göre değişen sıralama unvanı (resmî forum: her setin unvanı ayrı): title_<sıralama>-<ay><yıl>set<n>, ayın 20'sinden önce
+    set 1, sonra set 2, ayın ilk 3 günü önceki ayın set 2'si; istemcide yoksa tablonun unvanı."""
+    m = re.match(r'(title_\w+Rankings)-[a-z]{3}\d{4}set\d$', key or '')
+    if not m:
+        return key
+    t = time.localtime(time.time() if now is None else now)
+    y, mo, n = t.tm_year, t.tm_mon, 1 if t.tm_mday < 20 else 2
+    if t.tm_mday <= 3:
+        y, mo, n = (y, mo - 1, 2) if mo > 1 else (y - 1, 12, 2)
+    cand = '%s-%s%dset%d' % (m.group(1), MONTHS[mo - 1], y, n)
+    return cand if cand in SET_TITLES else key
+
+
+def items(r, now=None):
     out = [mod('RewardModule', lootId=l, amount=a) for l, a in r['esyalar']]
     if r.get('unvan'):
-        out.append(mod('RewardTitleModule', titleKey=r['unvan']))
+        out.append(mod('RewardTitleModule', titleKey=set_title(r['unvan'], now)))
     return out
 
 

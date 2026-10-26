@@ -18509,7 +18509,7 @@
     "anahtar_degisimi": [
      {
       "_": "BattlePassKeyExchangeRewardModule",
-      "cost": 210,
+      "cost": 215,
       "limit": 1,
       "exchangeReward": "lf-5-mortifer",
       "listOfloot": [
@@ -19053,22 +19053,6 @@
      },
      {
       "_": "BattlePassKeyExchangeRewardModule",
-      "cost": 2,
-      "limit": 8,
-      "exchangeReward": "cc-c-x3000",
-      "listOfloot": [
-       {
-        "_": "BattlePassKeyExchangeLootModule",
-        "lootId": "ammunition_laser_spacecup_group-c",
-        "amount": 3000
-       }
-      ],
-      "priority": 8,
-      "isSpecial": false,
-      "claimCount": 0
-     },
-     {
-      "_": "BattlePassKeyExchangeRewardModule",
       "cost": 7,
       "limit": 10,
       "exchangeReward": "plt-3030-x2000",
@@ -19079,7 +19063,7 @@
         "amount": 2000
        }
       ],
-      "priority": 9,
+      "priority": 8,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19095,7 +19079,7 @@
         "amount": 3000
        }
       ],
-      "priority": 10,
+      "priority": 9,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19111,7 +19095,7 @@
         "amount": 500
        }
       ],
-      "priority": 11,
+      "priority": 10,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19127,7 +19111,7 @@
         "amount": 500
        }
       ],
-      "priority": 12,
+      "priority": 11,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19143,7 +19127,7 @@
         "amount": 25
        }
       ],
-      "priority": 13,
+      "priority": 12,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19159,7 +19143,7 @@
         "amount": 50
        }
       ],
-      "priority": 14,
+      "priority": 13,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19175,7 +19159,7 @@
         "amount": 1000
        }
       ],
-      "priority": 15,
+      "priority": 14,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19191,7 +19175,7 @@
         "amount": 25
        }
       ],
-      "priority": 16,
+      "priority": 15,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19207,7 +19191,7 @@
         "amount": 150
        }
       ],
-      "priority": 17,
+      "priority": 16,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19223,7 +19207,7 @@
         "amount": 100
        }
       ],
-      "priority": 18,
+      "priority": 17,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19239,7 +19223,7 @@
         "amount": 75
        }
       ],
-      "priority": 19,
+      "priority": 18,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19255,7 +19239,7 @@
         "amount": 45
        }
       ],
-      "priority": 20,
+      "priority": 19,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19271,7 +19255,7 @@
         "amount": 1000
        }
       ],
-      "priority": 21,
+      "priority": 20,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19287,7 +19271,7 @@
         "amount": 150
        }
       ],
-      "priority": 22,
+      "priority": 21,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19303,7 +19287,7 @@
         "amount": 125
        }
       ],
-      "priority": 23,
+      "priority": 22,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19319,7 +19303,7 @@
         "amount": 150
        }
       ],
-      "priority": 24,
+      "priority": 23,
       "isSpecial": false,
       "claimCount": 0
      },
@@ -19335,7 +19319,7 @@
         "amount": 5
        }
       ],
-      "priority": 25,
+      "priority": 24,
       "isSpecial": false,
       "claimCount": 0
      }
@@ -31532,6 +31516,22 @@
       "priority": 24,
       "isSpecial": false,
       "claimCount": 0
+     },
+     {
+      "_": "BattlePassKeyExchangeRewardModule",
+      "cost": 8,
+      "limit": 3,
+      "exchangeReward": "nova",
+      "listOfloot": [
+       {
+        "_": "BattlePassKeyExchangeLootModule",
+        "lootId": "captain_captain-generic",
+        "amount": 1
+       }
+      ],
+      "priority": 19,
+      "isSpecial": true,
+      "claimCount": 0
      }
     ]
    },
@@ -36145,7 +36145,7 @@
    "spacecup": {
     "dosya": "pass_offline_spacecup.xml",
     "kaynak": "yazılan: darkorbitwiki events/spacecup; 26 hedef, 176 Battle Key",
-    "uyarlama": "Spaceball/PvP hedefleri PvE karşılığıyla (4-4'te Deadly Battleray, NPC hasarı); Referee Bot yok. Takvimde etkinliği yok (etkinlikler.json): pass etkinlik eklenince devreye girer.",
+    "uyarlama": "Spaceball/PvP hedefleri PvE karşılığıyla (4-4'te Deadly Battleray, NPC hasarı); Referee-Bot etkinlik haritalarında (resmî Türk forumu 135026 / 127757; etkinlikler.json spacecup). Takvimde etkinliği yok (etkinlikler.json): pass etkinlik eklenince devreye girer.",
     "oduller": {
      "500529": {
       "odul": [
@@ -38517,6 +38517,1516 @@
       "claimCount": 0
      }
     ]
+   },
+   "plague_mutation": {
+    "dosya": "pass_offline_plague_mutation.xml",
+    "kaynak": "yazılan: resmî Türk forumu 154610 (Veba Mutasyonu, Haziran 2020) ve istemcinin ipucu metinleri; 22 hedef, 0 Battle Key",
+    "uyarlama": "22 hedef istemcinin başlıklarıyla (quest_title_500507-500528) forumun tablosundan eşlendi; biletli ödüller bpReward (anahtar yok, anahtar değişimi yok). İstemcinin ipucu metni forumla çelişince istemci (Wipe the Floor: 100 Enfeksiyon Mayını). Viral Kristallon / Gygerim Overlord hedefleri forum değerleriyle (sıraları istemci başlıklarına göre artmıyor: forum yazımı)",
+    "oduller": {
+     "500507": {
+      "odul": [
+       [
+        "ammunition_laser_ucb-100",
+        1500
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "resource_collectable_indoctrineoil",
+        20
+       ],
+       [
+        "ammunition_mine_im-01",
+        100
+       ]
+      ]
+     },
+     "500508": {
+      "odul": [
+       [
+        "resource_collectable_axion-beam-regulator",
+        50
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "tech_burning-trail",
+        1
+       ]
+      ]
+     },
+     "500509": {
+      "odul": [
+       [
+        "ammunition_laser_pib-100",
+        3500
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_specialammo_dcr-250",
+        100
+       ],
+       [
+        "ammunition_specialammo_spray_wash-hands",
+        20
+       ]
+      ]
+     },
+     "500510": {
+      "odul": [
+       [
+        "resource_collectable_indoctrineoil",
+        10
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "resource_collectable_indoctrineoil",
+        20
+       ]
+      ]
+     },
+     "500511": {
+      "odul": [
+       [
+        "ammunition_rocketlauncher_pir-100",
+        500
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "resource_collectable_axion-beam-regulator",
+        50
+       ]
+      ]
+     },
+     "500512": {
+      "odul": [
+       [
+        "ammunition_rocket_plt-3030",
+        5000
+       ],
+       [
+        "ammunition_specialammo_emote_alien-sick",
+        20
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_rocketlauncher_ubr-100",
+        1200
+       ]
+      ]
+     },
+     "500513": {
+      "odul": [
+       [
+        "resource_booty-key",
+        1
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_laser_pib-100",
+        3000
+       ],
+       [
+        "ammunition_specialammo_spray_biohazard",
+        20
+       ]
+      ]
+     },
+     "500514": {
+      "odul": [
+       [
+        "resource_collectable_indoctrineoil",
+        10
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_rocketlauncher_pir-100",
+        1000
+       ],
+       [
+        "ammunition_mine_im-01",
+        200
+       ]
+      ]
+     },
+     "500515": {
+      "odul": [
+       [
+        "ammunition_laser_rsb-75",
+        5000
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "tech_npc-nuke",
+        1
+       ],
+       [
+        "ammunition_specialammo_emote_alien-mask-up",
+        20
+       ]
+      ]
+     },
+     "500516": {
+      "odul": [
+       [
+        "ammunition_laser_rsb-75",
+        2000
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "booster_shd-dlb",
+        10
+       ]
+      ]
+     },
+     "500517": {
+      "odul": [
+       [
+        "ammunition_rocket_plt-2021",
+        2000
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "tech_explosive-charging-blob",
+        1
+       ]
+      ]
+     },
+     "500518": {
+      "odul": [
+       [
+        "ammunition_laser_pib-100",
+        5000
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_specialammo_dcr-250",
+        250
+       ],
+       [
+        "resource_collectable_axion-beam-regulator",
+        50
+       ]
+      ]
+     },
+     "500519": {
+      "odul": [
+       [
+        "ammunition_rocketlauncher_hstrm-01",
+        500
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_rocketlauncher_pir-100",
+        500
+       ]
+      ]
+     },
+     "500520": {
+      "odul": [
+       [
+        "equipment_shipupgrade_dmg-ms01",
+        1
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "tech_burning-trail",
+        1
+       ],
+       [
+        "resource_collectable_axion-beam-regulator",
+        75
+       ]
+      ]
+     },
+     "500521": {
+      "odul": [
+       [
+        "resource_collectable_axion-beam-regulator",
+        75
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_specialammo_sr-5",
+        250
+       ]
+      ]
+     },
+     "500522": {
+      "odul": [
+       [
+        "resource_collectable_axion-beam-regulator",
+        50
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "equipment_shipupgrade_shd-sh02",
+        1
+       ],
+       [
+        "ammunition_specialammo_spray_healing",
+        20
+       ]
+      ]
+     },
+     "500523": {
+      "odul": [
+       [
+        "ammunition_rocket_plt-2021",
+        3000
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "resource_collectable_indoctrineoil",
+        25
+       ],
+       [
+        "ammunition_rocketlauncher_pir-100",
+        1000
+       ]
+      ]
+     },
+     "500524": {
+      "odul": [
+       [
+        "booster_dmg-dlb",
+        10
+       ],
+       [
+        "ammunition_specialammo_emote_injection",
+        20
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "resource_collectable_axion-beam-regulator",
+        125
+       ]
+      ]
+     },
+     "500525": {
+      "odul": [
+       [
+        "equipment_shipupgrade_dmg-ven01",
+        1
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ship_sentinel_design_sentinel-contagion",
+        1
+       ]
+      ]
+     },
+     "500526": {
+      "odul": [
+       [
+        "tech_npc-nuke",
+        2
+       ],
+       [
+        "ammunition_specialammo_emote_alien-mask-up",
+        20
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_laser_pib-100",
+        10000
+       ],
+       [
+        "resource_collectable_axion-beam-regulator",
+        50
+       ]
+      ]
+     },
+     "500527": {
+      "odul": [
+       [
+        "tech_battle-repair-bot2",
+        2
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_rocketlauncher_hstrm-01",
+        20000
+       ]
+      ]
+     },
+     "500528": {
+      "odul": [
+       [
+        "tech_shield-backup2",
+        2
+       ]
+      ],
+      "anahtar": 0,
+      "bilet_odul": [
+       [
+        "ammunition_specialammo_sr-5",
+        1000
+       ],
+       [
+        "resource_collectable_axion-beam-regulator",
+        75
+       ]
+      ]
+     }
+    },
+    "gorevler": {
+     "500507": {
+      "_": "QuestDefinitionModule",
+      "id": 500507,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50050700,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50050701,
+          "matches": [
+           "161"
+          ],
+          "type": 6,
+          "displayType": 6,
+          "targetValue": 50,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500508": {
+      "_": "QuestDefinitionModule",
+      "id": 500508,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50050800,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50050801,
+          "matches": [
+           "161"
+          ],
+          "type": 6,
+          "displayType": 6,
+          "targetValue": 100,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500509": {
+      "_": "QuestDefinitionModule",
+      "id": 500509,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50050900,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50050901,
+          "matches": [
+           "161"
+          ],
+          "type": 6,
+          "displayType": 6,
+          "targetValue": 200,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500510": {
+      "_": "QuestDefinitionModule",
+      "id": 500510,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051000,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051001,
+          "matches": [
+           "155"
+          ],
+          "type": 6,
+          "displayType": 6,
+          "targetValue": 100,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500511": {
+      "_": "QuestDefinitionModule",
+      "id": 500511,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051100,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051101,
+          "matches": [
+           "155"
+          ],
+          "type": 6,
+          "displayType": 6,
+          "targetValue": 200,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500512": {
+      "_": "QuestDefinitionModule",
+      "id": 500512,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051200,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051201,
+          "matches": [
+           "155"
+          ],
+          "type": 6,
+          "displayType": 6,
+          "targetValue": 500,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500513": {
+      "_": "QuestDefinitionModule",
+      "id": 500513,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051300,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051301,
+          "matches": [
+           "ammunition_laser_pib-100"
+          ],
+          "type": 89,
+          "displayType": 89,
+          "targetValue": 3000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500514": {
+      "_": "QuestDefinitionModule",
+      "id": 500514,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051400,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051401,
+          "matches": [
+           "ammunition_laser_pib-100"
+          ],
+          "type": 89,
+          "displayType": 89,
+          "targetValue": 5000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500515": {
+      "_": "QuestDefinitionModule",
+      "id": 500515,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051500,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051501,
+          "matches": [
+           "ammunition_laser_pib-100"
+          ],
+          "type": 89,
+          "displayType": 89,
+          "targetValue": 12000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500516": {
+      "_": "QuestDefinitionModule",
+      "id": 500516,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051600,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051601,
+          "matches": [
+           "1",
+           "156",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 1000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500517": {
+      "_": "QuestDefinitionModule",
+      "id": 500517,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051700,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051701,
+          "matches": [
+           "1",
+           "156",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 50000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500518": {
+      "_": "QuestDefinitionModule",
+      "id": 500518,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051800,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051801,
+          "matches": [
+           "1",
+           "156",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 15000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500519": {
+      "_": "QuestDefinitionModule",
+      "id": 500519,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50051900,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50051901,
+          "matches": [
+           "1",
+           "128",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 50000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500520": {
+      "_": "QuestDefinitionModule",
+      "id": 500520,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052000,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052001,
+          "matches": [
+           "1",
+           "128",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 10000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500521": {
+      "_": "QuestDefinitionModule",
+      "id": 500521,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052100,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052101,
+          "matches": [
+           "1",
+           "128",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 2500000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500522": {
+      "_": "QuestDefinitionModule",
+      "id": 500522,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052200,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052201,
+          "matches": [
+           "ammunition_ggportal_quarantine-zone-cpu"
+          ],
+          "type": 89,
+          "displayType": 89,
+          "targetValue": 50,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500523": {
+      "_": "QuestDefinitionModule",
+      "id": 500523,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052300,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052301,
+          "matches": [
+           "ammunition_ggportal_quarantine-zone-cpu"
+          ],
+          "type": 89,
+          "displayType": 89,
+          "targetValue": 100,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500524": {
+      "_": "QuestDefinitionModule",
+      "id": 500524,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052400,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052401,
+          "matches": [
+           "ammunition_ggportal_quarantine-zone-cpu"
+          ],
+          "type": 89,
+          "displayType": 89,
+          "targetValue": 150,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500525": {
+      "_": "QuestDefinitionModule",
+      "id": 500525,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052500,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052501,
+          "matches": [],
+          "type": 87,
+          "displayType": 87,
+          "targetValue": 15,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500526": {
+      "_": "QuestDefinitionModule",
+      "id": 500526,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052600,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052601,
+          "matches": [
+           "0",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 1000000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500527": {
+      "_": "QuestDefinitionModule",
+      "id": 500527,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052700,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052701,
+          "matches": [
+           "0",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 2000000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     },
+     "500528": {
+      "_": "QuestDefinitionModule",
+      "id": 500528,
+      "types": [],
+      "rootCase": {
+       "_": "QuestCaseModule",
+       "id": 50052800,
+       "active": false,
+       "mandatory": true,
+       "ordered": false,
+       "mandatoryCount": 1,
+       "modifier": [
+        {
+         "_": "QuestElementModule",
+         "questCase": {
+          "_": "QuestCaseModule",
+          "id": 0,
+          "active": false,
+          "mandatory": false,
+          "ordered": false,
+          "mandatoryCount": 0,
+          "modifier": []
+         },
+         "condition": {
+          "_": "QuestConditionModule",
+          "id": 50052801,
+          "matches": [
+           "0",
+           "0"
+          ],
+          "type": 29,
+          "displayType": 29,
+          "targetValue": 3000000000,
+          "mandatory": true,
+          "state": {
+           "_": "QuestConditionStateModule",
+           "currentValue": 0,
+           "active": true,
+           "completed": false
+          },
+          "subConditions": []
+         }
+        }
+       ]
+      },
+      "rewards": [],
+      "icons": [],
+      "textKeyFoundation": "",
+      "portraitId": "",
+      "star": 0
+     }
+    },
+    "anahtar_degisimi": [],
+    "anahtarsiz": true
    }
   },
   "ayarlar": {

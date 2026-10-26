@@ -27,7 +27,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 D = json.load(open(os.path.join(HERE, 'data', 'pve_modlari.json'), encoding='utf8'))['astral']
 PORTAL = 154900000                 # X-1'deki kapı; + 10 + i ödül kapıları; + 50 çıkış
 PICK = ('silah', 'jenerator', 'modul', 'booster')
-SALVAGE_CHANCE, KEY_CHANCE = 0.7, 0.5          # rift sonu ödülünün olasılıkları (kaynak vermiyor: uyarlama)
+SALVAGE_CHANCE, KEY_CHANCE = 1.0, 0.5          # rift sonu: Kurtarma Çekirdeği her seferde (resmî forum); anahtar uyarlama
 
 
 def mod(_cls, **f):

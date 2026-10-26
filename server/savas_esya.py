@@ -201,12 +201,11 @@ def launchers(p):
 
 
 def launcher_upgrade(p):
-    """Fırlatıcının roket hasarı çarpanı: yükseltme (yukseltme.py) x Plus fırlatıcının kendi bonusu (roket_bonus: Neptune +%19 …);
-    birden çok fırlatıcıda en yükseği."""
+    """Fırlatıcının roket hasarı çarpanı: yükseltme (yukseltme.py; istemcinin oranı). Plus fırlatıcının roket_bonus'u bilgi: 20. seviye
+    toplamı 1 + seviye x oran (resmî forum 161353: Neptune %28,5, Triskelion %47,5); birden çok fırlatıcıda en yükseği."""
     import yukseltme as YK
     eq, lv = p.d.get('ekipman', {}).get('rocket', []), p.d.get('ekipman_seviye', {}).get('rocket', [])
-    return max([YK.factor(l, lv[i] if i < len(lv) else 0, YK.ROCKET) * (1 + LAUNCHERS[l].get('roket_bonus', 0))
-                for i, l in enumerate(eq) if l in LAUNCHERS] or [1.0])
+    return max([YK.factor(l, lv[i] if i < len(lv) else 0, YK.ROCKET) for i, l in enumerate(eq) if l in LAUNCHERS] or [1.0])
 
 
 def capacity(p):
@@ -364,21 +363,36 @@ def menu_status(p, menu_id, st):
 
 
 # ------------------------------------------------------------ gelişmiş atlama (AJP-01) listesi
+def ajp_price(p, dest, here=None):
+    """Kuponsuz AJP-01 atlamasının bedeli: kaynak ve hedef haritaya göre (forum 127075 tablosu, gerçek kayıtla aynı); kuponla 0."""
+    c = S['gelismis_atlama']
+    if p.resource(c['kupon']):
+        return 0
+    src = H.name(here if here is not None else p.d['konum'].get('mapId', 0))
+    return c.get('fiyat_tablosu', {}).get(src, {}).get(H.name(dest), c['fiyat'])
+
+
+def ajp_locked(p, m):
+    """Hedefe seviye yetmiyor ya da düşman şirketin X-1'i (forum 127075: seviyeden bağımsız kilitli)."""
+    fac = p.d['pilot'].get('factionId')
+    homes = S['atlama_cpu']['ana_harita']
+    return (m in homes.values() and m != homes.get(str(fac))) or p.d['pilot'].get('level', 1) < H.level_required(m, fac)
+
+
 def jcpu_list(p):
-    """0|A|JCPU|I|anahtar|harita;…;|… : -1 seviye yetmiyor, -2 uridyum yetmiyor, fiyat: seçilebilir (sondaki ; istemci için)."""
+    """0|A|JCPU|I|anahtar|harita;…;|… : -1 kilitli (seviye ya da düşman X-1), -2 uridyum yetmiyor, fiyat: seçilebilir."""
     here = p.d['konum'].get('mapId', 0)
-    lv, fac = p.d['pilot'].get('level', 1), p.d['pilot'].get('factionId')
-    price = 0 if p.resource(S['gelismis_atlama']['kupon']) else S['gelismis_atlama']['fiyat']
-    groups = {-1: [], -2: [], price: []}
+    groups = {-1: [], -2: []}
     for m in sorted(H.NAMES):
         if m == here or m in H.SPECIAL or any(H.name(m).startswith(s) for s in ('5-', 'BL-')):
             continue
-        if lv < H.level_required(m, fac):
+        price = ajp_price(p, m, here)
+        if ajp_locked(p, m):
             groups[-1].append(m)
         elif price and p.d['pilot'].get('uridium', 0) < price:
             groups[-2].append(m)
         else:
-            groups[price].append(m)
+            groups.setdefault(price, []).append(m)
     parts = ['0', 'A', 'JCPU', 'I']
     for k, maps in groups.items():
         if maps:
@@ -578,7 +592,7 @@ class Esyalar:
         h = 'M%d_%d' % (w.hid, self.seq)
         self.mines[h] = dict(loot=loot, x=x, y=y, sahip=w.hid, kurulma=now + cfg.get('kurulma_sn', M['kurulma_sn']),   # SLM-01 1 sn
                              bitis=now + cfg.get('omur_sn', M['omur_sn']),
-                             hasar=max(0.0, 1 + p.mods().get('mayin', 0)),
+                             hasar=max(0.0, 1 + p.mods().get('mayin', 0) + p.mods().get('mayin_lance', 0)),     # Lance yalnız mayınlara
                              yaricap=M['patlama'] * max(0.0, 1 + p.mods().get('mayin_yaricap', 0)),
                              maxSkill1=YT.maxed(p, '1'), maxSkill5b=YT.maxed(p, '5b'))
         p.ach('shot', silah='MINE')
@@ -737,7 +751,7 @@ class Esyalar:
         """Patlama: yarıçaptaki uzaylılara (sahibi oyuncuysa) ve oyuncuya (uzaylının mayınıysa ya da self_hit) mayın etkisi."""
         w = self.w
         m = self.p.mods()
-        f = factor if factor is not None else max(0.0, 1 + m.get('mayin', 0)) if owner == w.hid else 1.0
+        f = factor if factor is not None else max(0.0, 1 + m.get('mayin', 0) + m.get('mayin_lance', 0)) if owner == w.hid else 1.0
         if source in MINES:                   # resmî SSS: mayınlar gemileri etkiler; uzaylıları değil
             if 'yem' in cfg:
                 return
@@ -752,7 +766,7 @@ class Esyalar:
                 if not other.in_pvp_peace(hx, hy) and math.hypot(hx - x, hy - y) <= radius:
                     other.items.mine_hero(cfg, f, owner, now, source)
             return
-        f = max(0.0, 1 + m.get('mayin', 0)) if owner == w.hid else 1.0      # Lance +%50, Turtle -%7,5, Detonation I/II
+        f = max(0.0, 1 + m.get('mayin', 0)) if owner == w.hid else 1.0      # Turtle -%7,5, Detonation I/II; Lance değil (forum 127433)
         if owner == w.hid:
             radius *= 1 + m.get('mayin_yaricap', 0)                         # Explosives
             for n in list(w.npcs.values()):
@@ -907,6 +921,10 @@ class Esyalar:
             w.hero_etki.remove('yavas')                             # EMP yavaşlatmaları kaldırır (aliens.md: Slowdown Orb)
             w.hero_etki.remove('hiz_siniri')
             msgs += self.mine_effect_msgs(now) + w.effect_stats_msgs(now)
+        for other in self.mine_worlds()[1:]:          # forum 127074: EMP menzilindeki (öteki oyuncunun) P.E.T. etkin dışı kalır
+            pet = getattr(other, 'pet', None)
+            if pet and pet.active and math.hypot(*(a - b for a, b in zip(pet.pos(now), (hx, hy)))) <= c['yaricap']:
+                pet.disrupt(now)
         self.send(msgs + w.ammo_msgs(loot) + [self.cooldown(loot, now)])
         self.log('   EMP: %d uzaylının hedefi sıfırlandı' % reset)
 
@@ -939,6 +957,7 @@ class Esyalar:
         y = min(max(600, hy + math.sin(a) * 800), w.map_h - 600)
         n = w.spawn_npc_at(random.choice(c['turler']), x, y)
         n.summoned = n.hunt = n.cpu = True
+        n.saturn = bool(c.get('oyuncu_sayilir'))          # Saturn Verici: PvP görevlerinde düşman oyuncu (forum 127576)
         self.send(w.ammo_msgs(loot) + [self.cooldown(loot, now)])
         self.log('   %s: %s doğdu' % (loot, n.d['ad']))
 
@@ -1103,17 +1122,18 @@ class Esyalar:
                   * (1 + p.lab_bonus(1)) * launcher_upgrade(p))
         drain = cfg.get('kalkan_cek', 0) * cnt
         impact = w.hit_asset if asset else w.hit_npc
+        kw = {} if asset else {'ammo': ammo}            # Referee-Bot yalnız CBR'den hasar alır (dunya.hit_npc)
 
         def land():
             if drain:                          # SAR/CBR/PIR: uzaylının kalkanından çekilen oyuncuya
                 w.last_shield_hit = 0
-                impact(uid, drain, cfg.get('saldiri', 0), shield_only=True)
+                impact(uid, drain, cfg.get('saldiri', 0), shield_only=True, **kw)
                 if w.last_shield_hit:
                     g = p.d['gemi']
                     p.set_hull(shield=g.get('shield', 0) + w.last_shield_hit)
                     self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
             if dmg:
-                impact(uid, dmg, 0)
+                impact(uid, dmg, 0, **kw)
         w.later(salvo_time(math.hypot(nx - hx, ny - hy), cnt), land)       # son roket varınca
 
     # ------------------------------------------------------------ özel roketler
@@ -1224,8 +1244,11 @@ class Esyalar:
         if now - w.last_combat < S['atlama_cpu']['savas_sn']:
             self.send([stm('jump_cpu_failed_attack3')])          # "uzaylıyla çatışmadan sonra 5 sn" (savas_sn)
             return False
-        sec = S['atlama_cpu']['geri_sayim_sn']
-        self.jump = dict(hedef=dest, zaman=now + sec, cpu=loot, basla=now, kupon=voucher)
+        if w.radiation_since is not None:                      # forum 127075: radyasyonlu bölgede atlanmaz
+            self.send([stm('jump_cpu_failed_map')])
+            return False
+        sec = S['atlama_cpu']['geri_sayim_sn_ajp' if loot == 'ajp' else 'geri_sayim_sn']
+        self.jump = dict(hedef=dest, zaman=now + sec, cpu=loot, basla=now, kupon=voucher, yer=w.hero_pos(now))
         self.send([legacy('0|A|JCPU|S|%d|%d' % (sec, dest))])
         self.log('   CPU atlaması: %s -> %s, %d sn' % (H.name(w.map_id), H.name(dest), sec))
         return True
@@ -1246,11 +1269,15 @@ class Esyalar:
         if w.hero_dead or w.last_combat > j['basla']:
             self.cancel_jump()
             return
+        x, y = w.hero_pos(now)
+        if j.get('yer') and math.hypot(x - j['yer'][0], y - j['yer'][1]) > 5:     # forum 127075: geri sayımda hareket edilirse iptal
+            self.cancel_jump('error_cpu_jump_cancelled_through_move')
+            return
         if now < j['zaman']:
             return
         self.jump = None
         if j['cpu'] == 'ajp':
-            if not self.pay_ajp():
+            if not self.pay_ajp(j['hedef']):
                 self.send([legacy('0|A|JCPU|S|-1|0'), stm('jump_cpu_malfunction')])
                 return
         else:
@@ -1264,17 +1291,19 @@ class Esyalar:
             dest, pos = 42, None                      # Cubikon Mezarlığı (wiki: "her 1.000 atlamada bir"; tek oyunculu oran)
             self.log('   atlama CPU\'su Cubikon Mezarlığı\'na saptı')
         if w.on_jump:
+            self.send([stm('msg_cpu_jump_sequence_complete')])     # "CPU jump completed. Map switched." (forum 127075)
             w.on_jump(dest, None, pos)
 
-    def pay_ajp(self):
+    def pay_ajp(self, dest):
         p, c = self.p, S['gelismis_atlama']
         if p.resource(c['kupon']):
             p.add_resource(c['kupon'], -1)
             self.send([vouchers_msg(p)])
             return True
-        if p.d['pilot'].get('uridium', 0) < c['fiyat']:
+        price = ajp_price(p, dest, self.w.map_id)
+        if p.d['pilot'].get('uridium', 0) < price:
             return False
-        p.gain(uridyum=-c['fiyat'], neden='buy_cpu_jump')
+        p.gain(uridyum=-price, neden='buy_cpu_jump')
         self.send(self.w.money_msgs() if self.w.money_msgs else [])
         return True
 
@@ -1287,9 +1316,8 @@ class Esyalar:
         elif cmd == 'S' and len(parts) > 2 and parts[2].isdigit():
             m = int(parts[2])
             ok = (has_ajp(p) and m != w.map_id and m in H.NAMES and jump_allowed('equipment_extra_cpu_ajp-01', m)
-                  and jump_allowed('equipment_extra_cpu_ajp-01', w.map_id)
-                  and p.d['pilot'].get('level', 1) >= H.level_required(m, p.d['pilot'].get('factionId')))
-            price = 0 if p.resource(S['gelismis_atlama']['kupon']) else S['gelismis_atlama']['fiyat']
+                  and jump_allowed('equipment_extra_cpu_ajp-01', w.map_id) and not ajp_locked(p, m))
+            price = ajp_price(p, m, w.map_id) if m in H.NAMES else 0
             self.ajp_target = m if ok else None
             self.send([legacy('0|A|JCPU|C|%d|%d|%d' % (m, price, 1 if ok else 0))])
         elif cmd == 'J':
@@ -1297,7 +1325,7 @@ class Esyalar:
             if m is None or not has_ajp(p) or w.hero_dead or w.jumping or self.jump:
                 self.send([stm('jump_cpu_malfunction')])
                 return
-            price = 0 if p.resource(S['gelismis_atlama']['kupon']) else S['gelismis_atlama']['fiyat']
+            price = ajp_price(p, m, w.map_id)
             if price and p.d['pilot'].get('uridium', 0) < price:
                 self.send([stm('jump_cpu_malfunction')])
                 return

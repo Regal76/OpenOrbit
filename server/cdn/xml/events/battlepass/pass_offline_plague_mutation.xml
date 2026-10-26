@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<battlePass>
+    <!-- Çevrimdışı sunucunun yazdığı Battle Pass (tools/biletler.py, wiki verisi: tools/biletler_wiki.json; resmî dosya değil) -->
+    <objectiveList>
+        <!-- Wipe the Floor -->
+        <objective questId="500507">
+            <questReward lootid="ammunition_laser_ucb-100" amount="1500"/>
+            <bpReward packageid="package_battlepass_bpReward-500507" packageItemIds="resource_collectable_indoctrineoil,ammunition_mine_im-01" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500507"/>
+        </objective>
+        <!-- Garbage Disposal -->
+        <objective questId="500508">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward lootid="tech_burning-trail" amount="1"/>
+        </objective>
+        <!-- Cleaning Maniac -->
+        <objective questId="500509">
+            <questReward lootid="ammunition_laser_pib-100" amount="3500"/>
+            <bpReward packageid="package_battlepass_bpReward-500509" packageItemIds="ammunition_specialammo_dcr-250,ammunition_specialammo_spray_wash-hands" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500509"/>
+        </objective>
+        <!-- Whittling Small Fry -->
+        <objective questId="500510">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="10"/>
+            <bpReward lootid="resource_collectable_indoctrineoil" amount="20"/>
+        </objective>
+        <!-- Cleaning up Trash -->
+        <objective questId="500511">
+            <questReward lootid="ammunition_rocketlauncher_pir-100" amount="500"/>
+            <bpReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+        </objective>
+        <!-- Destroying Nuisances -->
+        <objective questId="500512">
+            <questReward packageid="package_battlepass_questReward-500512" packageItemIds="ammunition_rocket_plt-3030,ammunition_specialammo_emote_alien-sick" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500512"/>
+            <bpReward lootid="ammunition_rocketlauncher_ubr-100" amount="1200"/>
+        </objective>
+        <!-- Laser Light Show -->
+        <objective questId="500513">
+            <questReward lootid="resource_booty-key" amount="1"/>
+            <bpReward packageid="package_battlepass_bpReward-500513" packageItemIds="ammunition_laser_pib-100,ammunition_specialammo_spray_biohazard" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500513"/>
+        </objective>
+        <!-- Blast Burst -->
+        <objective questId="500514">
+            <questReward lootid="resource_collectable_indoctrineoil" amount="10"/>
+            <bpReward packageid="package_battlepass_bpReward-500514" packageItemIds="ammunition_rocketlauncher_pir-100,ammunition_mine_im-01" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500514"/>
+        </objective>
+        <!-- Trigger-happy -->
+        <objective questId="500515">
+            <questReward lootid="ammunition_laser_rsb-75" amount="5000"/>
+            <bpReward packageid="package_battlepass_bpReward-500515" packageItemIds="tech_npc-nuke,ammunition_specialammo_emote_alien-mask-up" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500515"/>
+        </objective>
+        <!-- Germ Phobia -->
+        <objective questId="500516">
+            <questReward lootid="ammunition_laser_rsb-75" amount="2000"/>
+            <bpReward lootid="booster_shd-dlb" amount="10"/>
+        </objective>
+        <!-- Removing Plague -->
+        <objective questId="500517">
+            <questReward lootid="ammunition_rocket_plt-2021" amount="2000"/>
+            <bpReward lootid="tech_explosive-charging-blob" amount="1"/>
+        </objective>
+        <!-- Kills 99.9% of Germs -->
+        <objective questId="500518">
+            <questReward lootid="ammunition_laser_pib-100" amount="5000"/>
+            <bpReward packageid="package_battlepass_bpReward-500518" packageItemIds="ammunition_specialammo_dcr-250,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500518"/>
+        </objective>
+        <!-- Chipping at Defenses -->
+        <objective questId="500519">
+            <questReward lootid="ammunition_rocketlauncher_hstrm-01" amount="500"/>
+            <bpReward lootid="ammunition_rocketlauncher_pir-100" amount="500"/>
+        </objective>
+        <!-- Cracking Defenses -->
+        <objective questId="500520">
+            <questReward lootid="equipment_shipupgrade_dmg-ms01" amount="1"/>
+            <bpReward packageid="package_battlepass_bpReward-500520" packageItemIds="tech_burning-trail,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500520"/>
+        </objective>
+        <!-- Penetrating Defenses -->
+        <objective questId="500521">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="75"/>
+            <bpReward lootid="ammunition_specialammo_sr-5" amount="250"/>
+        </objective>
+        <!-- Attracted to Danger -->
+        <objective questId="500522">
+            <questReward lootid="resource_collectable_axion-beam-regulator" amount="50"/>
+            <bpReward packageid="package_battlepass_bpReward-500522" packageItemIds="equipment_shipupgrade_shd-sh02,ammunition_specialammo_spray_healing" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500522"/>
+        </objective>
+        <!-- Dance with Danger -->
+        <objective questId="500523">
+            <questReward lootid="ammunition_rocket_plt-2021" amount="3000"/>
+            <bpReward packageid="package_battlepass_bpReward-500523" packageItemIds="resource_collectable_indoctrineoil,ammunition_rocketlauncher_pir-100" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500523"/>
+        </objective>
+        <!-- Immune to Danger -->
+        <objective questId="500524">
+            <questReward packageid="package_battlepass_questReward-500524" packageItemIds="booster_dmg-dlb,ammunition_specialammo_emote_injection" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500524"/>
+            <bpReward lootid="resource_collectable_axion-beam-regulator" amount="125"/>
+        </objective>
+        <!-- Viral Eradication -->
+        <objective questId="500525">
+            <questReward lootid="equipment_shipupgrade_dmg-ven01" amount="1"/>
+            <bpReward lootid="ship_sentinel_design_sentinel-contagion" amount="1"/>
+        </objective>
+        <!-- Pathological Hunter -->
+        <objective questId="500526">
+            <questReward packageid="package_battlepass_questReward-500526" packageItemIds="tech_npc-nuke,ammunition_specialammo_emote_alien-mask-up" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_questReward-500526"/>
+            <bpReward packageid="package_battlepass_bpReward-500526" packageItemIds="ammunition_laser_pib-100,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500526"/>
+        </objective>
+        <!-- Mass Oppression -->
+        <objective questId="500527">
+            <questReward lootid="tech_battle-repair-bot2" amount="2"/>
+            <bpReward lootid="ammunition_rocketlauncher_hstrm-01" amount="20000"/>
+        </objective>
+        <!-- Unstoppable Onslaught -->
+        <objective questId="500528">
+            <questReward lootid="tech_shield-backup2" amount="2"/>
+            <bpReward packageid="package_battlepass_bpReward-500528" packageItemIds="ammunition_specialammo_sr-5,resource_collectable_axion-beam-regulator" itemShowTimeInSec="3" tooltipkey="window_objectives_bp_ttip_bpReward-500528"/>
+        </objective>
+    </objectiveList>
+    <flvDisplayLootId>resource_battle-pass-key</flvDisplayLootId>
+    <titleKeyBeforePurchase>window_objectives_bp_title</titleKeyBeforePurchase>
+    <descriptionKeyBeforePurchase>window_objectives_bp_promo_desc-plague</descriptionKeyBeforePurchase>
+    <descriptionKeyCollect>window_objectives_bp_collect_desc</descriptionKeyCollect>
+    <titleKeyAfterPurchase>window_objectives_bp_highlight_title-plague</titleKeyAfterPurchase>
+    <descriptionKeyAfterPurchase>window_objectives_bp_highlight_desc-plague</descriptionKeyAfterPurchase>
+</battlePass>

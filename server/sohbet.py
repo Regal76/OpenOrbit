@@ -29,11 +29,20 @@ Akış (istemcinin AChatGameClientConnection'ı):
 Gönderenin bilgisi (ChatUserVo.FromJson): userId = görünen ad, id = sayısal kimlik, globalId, role (chatter/system/mod),
 clanTag, factionId, instanceId. Oda türleri (ChatRoomVo): global, faction, clan, group (sekme adları istemcide çevrilir).
 
+Özel odalar (resmî forum 127334: /create, /close, /invite, /join, /leave; istemcinin AChatGameClientConnection'ı, il2cpp 1.1.115):
+  /create <ad> [kullanıcı] -> Request /roomSvc/usr/createRoom/ {roomName: 'private_<ad>'}; yanıt gelince istemci odayı modelinde
+  arar (GetRoomByName), bu yüzden sunucu önce changePredefinedRoom ile odayı verir (roomType = roomName: tür başına tek oda tutulur,
+  roomClass 'usr'; ChatRoomVo 'private_' önekini atıp adı gösterir). /invite -> inviteUser {roomName, whisperId}; davet edilenin
+  /userRoomInvite/<whisperId>/ yoluna Message {roomName, invitingUserData: gönderenin bilgisi}. Kabul -> acceptInvite {roomName};
+  /close -> close {roomName} (yalnız kurucu); /leave -> removeUser {roomName, whisperId}. Hata yanıtı errorMsg ile (istemcinin
+  ChatIcErrorTranslator'ı: 'Not creator of this channel' -> inviteErrorNotYourRoom, 'user no longer logged in' ->
+  inviteErrorUserNotFound); başarı yanıtı data {success: true}. /report -> Request <oda yolu>/reportUser {targetUserId, targetGlobalId, reason, reasonKey, message}:
+  server/logs/sohbet_raporlari.jsonl dosyasına yazılır (forum 132515).
 Duyurular (duyuru()): sistem kullanıcısının (role system) mesajı. İstemci sistem mesajını yerelleştirme anahtarı sayar
 ("anahtar|eski|yeni|…": anahtarın metnini çevirip çiftleri değiştirir; bilinmeyen anahtar boş çıkar). Bu yüzden metin
 'dochat.chat.system' anahtarının çevirisinin ("System"/"Sistem") yerine konur.
 """
-import json, socket, struct, threading, time
+import json, os, socket, struct, threading, time
 
 PORT = 7771
 P_JSON, P_BIN, P_GZIP, P_INTRO, P_PING, P_PONG = 0x50, 0x53, 0x61, 0x10, 0x11, 0x12
@@ -42,6 +51,9 @@ T_LISTENING_LIST = 30             # GetListeningList: sohbetin /users komutu (od
 PING_SN = 15
 SISTEM_ANAHTARI = 'dochat.chat.system'
 SISTEM_METNI = {'en': 'System', 'tr': 'Sistem'}       # istemcinin çevirisi (resource_chat); başka dilde ikisi de denenir
+ODA_SINIRI = 3                    # oyuncu başına özel oda (uyarlama: istemcinin noMorePrivateRoomsAllowed metni var, sayı yok)
+SEL_SINIRI, SEL_SN = 8, 10        # sunucu tarafı sel denetimi: 10 sn'de 8'den çok mesaj atılır (uyarlama; istemci floodWarning kendi uyarır)
+RAPOR_YOLU = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs', 'sohbet_raporlari.jsonl')
 
 
 # ------------------------------------------------------------ APlay çerçevesi ve ikili JSON
@@ -181,6 +193,7 @@ class Baglanti:
         self.user = None                  # authenticate() sonrası gönderen bilgisi
         self.dil = None
         self.pending = []                 # odası henüz kaydedilmemiş duyurular (oda türü, metin)
+        self.gecmis = []                  # son mesaj zamanları (sel denetimi)
         self.alive = True
 
     @property
@@ -229,6 +242,8 @@ class Sohbet:
         self.sock = None
         self.running = False
         self.iz = None                    # canlı test izi: iz(yön, tür, yük) (game.py --kontrol bağlar)
+        self.odalar = {}                  # özel oda adı ('private_<ad>') -> {'kurucu': kimlik, 'uyeler': set, 'davetli': set}
+        self.rapor_yolu = RAPOR_YOLU
 
     # -------------------------------------------------------- dinleme
     def start(self):
@@ -333,9 +348,94 @@ class Sohbet:
         return [{'path': x.path, 'endpoint': x.ep, 'data': x.user} for x in conns if x.user and path in x.handlers]
 
     def request(self, c, m):
-        """Oda servisi istekleri (/roomSvc/usr/createRoom/ …): tek oyunculuda özel oda yok -> başarısız yanıt."""
-        self.log('sohbet: istek %s' % m.get('path'))
-        c.send({'t': T_RESPONSE, 'requestId': m.get('requestId', 0), 'data': {'success': False}})
+        """Oda servisi (/roomSvc/usr/…) ve rapor (<oda>/reportUser) istekleri; hata errorMsg ile, başarı data.success (istemcinin
+        yanıt geri çağrısı json['success']'i okur: yoksa NullReferenceException, canlı 2026-10-26)."""
+        path, d, rid = m.get('path') or '', m.get('data') or {}, m.get('requestId', 0)
+        self.log('sohbet: istek %s %s' % (path, json.dumps(d, ensure_ascii=False)[:200]))
+        if not c.user:
+            err = 'user no longer logged in'
+        elif path.rstrip('/').endswith('/reportUser'):
+            err = self.report(c, path, d)
+        else:
+            fn = {'/roomSvc/usr/createRoom/': self.oda_kur, '/roomSvc/usr/inviteUser/': self.oda_davet,
+                  '/roomSvc/usr/acceptInvite/': self.oda_katil, '/roomSvc/usr/close/': self.oda_kapat,
+                  '/roomSvc/usr/removeUser/': self.oda_ayril}.get(path)
+            err = fn(c, str(d.get('roomName') or ''), d) if fn else 'unknown request'
+        if err:
+            c.send({'t': T_RESPONSE, 'requestId': rid, 'errorReason': 'invalid', 'errorMsg': err, 'errorPath': path})
+        else:
+            c.send({'t': T_RESPONSE, 'requestId': rid, 'data': {'success': True}})
+
+    def report(self, c, path, d):
+        """Sohbet raporu (/report): sunucu günlüğüne bir satır (forum 132515; tek oyunculuda moderatör yok)."""
+        row = {'zaman': time.strftime('%Y-%m-%d %H:%M:%S'), 'raporlayan': c.user.get('userId'), 'oda': path.rsplit('/reportUser', 1)[0],
+               **{k: d.get(k) for k in ('targetUserId', 'targetGlobalId', 'reason', 'reasonKey', 'message')}}
+        os.makedirs(os.path.dirname(self.rapor_yolu), exist_ok=True)
+        with self.lock, open(self.rapor_yolu, 'a', encoding='utf8') as fh:
+            fh.write(json.dumps(row, ensure_ascii=False) + '\n')
+        self.log('sohbet: rapor %s -> %s (%s)' % (row['raporlayan'], row['targetUserId'], row['reasonKey'] or row['reason']))
+        return None
+
+    def oda_yolu(self, name):
+        return '/room/usr/%s/' % name
+
+    def oda_kur(self, c, name, d):
+        me = c.user.get('id')
+        if not name.startswith('private_') or len(name) <= len('private_') or '/' in name:
+            return 'invalid room name'
+        with self.lock:
+            if name in self.odalar:
+                return 'room already exists'
+            if sum(o['kurucu'] == me for o in self.odalar.values()) >= ODA_SINIRI:
+                return 'no more private rooms allowed'
+            self.odalar[name] = {'kurucu': me, 'uyeler': {me}, 'davetli': set()}
+        self.join(c, name, 'usr', name)
+        return None
+
+    def oda_davet(self, c, name, d):
+        o = self.odalar.get(name)
+        if not o or o['kurucu'] != c.user.get('id'):
+            return 'Not creator of this channel'
+        want = '/userroominvite/%s/' % str(d.get('whisperId') or '').lower()
+        with self.lock:
+            conns = [x for x in self.conns.values() if x.user and x is not c]
+        hits = [(x, p) for x in conns for p in x.handlers if p.lower() == want]
+        if not hits:                       # başka örnek kimliği ile dinleyen: adın kendisi (fısıltıdaki gibi)
+            ad = '_' + want[len('/userroominvite/'):].split('_', 1)[-1]
+            hits = [(x, p) for x in conns for p in x.handlers if p.lower().startswith('/userroominvite/') and p.lower().endswith(ad)]
+        if not hits:
+            return 'user no longer logged in'
+        for x, p in hits:
+            o['davetli'].add(x.user.get('id'))
+            x.send({'t': T_MESSAGE, 'path': p, 'data': {'roomName': name, 'invitingUserData': c.user},
+                    'endpointObject': {'path': c.path, 'endpoint': c.ep, 'data': c.user}})
+        return None
+
+    def oda_katil(self, c, name, d):
+        me = c.user.get('id')
+        o = self.odalar.get(name)
+        if not o or me not in o['davetli'] | o['uyeler']:
+            return 'no playerId found'
+        o['uyeler'].add(me)
+        self.join(c, name, 'usr', name)
+        return None
+
+    def oda_kapat(self, c, name, d):
+        o = self.odalar.get(name)
+        if not o or o['kurucu'] != c.user.get('id'):
+            return 'Not creator of this channel'
+        with self.lock:
+            del self.odalar[name]
+            for x in self.conns.values():
+                x.handlers.discard(self.oda_yolu(name))
+        return None
+
+    def oda_ayril(self, c, name, d):
+        o = self.odalar.get(name)
+        if o:
+            o['uyeler'].discard(c.user.get('id'))
+        c.handlers.discard(self.oda_yolu(name))
+        return None
 
     def relay(self, c, path, data):
         """Oyuncunun oda mesajı: odayı dinleyenlere (kendisi dahil) gönderenin bilgisiyle."""
@@ -343,6 +443,11 @@ class Sohbet:
             return
         msg = str(data.get('msg', ''))[:500]
         if not msg:
+            return
+        now = time.time()
+        c.gecmis = [t for t in c.gecmis if now - t < SEL_SN] + [now]
+        if len(c.gecmis) > SEL_SINIRI:
+            self.log('sohbet: sel, atıldı %s: %s' % (c.user.get('userId'), msg[:60]))
             return
         self.log('sohbet: %s: %s' % (path, msg))
         self.broadcast(path, msg, c.ep, c.user)

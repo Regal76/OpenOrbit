@@ -61,12 +61,18 @@ def extra_type(key, name):
     return 'eg_%s_ek_%s' % (key, name)
 
 
+def time_score(secs):
+    """Plutus süre skoru (forum 143902: skor süreye bağlı, 60 dk üstü puansız; formül kaynakta yok: uyarlama)."""
+    return max(0, int(round(1000 * (3600 - secs) / 3600.0)))
+
+
 def _tip(a, key=None, aggressive=True):
     d = dict(ad=a['gorunen_ad'], model=str(a['tur']), hp=a['hp'], kalkan=a['kalkan'], hasar=a['hasar'], hiz=a['hiz'],
              saldirgan=a.get('saldirgan', aggressive), odul=dict(a['odul']), kargo=dict(a.get('kargo', {})), npc_kimlik=a['npc_kimlik'])
     if key:
         d['kapi'] = key
-    for k in ('kutu', 'davranis', 'anahtar', 'dusme', 'yeniden_sn', 'puan', 'ek_odul', 'cpu_artis', 'radyoaktif'):
+    for k in ('kutu', 'davranis', 'anahtar', 'dusme', 'yeniden_sn', 'puan', 'ek_odul', 'cpu_artis', 'radyoaktif', 'menzil', 'isabet',
+              'kalkan_emme', 'kacak', 'guclendir'):
         if a.get(k):
             d[k] = a[k]
     return d
@@ -151,6 +157,10 @@ class EtkinlikKapilari:
                 return False, 'bugün girildi'
         if kural.get('yillik') and G.get('son_yil') == today(now)[:4]:
             return False, 'bu yıl girildi'
+        if kural.get('gunluk') and 0 < 86400 - (now - time.mktime(time.localtime(now)[:3] + (0, 0, 0, 0, 0, -1))) < 300:
+            return False, 'günlük sıfırlamaya 5 dk kaldı'                # forum 143902
+        if kural.get('donem') and not TK.forced(g.get('etkinlik')) and not TK._span_at(kural['donem'], datetime.datetime.fromtimestamp(now)):
+            return False, 'kapı dönemi dışında'                            # The Breach: 11 Aralık - 1 Ocak (forum 134831)
         if kural.get('bekleme_sn') and now < G.get('son_bitis', 0) + kural['bekleme_sn']:
             return False, 'bekleme %d sn' % (G['son_bitis'] + kural['bekleme_sn'] - now)
         return True, ''
@@ -267,6 +277,17 @@ class EtkinlikKapilari:
         for loot, n, chance in o.get('sans', []):          # şanslı ödül (Quarantine Box'ın LF-4'ü)
             if random.random() < AY.chance('dusme', chance, 'kapi') and self.m:
                 msgs += self.m.prize(loot, n, 'kapi')
+        if o.get('ruller') and self.m:                     # Karantina: Indoctrine Oil ruloları (forum 140274)
+            loot, rows = o['ruller']
+            n = sum(random.randint(*a) if isinstance(a, list) else a for a, c in rows if random.random() < AY.chance('dusme', c, 'kapi'))
+            msgs += self.m.prize(loot, n, 'kapi') if n else []
+        bp = o.get('buyuk_paket')
+        if bp and self.m and random.random() < AY.chance('dusme', bp['olasilik'], 'kapi'):     # %0,001 Büyük Ödül Paketi
+            for loot, n in bp['esyalar']:
+                if loot == 'premium_30':
+                    self.p.d['pilot']['premium'] = True        # tek oyunculuda Premium hep açık: yalnız kayıt
+                    continue
+                msgs += self.m.prize(loot, n, 'kapi')
         c = g.get('cpu')
         if c and self.m and random.random() < AY.chance('dusme', c['taban'] + G.get('cpu_artis', 0.0), 'kapi'):
             msgs += self.m.prize(c['esya'], 1, 'kapi')     # Bountiful Alien CPU: temel şans, öldürülen Aura Dun Jig başına artar
@@ -274,7 +295,7 @@ class EtkinlikKapilari:
         best = G.get('en_iyi_sn')
         with self.p.lock:
             G['tamam'] = G.get('tamam', 0) + 1
-            if g.get('kural', {}).get('sure'):
+            if g.get('kural', {}).get('sure') and g.get('mod') != 'kolay' and secs <= 3600:   # forum 143902: yalnız Normal, 60 dk altı
                 if best is None or secs < best:
                     G['en_iyi_sn'] = secs
                 G['sureler'] = sorted(G.get('sureler', []) + [secs])[:5]
@@ -310,7 +331,7 @@ class EtkinlikKapilari:
         if ev in SCORE_EVENTS:
             self.p.ach('event_score', etkinlik=SCORE_EVENTS[ev], deger=rec['puan'])
         G = self.gate(key)
-        entries = [dict(_='PlutusScoreEntryModule', score=i + 1, timeInSeconds=int(s)) for i, s in enumerate(G.get('sureler', []))]
+        entries = [dict(_='PlutusScoreEntryModule', score=time_score(s), timeInSeconds=int(s)) for s in G.get('sureler', [])]
         return [('PlutusPointsUpdateCommand', dict(scoreEntriesList=entries, score=rec['puan']))]
 
     # ------------------------------------------------------------ Gauntlet of Plutus göstergesi
@@ -330,7 +351,7 @@ class EtkinlikKapilari:
         else:
             mode, t = PLUTUS_OPEN, TK.time_left(g['etkinlik'], now)      # etkinliğin kalan süresi
         status = dict(_='PlutusStatusCommand', lifes=int(G.get('can', g['can'])), mode=mode, timeLeft=int(max(0, t)))
-        entries = [dict(_='PlutusScoreEntryModule', score=i + 1, timeInSeconds=int(s)) for i, s in enumerate(G.get('sureler', []))]
+        entries = [dict(_='PlutusScoreEntryModule', score=time_score(s), timeInSeconds=int(s)) for s in G.get('sureler', [])]
         return [('PlutusInfoCommand', dict(playerPoints=int(self.score(key, now)['puan']), scoreEntriesList=entries, status=status,
                                            playerRanges=SR.ranges(SR.PLUTUS),          # ödül sekmesinin aralıkları (Ö1)
                                            filename=''))]
@@ -357,7 +378,8 @@ class Kosu(KAPI.Kosu):
             world.add_gate(ekapi.next_portal(key, self.map, self.cur_map()))
             world.add_gate(ekapi.exit_portal(key, self.map, side=True))
         else:
-            self.phase, self.t = 'intro', now + KAPI.pace('giris_bekleme_sn')
+            wait = self.g.get('kural', {}).get('giris_sn')         # Plutus: Normal 1 sn, Kolay 15 sn (forum 143902)
+            self.phase, self.t = 'intro', now + (KAPI.pace('giris_bekleme_sn') if wait is None else wait * AY.carpan('dalga_bekleme'))
             world.send(self.say('devam' if G['dalga'] else 'giris') + self.k.plutus_cmds(key, now))
         world.log('   %s: dalga %d/%d, can %d (%s)' % (self.g['ad'], G['dalga'] + 1, self.wave_count(), G['can'], self.phase))
 

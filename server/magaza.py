@@ -167,6 +167,12 @@ def raw_msg(text):
 # istemcinin metinlerinde karşılığı olmayan ret nedenleri (BaseKey'lerde ve 40 metin dosyasında yok; istemci yalnız genel metni
 # gösteriyordu: N4, HAT-7/20) -> (İngilizce, Türkçe); istemcinin dilinde ham metin (Magaza.neden)
 NEDENLER = {
+    'ad_bekleme': ('You can only rename your Pilot once every 48 hours. (Your last name change: %DATETIME%)',     # change_pilotname_error_time
+                   'Pilotunun adını en fazla 48 saatte bir değiştirebilirsin. (Son ad değişikliğin: %DATETIME%)'),
+    'ad_yasak': ('This Pilot name is not permitted.', 'Bu Pilot adına izin verilmiyor.'),                       # change_pilotname_error_blacklist
+    'abone_oldu': ('You have subscribed to this booster. It will be bought again automatically.',            # istemci booster_bought_subscription
+                   'Bu güçlendiriciye abone oldun; süresi bitmeden kendiliğinden yeniden alınacak.'),
+    'abone_bitti': ('Your booster subscription has been cancelled.', 'Güçlendirici aboneliğin sona erdi.'),
     'pet_zaten': ('This item is already equipped on your P.E.T.', "Bu eşya P.E.T.'inde zaten takılı."),
     'pet_dolu': ('Your P.E.T. has no free slot for this item.', "P.E.T.'inde bu eşya için boş yuva yok."),
     'baska_gemi': ('This item is equipped on another ship. Unequip it there first.', 'Bu eşya başka bir gemide takılı; önce oradan çıkar.'),
@@ -404,6 +410,8 @@ class Magaza:
             return self.sell(f)
         if name == 'HangarShipSellDroneRequest':
             return self.sell_drone(f)
+        if name == 'ShopItemBuyRequest' and f.get('action') == 'toggleSubscription':
+            return self.toggle_subscription(f.get('lootId', ''), f.get('category', ''), f.get('buyCategory', ''))
         if name == 'ShopItemBuyRequest':
             return self.buy(f.get('lootId', ''), f.get('amount', 1), f.get('category', ''), f.get('buyCategory', ''),
                             pet_name=f.get('petName') or '', level=f.get('level') or 1)
@@ -707,6 +715,8 @@ class Magaza:
         for it in t['itemList']:
             if (self.extra_entry.get(it['lootId']) or {}).get('bir_kez'):
                 it['maxAmount'] = 1                          # Ö7 paketleri: etkinlikte bir kez
+            elif (self.extra_entry.get(it['lootId']) or {}).get('en_cok'):
+                it['maxAmount'] = self.extra_entry[it['lootId']]['en_cok']      # forum 109162: Süper Destek Paketi 15
         t['itemList'] = [it for it in t['itemList'] if it['lootId'] != PETM.HULL or self.pet.hull_price()]
         for it in t['itemList']:
             if it['lootId'] == PETM.HULL:
@@ -839,14 +849,57 @@ class Magaza:
                         out.append(('MenuItemStatusCommand', st))
         return out
 
-    def buy_cmd(self, loot, category, buy_category, result, amount=0, error=None, equip_ids=(), free=0):
+    def buy_cmd(self, loot, category, buy_category, result, amount=0, error=None, equip_ids=(), free=0, success=None):
+        sub = self.p.d.get('booster_abonelik', {}).get(loot)
         return ('ShopItemBuyCommand', dict(
             canEquipItemId=[float(i) for i in equip_ids], slotSet='', hintEquipTo='hint_equip_to_ship' if equip_ids else '',
-            canBeSubscribedTo=False, userHasBoosterPackage=False, buyCategory=buy_category, resultId=result,
+            canBeSubscribedTo=BOOSTER.is_booster(loot), userHasBoosterPackage=False, buyCategory=buy_category, resultId=result,
             configId=self.p.aktif_konfig if equip_ids else 0, errorMessage=error, lootId=loot, category=category,
-            hangarId=self.hangar_id if equip_ids else 0, realBuyAmount=amount, isSubscriptionRunning=False,
-            allowAutoEquip=1 if equip_ids else 0, sucessMessage=None, emptySlotCount=free, droneId=0, isSubscriptionPaused=False,
-            secondsLeft=0, action=''))
+            hangarId=self.hangar_id if equip_ids else 0, realBuyAmount=amount, isSubscriptionRunning=bool(sub),
+            allowAutoEquip=1 if equip_ids else 0, sucessMessage=success, emptySlotCount=free, droneId=0,
+            isSubscriptionPaused=bool(sub and sub.get('durum') == 'duraklatildi'),
+            secondsLeft=int(BOOSTER.left(self.p, loot)) if sub else 0, action='toggleSubscription' if sub else ''))
+
+    def toggle_subscription(self, loot, category='', buy_category=''):
+        """Booster aboneliği (resmî forum 127558 Hangar-Güçlendirici: "ABONE OL" / "ABONELİĞİ BİTİR"; istemcinin düğmesi
+        ShopItemBuyRequest action 'toggleSubscription'): abone olunca bir kez alınır; süre bitmeden uridyum yetiyorsa yeniden alınır,
+        yetmiyorsa abonelik para olana dek durur (subscription_tick)."""
+        if not BOOSTER.is_booster(loot):
+            return [self.buy_cmd(loot, category, buy_category, 0, error=stack_msg('shop_item_not_found'))]
+        subs = self.p.d.setdefault('booster_abonelik', {})
+        if loot in subs:
+            with self.p.lock:
+                del subs[loot]
+                self.p.dirty = True
+            self.log('   booster aboneliği bitti: %s' % loot)
+            return [self.buy_cmd(loot, category, buy_category, 1, success=self.neden('abone_bitti'))]
+        msgs = self.buy(loot, 1, category, buy_category)
+        if not BOOSTER.left(self.p, loot):
+            return msgs                                  # alınamadı (para yok): abonelik başlamaz
+        with self.p.lock:
+            subs[loot] = {'durum': 'aktif'}
+            self.p.dirty = True
+        self.log('   booster aboneliği: %s' % loot)
+        return msgs + [self.buy_cmd(loot, category, buy_category, 1, success=self.neden('abone_oldu'))]
+
+    def subscription_tick(self, now):
+        """Aboneliği süren boosterlar: kalan 60 sn'nin altına inince uridyum yetiyorsa yeniden alınır, yetmiyorsa duraklar."""
+        msgs = []
+        for loot, sub in list(self.p.d.get('booster_abonelik', {}).items()):
+            if BOOSTER.left(self.p, loot, now) > 60:
+                continue
+            pr = self.buy_price(loot)
+            ok = pr and (self.p.d['pilot'].get('uridium', 0) if pr[0] == 'uridium' else self.p.d['pilot'].get('credits', 0)) >= pr[1]
+            state = 'aktif' if ok else 'duraklatildi'
+            if ok:
+                msgs += [m for m in self.buy(loot, 1) if m[0] != 'ShopItemBuyCommand']
+            if sub.get('durum') != state:
+                with self.p.lock:
+                    sub['durum'] = state
+                    self.p.dirty = True
+                if not ok:
+                    self.log('   booster aboneliği durdu (para yok): %s' % loot)
+        return msgs
 
     def free_slots(self, slot, cid=None):
         return max(0, self.capacity(slot) - len(self.p.config(cid).get(slot, [])))
@@ -924,6 +977,8 @@ class Magaza:
             return [] if quick else [self.buy_cmd(loot, category, buy_category, 0, error=stack_msg('shop_item_not_found'))]
         if (self.extra_entry.get(loot) or {}).get('bir_kez'):
             amount = 1
+        elif (self.extra_entry.get(loot) or {}).get('en_cok'):
+            amount = min(amount, self.extra_entry[loot]['en_cok'])
         if loot == PET_FUEL:                        # deponun boş yeri kadar (fazlasının parası alınmaz)
             if self.fuel_room() <= 0:
                 self.log('   satın alma yok: P.E.T. yakıt deposu dolu ya da P.E.T. yok')
@@ -1305,6 +1360,9 @@ class Magaza:
             if cost and v >= cost:
                 v = cost * ESYA['satis_orani']
             return 'credits', int(v * n)
+        fixed = ESYA.get('satis_gemi', {}).get(loot)
+        if fixed:
+            return fixed[0], int(fixed[1] * n)
         pr = self.price(loot) or self.ref_value(loot)
         if not pr:
             return None
@@ -1684,8 +1742,9 @@ class Magaza:
                 msgs.append(('HitpointInfoCommand', dict(hitpoints=int(g['hitPoints']), hitpointsMax=g['hitMax'],
                                                          nanoHull=int(g.get('nanoHull', 0)), nanoHullMax=g.get('maxNanoHull', 0))))
             if s['shield_max'] != g.get('shieldMax', 0):
+                fill = getattr(self, 'fill_shield', False) and s['shield_max'] > g.get('shieldMax', 0)
                 g['shieldMax'] = s['shield_max']
-                g['shield'] = min(g.get('shield', 0), s['shield_max'])
+                g['shield'] = s['shield_max'] if fill else min(g.get('shield', 0), s['shield_max'])
                 msgs.append(('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g['shieldMax']}))
             self.p.d['kalkan_emme'] = s['absorb']
             # kargo alanı: geminin kargosu + Logistics yeteneği (yetenek.py); ShipInitializationCommand'da görünür
@@ -1814,7 +1873,11 @@ class Magaza:
                 st = self.p.menu_status(k)
                 if st:
                     msgs.append(('MenuItemStatusCommand', st))
-        msgs += self.drone_msgs() + self.apply_stats()
+        self.fill_shield = True                       # forum 127433: azami kalkan artarsa kalkan hemen dolar
+        try:
+            msgs += self.drone_msgs() + self.apply_stats()
+        finally:
+            self.fill_shield = False
         self.log('   formasyon: %s (%d)' % (loot, new))
         self.p.ach('formation', dron=len(self.p.d['dronlar']))
         return msgs
@@ -1826,6 +1889,9 @@ class Magaza:
         sid = str(f.get('shipId'))
         if sid not in self.p.d['gemiler']:
             return [('HangarShipFavouriteCommand', {'resultId': 0, 'errorMessage': stack_msg('eqt_error_generic')})]
+        favs = sum(1 for k, s in self.p.d['gemiler'].items() if s.get('favori') and k != sid)
+        if f.get('favourite') and favs >= ESYA.get('favori_gemi_siniri', 10):      # forum 127436: en çok 10 favori gemi
+            return [('HangarShipFavouriteCommand', {'resultId': 0, 'errorMessage': stack_msg('items_hangarSlot_max_favs')})]
         with self.p.lock:
             self.p.d['gemiler'][sid]['favori'] = bool(f.get('favourite'))
             self.p.dirty = True
@@ -2146,7 +2212,7 @@ class Magaza:
                         fail('%s: %s' % (loot, PC.equip_allowed(self.p, iid, slot, lst)), 'ayni_top')   # her türden bir top
                     elif slot == 'extra' and EK.slot_bonus_of([loot]) and EK.slot_bonus_of(loots(lst)):
                         fail('%s: config\'te yuva CPU\'su var' % loot, 'tek_yuva_cpu')       # config başına bir yuva CPU'su (wiki)
-                    elif slot == 'extra' and (loot in extras_of(dcfg.values(), iid) or loot.startswith(REPBOT)
+                    elif slot == 'extra' and (loot in extras_of(dcfg.values(), iid) or loot in loots(lst) or loot.startswith(REPBOT)
                                               and any(l.startswith(REPBOT) for l in extras_of([lst] + list(dcfg.values()), iid))):
                         # config başına bir onarım robotu (kullanıcı bildirimi 2026-10-24: iki tane takılabiliyordu); istemcinin metni
                         # "Only one of these items is allowed per configuration."
@@ -2271,6 +2337,9 @@ class Magaza:
         n = int(n)
         if str(n) not in ship['konfigler']:
             return []
+        if n != 1 and ((self.p.d.get('pve') or {}).get('astral') or {}).get('kosu'):     # forum 162090: Astral'da yalnız Ayar 1
+            self.log('   Astral: Ayar %d kapalı' % n)
+            return [legacy('0|S|CFG|1')]
         now = time.time()
         if now - getattr(self, 'last_config', 0) < CONFIG_COOLDOWN_SN:       # kayıt: 2,4 sn sonraki ikinci geçiş reddedildi
             self.log('   config geçişi bekliyor')

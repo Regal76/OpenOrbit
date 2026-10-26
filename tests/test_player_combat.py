@@ -84,16 +84,22 @@ class PlayerCombat(unittest.TestCase):
     def test_enemy_at_cbs_can_be_attacked(self):
         self.assertEqual(PVP.attack_error(self.a, self.b, 100), [])
 
-    def test_friendly_group_clan_allies_nap_and_same_faction_are_blocked(self):
-        for mode in ['clan', 'ally', 'nap', 'same-faction', 'group']:
+    def test_same_faction_warned_but_blocked_only_on_own_start_maps(self):
+        # Turkish board FAQ 127509: attacking your own company is allowed (penalised on kill), except on its first two maps
+        self.b.p.d['pilot']['factionId'] = 1
+        self.assertEqual(PVP.attack_error(self.a, self.b, 100), [])
+        self.assertTrue(any('friendlyfire' in str(m) for m in self.a.sent))
+        self.a.map_id = self.b.map_id = '1'
+        self.assertIn('no_attack_on_start_maps', str(PVP.attack_error(self.a, self.b, 100)))
+
+    def test_friendly_group_clan_allies_nap_are_blocked(self):
+        for mode in ['clan', 'ally', 'nap', 'group']:
             with self.subTest(mode=mode):
                 self.reset_pair()
                 if mode == 'clan':
                     self.a.p.d['pilot']['clanId'] = self.b.p.d['pilot']['clanId'] = 7
                 elif mode in ('ally', 'nap'):
                     PVP.KL.iliski.return_value = 1 if mode == 'ally' else 2
-                elif mode == 'same-faction':
-                    self.b.p.d['pilot']['factionId'] = 1
                 else: self.a.grup_uyesi.return_value = True
                 self.assertTrue(PVP.attack_error(self.a, self.b, 100))
 

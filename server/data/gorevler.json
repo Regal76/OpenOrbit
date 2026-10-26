@@ -6386,7 +6386,7 @@
        "_": "QuestConditionModule",
        "id": 10801102,
        "matches": [
-        "resource_ore_prometium"
+        "resource_ore_promerium"
        ],
        "type": 67,
        "displayType": 67,
@@ -6627,7 +6627,7 @@
     "active": false,
     "mandatory": true,
     "ordered": false,
-    "mandatoryCount": 3,
+    "mandatoryCount": 2,
     "modifier": [
      {
       "_": "QuestElementModule",
@@ -6679,36 +6679,6 @@
        "type": 6,
        "displayType": 6,
        "targetValue": 2,
-       "mandatory": true,
-       "state": {
-        "_": "QuestConditionStateModule",
-        "currentValue": 0,
-        "active": true,
-        "completed": false
-       },
-       "subConditions": []
-      }
-     },
-     {
-      "_": "QuestElementModule",
-      "questCase": {
-       "_": "QuestCaseModule",
-       "id": 0,
-       "active": false,
-       "mandatory": false,
-       "ordered": false,
-       "mandatoryCount": 0,
-       "modifier": []
-      },
-      "condition": {
-       "_": "QuestConditionModule",
-       "id": 10801404,
-       "matches": [
-        "4"
-       ],
-       "type": 6,
-       "displayType": 6,
-       "targetValue": 1,
        "mandatory": true,
        "state": {
         "_": "QuestConditionStateModule",
@@ -7491,7 +7461,7 @@
     ],
     [
      "currency_uridium",
-     45
+     50
     ]
    ]
   },
@@ -7756,7 +7726,7 @@
     ],
     [
      "currency_uridium",
-     45
+     50
     ]
    ]
   },
@@ -8147,7 +8117,7 @@
     ],
     [
      "currency_uridium",
-     45
+     50
     ]
    ]
   },
@@ -8619,7 +8589,7 @@
     ],
     [
      "currency_uridium",
-     50
+     1000
     ],
     [
      "equipment_extra_cpu_nc-awr-x",
@@ -8844,7 +8814,7 @@
     "active": false,
     "mandatory": true,
     "ordered": false,
-    "mandatoryCount": 1,
+    "mandatoryCount": 2,
     "modifier": [
      {
       "_": "QuestElementModule",
@@ -9390,7 +9360,7 @@
     ],
     [
      "currency_uridium",
-     50
+     100
     ]
    ]
   },
@@ -9851,7 +9821,7 @@
          "_": "QuestConditionModule",
          "id": 0,
          "matches": [
-          "@own X-5"
+          "@any X-5"
          ],
          "type": 77,
          "displayType": 77,
@@ -11121,7 +11091,7 @@
     "active": false,
     "mandatory": true,
     "ordered": false,
-    "mandatoryCount": 2,
+    "mandatoryCount": 1,
     "modifier": [
      {
       "_": "QuestElementModule",
@@ -13484,7 +13454,7 @@
        "id": 11401002,
        "matches": [
         "1",
-        "70",
+        "69",
         "0"
        ],
        "type": 28,
@@ -14345,7 +14315,7 @@
        "id": 11401802,
        "matches": [
         "1",
-        "69",
+        "70",
         "0"
        ],
        "type": 28,
@@ -15806,7 +15776,7 @@
     ],
     [
      "currency_uridium",
-     320
+     560
     ]
    ]
   },
@@ -20004,7 +19974,7 @@
        "_": "QuestConditionModule",
        "id": 11702303,
        "matches": [
-        "8"
+        "21"
        ],
        "type": 6,
        "displayType": 6,
@@ -21426,7 +21396,7 @@
     ],
     [
      "currency_uridium",
-     1000
+     400
     ]
    ],
    "sure_sn": 2400
@@ -22181,7 +22151,7 @@
        ],
        "type": 6,
        "displayType": 6,
-       "targetValue": 20,
+       "targetValue": 15,
        "mandatory": true,
        "state": {
         "_": "QuestConditionStateModule",
@@ -23137,7 +23107,7 @@
     ],
     [
      "currency_credits",
-     190000
+     170000
     ],
     [
      "currency_uridium",
@@ -23208,7 +23178,7 @@
     ],
     [
      "currency_credits",
-     190000
+     170000
     ],
     [
      "currency_uridium",
@@ -23622,7 +23592,7 @@
     ],
     [
      "currency_credits",
-     190000
+     170000
     ],
     [
      "currency_uridium",
@@ -24332,7 +24302,7 @@
        "_": "QuestConditionModule",
        "id": 11901703,
        "matches": [
-        "8"
+        "2"
        ],
        "type": 6,
        "displayType": 6,

@@ -903,12 +903,12 @@
    "etki": {
     "ucgen_patlama": {
      "hasar": 20000,
-     "yaricap": 150,
+     "yaricap": 200,
      "uzaklik": 150
     }
    },
    "hedefli": true,
-   "_not": "istemci: hedefin arkasında üçgen üç patlama, her biri 20.000; üst üste binen alanlar toplanır. Yarıçap ve aralık uyarlama (150)",
+   "_not": "istemci: hedefin arkasında üçgen üç patlama, her biri 20.000; üst üste binen alanlar toplanır. Yarıçap 200 (resmî Türk forumu 158403 Kış SSS); aralık uyarlama (150)",
    "metin": [
     "msg_triple_barrage_activated",
     null

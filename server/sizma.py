@@ -9,7 +9,10 @@ uzaylıdan fazla ödül verirler (2x; kaynaklar 2x/4x diyor). Akşam saatlerinde
 Tek oyunculu uyarlama: takım oyuncunun firmasının X-2..X-8 haritalarından birinde; oyuncu o haritadaysa (ya da sonradan gelirse)
 kalan komandolar haritanın rastgele bir yerinde doğar. Takım boyu, tur arası ve uzaylı türleri veride (_uyarlama); turun
 'gizli_patron' olasılığıyla komandolardan biri gizli Boss Kristallon'dur (Uber Kristallon'un ganimeti; fandom Infiltration).
-Profilde tutulmaz (turlar oturumluk).
+Şirket sıralaması (resmî Türk forumu Sızma SSS: "yan çubukta belirecek"; takımı yok eden şirketine puan): UpdateEventSummaryScoreCommand
+{scoreCommandList: [EventSummaryScoreCommand {score, factionModule}], eventEnd, eventType 'Infiltration'} (istemcinin UIScoreSystem'i
+bu türde sidebar_infiltration_title_long başlığını gösterir; il2cpp 1.1.115). Oyuncunun firması yok ettiği her takımla +1; öteki
+firmalar sanal: her tur sonunda %50 olasılıkla +1 (uyarlama). Puanlar profilde, etkinlik dönemi başına; turlar oturumluk.
 """
 import json, os, random, time
 
@@ -43,6 +46,33 @@ class Sizma:
 
     def faction(self):
         return self.p.d['pilot'].get('factionId', 2)
+
+    def scores(self, now=None):
+        """Bu etkinlik döneminin şirket puanları {'1','2','3'} (dönem değişince sıfır)."""
+        span = TK.period(EVENT, now)
+        d = self.p.d.setdefault('sizma', {})
+        if span and d.get('donem') != int(span[0]):
+            d.update(donem=int(span[0]), puan={'1': 0, '2': 0, '3': 0})
+            self.p.dirty = True
+        return d.setdefault('puan', {'1': 0, '2': 0, '3': 0})
+
+    def score_cmd(self, now=None):
+        s = self.scores(now)
+        return ('UpdateEventSummaryScoreCommand', {'eventType': 'Infiltration', 'eventEnd': False, 'scoreCommandList': [
+            {'_': 'EventSummaryScoreCommand', 'score': int(s[f]), 'factionModule': {'_': 'FactionModule', 'faction': int(f)}}
+            for f in ('1', '2', '3')]})
+
+    def round_over(self, won, now=None):
+        """Tur bitti: kazanılırsa oyuncunun firmasına +1; öteki firmalar sanal (%50) -> yan çubuk."""
+        s = self.scores(now)
+        with self.p.lock:
+            if won:
+                s[str(self.faction())] = int(s.get(str(self.faction()), 0)) + 1
+            for f in ('1', '2', '3'):
+                if f != str(self.faction()) and random.random() < 0.5:
+                    s[f] = int(s.get(f, 0)) + 1
+            self.p.dirty = True
+        return [self.score_cmd(now)]
 
     def status_cmd(self, now=None):
         r = self.round
@@ -100,11 +130,11 @@ class Sizma:
         self.world = world
         if self.round and active():
             self.spawn(world)
-            return [self.status_cmd()]
-        return []
+            return [self.status_cmd(), self.score_cmd()]
+        return [self.score_cmd()] if active() else []
 
     def login_msgs(self):
-        return [self.status_cmd()] if active() else []
+        return [self.status_cmd(), self.score_cmd()] if active() else []
 
     def on_kill(self, w, npc, x, y):
         owner = getattr(npc, 'sizma', None)
@@ -127,6 +157,7 @@ class Sizma:
             msgs.append(legacy('0|A|STM|msg_infiltration_success'))
             self.round = None
             self.next_round = time.time() + D.get('ara_sn', 120)
+            msgs += self.round_over(True)
         return msgs
 
     def tick(self, now):
@@ -152,7 +183,7 @@ class Sizma:
                             w.send(w.remove_npc(n))        # takım kaçtı
             self.round = None
             self.next_round = now + D.get('ara_sn', 120)
-            return msgs + [self.status_cmd(now)]
+            return msgs + [self.status_cmd(now)] + self.round_over(False, now)
         if not r and in_slot(now) and now >= self.next_round:
             return self.start_round(now)
         return []

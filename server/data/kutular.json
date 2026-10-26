@@ -695,7 +695,7 @@
     ],
     [
      "resource_ore_seprom",
-     1000,
+     100,
      10.5
     ],
     [
@@ -875,7 +875,7 @@
     ],
     [
      "resource_ore_seprom",
-     1000,
+     100,
      9.0
     ],
     [
@@ -1823,21 +1823,21 @@
     [
      "ammunition_laser_mcb-50",
      5000,
-     10.5
+     3.5
     ],
     [
      "ammunition_laser_sab-50",
      5000,
-     10.5
+     7.0
     ],
     [
      "ammunition_rocketlauncher_hstrm-01",
      800,
-     7.0
+     10.5
     ],
     [
      "ammunition_rocketlauncher_sar-02",
-     1500,
+     5000,
      7.0
     ],
     [
@@ -2451,8 +2451,44 @@
      "pet_designs_pet-pusat-carbonite",
      1,
      1
+    ],
+    [
+     "resource_collectable_permit-plus",
+     1,
+     2
+    ],
+    [
+     "ammunition_mine_acm-01",
+     10,
+     2
+    ],
+    [
+     "resource_extra-energy",
+     10,
+     2
+    ],
+    [
+     "resource_pet-fuel",
+     1000,
+     2
+    ],
+    [
+     "resource_repairvoucher",
+     1,
+     2
+    ],
+    [
+     "currency_uridium",
+     1000,
+     2
+    ],
+    [
+     "currency_credits",
+     100000,
+     2
     ]
-   ]
+   ],
+   "_forum_tr": "Resmî Türk forumu 1451139, 1455900: İzin Plus ve diğer öğeler (mayın, Ekstra Enerji, P.E.T. Yakıtı, Onarım Kuponu, Uridium/Kredi); adet ve ağırlıklar uyarlama"
   },
   "LAUREL_BOX": {
    "ad": "Laurel Box",
@@ -3043,7 +3079,7 @@
      [
       "ammunition_laser_a-bl",
       800,
-      15.2
+      15.0
      ],
      [
       "resource_extra-energy",
@@ -3073,37 +3109,37 @@
      [
       "ship_hecate-plus_design_hecate-plus-nobilis",
       1,
-      0.23
+      0.2
      ],
      [
       "ship_pusat-plus_design_pusat-plus-nobilis",
       1,
-      0.23
+      0.2
      ],
      [
       "ship_solace-plus_design_solace-plus-nobilis",
       1,
-      0.23
+      0.2
      ],
      [
       "ship_hammerclaw-plus_design_hammerclaw-plus-nobilis",
       1,
-      0.23
+      0.2
      ],
      [
       "ship_spearhead-plus_design_spearhead-plus-nobilis",
       1,
-      0.23
+      0.2
      ],
      [
       "pet_designs_pet-orcus-nobilis",
       1,
-      0.35
+      0.25
      ],
      [
       "pet_designs_pet-pusat-nobilis",
       1,
-      0.35
+      0.3
      ],
      [
       "equipment_weapon_laser_os-l",
@@ -3532,24 +3568,9 @@
       1
      ],
      [
-      "equipment_shipupgrade_dmg-xw01",
+      "ship_citadel-plus_design_citadel-plus-frost",
       1,
-      0.1
-     ],
-     [
-      "equipment_shipupgrade_hp-xw01",
-      1,
-      0.1
-     ],
-     [
-      "equipment_shipupgrade_shd-xw01",
-      1,
-      0.1
-     ],
-     [
-      "equipment_shipupgrade_spc-xw01",
-      1,
-      0.1
+      0.5
      ]
     ],
     "immortal_union": [
@@ -3743,7 +3764,7 @@
      [
       "resource_collectable_mucosum",
       100,
-      6.7
+      5.0
      ],
      [
       "resource_collectable_bifenon",
@@ -3809,6 +3830,11 @@
       "equipment_shipupgrade_shd-xa01",
       1,
       1.25
+     ],
+     [
+      "ship_pusat-plus_design_pusat-plus-astral",
+      1,
+      1.0
      ]
     ],
     "spacecup": [
@@ -3933,7 +3959,8 @@
       0.4
      ]
     ]
-   }
+   },
+   "_forum_tr": "Resmî Türk forumu: Plutus kutusu (A-BL %15, Nobilis Plus tasarımları %0,2, Orcus/Pusat P.E.T. %0,25/%0,3; NOS01/SEN01/TAR01 forumda yok: bu modüllerin tek kaynağı olduğu için %0,4 uyarlamayla kaldı), Astral (Mucosum %5, Astral Pusat Plus %1), Kış/Labirent (Citadel Plus Frost %0,5; XW01 forumda yok): her tablo toplamı %100"
   },
   "EMPYRIAN_BOOTY_BOX": {
    "ad": "Empyrian Box",

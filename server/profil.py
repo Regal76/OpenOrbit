@@ -58,6 +58,17 @@ def event_window_visible(item_id, now=None, hooks=None):
     return any(TKV.is_active(k, now) for k in window_events(item_id))
 
 import booster as BOOSTER
+
+_YIGIN = None
+
+
+def stack_cap(loot):
+    """İstemcinin eşya yığın sınırı (istemci_esyalari.json yigin; 2^63'e yakın 'sınırsız' sayılır) ya da None."""
+    global _YIGIN
+    if _YIGIN is None:
+        K = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'istemci_esyalari.json'), encoding='utf8'))
+        _YIGIN = {k: int(v['yigin']) for k, v in K['esyalar'].items() if isinstance(v, dict) and 0 < (v.get('yigin') or 0) < 10 ** 12}
+    return _YIGIN.get(loot)
 import yetenek as YETENEK
 import gemi_yetenek as GY
 import lazer as LAZER
@@ -580,10 +591,14 @@ class Profil:
         return self.d.get('diger_esyalar', {}).get(loot, 0)
 
     def add_resource(self, loot, n):
-        """Depoya ekle (n < 0 çıkarır, sıfırın altına inmez) -> yeni adet."""
+        """Depoya ekle (n < 0 çıkarır, sıfırın altına inmez; istemcinin yığın sınırını aşan kısım kaybolur: resmî forum 150401
+        "maksimum tutarı aşan kaynaklar kaybolacaktır", istemci_esyalari.json yigin) -> yeni adet."""
+        cap = stack_cap(loot)
         with self.lock:
             d = self.d.setdefault('diger_esyalar', {})
             d[loot] = max(0, d.get(loot, 0) + n)
+            if n > 0 and cap and d[loot] > cap:
+                d[loot] = max(cap, d.get(loot, 0) - n)       # zaten sınırın üstündeyse (eski kayıt) azaltmaz
             if not d[loot]:
                 del d[loot]
             self.dirty = True
@@ -799,7 +814,8 @@ class Profil:
         for l in looks:
             for k, v in designs.get(l or '', {}).get('dron_basina', {}).items():
                 out[k] = out.get(k, 0) + v
-        if looks and looks[0] and len(set(looks)) == 1:
+        grp = lambda l: designs.get(l or '', {}).get('takim_grubu', l)     # Demon Gümüş ve Epic karışık da "tüm dronlar Demon" (forum 127526)
+        if looks and looks[0] and len({grp(l) for l in looks}) == 1:
             for k, v in designs.get(looks[0], {}).get('takim', {}).items():
                 out[k] = out.get(k, 0) + v
         for x in self.d.get('dronlar', []):          # görünüm tasarımının etkinlikteki geçici bonusu (Goal Rush, Apocalypse: NPC lazer)
@@ -822,6 +838,13 @@ class Profil:
                      + list((self.event_mods() if getattr(self, 'event_mods', None) else {}).items())    # + Fever (fever.py)
                      + list((self.cbs_mods() if getattr(self, 'cbs_mods', None) else {}).items())):    # + CBS boosterları (cbs.py)
             out[k] = min(out.get(k, v), v) if k in ('sabit_hiz', 'azami_hiz') else out.get(k, 0) + v
+        if out.get('kacinma', 0) > 0.75:                 # resmî forum 160373: kaçınma en çok %75
+            out['kacinma'] = 0.75
+        if out.get('bekleme', 0) > 0.75:                 # forum 127074: bekleme kısaltması en çok %75 (yetenek)
+            out['bekleme'] = 0.75
+        for k in ('roket_bekleme', 'fircatici_bekleme', 'mayin_bekleme', 'top_bekleme'):
+            if out.get(k, 0) < -0.75:
+                out[k] = -0.75
         return out
 
     def ship_mods(self):

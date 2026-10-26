@@ -11,6 +11,8 @@ eski Invasion (istila.py), etkinlik sonunda kalan paralar onura (etkinlik_sonu.p
 Domain / World Boss 2025 (dunya_patronu.py), Mimesis Mutiny (mimesis.py). Ö4'ünkiler haritada dünyanın 'kapi'sını kurar (dalgalar, ölüm ekranı, radyasyon kancaları).
 1.1.115: Kristallon Apotheosis (apotheosis.py; patron haritasında 'kapi'), Recall Battle Pass (donus_pass.py).
 Plutus' Experiments (plutus_deney.py; X-1 / X-5 / 4-4 haritalarında işaret kulesi, hasar kademesine göre kutu; Tarnom ve Opitite).
+Etkinlik puanı, ilerleme eşikleri ve etkinlik sonu sıralama/katılım ödülleri (olay_puani.py: Hatching Out, Blacklight Surge, Korsan
+Baskını, Europa; resmî Türk forumu).
 """
 import traceback
 
@@ -30,6 +32,7 @@ import etkinlik_sonu as ES
 import apotheosis as APO
 import donus_pass as DP
 import plutus_deney as PDN
+import olay_puani as OP
 
 
 class EkEtkinlikler:
@@ -54,11 +57,13 @@ class EkEtkinlikler:
         self.apo = APO.Apotheosis(profil, magaza, ekapilar, log)                # 1.1.115
         self.rbp = DP.DonusPass(profil, magaza, log)
         self.deney = PDN.PlutusDeney(profil, magaza, log)                       # Plutus' Experiments
-        for s in (self.vortex, self.patron, self.mimesis, self.apo):
+        self.puan = OP.OlayPuani(profil, magaza, log)                           # etkinlik puanı (forum: Hatching Out, Blacklight Surge …)
+        for s in (self.vortex, self.patron, self.mimesis, self.apo, self.puan):
             s.titles = self.unvan.grant_title
         self.patron.send = lambda msgs: self.send(msgs)
         self.systems = [self.chromin, self.hitac, self.fever, self.unvan, self.trek, self.sizma, self.acil, self.sonu] + \
-            [s for s in (self.fiesta, self.istila) if s] + [self.vortex, self.patron, self.mimesis, self.apo, self.rbp, self.deney]
+            [s for s in (self.fiesta, self.istila) if s] + [self.vortex, self.patron, self.mimesis, self.apo, self.rbp, self.deney,
+                                                            self.puan]
         self.send = lambda msgs: None            # oturum bağlar
         self.world = None
         self.requests = {}

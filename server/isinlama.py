@@ -16,8 +16,8 @@ import harita as H
 from eski_protokol import legacy, stm
 
 KUPON = 'resource_jumpvoucher'
-URIDYUM = 1000
-GERI_SAYIM = 5
+URIDYUM = 200            # resmî Türk forumu 127436 (Gemi Değiştirme): "1 atlama kuponu veya 200 Uridium"
+GERI_SAYIM = 10          # aynı SSS: "10 saniye süren geri sayım"
 REQUESTS = {'ShipWarpRequest'}
 
 
@@ -48,7 +48,7 @@ class Isinlama:
             return [legacy('0|A|STM|msg_swnoactiveships'), ('ShipWarpNotAllowedCommand', {})]
         home = self.p.d['konum'].get('mapId', 1)
         near = bool(w and w.in_station())
-        pay = 0 if near else AY.fiyat('hizmet_fiyat', URIDYUM, 'isinlama')          # panel: hizmet ücretleri
+        pay = 0 if near else self.price()
         ships = []
         for sid in sids:
             s = self.p.ship(sid)
@@ -56,6 +56,12 @@ class Isinlama:
                              uridiumPrice=pay, voucherPrice=0 if near else 1, hangarId=int(sid), hangarName='', mapId=home))
         return [('ShipWarpWindowCommand', {'jumpVoucherCount': self.p.resource(KUPON), 'uridium': int(self.p.d['pilot'].get('uridium', 0)),
                                            'isNearSpacestation': near, 'ships': ships})]
+
+    def price(self):
+        """Uridyum bedeli: panelin hizmet fiyatı, Premium'a indirim (forum 127436: "VIP kullanıcılar için küçük bir indirim")."""
+        import magaza as MG
+        k = 1 - MG.ESYA['magaza_indirimi']['premium_oran'] if self.p.premium else 1
+        return int(round(AY.fiyat('hizmet_fiyat', URIDYUM, 'isinlama') * k))
 
     def refuse(self, key):
         self.log('   ışınlama yok: %s' % key)
@@ -78,11 +84,11 @@ class Isinlama:
         elif self.p.resource(KUPON):
             pay = {KUPON: 1}
         else:
-            pay = {'currency_uridium': AY.fiyat('hizmet_fiyat', URIDYUM, 'isinlama')}
+            pay = {'currency_uridium': self.price()}
         import envanter as INV
         if INV.missing(self.p, pay):
             return [stm('ttip_currency_missing', '%CURRENCY%', 'Uridium'), ('ShipWarpNotAllowedCommand', {})]
-        self.busy = (sid, pay, now)
+        self.busy = (sid, pay, now, w.hero_pos(now))
         self.log('   ışınlama başladı: shipId %s (%s)' % (sid, pay or 'ücretsiz'))
         w.later(GERI_SAYIM, lambda: done(*self.finish(w)))
         n = int(GERI_SAYIM)
@@ -95,11 +101,11 @@ class Isinlama:
 
     def finish(self, w):
         """Geri sayım bitti -> (mesajlar, gemi değişti mi)."""
-        sid, pay, t0 = self.busy
+        sid, pay, t0, (x0, y0) = self.busy
         self.busy = None
-        import magaza as MG
-        if w.last_combat > t0:
-            self.log('   ışınlama iptal: saldırı')
+        x, y = w.hero_pos()
+        if w.last_combat > t0 or abs(x - x0) + abs(y - y0) > 5:     # forum 127436: hareket edilirse de iptal
+            self.log('   ışınlama iptal: %s' % ('saldırı' if w.last_combat > t0 else 'hareket'))
             return [stm('msg_swblocked'), ('ShipWarpCanceledCommand', {})], False
         import envanter as INV
         if INV.spend(self.p, pay, 'balance_ship_warp_completed') is None:
@@ -107,6 +113,8 @@ class Isinlama:
         _, changed = self.m.activate({'shipId': sid}, in_station=True)
         if not changed:
             return [('ShipWarpCanceledCommand', {})], False
+        if getattr(w, 'items', None):                  # forum 127436: "değiştirme tamamlandığında kamuflaj devre dışı kalır"
+            w.items.reveal()
         import rutbe as RT
         # seyir defteri: istemci (ReturnLogBookInfoText) infoText'i "_" ile bölüp "ship_warp_completed_<harita>"yı tanıyor, metni
         # history_ship_warp_completed; %SHIP_NAME% info'daki geminin adı (items_<lootId>_fullname), %MAP_NAME% haritanın adı. args'a
