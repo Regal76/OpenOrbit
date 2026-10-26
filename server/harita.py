@@ -20,6 +20,18 @@ GATE_PEACE_RADIUS = 1000   # kayıt: 2-1 portalına 818 birimde BeaconCommand.in
 # yok, 4-5'te portaldan geçtikten sonra 15 sn
 NO_DMZ_MAPS = {'4-1', '4-2', '4-3', '4-4'}
 DMZ_AFTER_JUMP_SN = {'4-5': 15}
+# Demilitarized zone around the pilot's own company Mission Control (quest giver). Matters for the stand-alone X-5 beacons; the X-1 and
+# X-8 ones already sit inside the station's zone (peaceRadius 1800, giver 1080 units from the centre). The wikis give no radius and no
+# recording covers X-5, so it uses the measured portal DMZ (GATE_PEACE_RADIUS). A foreign Mission Control is not usable (dunya.start)
+# and gives no protection, like a foreign station. Black Light Mission Controls have none: "All BL maps feature Demilitarised zones on
+# the portals but not on the mission control centre" (darkorbit.fandom.com/wiki/Demilitarized_zone); 4-X battle maps have none either.
+GIVER_PEACE_RADIUS = GATE_PEACE_RADIUS
+
+
+def giver_dmz(map_id):
+    """Does a quest giver on this map have a demilitarized zone?"""
+    n = name(map_id)
+    return n not in NO_DMZ_MAPS and n not in DMZ_AFTER_JUMP_SN and not n.startswith('BL-')
 NAMES = {}
 LEVELS = {}                # istemcinin maps-config.xml'i: harita -> (habitant, foreign) gereken seviye (kendi / başka firma)
 SCALE = {}                 # istemcinin maps-config.xml'i: scaleFactor 2 olan haritalar (4-4, 4-5, 5-1, 5-3) iki kat büyük
