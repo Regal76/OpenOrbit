@@ -629,13 +629,13 @@ class World:
 
     def in_peace(self, x, y):
         """Güvenli bölge: kendi firmasının istasyonunun çevresi ya da harita portallarının çevresi (NPC saldırmaz, doğmaz, oraya dolaşmaz)."""
-        return bool(self.station_at(x, y)) or self.near_gate_peace(x, y) or HD.in_safe(self.map_id, x, y)
+        return bool(self.station_at(x, y)) or self.near_gate_peace(x, y) or self.near_giver_peace(x, y) or HD.in_safe(self.map_id, x, y)
 
     def in_pvp_peace(self, x, y):
         """Home station, portal and map-layout DMZs; CBS docking grants no PvP protection."""
         s = self.home_station()
         return (bool(s and math.hypot(x - s['posX'], y - s['posY']) <= s['peaceRadius'])
-                or self.near_gate_peace(x, y) or HD.in_safe(self.map_id, x, y))
+                or self.near_gate_peace(x, y) or self.near_giver_peace(x, y) or HD.in_safe(self.map_id, x, y))
 
     def peace_gates(self):
         """Güvenli bölgesi olan portallar: harita portalları (Galaksi Kapısı ve kapı haritası portalları değil; harita.py). Düşman
@@ -649,6 +649,18 @@ class World:
     def near_gate_peace(self, x, y):
         r = HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)        # X-BL'de "çok küçük" (harita_duzeni.json)
         return any(math.hypot(g['x'] - x, g['y'] - y) <= r for g in self.peace_gates())
+
+    def giver_zones(self):
+        """Demilitarized zones (x, y, radius) around the pilot's own usable quest givers (harita.GIVER_PEACE_RADIUS). A giver inside
+        the home station's zone (X-1, X-8) adds none: the station already protects it and keeps its own rules (retaliating aliens)."""
+        if not H.giver_dmz(self.map_id):
+            return []
+        s = self.home_station()
+        return [(x, y, H.GIVER_PEACE_RADIUS) for gid, x, y in self.givers
+                if not (s and math.hypot(x - s['posX'], y - s['posY']) <= s['peaceRadius'])]
+
+    def near_giver_peace(self, x, y):
+        return any(math.hypot(gx - x, gy - y) <= r for gx, gy, r in self.giver_zones())
 
     def home_station(self):
         """Oyuncunun firmasının istasyonu: başka firmanın üssünde (X-1, X-8) güvenli bölge, rafineri, hangar, donanım değiştirme ve
@@ -989,12 +1001,33 @@ class World:
         h = self.drop_box(kind, x, y, None, None)
         self.boxes[h]['anahtarli'] = True
 
+    def load_assets(self):
+        """Usable station assets and quest givers of the map's entry messages (foreign ones only listed as unusable)."""
+        own = self.p.d['pilot'].get('factionId')
+        for name, a in (self.map_msgs() if self.map_msgs else []):
+            if name != 'AssetCreateCommand':
+                continue
+            if a['type']['typeValue'] in H.STATION_ASSETS:
+                if a.get('factionId') in (0, None, own):
+                    self.assets.append((a['assetId'], a['posX'], a['posY'], H.STATION_ASSETS[a['type']['typeValue']]))
+                    self.asset_types[a['assetId']] = a['type']['typeValue']
+                else:
+                    self.foreign_assets.append(a['assetId'])        # düşman üssününkiler kullanılmaz
+            if a['type']['typeValue'] == H.QUEST_GIVER:
+                # görev verici yalnız kendi firmasınınki ("Browse your company's missions"; kullanıcı bildirimi 2026-10-25: EIC
+                # pilotu VRU/MMO üssünün ve X-5'lerinin Mission Control'ünü kullanabiliyordu)
+                if H.company(self.map_id) in (None, own):
+                    self.givers.append((a['assetId'], a['posX'], a['posY']))
+                else:
+                    self.foreign_assets.append(a['assetId'])
+
     def start(self):
         m = CFG['haritalar'].get(self.map_id)
         if not m:
             self.log('   dünya: harita %s için NPC listesi yok' % self.map_id)
             m = {'npc': [], 'bonus_kutu': 0}     # yine de döngü çalışsın: portallar, onarım, kalkan
         with self.lock:
+            self.load_assets()            # before spawning: quest giver DMZs keep aliens from spawning there (zone_circles)
             joined = bool(self.ortak and self.ortak.uyeler)      # ortak haritada başka oyuncu var: uzaylılar, kutular, cevherler onun
             restored = joined or self.restore_state()
             for g in ([] if restored else m['npc']):
@@ -1031,23 +1064,6 @@ class World:
             self.start_rules()
             if joined:                    # harita etkinliğinin göstergesi (lider haritaya girdiğinde yalnız ona gitmişti)
                 self.send(self.etkinlik.info_msgs())
-            own = self.p.d['pilot'].get('factionId')
-            for name, a in (self.map_msgs() if self.map_msgs else []):
-                if name != 'AssetCreateCommand':
-                    continue
-                if a['type']['typeValue'] in H.STATION_ASSETS:
-                    if a.get('factionId') in (0, None, own):
-                        self.assets.append((a['assetId'], a['posX'], a['posY'], H.STATION_ASSETS[a['type']['typeValue']]))
-                        self.asset_types[a['assetId']] = a['type']['typeValue']
-                    else:
-                        self.foreign_assets.append(a['assetId'])        # düşman üssününkiler kullanılmaz
-                if a['type']['typeValue'] == H.QUEST_GIVER:
-                    # görev verici yalnız kendi firmasınınki ("Browse your company's missions"; kullanıcı bildirimi 2026-10-25: EIC
-                    # pilotu VRU/MMO üssünün ve X-5'lerinin Mission Control'ünü kullanabiliyordu)
-                    if H.company(self.map_id) in (None, own):
-                        self.givers.append((a['assetId'], a['posX'], a['posY']))
-                    else:
-                        self.foreign_assets.append(a['assetId'])
         self.running = True
         with self.lock:
             if self.ortak:
@@ -1487,7 +1503,7 @@ class World:
         hx, hy = self.hero_pos(now)
         g = next((g for g in self.gates if math.hypot(g['x'] - hx, g['y'] - hy) <= H.JUMP_RADIUS), None)
         gid = g['gateId'] if g else None
-        peace = self.near_gate_peace(hx, hy) or HD.in_safe(self.map_id, hx, hy)
+        peace = self.near_gate_peace(hx, hy) or self.near_giver_peace(hx, hy) or HD.in_safe(self.map_id, hx, hy)
         s = self.station_at(hx, hy)
         inside = bool(s)
         ready = self.in_station(now)
@@ -3675,7 +3691,8 @@ class World:
         zones = cbs.exclusion_zones(self.map_id)
         if self.station:
             zones.append((self.station['posX'], self.station['posY'], self.station['peaceRadius']))
-        return zones + list(HD.safe_zones(self.map_id)) + [(g['x'], g['y'], HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)) for g in self.gates]
+        return (zones + list(HD.safe_zones(self.map_id)) + self.giver_zones()
+                + [(g['x'], g['y'], HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)) for g in self.gates])
 
     def near_zone(self, x, y, margin):
         return any(math.hypot(x - sx, y - sy) <= radius + margin for sx, sy, radius in self.zone_circles())
@@ -3684,7 +3701,8 @@ class World:
         """Reject a route through a structure; allow an NPC already inside to exit outward."""
         dx, dy = tx - x, ty - y
         length2 = dx * dx + dy * dy
-        zones = (list(HD.safe_zones(self.map_id)) + [(g['x'], g['y'], HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)) for g in self.gates]
+        zones = (list(HD.safe_zones(self.map_id)) + self.giver_zones()
+                 + [(g['x'], g['y'], HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)) for g in self.gates]
                  if allow_station else self.zone_circles())
         for sx, sy, radius in zones:
             fraction = max(0.0, min(1.0, ((sx - x) * dx + (sy - y) * dy) / length2)) if length2 else 0.0
@@ -3732,7 +3750,7 @@ class World:
     def peace_circle(self, x, y):
         """(x, y, radius) of the protected zone around a point (home station or docked CBS, portal, layout safe zone) or None."""
         s = self.station_at(x, y)
-        zones = ([(s['posX'], s['posY'], s['peaceRadius'])] if s else []) + list(HD.safe_zones(self.map_id))
+        zones = ([(s['posX'], s['posY'], s['peaceRadius'])] if s else []) + list(HD.safe_zones(self.map_id)) + self.giver_zones()
         zones += [(g['x'], g['y'], HD.gate_peace_radius(self.map_id, H.GATE_PEACE_RADIUS)) for g in self.peace_gates()]
         return next((z for z in zones if math.hypot(x - z[0], y - z[1]) <= z[2]), None)
 
