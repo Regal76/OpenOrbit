@@ -1105,10 +1105,13 @@ class Pet:
                 msgs.append(('HitpointInfoCommand', dict(hitpoints=int(ship['hitPoints']), hitpointsMax=ship.get('hitMax', 0),
                                                          nanoHull=ship.get('nanoHull', 0), nanoHullMax=ship.get('maxNanoHull', 0))))
                 msgs += w.heal_msgs(hp0)                                  # "+can" sayısı (Ö1)
-        if g in (ENEMY_LOCATOR, RESOURCE_LOCATOR) and g in self.locate:
-            spot = self.locate_target(g, self.locate[g])
-            if spot:
-                msgs.append(('PetGearLocatorUpdate', dict(x=int(spot[0]), y=int(spot[1]))))
+        if g in (ENEMY_LOCATOR, RESOURCE_LOCATOR):
+            # No target (none chosen, none on the map or none in range): the client expects (-1, -1) and dims the arrow
+            # (LocatorGearEffect3D.UpdateGearInfo: alpha 0.2, no rotation). Sending nothing left the arrow at its default
+            # rotation, pointing north, or frozen on the last target.
+            spot = self.locate_target(g, self.locate[g]) if g in self.locate else None
+            x, y = (int(spot[0]), int(spot[1])) if spot else (-1, -1)
+            msgs.append(('PetGearLocatorUpdate', dict(x=x, y=y)))
         if now >= self.next_locate:
             self.next_locate = now + 5
             msgs += self.locator_msgs(changed=True)
