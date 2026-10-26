@@ -20,8 +20,9 @@ Return of Hero (takvim return_of_hero) süresince menü öğesi 'recallBattlePas
   VIP         penceredeki "Buy" ödeme sayfasını açar (JavascriptHelper.OpenWebUrl PAY_TYPE RecallPassVip): odeme.py mağazayı açar,
               Return VIP Badge (resource_recall-pass-vip-badge) paketten; the badge is used up as soon as it is bought (bought) or
               found in the inventory (ensure), and the open window gets a fresh view with its last requestId (refresh_msgs)
-Seviyeler, bedeller, specialId ve görevler resmî sunucu kaydından (2026-10-25). Tek oyunculu: oyuncu dönen kahraman; Return izi
-Return of Hero'da veterana bağlanınca açılır (SSS: Return of Hero görevleriyle), değilse RETURN_INELIGIBLE. Görevler kayıttakiler:
+Seviyeler, bedeller, specialId ve görevler resmî sunucu kaydından (2026-10-25). Tek oyunculu: oyuncu dönen kahraman (HeroState
+TRUE; Return of Hero'da veterana bağlanınca INVITEE), so the Return track is open; a non-returnee (FALSE) gets RETURN_INELIGIBLE.
+Görevler kayıttakiler:
 günlük 3 + 2 VIP her gün, haftalık 5 + 3 VIP pazartesi, 12 sezonluk dönem boyunca; yenilemede yerine gelen Season Pass havuzundan
 (kimlikleri kaydırılmış; Gold görevleri VIP görevi, deneyimi Season Pass puanı). Yenileme günde bir ücretsiz, sonra 500 U (haftalık 500 U).
 Profilde: donus_pass {donem, surum, puan, vip, alinan {0: [], 1: [], 2: []}, gun, gunluk, hafta, haftalik, sezonluk, deger, tamam,
@@ -42,6 +43,7 @@ LEVELS = {r[0]: r[1:] for r in R['seviyeler']}               # seviye -> [[free]
 MAX_LEVEL = len(COST)
 OFS = R['gorev_kimlik_kaydirma']
 FREE, RETURN, VIP = 0, 1, 2
+HERO_FALSE, HERO_TRUE, HERO_INVITEE = 1, 2, 4                  # client HeroState: NONE 0, FALSE 1, TRUE 2, INVITER 3, INVITEE 4
 PERIOD = {SZ.DAILY: 0, SZ.WEEKLY: 1, SZ.SEASON: 2}
 REFRESH_U = R['yenileme_uridyum']
 
@@ -105,6 +107,7 @@ class DonusPass:
     def __init__(self, profil, magaza, log=print):
         self.p, self.m, self.log = profil, magaza, log
         self.hero = None                 # oturum bağlar: Return of Hero'da veterana bağlı mı (dukkanlar.py)
+        self.returning = True            # single player: the player is always the returning hero (Return track open)
         self.open = False                # pencere açıldı mı (puan değişince PointsInfoCommand)
         self.rid = {'view': 0, 'mission': None}   # last requestIds of the open window (pushed refreshes reuse them)
         if magaza is not None:
@@ -194,11 +197,14 @@ class DonusPass:
         return ('RecallBattlePassPointsInfoCommand', dict(points=int(self.st.get('puan', 0)), specialId=SPECIAL))
 
     def eligible(self):
-        """Return izi: Return of Hero'da veterana bağlı (SSS: Return izi Return of Hero görevleriyle açılır)."""
-        return bool(self.hero and self.hero())
+        """Return track: open to a returning hero (client HeroState TRUE, or INVITEE once bound to a veteran). Binding in
+        Return of Hero is not required: requiring it locked the track for players who never entered an invite code."""
+        return self.hero_state() in (HERO_TRUE, HERO_INVITEE)
 
     def hero_state(self):
-        return 4 if self.eligible() else 2                          # INVITEE (veterana bağlı) / TRUE (dönen kahraman)
+        if self.hero and self.hero():
+            return HERO_INVITEE                                     # veterana bağlı dönen kahraman
+        return HERO_TRUE if self.returning else HERO_FALSE
 
     def view_cmd(self, rid, now=None):
         al, th = self.st['alinan'], thresholds()
