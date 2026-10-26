@@ -13,6 +13,8 @@ kapi.Kosu'nunkiyle aynı (dalga biçimi kapilar.json'unki). Kurallar ('kural'):
                   (Devolarium Attack'in wiki koordinatı; yoksa portallar haritanın ortasında yayda dizilir)
   seviye, bir_kez en düşük seviye; bir kez tamamlanabilir (Compromising Invasion; The Breach Hard 16+)
   rastgele        her haritanın dalgaları kendi aralarında rastgele sırayla ('sabit' dalga, Plutus, sonda; Gauntlet of Plutus)
+  portallar       harita geçişinde bu kadar portal (hepsi rastgele sıradaki haritaya) ve solda üsse dönüş; haritalar da karışık,
+                  son harita sonda (Trial of Terrors 3)
   sure            bitiş süresi ölçülür (ölü geçen süre dahil); en iyi süreler profilde (Gauntlet of Plutus'un kişisel rekoru)
 'secenek' grubundaki dalgalardan (Vortex'in "ya da" dalgaları) girişte biri seçilir. Dalga uzaylısının 'kutu'su ölünce düşer
 (etkinlik_harita.py: Plutus Box, Demon Drone Box …); 'ek_turler' dalga dışı türler (Plutus'un Warhead'leri).
@@ -90,6 +92,8 @@ def register_npcs(tipler):
                 tipler[npc_type(key, n, i)] = _tip(a, key)
         for name, a in g.get('ek_turler', {}).items():
             tipler[extra_type(key, name)] = _tip(a, key)
+        for k in [k for k in tipler if k.startswith(('eg_%s_' % key))]:
+            tipler[k].setdefault('kalkan_emme', KAPI.GATE_ABSORB)      # kapı uzaylıları %50 (kapi.GATE_ABSORB)
     for k, a in LAB['uzaylilar'].items():
         tipler[k] = _tip(a, aggressive='meteoroid' not in k and 'synk' not in k)
 
@@ -180,9 +184,7 @@ class EtkinlikKapilari:
                 continue                    # pencereli giriş (Fiesta Gate: tek portal, zorluğu pencere seçer; fiesta.py)
             if not self.here(g['giris'], map_id) or not self.allowed(key, now)[0]:
                 continue
-            G = self.gate(key)
-            order = self.order(key)
-            dest = g['dalgalar'][order[min(G['dalga'], len(order) - 1)]]['harita'] if G.get('hazir') else g['dalgalar'][0]['harita']
+            dest = self.dest(key)
             out.append(dict(gateId=PORTAL_BASE + g['kimlik'], x=0, y=0, hedef=dest, designId=g['portal'], kapi=key,
                             etkinlik_kapisi=True, varis=center(dest)))
         if self.here(LAB['giris'], map_id) and TK.is_active(LAB['etkinlik'], now):
@@ -220,7 +222,12 @@ class EtkinlikKapilari:
             for i in sira:
                 by_map.setdefault(waves[i]['harita'], []).append(i)
             sira = []
-            for m in sorted(by_map, key=lambda m: min(by_map[m])):
+            maps = sorted(by_map, key=lambda m: min(by_map[m]))
+            if g['kural'].get('portallar'):          # Trial of Terrors: haritalar da karışık, son harita (patron) sonda
+                head = maps[:-1]
+                random.shuffle(head)
+                maps = head + maps[-1:]
+            for m in maps:
                 part = by_map[m]
                 rest = [i for i in part if not waves[i].get('sabit')]
                 random.shuffle(rest)
@@ -230,6 +237,11 @@ class EtkinlikKapilari:
                      son_yil=today(now)[:4])                   # panel: kapı canı
             self.p.dirty = True
         self.log('   %s kuruldu (%d dalga, %d can)' % (g['ad'], len(sira), G['can']))
+
+    def dest(self, key):
+        """Kapıya girince inilecek harita: süren kapıda sıradaki dalganınki, kurulmamışsa ilk dalganınki."""
+        G, g, order = self.gate(key), GATES[key], self.order(key)
+        return g['dalgalar'][order[min(G['dalga'], len(order) - 1)]]['harita'] if G.get('hazir') else g['dalgalar'][0]['harita']
 
     def order(self, key):
         G = self.gate(key)
@@ -245,6 +257,14 @@ class EtkinlikKapilari:
         x, y = center(map_id)
         return dict(gateId=PORTAL_BASE + 100 + GATES[key]['kimlik'], x=x, y=y, hedef=dest, designId=GATES[key]['portal'], kapi=key,
                     varis=center(dest))
+
+    def next_portals(self, key, map_id, dest):
+        """Sonraki haritanın portalları: kuralın 'portallar' sayısı kadar (Trial of Terrors 3; hepsi rastgele sıradaki haritaya: fandom
+        Vortex of Terror "dalgalar portallarla rastgele, hangi portalın hangi dalgaya götürdüğü bilinmez"; oyuncu bildirimi 2026-10-27:
+        3 portal, solda üsse dönüş) ya da tek portal."""
+        n = GATES[key].get('kural', {}).get('portallar', 1)
+        one = self.next_portal(key, map_id, dest)
+        return [dict(one, gateId=one['gateId'] + 200 * j, y=one['y'] + (j - (n - 1) / 2.0) * 1400) for j in range(n)]
 
     # ------------------------------------------------------------ bitiş
     def end(self, key, now=None):
@@ -375,7 +395,8 @@ class Kosu(KAPI.Kosu):
             world.add_gate(ekapi.exit_portal(key, self.map))
         elif self.cur_map() != self.map:
             self.phase, self.t = 'void', now
-            world.add_gate(ekapi.next_portal(key, self.map, self.cur_map()))
+            for g in ekapi.next_portals(key, self.map, self.cur_map()):
+                world.add_gate(g)
             world.add_gate(ekapi.exit_portal(key, self.map, side=True))
         else:
             wait = self.g.get('kural', {}).get('giris_sn')         # Plutus: Normal 1 sn, Kolay 15 sn (forum 143902)
@@ -529,7 +550,8 @@ class Kosu(KAPI.Kosu):
             return
         nxt = self.cur_map()
         if nxt != self.map:
-            self.w.add_gate(self.k.next_portal(self.key, self.map, nxt))
+            for g in self.k.next_portals(self.key, self.map, nxt):
+                self.w.add_gate(g)
             self.w.add_gate(self.k.exit_portal(self.key, self.map, side=True))
             self.w.send(self.say('sonraki_harita', dalga=G['dalga']) + self.k.plutus_cmds(self.key))
             self.phase = 'move'

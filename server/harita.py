@@ -215,7 +215,9 @@ def map_world(map_id, tpl):
 
 # istasyon dışı yapılar (wiki haritalar: X-5 ve X-BL'de Mission Control, 5-2'de Trader); kayıttaki 2-1 istasyonunun görev vericisi
 # (AssetCreateCommand türü 34) ya da rafinerisi (50) kopyalanır, portallardan en uzak köşeye. Clan Battle Station'lar (klan yok) yok.
-STRUCTURES = {17: 34, 21: 34, 25: 34, 306: 34, 307: 34, 308: 34, 92: 50}
+# X-4 (1-4, 2-4, 3-4): oyuncu bildirimi 2026-10-27, gerçek oyunda Mission Control var (yeri kaynakta yok: portallardan uzak nokta,
+# uyarlama; model X-5'in işareti)
+STRUCTURES = {4: 34, 8: 34, 12: 34, 17: 34, 21: 34, 25: 34, 306: 34, 307: 34, 308: 34, 92: 50}
 # yapının görünümü: rafineri (50) istemcide "refinery_home_<firma>" modeliyle çizilir, firmasız (5-2) hiç görünmüyordu (canlı deneme
 # 2026-10-17). 5-2'nin Trader'ı istemcinin "station_6" korsan istasyonu (lib_assets: "big sausage pirate station", mini haritada
 # minimap_piratestation): SpaceStationCommand type 6 (güvenli bölgesi harita_duzeni.json'da); ticaret noktası ORE_TRADE_INVISIBLE (52,
@@ -337,7 +339,7 @@ STATION_ASSETS = {46: 'ttip_company_hq', 48: 'ttip_hangar', 50: 'ttip_ore_trade'
 REPAIR_ASSETS = (53, 54)         # InstantRepairRequest: onarım kuponuyla anında onarım (dunya.instant_repair)
 ASSET_RANGE = 500
 QUEST_GIVER = 34                 # AssetCreateCommand.type: görev verici (kayıt: Reginald Crowley, 2-1)
-QUEST_GIVER_DESIGN = {'1': 3, '8': 4, '5': 5}                  # X-1, X-8, X-5: MMO'nunki; EIC +3, VRU +6 (quest_giver)
+QUEST_GIVER_DESIGN = {'1': 3, '8': 4, '5': 5, '4': 5}                  # X-1, X-8, X-5: MMO'nunki; EIC +3, VRU +6 (quest_giver)
 QUEST_GIVER_NAME = {1: 'Morgus Petterson', 2: 'Reginald Crowley', 3: 'Vanessa Arkadium'}
 
 

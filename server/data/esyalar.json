@@ -12117,14 +12117,14 @@
   },
   "atlama_cpu": {
    "menu": "equipment_extra_cpu_jp",
-   "geri_sayim_sn": 5,
+   "geri_sayim_sn": 0,
    "savas_sn": 5,
    "ana_harita": {
     "1": 1,
     "2": 5,
     "3": 9
    },
-   "_not": "geri sayım uyarlama (kayıtta başarılı CPU atlaması yok)",
+   "_not": "JP-01/JP-02 geri sayımsız, portal gibi anında (oyuncu bildirimi 2026-10-27, gerçek oyun; kayıtta başarılı CPU atlaması yok)",
    "mezarlik_sansi": 0.02,
    "_mezarlik_sansi": "wiki (Cubikon Graveyard): \"CPU bütün oyuncuların her 1.000 atlamasında bir oyuncuyu mezarlığa ışınlar\"; tek oyunculu uyarlama: JP-01/JP-02 atlamalarının %2'si",
    "geri_sayim_sn_ajp": 10,
@@ -12133,6 +12133,8 @@
   "gelismis_atlama": {
    "menu": "equipment_extra_cpu_ajp-01",
    "kupon": "resource_jumpvoucher",
+   "bekleme_sn": 120,
+   "_bekleme_sn": "Resmî Türk forumu 127075: atlayıştan sonra tekrar kullanmak için 120 saniye soğuma (istemci ttip_block_cooldown)",
    "fiyat": 850,
    "_not": "Kuponsuz atlamanın uridyum fiyatı kaynak ve hedef haritaya göre (fiyat_tablosu); tabloda olmayan hedefte fiyat (en yüksek satır)",
    "fiyat_tablosu": {

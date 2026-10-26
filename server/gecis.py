@@ -79,7 +79,12 @@ class Gecis:
                            nextLevelExp=nxt, currentExp=s['puan'] - prev))
 
     def claim(self, lvl, vip, grant):
-        """Ödülü al (grant: lootId, adet -> mesajlar) -> mesajlar ya da None (alınamaz)."""
+        """Ödülü al (grant: lootId, adet -> mesajlar) -> mesajlar ya da None (alınamaz). lvl 0: iki sıranın alınabilir bütün
+        ödülleri (istemci hangi ödüle tıklanırsa tıklansın rewardLevel 0, isVip false gönderir; canlı 2026-10-27)."""
+        if lvl == 0:
+            out = [self.claim(r[0], v, grant) for v, rows in ((False, self.D['ucretsiz']), (True, self.D['vip']))
+                   for r in rows if self.status(r[0], v) == CLAIMABLE]
+            return sum(out, []) if out else None
         if self.status(lvl, vip) != CLAIMABLE:
             return None
         row = next((r for r in self.D['vip' if vip else 'ucretsiz'] if r[0] == lvl), None)

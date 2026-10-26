@@ -640,6 +640,8 @@ class Pet:
         lock = self.w.lock if self.w else _NoLock()
         with lock:
             if kind == LAUNCH or (kind == TOGGLE and not self.active):
+                if kind == TOGGLE:
+                    self.d['disli'] = PASSIVE        # oyuncu bildirimi 2026-10-27: gerçek oyunda E ile hep pasif kipte çıkar
                 self.launch()
                 if self.active:
                     self.send([legacy('0|A|STM|msg_pet_activated')])     # oyuncunun isteğiyle (harita değişiminde değil)
@@ -648,9 +650,9 @@ class Pet:
             elif kind == DEACTIVATE or kind == TOGGLE:
                 self.deactivate(msg='msg_pet_deactivated')
             elif kind == HOTKEY_GUARD:
-                self.select(GUARD)
+                self.launch_into(COMBO_GUARD if COMBO_GUARD in self.installed_gears() else GUARD)
             elif kind == HOTKEY_REPAIR_SHIP:
-                self.select(COMBO_REPAIR if COMBO_REPAIR in self.installed_gears() else REPAIR_PET)
+                self.launch_into(COMBO_REPAIR if COMBO_REPAIR in self.installed_gears() else REPAIR_PET)
             elif kind == REPAIR_DESTROYED:
                 self.repair()
             elif kind == HOTKEY_BUY_FUEL:
@@ -662,7 +664,16 @@ class Pet:
         t = (f.get('gearTypeToActivate') or {}).get('typeValue')
         lock = self.w.lock if self.w else _NoLock()
         with lock:
-            self.select(t, f.get('optParam') or 0)
+            self.launch_into(t, f.get('optParam') or 0)
+
+    def launch_into(self, t, opt=0):
+        """Dişli kısayolu (R, D, dişli tuşları): P.E.T. kapalıysa o dişliyle çıkar (oyuncu bildirimi 2026-10-27: gerçek oyunda R
+        kapalı P.E.T.'i koruma kipinde başlatır; bizde hiçbir şey olmuyordu)."""
+        if not self.active and t in {g for g, lv, usable in self.gear_list() if usable}:
+            self.launch()
+            if not self.active:
+                return
+        self.select(t, opt)
 
     def hidden(self, now):
         """Sahibi kamuflajdayken P.E.T. de gizli; ateş ederken (son 3 sn) görünür (resmî forum 127074)."""

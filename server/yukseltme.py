@@ -111,15 +111,24 @@ class Yukseltme:
         x = next((d for d in self.p.d.get('dronlar', []) if d['kimlik'] == int(tid or 0)), None)
         if x and '-drone' in key:
             return 'dron', x['lootId'], x
+        cbs = getattr(self.m, 'cbs', None)
+        m = cbs.st['moduller'].get(str(tid)) if cbs and '-cbs' in key and not cbs.where(tid) else None
+        if m:
+            return 'modul', m['loot'], (int(tid), m)          # Clan Battle Station modülü (takılı değilken; magaza.module_items)
         return None
 
     def level_of(self, kind, ref):
+        if kind == 'modul':
+            return int(ref[1].get('seviye', 0))
         return drone_level(ref) if kind == 'dron' else item_level(self.p, ref)
 
     def set_level(self, kind, ref, n):
         with self.p.lock:
             if kind == 'dron':
                 ref['yukseltme'] = n
+            elif kind == 'modul':                       # can ve kalkan yeni seviyenin azamisine (cbs.mx)
+                ref[1]['seviye'] = n
+                ref[1]['can'], ref[1]['kalkan'] = self.m.cbs.mx(ref[1])
             else:
                 self.p.d.setdefault('yukseltme_seviye', {})[str(ref)] = n
             self.p.dirty = True
@@ -223,6 +232,8 @@ class Yukseltme:
         self.p.sync_ekipman()
         if kind == 'dron':
             return [self.m.drone_item(ref), self.m.equipment_cmd()] + self.m.apply_stats()     # Assembly'deki seviyesi de
+        if kind == 'modul':
+            return [self.m.module_item(*ref)]
         hm = self.p.hangar_map()
         msgs = [self.m.inv_item(ref, loot, 1, hm.get(ref, 0)), self.m.pack([self.m.hangar_item(ref, loot, 1, hm.get(ref, 0))])]
         import parcacik as PC

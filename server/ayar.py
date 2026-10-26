@@ -145,6 +145,11 @@ SCHEMA = [
        'edilmez.', lo=1, hi=10, varsayilan=5, birim='görev', sinir=100),
     _b('atlama_sapma', "Atlama CPU'su ara sıra sapar", 'dunya', "Atlama CPU'su küçük bir olasılıkla (%2) seni Cubikon "
        'Mezarlığına götürür (oyundaki gibi). Kapatılırsa hep seçtiğin haritaya.', varsayilan=True),
+    _b('paket_siniri', 'Benzersiz paketler bir kez', 'dunya', "Mağazada içinde gemi, gemi tasarımı, formasyon, P.E.T. ya da tekil "
+       'dron olan paketler (Defcom-Raven, Stellar, Dusklight …) oyundaki gibi bir kez alınır, sonra listeden kalkar. Kapatılırsa '
+       'tekrar alınabilir (sahip olduğun içerik atlanır).', varsayilan=True),
+    _b('portal_hangar', 'Portallarda hangar', 'dunya', "Portalların güvenli bölgesinde de hangara girip donanım değiştirebilirsin "
+       '(kolaylık; gerçek oyunda yalnız istasyonda). Kapatılırsa yalnız istasyonda.', varsayilan=True),
     _b('klan_bekleme', 'Klan 48 saat kuralları', 'dunya', 'Klandan ayrılınca 48 saat yeni klan kurulamaz ya da klana katılınamaz; klan '
        'adı/etiketi iki değişim arası 48 saat bekler. Kapalıyken bekleme yok.', varsayilan=True),
     # ---------------------------------------------------------------- kapılar ve modlar

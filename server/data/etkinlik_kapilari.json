@@ -5232,7 +5232,9 @@
    "portal": 81,
    "can": 5,
    "kural": {
-    "bekleme_sn": 43200
+    "bekleme_sn": 43200,
+    "rastgele": true,
+    "portallar": 3
    },
    "haritalar": [
     227,

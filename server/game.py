@@ -428,6 +428,7 @@ class Session:
         self.ek.add(self.cbs)
         self.sosyal.klan.cbs = self.cbs
         self.profil.cbs_mods = self.cbs.mods
+        self.magaza.cbs = self.cbs                 # Assembly: boştaki modüller envanterde, yükseltilebilir (magaza.module_items)
         self.dukkan = DK.Dukkanlar(self.profil, self.magaza, log)              # Ö7: uridyumla çalışan dükkân pencereleri
         self.ek.add(self.dukkan)
         self.profil.window_hooks['returnee_login'] = self.dukkan.returnee_active
@@ -893,6 +894,7 @@ class Session:
             self.profil.ach('jump')                   # başarım: portal atlamaları
         if gate and gate.get('etkinlik_kapisi'):
             self.ekapilar.enter(gate['kapi'])    # etkinlik kapısının girişi: kapı kurulur (canlar, dalga sırası, süre)
+            dest = self.ekapilar.dest(gate['kapi'])     # karışık sırada ilk harita (Trial of Terrors)
         self.pve.on_jump(gate)                   # Astral'ın çıkışı: oyuncunun donanımı geri
         with self.state_lock:
             old = self.profil.d['konum']['mapId']

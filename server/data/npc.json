@@ -560,7 +560,7 @@
    "hiz": 30,
    "saldirgan": false,
    "odul": {
-    "ep": 536200,
+    "ep": 512000,
     "onur": 4096,
     "kredi": 1638400,
     "uridyum": 1024
@@ -652,7 +652,7 @@
    "kalkan": 60000,
    "hasar": 1700,
    "hiz": 300,
-   "saldirgan": true,
+   "saldirgan": false,
    "odul": {
     "ep": 6400,
     "onur": 32,
@@ -3148,7 +3148,7 @@
    "kalkan": 7500,
    "hasar": 100,
    "hiz": 280,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 800,
     "onur": 4,
@@ -3176,7 +3176,7 @@
    "kalkan": 15000,
    "hasar": 300,
    "hiz": 280,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 2000,
     "onur": 12,
@@ -3204,7 +3204,7 @@
    "kalkan": 24000,
    "hasar": 600,
    "hiz": 280,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 3200,
     "onur": 20,
@@ -3233,7 +3233,7 @@
    "kalkan": 70500,
    "hasar": 1200,
    "hiz": 280,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 8600,
     "onur": 52,
@@ -3261,7 +3261,7 @@
    "kalkan": 135000,
    "hasar": 3100,
    "hiz": 280,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 17601,
     "onur": 106,
@@ -3289,7 +3289,7 @@
    "kalkan": 202500,
    "hasar": 4300,
    "hiz": 280,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 26601,
     "onur": 160,
@@ -3317,7 +3317,7 @@
    "kalkan": 270000,
    "hasar": 5700,
    "hiz": 280,
-   "saldirgan": false,
+   "saldirgan": true,
    "odul": {
     "ep": 36000,
     "onur": 216,

@@ -334,7 +334,8 @@ def menu_status(p, menu_id, st):
         if loot:
             if menu_id == S['nisan_cpu']['menu']:
                 _tips(st, [_line('ttip_aim_cpu_category'), _line(loot, ktype=7)])
-                st['iconLootId'] = loot
+                n = p.ore_count(XENOMIT) // S['nisan_cpu']['xenomit']      # kalan salvo (oyuncu bildirimi 2026-10-27: 0 görünüyordu)
+                st.update(iconLootId=loot, counterValue=n, counterStyle=4 if n > 0 else 1)
             for tip in ('toolTipSlotBar', 'toolTipItemBar'):
                 lines = (st.get(tip) or {}).get('commandList')
                 if lines:
@@ -447,7 +448,7 @@ class Esyalar:
         if now < self.next_dep:
             return
         self.next_dep = now + 1.0
-        self.send(self.p.menu_changes([S['akilli_bomba']['menu'], S['aninda_kalkan']['menu']]))
+        self.send(self.p.menu_changes([S['akilli_bomba']['menu'], S['aninda_kalkan']['menu'], S['nisan_cpu']['menu']]))
 
     def start_map(self):
         return H.map_class(self.w.map_id) == 'X-1'
@@ -1247,9 +1248,13 @@ class Esyalar:
         if w.radiation_since is not None:                      # forum 127075: radyasyonlu bölgede atlanmaz
             self.send([stm('jump_cpu_failed_map')])
             return False
-        sec = S['atlama_cpu']['geri_sayim_sn_ajp' if loot == 'ajp' else 'geri_sayim_sn']
+        if loot == 'ajp' and now < self.p.d.get('ajp_hazir', 0):
+            self.send([stm('ttip_block_cooldown')])                 # "CPU cooling down. Jump not possible." (forum 127075: 120 sn)
+            return False
+        sec = S['atlama_cpu']['geri_sayim_sn_ajp' if loot == 'ajp' else 'geri_sayim_sn']     # JP-01/02 anında, AJP-01 10 sn
         self.jump = dict(hedef=dest, zaman=now + sec, cpu=loot, basla=now, kupon=voucher, yer=w.hero_pos(now))
-        self.send([legacy('0|A|JCPU|S|%d|%d' % (sec, dest))])
+        if sec:                                                  # geri sayımsızda atlama sonraki adımda (jump_tick)
+            self.send([legacy('0|A|JCPU|S|%d|%d' % (sec, dest))])
         self.log('   CPU atlaması: %s -> %s, %d sn' % (H.name(w.map_id), H.name(dest), sec))
         return True
 
@@ -1280,6 +1285,9 @@ class Esyalar:
             if not self.pay_ajp(j['hedef']):
                 self.send([legacy('0|A|JCPU|S|-1|0'), stm('jump_cpu_malfunction')])
                 return
+            with p.lock:
+                p.d['ajp_hazir'] = now + S['gelismis_atlama']['bekleme_sn'] * AY.carpan('yetenek_bekleme')
+                p.dirty = True
         else:
             EK.use(p, j['cpu'])
         w.jumping, w.attacking, w.target = True, False, None

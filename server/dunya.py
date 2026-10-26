@@ -125,6 +125,11 @@ def attack_type(v):
 from eski_protokol import legacy, stm  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
 
 
+def halloween_boss(d):
+    """Cadılar Bayramı'nda hayalet görünen patron (adında Boss; Boss Curcubitor dahil)."""
+    return 'Boss' in d.get('ad', '')
+
+
 # başarım "lazer şovu" (LaserTypeUsage 1-6): istemcinin temel lazer cephanesi sırası (uyarlama: LCB-10 … RSB-75)
 AMMO_TYPE_IDS = {'ammunition_laser_lcb-10': 1, 'ammunition_laser_mcb-25': 2, 'ammunition_laser_mcb-50': 3, 'ammunition_laser_ucb-100': 4,
                  'ammunition_laser_sab-50': 5, 'ammunition_laser_rsb-75': 6}
@@ -193,7 +198,9 @@ class NPC:
         self.alive = True
         # kovalarken oyuncunun çevresinde kendi yeri (açı sapması, uzaklık): aynı yönden gelenler tek noktada üst üste binmesin
         self.spread = random.uniform(-0.8, 0.8)
-        self.keep = random.uniform(250, 440)
+        # kovalarken oyuncuya uzaklığı: resmî sunucu kaydında ateş eden uzaylıların %10-%90'ı 90-310 birimde (ortanca 167; 195 atış).
+        # Önceden 250-440: uzaylılar dağınık duruyor, P.E.T. kamikazesinin menziline girmiyordu (oyuncu bildirimi 2026-10-27)
+        self.keep = random.uniform(90, 310)
         self.etki = DURUM.Etkiler()         # durum etkileri: yavaşlatma, dondurma, zehir, zayıf kalkan … (durum.py)
         self.davranis = UZ.of(self.d)       # davranış kancaları ve yetenekler (npc.json, uzayli_yetenekleri.json; uzayli.py)
         self.summoned = False               # çağrılan ya da ölünce doğan: yeniden doğmaz
@@ -659,8 +666,10 @@ class World:
 
     def in_station(self, now=None):
         now = time.time() if now is None else now
+        x, y = self.hero_pos(now)
+        here = self.in_peace(x, y) if AY.get('portal_hangar') else bool(self.station_at(x, y)) or HD.in_safe(self.map_id, x, y)
         return (not self.hero_dead and not self.jumping and now - self.last_combat >= ESYA['savas_disi_sn']
-                and (self.in_peace(*self.hero_pos(now)) or bool(self.low and self.low.docking_station(*self.hero_pos(now)))))
+                and (here or bool(self.low and self.low.docking_station(x, y))))
 
     def reload_ship(self):
         """Hangarda gemi değişti: yeni gemiyle ShipInitializationCommand; istemci haritayı yeniden yükler,
@@ -704,8 +713,17 @@ class World:
             userId=n.id, typeId=n.model, expansionStage=1, clanTag='', userName=n.d['ad'], x=int(x), y=int(y), factionId=0, clanId=0,
             dailyRank=0, warnBox=False, clanDiplomacy=mod('ClanRelationModule', type=0), galaxyGatesDone=0, useSystemFont=False, npc=True,
             cloaked=bool(getattr(n, 'gizli', False)), motherShipId=0, positionIndex=0, designSet='',      # Infiltration
-            modifier=[mod('VisualModifierCommand', **v) for v in n.vm.values()],
+            modifier=[mod('VisualModifierCommand', **v) for v in n.vm.values()] + ([mod(
+                'VisualModifierCommand', userId=n.id, modifier=SE.S['hayalet']['gorsel'], attribute=0, additionalAttribute='', count=1,
+                activated=True)] if self.ghostly(n) else []),
             minimapStrategyModule=mod('MinimapStrategyModule', minimapStrategy=0), specialNpcType=''))
+
+    def ghostly(self, n):
+        """Cadılar Bayramı patronu ya da Trial of Terrors uzaylısı: hayalet görünür (Ghostifier'ın GHOST_EFFECT'i; fandom Pumpkin Fest
+        "Ghost Boss Aliens", oyuncu bildirimi 2026-10-27: gerçek oyunda patronlar ve Trial of Terrors'ın bütün uzaylıları)."""
+        if not hasattr(n, 'hayalet'):
+            n.hayalet = n.d.get('kapi') == 'vortex' or (halloween_boss(n.d) and 'halloween' in TKV.active())
+        return n.hayalet
 
     def npc_visual(self, n, modifier, on):
         """Uzaylının süren görsel etkisi (VisualModifierCommand; Zeta Devourer'ın koruma kalkanı): açıkken n.vm'de kalır, uzaylı görüşe
@@ -1814,18 +1832,23 @@ class World:
                 b['icerik'] = left
             else:
                 del self.boxes[h]
+            extra = b.pop('ek', None) if cargo_box else None           # kutudaki ek kaynaklar (extra_loot box) ilk alımda
             msgs = pre + [self.beam_msg(by_pet)] + ([] if left else [('RemoveCollectableCommand', {'collected': True, 'hash': h})])
             if cargo_box:
                 totals = self.p.add_ores(ores)
                 content = [mod('OreCountModule', oreType=mod('OreTypeModule', typeValue=t), count=c) for t, c in sorted(ores.items())]
                 msgs += [('LMCollectResourcesCommand', dict(priorityMode=mod('LogMessengerPriorityModule', priorityModeValue=0),
-                                                            contentList=content)),
-                         ('AttributeOreCountUpdateCommand', {'oreCountList': totals})]
+                                                            contentList=content))] if content else []
+                msgs += [('AttributeOreCountUpdateCommand', {'oreCountList': totals})]
                 if not left:
                     msgs += self.quest('cargo')          # kutu sayacı: kutu boşalınca (kısmi alımda kutu yerde kalır)
                 for t, c in sorted(ores.items()):
                     msgs += self.quest('loot', loot=ORE['turler'].get(str(t), ''), amount=c, kutu=True)    # kutu: SALVAGE görevi
                     RT.note(self.p, 'received_item', ORE['turler'].get(str(t), ''), c)       # seyir defteri
+                for loot, c in sorted((extra or {}).items()):
+                    c = int(c * boost)
+                    self.p.add_resource(loot, c)
+                    msgs += [legacy('0|LM|ST|LOT|%s|%d' % (loot, c))] + self.quest('loot', loot=loot, amount=c, kutu=True)
                 msgs += self.auto_refine()               # her toplamadan sonra (ayar açıksa)
                 if left and self.p.cargo_free() < 1:     # kısmi alım: kalanı yer açılınca (satış/arıtma) alınır
                     msgs += [legacy('0|A|STM|loadfull')] + self.p.hint(IP.FULL_CARGO)
@@ -2073,8 +2096,8 @@ class World:
                 dmg = min(dmg, int(n.shield))
             absorb = n.d.get('kalkan_emme', SAVAS['npc_kalkan_emme'])           # türün emmesi
             kh = 1.0 if attacker else n.etki.shield_damage(now)                # Diminisher Weaken Shields: kalkana giden hasar artar
-            if not attacker:                                                     # kalkan delme (Moth +%20, Double Arrow +%10, Pincer -%10)
-                absorb *= max(0.0, 1 - self.p.mods().get('kalkan_delme', 0))
+            if not attacker:                                                     # kalkan delme (Moth +%20, Double Arrow +%10, Pincer -%10):
+                absorb = min(1.0, max(0.0, absorb - self.p.mods().get('kalkan_delme', 0)))     # PvP'deki gibi puan olarak düşer
             if split:                                                            # mayın (savas_esya.py)
                 b = 0 if immune else 1 + n.etki.damage_bonus(now)
                 to_shield = min(int(n.shield), int(split[0] * b * kh))
@@ -2165,9 +2188,11 @@ class World:
         self.p.add_resource(loot, n)
         return [legacy('0|LM|ST|LOT|%s|%d' % (loot, n))]
 
-    def extra_loot(self, n, specs=None):
+    def extra_loot(self, n, specs=None, box=None):
         """Ek ödüller (npc.json ek_odul ← aliens.md "Extra destroy rewards"; specs: etkinlik düşmeleri, etkinlik_harita.py): Palladium
-        kargoya (sığdığı kadar), ötekiler (Bifenon, Darksilver Coin, Candy Corn …) kaynak deposuna; ganimet günlüğünde görünür."""
+        kargoya (sığdığı kadar), ötekiler (Bifenon, Darksilver Coin, Candy Corn …) kaynak deposuna; ganimet günlüğünde görünür.
+        box: toplanabilir kaynaklar (scrap, mucosum, prismatium …) depoya değil bu sözlüğe; uzaylının kargo kutusuyla düşer ve kutu
+        toplanınca verilir (take_box; oyuncu bildirimi 2026-10-27: gerçek oyunda doğrudan envantere gelmez)."""
         msgs = []
         bm = BOOSTER.mods(self.p)
         boost = 1 + bm.get('ozel_sans', 0)                              # PRC-B00/B01: Hybrid Alloy ve Indoctrine Oil olasılığı
@@ -2190,6 +2215,9 @@ class World:
                     msgs.append(('AttributeOreCountUpdateCommand', {'oreCountList': self.p.add_ores({8: cnt})}))
                     if self.ore_pack:
                         msgs.append(self.ore_pack([8]))
+            elif cnt > 0 and box is not None:
+                box[loot] = box.get(loot, 0) + cnt
+                continue
             elif cnt > 0:
                 self.p.add_resource(loot, cnt)
             if cnt > 0:
@@ -2295,6 +2323,8 @@ class World:
         o['ep'] = int(o['ep'] * (1 + form.get('ep', 0)))          # Barrage, Bat, 3D X
         o['onur'] = int(o['onur'] * (1 + form.get('onur', 0)))    # Pincer, 3D Veteran; 3D X onuru kaldırır
         o['kredi'] = int(o['kredi'] * (1 + form.get('kredi', 0)))  # Greed (pilot yeteneği)
+        if halloween_boss(n.d) and self.ghostly(n):
+            o['uridyum'] *= 2                                      # Cadılar Bayramı: patronların uridyumu iki kat (oyuncu bildirimi 2026-10-27)
         if o.get('uridyum') and random.random() < form.get('cift_uridyum', 0):
             o['uridyum'] *= 2                                      # N.O.V.A. Autonomous Extraction (Galaksi Kapılarında; nova.py)
         f = self.x1_reward()
@@ -2314,6 +2344,7 @@ class World:
             o = dict(o, **{k: -(-o[k] // share) for k in ('ep', 'onur', 'kredi', 'uridyum')})
         in_rad = self.radiation_since is not None
         sahip = self.hid if share > 1 else None
+        ek = {}                                            # kutuya giden ek kaynaklar (extra_loot box)
 
         def reward():
             if own:
@@ -2336,7 +2367,7 @@ class World:
                 quest += self.quest('kill_player', ship=n.model, faction=random.choice([f for f in (1, 2, 3) if f != fac]))
             self.send(self.kill_notice(self.reward_msgs(tot, ep=o['ep'], onur=o['onur'], kredi=o['kredi'], uridyum=o['uridyum']))
                       + (self.drone_points(n) if own else []) + quest + (self.pet.gain_xp(o['ep']) if self.pet else [])
-                      + self.booster_drop(n) + self.extra_loot(n) + points
+                      + self.booster_drop(n) + self.extra_loot(n, box=ek) + points
                       + (self.kill_streak() + self.p.hint(IP.WEALTHY_FAMOUS) + [m for hk in self.kill_hooks for m in hk(self, n, x, y)]
                          if own else []))
             self.log('   %s yok edildi%s: +%d EP, +%d onur, +%d kredi, +%d uridyum (seviye %d)' % (
@@ -2344,9 +2375,14 @@ class World:
                 o['ep'], o['onur'], o['kredi'], o['uridyum'], tot['seviye']))
         self.later(0.3, reward)
         cargo = {} if ETK.no_cargo(n) else self.cargo_of(n)        # Curcubitor: yalnız sandığı (etkinlik_harita)
-        if cargo:
-            kind = self.etkinlik.cargo_kind() or ('CANDY_CARGO' if TKV.has_type('CandyCargo') else 'FROM_SHIP')
-            self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_box(kind, x, y, cargo, SAVAS['kutu_omur_sn'], sahip))
+        kind = self.etkinlik.cargo_kind() or ('CANDY_CARGO' if TKV.has_type('CandyCargo') else 'FROM_SHIP')
+
+        def cargo_drop():                                  # ödülden (0,3 sn) sonra: ek kaynaklar da kutuda
+            if cargo or ek:
+                h = self.drop_box(kind, x, y, cargo, SAVAS['kutu_omur_sn'], sahip)
+                if ek:
+                    self.boxes[h]['ek'] = ek
+        self.later(SAVAS['kutu_gecikme_sn'], cargo_drop)
         if n.d.get('sandik'):                              # hasara göre sandıklar (Invoke XVI, Mindfire Behemoth; npc.json)
             self.later(SAVAS['kutu_gecikme_sn'], lambda: self.drop_chests(n.d['sandik'], x, y, sahip))
 
@@ -2985,25 +3021,41 @@ class World:
             return
         count, gap = min(room, v.get('adet', 1)), v.get('aralik_sn', 0)
         # aralik_sn: sürü art arda çıkar (Cubikon'un 25 Protegit'i aynı anda çıkınca istemci anlık takılıyordu; kullanıcı bildirimi
-        # 2026-10-25); sırada bekleyenler en_cok'a sayılır. Sonraki çağrı sürünün hepsi çıktıktan sonra
-        n.next_summon = now + max(v.get('bekleme_sn', 10), count * gap)
+        # 2026-10-25); grup [en az, en çok]: her aralik_sn'de bir grup (Cubikon: saniyede 2-3; kullanıcı bildirimi 2026-10-27).
+        # Sırada bekleyenler en_cok'a sayılır. Sonraki çağrı sürünün hepsi çıktıktan sonra
+        delays, k = [], 0
+        while len(delays) < count:
+            size = random.randint(*v['grup']) if v.get('grup') else 1
+            delays += [k * gap] * size
+            k += 1
+        delays = delays[:count]
+        n.next_summon = now + max(v.get('bekleme_sn', 10), delays[-1] + gap)
+        if v.get('suru_gorsel') and 'suru' not in (getattr(n, 'gorseller', None) or {}):
+            # "0|n|s|<kimlik>": istemcinin MapEventsAssemblyHelper.AssembleSpawnEnemies'i -> SpawnChildrenEffect: Cubikon açılır,
+            # sarı çekirdek görünür, ölene dek açık kalır (canlı 2026-10-27). Kalıcı görsel: sonradan görüşe girene de gider
+            n.gorseller = dict(getattr(n, 'gorseller', None) or {}, suru=legacy('0|n|s|%d' % n.id))
+            if n.id in self.visible:
+                self.send([n.gorseller['suru']])
 
         def queued():
             n.ab['cagri_sirada'] -= 1
             if n.alive and n.id in self.npcs:
                 self.summon_one(n, v, time.time())
-        for k in range(count):
-            if k and gap:
+        for d in delays:
+            if d:
                 n.ab['cagri_sirada'] = n.ab.get('cagri_sirada', 0) + 1
-                self.later(k * gap, queued)
+                self.later(d, queued)
             else:
                 self.summon_one(n, v, now)
         self.log('   %s yardım çağırdı: %d %s' % (n.d['ad'], count, CFG['tipler'][v['tur']]['ad']))
 
     def summon_one(self, n, v, now):
-        x, y = n.mover.pos(now)
+        x, y, r = *n.mover.pos(now), 200
+        if v.get('dogma'):              # oyuncunun biraz uzağından ekranın hemen dışına dek (Cubikon; kullanıcı bildirimi 2026-10-27)
+            (x, y), r = self.hero_pos(now), random.uniform(*v['dogma'])
         a = random.uniform(0, 2 * math.pi)
-        c = self.spawn_npc_at(v['tur'], x + math.cos(a) * 200, y + math.sin(a) * 200)
+        c = self.spawn_npc_at(v['tur'], min(max(x + math.cos(a) * r, 300), self.map_w - 300),
+                              min(max(y + math.sin(a) * r, 300), self.map_h - 300))
         self.alien.adopt(n, c)
         c.engaged, c.next_think = True, now      # sürü hemen saldırır (fandom: Protegit'ler bir anda üstüne gelir)
         if v.get('koru'):
@@ -3718,7 +3770,18 @@ class World:
 
     def guard_spot(self, n, post, hx, hy, now):
         """Saldıran koruyucunun gideceği nokta: çağıranın çevresinde (koru.yaricap), oyuncuya bakan yanda ve oyuncuyu menzilinde
-        tutan; yoksa çevrenin oyuncuya en yakın noktası (koruyucu çağıranından uzaklaşmaz)."""
+        tutan; yoksa çevrenin oyuncuya en yakın noktası (koruyucu çağıranından uzaklaşmaz). koru.vurkac {yakin, uzak, yakin_sn,
+        uzak_sn}: oyuncunun çevresinde vur-kaç (Cubikon'un Protegit'leri; kullanıcı bildirimi 2026-10-27): yanına gelir, bir iki atış,
+        uzaklaşır (menzildeyse atışı sürer), az sonra yine yaklaşır; her biri kendi açısında, dağınık."""
+        vk = n.guard[1].get('vurkac')
+        if vk:
+            near = not n.ab.get('yakin')
+            n.ab['yakin'] = near
+            nx, ny = n.mover.pos(now)
+            r = random.uniform(*vk['yakin' if near else 'uzak'])
+            a = math.atan2(ny - hy, nx - hx) + random.uniform(-1.2, 1.2)        # kendi yanında kalır: sürü gemide toplanmaz
+            n.ab['bekle'] = random.uniform(*vk['yakin_sn' if near else 'uzak_sn'])
+            return hx + math.cos(a) * r, hy + math.sin(a) * r
         px, py = post.mover.pos(now)
         lo, hi = n.guard[1]['yaricap']
         b = math.atan2(hy - py, hx - px)
@@ -3799,7 +3862,7 @@ class World:
             # oyuncu tasmanın dışına çıkınca peşini bırakır (yukarıda). Önceden 450 birimden yakında kıpırdamıyordu, Cubikon'un dibinde
             # doğan sürü tek noktada kalıyordu (kullanıcı bildirimi 2026-10-24)
             spot = self.guard_spot(n, post, hx, hy, now) if post and now >= n.next_think else None
-            near = 450 * min(1.0, AY.carpan('npc_menzil'))   # shorter firing range: close in so the alien can still shoot
+            near = min(450, n.keep + 150) * min(1.0, AY.carpan('npc_menzil'))   # shorter firing range: close in so the alien can still shoot
             circle = bool(post) and dist <= near
             if (dist > near or post) and now >= n.next_think and n.speed() > 0:
                 a = math.atan2(ny - hy, nx - hx) + (random.choice((-1, 1)) * random.uniform(0.6, 1.3) if circle else n.spread)
@@ -3824,7 +3887,7 @@ class World:
                 if not (hunt and self.in_peace(tx, ty) and not follows):     # dalga uzaylısı güvenli bölgenin kenarında bekler (oyuncunun vurduğu girer)
                     ms = n.mover.go(tx, ty, n.speed() * n.etki.speed_factor(now), now)
                     self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
-                n.next_think = now + (max(0.5, ms / 1000) if post else 1.0)
+                n.next_think = now + (max(0.5, ms / 1000) + n.ab.pop('bekle', 0) if post else 1.0)
             if dist <= self.npc_range(n) and now >= n.next_shot and n.d['hasar'] > 0 and now >= self.invuln_until:
                 if n.next_shot == 0.0:
                     self.send([legacy('0|n|LSH|%d|%d' % (self.hid, n.id))])

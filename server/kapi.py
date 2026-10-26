@@ -58,6 +58,9 @@ XENOMIT, XENOMIT_ITEM = 3, 4              # sunucunun cevher türü; istemcinin 
 PORTAL_BASE = 150900000                   # kapı portallarının kimliği: + kapı kimliği (X-1), + 50 + kimlik (kapıdan çıkış),
 NEXT_PORTAL = 100                         # + 100 + kimlik (çok haritalı kapıda sonraki harita)
 HOME_MAP = {1: 1, 2: 5, 3: 9}
+# kapı uzaylılarının kalkan emmesi (türün kendi değeri yoksa): oyuncu bildirimi 2026-10-27, gerçek oyunda kapı uzaylıları %50 (harita
+# uzaylıları %70, npc.json savas.npc_kalkan_emme); Moth formasyonuyla kalkanı bitmeden ölürler. Kaynakta sayı yok
+GATE_ABSORB = 0.5
 ABG = ('alpha', 'beta', 'gamma')        # üreticide ortak çekiliş: parça üçünden birine düşer (Kapilar.draw)
 MAP_W, MAP_H = 21000, 13100
 # Kapı halkaları (ShipInitializationCommand / ShipCreateCommand galaxyGatesDone): istemci 7 bitlik maske okur
@@ -112,7 +115,8 @@ def register_npcs(tipler):
             for i, a in enumerate(w['uzaylilar']):
                 tipler[npc_type(key, n, i)] = dict(
                     ad=a['gorunen_ad'], model=a['tur'], hp=a['hp'], kalkan=a['kalkan'], hasar=a['hasar'], hiz=a['hiz'],
-                    saldirgan=True, odul=dict(a['odul']), kargo=dict(a['kargo']), npc_kimlik=a['npc_kimlik'], kapi=key)
+                    saldirgan=True, odul=dict(a['odul']), kargo=dict(a['kargo']), npc_kimlik=a['npc_kimlik'], kapi=key,
+                    kalkan_emme=a.get('kalkan_emme', GATE_ABSORB))
                 if a.get('davranis'):
                     tipler[npc_type(key, n, i)]['davranis'] = dict(a['davranis'])
 
@@ -186,7 +190,8 @@ def pace(name):
 
 
 def fresh(g, old=None):
-    out = {'parcalar': [], 'hazir': False, 'dalga': 0, 'can': g['can'], 'alinan_can': 0, 'tamam': (old or {}).get('tamam', 0)}
+    out = {'parcalar': sorted((old or {}).get('sonraki', [])), 'hazir': False, 'dalga': 0, 'can': g['can'], 'alinan_can': 0,
+           'tamam': (old or {}).get('tamam', 0)}      # hazır kapı sürerken toplanan parçalar (sonraki) yeni kapının
     if 'kaynaklar' in g:
         out['kaynak'] = {}                # Kronos: hangi kapıdan kaç parça geldi
     return out
@@ -286,17 +291,25 @@ class Kapilar:
     def built(self, key):
         return len(self.gate(key)['parcalar']) >= KAPI[key]['parca']
 
+    def parts(self, key):
+        """Çekilişte parçaların gittiği liste: kapı hazırlanıp haritadaysa sonraki kapınınki (oyuncu bildirimi 2026-10-27: gerçek oyunda
+        kurulu kapı haritadayken de parça çıkar; bizde hepsi kopya sayılıp çarpana dönüyordu), değilse kapının kendisi."""
+        G = self.gate(key)
+        return G.setdefault('sonraki', []) if G['hazir'] else G['parcalar']
+
     def state(self, key):
         """Penceredeki durum: kurulu ve henüz hazırlanmamışsa FINISHED (istemci "Prepare jump"u açar, "inşaatı bitti" bildirimini
         gösterir); hazırlanmış kapı IN_PROGRESS (portalı X-1'de, bildirim her açılışta çıkmasın)."""
         return FINISHED if self.built(key) and not self.gate(key)['hazir'] else IN_PROGRESS
 
     def energy_price(self):
-        """Enerji fiyatı: Premium -%5 (tek oyunculuda herkes premium; galaxy_gates.md), hafta sonu -%15; indirimler toplanır (wiki:
-        en düşük 55 = 100 - 25 - 5 - 15)."""
+        """Enerji fiyatı: Premium -%5 (tek oyunculuda herkes premium; galaxy_gates.md), Shop Discount (rebate) -%25 sürüyorsa, hafta
+        sonu -%15; indirimler toplanır (wiki: en düşük 55 = 100 - 25 - 5 - 15; istemci galaxygates_costs_discount_p "Premium ve
+        rebate olağan kullanılır"). Oyuncu bildirimi 2026-10-27: rebate + Premium 70 yerine 80 (hafta sonuyla) gösteriyordu."""
         import takvim as TK
         sale = TK.is_active('kapi_hafta_sonu')    # cumartesi-pazar (takvim.py)
-        f = (1 - K.get('premium_indirim', 0) - (K['hafta_sonu_indirim'] if sale else 0)) * AY.carpan('kapi_fiyat')     # panel
+        disc = self.m.discount() if self.m else K.get('premium_indirim', 0)     # Premium + Shop Discount (magaza.discount)
+        f = (1 - disc - (K['hafta_sonu_indirim'] if sale else 0)) * AY.carpan('kapi_fiyat')     # panel
         return int(round(K['enerji_fiyati'] * f)), sale
 
     def life_price(self, key):
@@ -361,7 +374,7 @@ class Kapilar:
             pct = percentages()
             out['probabilityModules'] = [dict(m, percentage=pct.get(m.get('category'), m.get('percentage', 0)))
                                          for m in out['probabilityModules']]
-        out.update(currPart=len(G['parcalar']), currWave=sub_waves(g, G['dalga']), state=self.state(key),
+        out.update(currPart=len(self.parts(key)), currWave=sub_waves(g, G['dalga']), state=self.state(key),
                    livesLeft=G['can'] if G['hazir'] else -1, lifePrice=self.life_price(key), multiplier=self.d['carpan'], mode=key,
                    id=g['kimlik'], bonusGGRewardModules=self.bonus_modules(key))
         if 'kaynaklar' in g:
@@ -417,7 +430,7 @@ class Kapilar:
         return json.dumps([gates, t['samples']], sort_keys=True)
 
     def part_ids(self, key):
-        return sorted(self.gate(key)['parcalar'])
+        return sorted(self.parts(key))
 
     def parts_cmd(self, f):
         key = BY_ID.get(f.get('gateId'))
@@ -500,13 +513,14 @@ class Kapilar:
             G, g = self.gate(key), KAPI[key]
         if cat == CAT_PART and d['carpan'] and (use_mult or d['carpan'] >= K['azami_carpan']):
             mult = d['carpan'] + 1
-            missing = [i for i in range(1, g['parca'] + 1) if i not in G['parcalar']]
+            P = self.parts(key)
+            missing = [i for i in range(1, g['parca'] + 1) if i not in P]
             new = random.sample(missing, min(mult, len(missing)))
             with self.p.lock:
                 d['carpan'] = 0
-                G['parcalar'] += new
+                P += new
                 self.p.dirty = True
-            have = len(G['parcalar']) - len(new)
+            have = len(P) - len(new)
             out = [dict(type=PART, part_id=pid, duplicate=False, current=have + i + 1, gate_id=g['kimlik'], mult=mult)
                    for i, pid in enumerate(new)]
             left = mult - len(new)
@@ -517,17 +531,18 @@ class Kapilar:
             return out
         if cat == CAT_PART:
             pid = random.randint(1, g['parca'])
-            missing = [i for i in range(1, g['parca'] + 1) if i not in G['parcalar']]
-            if pid in G['parcalar'] and missing and random.random() < AY.get('kopya_eksige') / 100.0:     # panel (oyunun %50'si)
+            P = self.parts(key)
+            missing = [i for i in range(1, g['parca'] + 1) if i not in P]
+            if pid in P and missing and random.random() < AY.get('kopya_eksige') / 100.0:     # panel (oyunun %50'si)
                 pid = random.choice(missing)
-            dup = pid in G['parcalar']
+            dup = pid in P
             with self.p.lock:
                 if dup:
                     d['carpan'] = min(K['azami_carpan'], d['carpan'] + 1)
                 else:
-                    G['parcalar'].append(pid)
+                    P.append(pid)
                 self.p.dirty = True
-            return [dict(type=PART, part_id=pid, duplicate=dup, current=len(G['parcalar']), gate_id=g['kimlik'])]
+            return [dict(type=PART, part_id=pid, duplicate=dup, current=len(P), gate_id=g['kimlik'])]
         mult = 1
         if d['carpan'] and (use_mult or d['carpan'] >= K['azami_carpan']):
             mult, d['carpan'] = d['carpan'] + 1, 0
@@ -812,7 +827,7 @@ class Kapilar:
         with self.p.lock:
             new = fresh(g, self.gate(key))
             new['tamam'] += 1
-            new['parcalar'] = random.sample(range(1, g['parca'] + 1), min(R['parca'], g['parca']))
+            new['parcalar'] = sorted(set(new['parcalar']) | set(random.sample(range(1, g['parca'] + 1), min(R['parca'], g['parca']))))
             self.d['kapilar'][key] = new
             self.p.dirty = True
         kr = self.kronos_part(key, dispatch)

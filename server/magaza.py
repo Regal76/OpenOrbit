@@ -615,7 +615,26 @@ class Magaza:
             return loot == 'drone_formation_default' or loot in self.p.d['formasyonlar']
         if loot in DRONES and DRONES[loot].get('tek'):
             return self.drone_slots(loot) == 0
+        if loot.startswith(('package_', 'deal_')):
+            return self.package_done(loot)
         return False
+
+    @staticmethod
+    def unique_loot(g):
+        """Bir kez sahip olunan eşya: gemi, gemi tasarımı, drone formasyonu, P.E.T., tekil dron."""
+        return g.startswith('ship_') or g in FORMS or g == PET_LOOT or bool(g in DRONES and DRONES[g].get('tek'))
+
+    def package_done(self, loot):
+        """Benzersiz paket (içinde gemi, tasarım, formasyon, P.E.T. ya da tekil dron olan; Defcom-Raven, Stellar, Dusklight …) bir kez
+        alınır; alındıysa ya da benzersiz içeriğinin hepsi zaten varsa mağazada görünmez ve alınamaz (oyuncu bildirimi 2026-10-27:
+        Defcom paketi alındıktan sonra listede kalıyordu). Panelin 'paket_siniri' ayarı kapatır (o zaman sahip olunan içerik atlanır,
+        gerisi verilir: package_fit)."""
+        if not AY.get('paket_siniri'):
+            return False
+        unique = [g for g, n in (self.contents(loot, 1) or []) if self.unique_loot(g)]
+        if not unique:
+            return False
+        return loot in self.p.d.get('benzersiz_paketler', []) or all(self.owned_unique(g) for g in unique)
 
     def package_fit(self, grants, owned):
         """Paket içeriğinden şimdi verilebilenler: sahip olunan gemi, P.E.T. ve formasyon atlanır, dronlar boş yer kadar verilir
@@ -972,6 +991,10 @@ class Magaza:
             # wiki: 2. seviye dişli/protokol için P.E.T. seviyesi 4, 3. seviye için 8, 4. seviye 20 (istemci: pet_gear_shop_level_limit)
             self.log('   satın alma yok: %s seviye %d (P.E.T. seviyesi %d gerekir)' % (loot, level, PETM.level_need(level)))
             return [] if quick else [self.buy_cmd(loot, category, buy_category, 0, error=stack_msg('pet_gear_shop_level_limit'))]
+        if self.package_done(loot) and loot in self.p.d.get('benzersiz_paketler', []):     # benzersiz paket bir kez (panel: paket_siniri;
+            # içeriği zaten varsa aşağıdaki kurallar oyunun kendi hatasını verir: items_shop_error_ship_contains_ship …)
+            self.log('   satın alma yok: %s (benzersiz paket alınmış)' % loot)
+            return [] if quick else [self.buy_cmd(loot, category, buy_category, 0, error=stack_msg('shop_item_not_found'))]
         if not self.gate_ok(loot):                  # Ö7: etkinlik dışı, alınmış (bir kez) ya da seviye dışı paket
             self.log('   satın alma yok: %s (şimdi satılmıyor)' % loot)
             return [] if quick else [self.buy_cmd(loot, category, buy_category, 0, error=stack_msg('shop_item_not_found'))]
@@ -1116,6 +1139,10 @@ class Magaza:
         if skipped:
             self.log('   paketten verilmedi (zaten var): %s' % ', '.join('%s x%d' % (g, n) for g, n, key in skipped))
             msgs.append(self.skipped_msg(skipped))
+        if pkg and any(self.unique_loot(g) for g, n in self.contents(loot, 1) or []):
+            with self.p.lock:
+                self.p.d.setdefault('benzersiz_paketler', []).append(loot)      # bir kez alınır (package_done)
+                self.p.dirty = True
         for cb in self.on_bought:                      # Ö7 dükkânları (dukkanlar.py)
             msgs += cb(loot, amount) or []
         for g, n in grants:                            # ipucu (bir kez): ikinci gemi -> gemi ışınlama, ilk ekipman -> hangarda tak
@@ -1822,7 +1849,22 @@ class Magaza:
         for iid, loot in sorted(self.p.d['esyalar'].items(), key=lambda kv: int(kv[0])):
             if loot.startswith(('equipment_', 'drone_designs_', 'pet_designs_')):
                 out.append(self.inv_item(int(iid), loot, 1, hm.get(int(iid), 0)))
-        return out + [self.drone_item(x) for x in self.p.d['dronlar']]
+        return out + [self.drone_item(x) for x in self.p.d['dronlar']] + self.module_items()
+
+    def module_items(self):
+        """Takılı olmayan Clan Battle Station modülleri envanterde (kayıttaki gibi: InventoryItemModule, nitelik 0 = can, upgradeLevel):
+        Assembly'nin Upgrade sekmesi yükseltilecekleri envanterden seçiyor, modüller hiç gönderilmediği için listede yoktu (oyuncu
+        bildirimi 2026-10-27). Build isteğinin targetItemId'si modülün kimliği (yukseltme.target)."""
+        cbs = getattr(self, 'cbs', None)
+        if not cbs:
+            return []
+        return [self.module_item(iid, m) for iid, m in sorted(cbs.st['moduller'].items(), key=lambda kv: int(kv[0]))
+                if not cbs.where(iid)]
+
+    def module_item(self, iid, m):
+        msg = self.inv_item(int(iid), m['loot'], 1, level=int(m.get('seviye', 0)))
+        msg[1]['item']['inventoryItemAttributes'] = [mod('InventoryItemAttributeModule', key=0, value=str(int(m.get('can', 0))))]
+        return msg
 
     def ship_count_msgs(self, loots):
         """Gemi kazanılınca/harcanınca Assembly sayacı (yalnız tariflerde taban gemi olanlar; envanter.client_count)."""
