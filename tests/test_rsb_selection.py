@@ -25,6 +25,7 @@ class ReloadingLaserSelection(unittest.TestCase):
     def select(self,ammo):
         self.p.d['secili']['lazer']=self.old
         self.p.d['cephane'][ammo]=100
+        self.w.attacking=False   # selected during an attack, RSB/RCB fire at once (test_rsb_instant_shot)
         self.w.menu_action(dict(menuItemId=ammo,actionType=0,sourceType=0))
 
     def test_npc_and_station_shots_return_to_previous_ammo(self):

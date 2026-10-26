@@ -2662,6 +2662,18 @@ class World:
         self.log('   back to %s after %s' % (back, ammo))
         return [('MenuItemStatusCommand', st) for st in (self.p.menu_status(ammo), self.p.menu_status(back)) if st]
 
+    def slow_ammo_shot(self, ammo, now=None):
+        """RSB-75 / RCB-140 fire as soon as they are selected during an attack, like on the official server, instead of
+        waiting for the next laser tick (next_laser). Nothing happens while the ammo cools down: the tick fires it later.
+        The shot sets next_laser again, so the next normal salvo waits a full interval; the only extra salvo is bounded
+        by the ammo's own cooldown (at most one more every aralik_sn)."""
+        now = now or time.time()
+        if (not self.slow_ammo(ammo) or not self.attacking or self.hero_dead or self.jumping
+                or self.p.d['secili'].get('lazer') != ammo or now < self.ammo_ready.get(ammo, 0)):
+            return
+        self.log('   instant shot: %s' % ammo)
+        self.hero_laser(now)
+
     def side_laser(self, now, uid, pos, hit, pvp=False, asset=False):
         """Uzaylı olmayan hedefe lazer (asset_laser, pet_laser): menzil, cephane, isabet; isabet ederse hit(hasar)."""
         hx, hy = self.hero_pos(now)
@@ -2824,6 +2836,8 @@ class World:
                 self.log('   %s cephanesi: %s' % (kind, item))
                 if act == 1 and kind == 'lazer' and self.quickslot_on() and not self.attacking:
                     self.quickslot_start()
+                if kind == 'lazer':
+                    self.slow_ammo_shot(item)
             elif item.startswith(SE.EMOTE_PREFIX):
                 if act == 1:
                     self.emote(item)                # ifade (Ö6)
