@@ -45,7 +45,7 @@ class MineMechanics(unittest.TestCase):
         p = Profil(path=str(Path(self.tmp.name) / ('%d.json' % uid)))
         p.d['gemi'].update(hitPoints=100000, hitMax=100000, shield=200000, shieldMax=200000, nanoHull=0)
         p.d['kalkan_emme'] = 0.8
-        for loot in SE.MINES:
+        for loot in SE.PLAYER_MINES:
             p.d.setdefault('cephane', {})[loot] = 10
         w = SimpleNamespace(p=p, hid=uid, hero_dead=False, jumping=False, running=True, map_id='3', ortak=None)
         w.pos, w.sent, w.npcs, w.invulnerable = (1000, 1000), [], {}, False

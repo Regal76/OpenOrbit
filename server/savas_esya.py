@@ -33,6 +33,10 @@ O6 = json.load(open(os.path.join(HERE, 'data', 'esyalar_o6.json'), encoding='utf
 EMOTE_PREFIX = 'ammunition_specialammo_emote_'
 ROCKETS = _E['roketler']
 MINES = S['mayinlar']
+# The Curcubitor "Trick" is spawned by an event NPC on death, not bought or placed by a player.
+# Keep it in MINES for damage and visual handling, but exclude it from player inventory/menu flows.
+EVENT_MINES = frozenset({'curcubitor_mayini'})
+PLAYER_MINES = frozenset(MINES) - EVENT_MINES
 LAUNCHERS = S['fircatici']['turler']
 LAUNCHER_AMMO = S['fircatici_cephane']
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
@@ -261,7 +265,7 @@ def _explosive(st, loot, n):
 def menu_status(p, menu_id, st):
     """Bu modülün öğelerinin durumu (st: kayıttaki şablonun kopyası) ya da None (başka öğe)."""
     start_map = H.map_class(p.d['konum'].get('mapId', 0)) == 'X-1'
-    if menu_id in MINES:
+    if menu_id in PLAYER_MINES:
         n = p.ammo(menu_id)
         st.update(counterValue=n, counterStyle=4 if n > 0 else 1, visible=st.get('visible') or n > 0, available=n > 0 and not start_map,
                   activatable=n > 0 and not start_map)
@@ -513,7 +517,7 @@ class Esyalar:
     def menu(self, item, now=None):
         """Tek atımlık ve aç-kapa öğeleri -> True: bu modülün öğesi (aç-kapa öğelerinde istemci actionType 0 gönderir)."""
         now = now or time.time()
-        if item in MINES:
+        if item in PLAYER_MINES:
             self.place_mine(item, now)
         elif item in FIREWORKS:
             self.place_firework(item, now)

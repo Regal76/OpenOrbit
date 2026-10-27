@@ -86,10 +86,10 @@ class AmmoCounterStyleTest(unittest.TestCase):
     def test_owned_mines_replace_captured_red_at_login_and_live_restock(self):
         import savas_esya as SE
         self.profile.d['konum']['mapId'] = 3
-        for item in SE.MINES:
+        for item in SE.PLAYER_MINES:
             self.profile.d['cephane'][item] = 7
         statuses = self.initialize()
-        for item in SE.MINES:
+        for item in SE.PLAYER_MINES:
             with self.subTest(item=item):
                 status = statuses[item]
                 self.assertEqual(status['counterStyle'], 4)
