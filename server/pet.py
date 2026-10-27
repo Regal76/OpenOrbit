@@ -1374,7 +1374,7 @@ class Pet:
         w = self.w
         now = time.time()
         hx, hy = w.hero_pos(now)
-        rng = self.gear_range(g)
+        rng = 1e9 if AY.get('sonsuz_pet_menzili') else self.gear_range(g)
         if g == ENEMY_LOCATOR:
             spots = [n.mover.pos(now) for n in w.npcs.values() if locator_id(n) == value]
         else:

@@ -579,11 +579,14 @@ class Profil:
         return sum(m['count'] for m in self.d['madenler'] if m['oreType']['typeValue'] in self.CARGO_ORES)
 
     def cargo_free(self):
+        import ayar as AY
+        if AY.get('sonsuz_kargo'):
+            return 10 ** 6                        # kargo hiç dolmaz (panel: Sonsuz kargo)
         return max(0, self.d['gemi'].get('cargoSpaceMax', 0) - self.cargo_used())
 
     def sync_cargo(self):
         """ShipInitializationCommand.cargoSpace = boş kargo alanı (kayıt)."""
-        self.d['gemi']['cargoSpace'] = self.cargo_free()
+        self.d['gemi']['cargoSpace'] = min(self.cargo_free(), self.d['gemi'].get('cargoSpaceMax', 0))      # istemci en çok azami alanı gösterir
 
     # ---------------------------------------------------------------- kaynak deposu (diger_esyalar)
     def resource(self, loot):

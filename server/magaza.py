@@ -1134,6 +1134,8 @@ class Magaza:
                         equip_ids.append(iid)
                         got += 1
                 EK.recharge(self.p, g, n)                  # atlama/gizlenme CPU'su: yeni hak
+                if g == 'equipment_extra_hmd-07':
+                    msgs += self.p.menu_changes([g])      # HM-7: takılmasa da kısayol çubuğunda hemen görünür
                 msgs.append(legacy('0|LM|ST|LOT|%s|%d' % (g, n)))
         self.log('   satın alındı: %s x%d = %d %s (kalan %d)' % (loot, amount, cost, cur, self.p.d['pilot'][cur]))
         if skipped:
@@ -1836,12 +1838,15 @@ class Magaza:
         import envanter as INV
         held = {k for k, v in self.p.d.get('diger_esyalar', {}).items()
                 if v > 0 and k.startswith('resource_') and k not in NO_TRAITS}
-        loots = ['currency_credits', 'currency_uridium'] + sorted((ASM.INGREDIENTS | held) - {'currency_credits', 'currency_uridium'})
+        free = AY.get('assembly_ucretsiz')
+        loots = ['currency_credits', 'currency_uridium'] + sorted((ASM.INGREDIENTS | YK.INGREDIENTS | held) - {'currency_credits', 'currency_uridium'})
         out = []
         for loot in loots:
             if loot.startswith(('equipment_', 'drone_', 'recipe_')):
                 continue                        # örnekli eşyalar hangar envanterinden (HangarShipsCommand)
             n = INV.client_count(self.p, loot)  # gemiler (Plus tariflerinin taban gemisi) dahil
+            if free and not loot.startswith('ship_'):
+                n = max(n, 10 ** 6)             # Ücretsiz Assembly: istemci bütün malzemeleri yeterli görür
             if n > 0 or loot.startswith('currency_'):
                 out.append(self.inv_item(self.item_id(loot), loot, n))
         # eşya örnekleri (seviye, takılı olduğu hangar): Assembly'nin Upgrade/Disassembly sekmeleri yalnız bunları tanıyor (H38)

@@ -380,23 +380,26 @@ class Trinity(Arena):
         nxt = rows[min(lv, len(rows) - 1)]
         cur = rows[lv - 1]
         left = int(max(0, o['bitis'] - now)) if o.get('bitis') else 0
+        building = bool(o.get('bitis'))          # yükseltme sürerken pencere atlama bedelini (Xyralith) gösterir; resmî ekran: "Xyralith 9/9"
+        skip = self.skip_cost(left)
+        cost_id = self.D['xy'] if building else self.D['kp']
         q = lambda r: [dict(_='TupleTwoModule', param0=str(i + 1), param1='%.1f' % v) for i, v in enumerate(r['nadirlik'])]
         return ('TrinityTrialsDropLevelCommand', dict(
-            costLootAmount=0 if mx else nxt['maliyet'], currentLevel=lv, nextLevel=min(lv + 1, len(rows)), building=bool(o.get('bitis')),
-            max=mx, skipConsume=self.skip_cost(left), currentLevelQualityRandomList=q(cur), totalBuildSeconds=0 if mx else nxt['sure_sn'],
-            lootAmount=int(self.p.resource(self.D['kp'])), nextLevelQualityRandomList=q(nxt), buildSeconds=left, costLootId=self.D['kp']))
+            costLootAmount=skip if building else (0 if mx else nxt['maliyet']), currentLevel=lv, nextLevel=min(lv + 1, len(rows)), building=bool(o.get('bitis')),
+            max=mx, skipConsume=skip, currentLevelQualityRandomList=q(cur), totalBuildSeconds=0 if mx else nxt['sure_sn'],
+            lootAmount=int(self.p.resource(cost_id)), nextLevelQualityRandomList=q(nxt), buildSeconds=left, costLootId=cost_id))
 
     def skip_cost(self, left):
-        return int(math.ceil(left / 60.0)) * self.D['atlama_dakika_basina'] if left else 0
+        return int(math.ceil(left / 1000.0)) * self.D['atlama_dakika_basina'] if left else 0      # resmî ekran: kalan 2:29:50 -> 9 Xyralith (1000 sn'de 1)
 
     def drop_level_optional(self, f, now=None):
         """Yükselt (Quantum Prism) ya da süreyi atla (Xyralith) -> mesajlar."""
         from magaza import stack_msg
         now = time.time() if now is None else now
         o = self.os_state(now)
-        loot = f.get('costLootId')
         ok = False
-        if loot == self.D['kp'] and not o.get('bitis') and o['seviye'] < len(self.D['os']):
+        # eylemi pencerenin durumu belirler (istemcinin gönderdiği costLootId'ye bakılmaz): yükseltme sürmüyorsa yükselt, sürüyorsa atla
+        if not o.get('bitis') and o['seviye'] < len(self.D['os']):
             row = self.D['os'][o['seviye']]
             if self.p.resource(self.D['kp']) >= row['maliyet']:
                 self.p.add_resource(self.D['kp'], -row['maliyet'])
@@ -405,7 +408,7 @@ class Trinity(Arena):
                     self.p.dirty = True
                 ok = True
                 self.log('   Trinity OS: %d -> %d başladı (%d sn)' % (o['seviye'], o['hedef'], row['sure_sn']))
-        elif loot == self.D['xy'] and o.get('bitis'):
+        elif o.get('bitis'):
             cost = self.skip_cost(o['bitis'] - now)
             if self.p.resource(self.D['xy']) >= cost:
                 self.p.add_resource(self.D['xy'], -cost)

@@ -33,6 +33,10 @@ O6 = json.load(open(os.path.join(HERE, 'data', 'esyalar_o6.json'), encoding='utf
 EMOTE_PREFIX = 'ammunition_specialammo_emote_'
 ROCKETS = _E['roketler']
 MINES = S['mayinlar']
+# Curcubitor'un Trick mayını etkinlik uzaylısının ölümünde doğar; oyuncu satın almaz ya da koymaz: hasar ve görsel için MINES'ta kalır,
+# envanter ve menü işlemlerinden çıkarılır
+EVENT_MINES = frozenset({'curcubitor_mayini'})
+PLAYER_MINES = frozenset(MINES) - EVENT_MINES
 LAUNCHERS = S['fircatici']['turler']
 LAUNCHER_AMMO = S['fircatici_cephane']
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
@@ -261,7 +265,7 @@ def _explosive(st, loot, n):
 def menu_status(p, menu_id, st):
     """Bu modülün öğelerinin durumu (st: kayıttaki şablonun kopyası) ya da None (başka öğe)."""
     start_map = H.map_class(p.d['konum'].get('mapId', 0)) == 'X-1'
-    if menu_id in MINES:
+    if menu_id in PLAYER_MINES:
         n = p.ammo(menu_id)
         st.update(counterValue=n, counterStyle=4 if n > 0 else 1, visible=st.get('visible') or n > 0, available=n > 0 and not start_map,
                   activatable=n > 0 and not start_map)
@@ -318,10 +322,13 @@ def menu_status(p, menu_id, st):
         _tips(st, [_line('ttip_cloak_cpu', [('%TYPE%', loot, 1)]), _line('ttip_cpu_cloak_count', [('%COUNT%', n, 0)])])
         st.update(visible=True, available=True, activatable=n > 0 and not on, selected=on, counterValue=n, iconLootId=loot)
         return st
-    if menu_id == HM7:                             # takılıysa ve hakkı varsa kullanılabilir: tıklayınca ticaret penceresi
-        owned = EK.has(p, 'her_yerde_satis')
+    if menu_id == HM7:                             # envanterde/takılıysa ve hakkı varsa kullanılabilir (resmî oyun: satın alınca çubukta, takmaya gerek yok)
+        owned = EK.owned(p, HM7)
         ok = owned and EK.uses(p, HM7) > 0
         st.update(visible=owned, available=ok, activatable=ok)
+        if owned and not EK.unlimited(p, HM7):         # kalan satış hakkı: simgenin sol altında (resmî oyun)
+            n = EK.uses(p, HM7)
+            st.update(counterValue=n, counterStyle=4 if n > 0 else 1)
         if owned:
             for tip in ('toolTipSlotBar', 'toolTipItemBar'):
                 lines = (st.get(tip) or {}).get('commandList')
@@ -513,7 +520,7 @@ class Esyalar:
     def menu(self, item, now=None):
         """Tek atımlık ve aç-kapa öğeleri -> True: bu modülün öğesi (aç-kapa öğelerinde istemci actionType 0 gönderir)."""
         now = now or time.time()
-        if item in MINES:
+        if item in PLAYER_MINES:
             self.place_mine(item, now)
         elif item in FIREWORKS:
             self.place_firework(item, now)

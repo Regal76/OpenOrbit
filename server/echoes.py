@@ -411,14 +411,14 @@ class Echoes:
 
     def jump_info_cmd(self):
         top = self.st['en_yuksek']
-        lv = [x for x in D['atlama']['hedefler'] if x <= top and x > 1]
+        lv = [x for x in D['atlama']['hedefler'] if self.st['seviye'] < x <= top]      # yalnız ilerisi: ilerlemede olan oyuncuya geri atlama penceresi açılmaz
         return ('ExpeditionJumpLevelInfoCommand', dict(levels=lv, costs=[D['atlama']['bedel_blok'] * ((x - 1) // 5) for x in lv]))
 
     def jump(self, f):
         from magaza import stack_msg
         target = int(f.get('jumpTargetLevel') or 0)
         top = self.st['en_yuksek']
-        ok = target in D['atlama']['hedefler'] and 1 < target <= top
+        ok = target in D['atlama']['hedefler'] and self.st['seviye'] < target <= top
         cost = D['atlama']['bedel_blok'] * ((target - 1) // 5)
         if ok and self.p.d['pilot'].get('uridium', 0) >= cost:
             self.p.gain(uridyum=-cost, neden='expedition_jump')

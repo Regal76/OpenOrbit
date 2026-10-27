@@ -141,6 +141,7 @@ class Assembly:
         self.m = None                 # mağaza (ödül ve envanter güncellemeleri; oturum bağlar)
         self.send = None              # zamanlayıcıyla biten üretimin bildirimi (oturum bağlar)
         self.next_tick = self.next_list = 0.0
+        self.free_last = AY.get('assembly_ucretsiz')
         self.shown = None             # istemcideki tarif listesi (content); etkinlik bitince düşenler kaldırılır
         self.up = YK.Yukseltme(profil, log)   # Upgrade ve Disassembly sekmeleri (yukseltme.py)
 
@@ -180,6 +181,8 @@ class Assembly:
 
     def cost(self, key, amount):
         """Malzemeler x adet; CostScalingFactor: bugünkü her üretimde bir kat daha (1,1 …)."""
+        if AY.get('assembly_ucretsiz'):
+            return {}
         r = T[key]
         f = r['olcek'] ** self.used_today(key) if r['olcek'] != 1 else 1
         return {loot: int(math.ceil(n * f * amount)) for loot, n in r['parcalar'].items()}
@@ -373,6 +376,11 @@ class Assembly:
         if now < self.next_tick:
             return
         self.next_tick = now + 1.0
+        free = AY.get('assembly_ucretsiz')
+        if free != self.free_last:                # ayar değişti: istemcinin malzeme sayaçları yenilenir
+            self.free_last = free
+            if self.m and self.send:
+                self.send(self.m.count_msgs())
         if now >= self.next_list and self.shown is not None and self.send:
             self.next_list = now + LIST_CHECK_SN
             keys = self.visible()

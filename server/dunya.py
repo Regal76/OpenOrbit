@@ -57,6 +57,7 @@ NOTICE_ARA_SN = 0.5
 LASER_AMMO = 'ammunition_laser_lcb-10'
 OLUM = ESYA['olum_ekrani']
 # istemcinin KillScreenOptionTypeModule.OptionType enum'u (global-metadata.dat)
+RAPID_AMMO, RAPID_VOLLEYS, RAPID_STEP = 'ammunition_laser_rsb-75', 4, 0.5     # RSB-75 salvosu: pulse laser (laserColor 6, ses 32 laser6_0 1,23 sn) 4 komut x 0,5 sn (kullanıcının resmî oyun videosu)
 REPAIR_BASE, REPAIR_GATE, REPAIR_LOCATION, REPAIR_RAID_GATE = 1, 2, 3, 7
 # seçenek -> (ayrıntı metni, ipucu, düğme): istemcinin çeviri anahtarları (flashres)
 REPAIR_TEXTS = {REPAIR_BASE: ('desc_killscreen_free_repair_cause_unknown', 'ttip_killscreen_basic_repair', 'btn_killscreen_repair_for_free'),
@@ -1449,7 +1450,7 @@ class World:
         self.log('   Palladium x%d -> %d kapı enerjisi' % (units * rate, units))
 
     def hm7_ready(self):
-        return EK.has(self.p, 'her_yerde_satis') and EK.uses(self.p, 'equipment_extra_hmd-07') > 0
+        return EK.owned(self.p, SE.HM7) and EK.uses(self.p, SE.HM7) > 0
 
     def pet_trade(self):
         return bool(self.pet and self.pet.active and self.pet.trading and time.time() >= self.pet.trade_ready)
@@ -2702,6 +2703,18 @@ class World:
         """Laser ammo with its own cooldown (RSB-75, RCB-140)."""
         return bool(ammo and ESYA['lazer_cephane'].get(ammo, {}).get('aralik_sn'))
 
+    def rapid_volleys(self, ammo, uid):
+        """RSB-75 is a rapid salvo: the client plays one volley (and its clip) per AttackLaserRunCommand, so the single command of a 3 s
+        cooldown looked and sounded like one short shot. Official recording (user's RSB-75 video): the sound is laser6_0 (the pulse
+        laser, game.xml sound 32; the user picked it by ear; laser5_x was the wrong clip) and the envelope fits 4 starts 0.5 s apart
+        (correlation 0.85), the fire lasting ~1.7 s, then silence until the next salvo 3 s after the first; damage stays one hit."""
+        n = RAPID_VOLLEYS if ammo == RAPID_AMMO else 1
+        for i in range(1, n):
+            self.later(RAPID_STEP * i, lambda: self.send([('AttackLaserRunCommand', dict(
+                attackerId=self.hid, targetId=uid, laserColor=self.laser_color(ammo), isDiminishedBySkillShield=False,
+                skilledLaser=self.skilled_laser(), visualType=0))]) if self.attacking and self.target == uid and not self.hero_dead
+                and not self.jumping else None)
+
     def slow_ammo_shot(self, ammo, now=None):
         """RSB-75 / RCB-140 fire as soon as they are selected during an attack, like on the official server, instead of
         waiting for the next laser tick (next_laser). Nothing happens while the ammo cools down: the tick fires it later.
@@ -2749,6 +2762,7 @@ class World:
         self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid,laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
+        self.rapid_volleys(ammo, uid)
         self.p.ach('shot', silah='LASER')
         m_ = self.p.mods()
         aim = self.items.aim(AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + m_.get('isabet', 0) + m_.get('lazer_isabet', 0))))
@@ -2818,6 +2832,7 @@ class World:
                                                                          laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
+        self.rapid_volleys(ammo, n.id)
         self.p.ach('shot', silah='LASER')
         self.ammo_seen[ammo] = now                      # başarım "lazer şovu": 60 sn içinde 6 temel cephane
         recent = [AMMO_TYPE_IDS[a] for a, t in self.ammo_seen.items() if a in AMMO_TYPE_IDS and now - t <= 60]

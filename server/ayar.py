@@ -195,6 +195,11 @@ SCHEMA = [
        'görünür).', hi=10.0, sinir=10000.0),
     _c('kargo', 'Kargo kapasitesi', 'ekonomi', "Geminin kargo alanı (Logistics, kargo CPU'su ve P.E.T. protokolüyle birlikte).",
        lo=0.5, hi=10.0, sinir=1000.0),
+    _b('sonsuz_kargo', 'Sonsuz kargo', 'ekonomi', 'Kargo dolmaz: bütün kutular ve cevherler "kargo dolu" uyarısı almadan her zaman toplanır.'),
+    _b('sonsuz_pet_menzili', 'Sonsuz P.E.T. bulucu menzili', 'ekonomi', "P.E.T.'in düşman ve kaynak bulucu dişlileri menzil sınırı olmadan "
+       'haritadaki en yakın hedefi gösterir.'),
+    _b('assembly_ucretsiz', 'Ücretsiz Assembly', 'ekonomi', 'Assembly ve Upgrade/Disassembly sekmelerinde malzeme harcanmaz; istemci '
+       'bütün malzemeleri yeterli gösterir. Üretim ve bekleme süreleri ile günlük kullanım sınırları aynı kalır.'),
     _c('pet_yakit', 'P.E.T. yakıt tüketimi', 'ekonomi', "P.E.T.'in dakikalık yakıt tüketimi. 0: yakıt harcamaz.", lo=0.0, hi=5.0,
        sinir=100.0),
     _c('skylab_uretim', 'Skylab üretimi', 'ekonomi', 'Skylab toplayıcılarının ve rafinerilerinin saatlik üretimi.', hi=20.0),
@@ -315,7 +320,8 @@ HAZIR = {
     'yaratici': {'ad': 'Yaratıcı', 'aciklama': 'Gemin yok edilmez, cephane bitmez, mağaza ve hizmetler bedava, bekleme yok.',
                  'degerler': {'dokunulmaz': True, 'sonsuz_cephane': True, 'sonsuz_teknoloji': True, 'magaza_fiyat': 0.0, 'hizmet_fiyat': 0.0,
                               'kapi_fiyat': 0.0, 'tamir_ucreti': 0.0, 'bekleme': 0.0, 'seviye_kisiti_yok': True,
-                              'sonsuz_can': True, 'giris_siniri_yok': True, 'pet_yakit': 0.0}},
+                              'sonsuz_can': True, 'giris_siniri_yok': True, 'pet_yakit': 0.0, 'assembly_ucretsiz': True,
+                              'sonsuz_kargo': True, 'sonsuz_pet_menzili': True}},
 }
 
 _lock = threading.Lock()

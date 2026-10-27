@@ -41,6 +41,11 @@ def has(p, key, sid=None):
     return bool(props(p, key, sid))
 
 
+def owned(p, loot):
+    """Ekstra envanterde ya da takılı mı (takılması gerekmeyenler: HM-7 ticaret dronu, satın alınınca kısayol çubuğunda görünür)."""
+    return loot in p.d['esyalar'].values() or loot in equipped(p)
+
+
 def slot_bonus(p, sid=None, cid=None):
     """Yuva CPU'sunun ekstra yuvası: geminin bir config'inde (varsayılan: etkin gemi, etkin config) takılı olanın."""
     return slot_bonus_of(equipped(p, sid) if cid is None else p.loadout(sid, cid).get('extra', []))
