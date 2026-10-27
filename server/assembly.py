@@ -36,9 +36,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 T = json.load(open(os.path.join(HERE, 'data', 'tarifler.json'), encoding='utf8'))['tarifler']
 INGREDIENTS = {loot for r in T.values() for loot in r.get('parcalar', {})}      # girişte sayaçları gönderilenler (magaza.count_msgs)
 ALREADY_OWNS, ALREADY_USED, ALREADY_USED_LIMIT = 0, 1, 2          # RecipeUnavailableType (istemci)
-# koşulla açılan tarifler (wiki): Spartan dron tasarımı Kronos kapısı tamamlanınca
-UNLOCK = {'recipe_blueprint-spartan': lambda p: ((p.d.get('kapilar') or {}).get('kapilar', {}).get('kronos') or {}).get('tamam', 0) > 0,
-          'recipe_blueprint-immunizer-cpu': lambda p: True}        # Quarantine Zone tek oyunculuda kalıcı (Aşama 8)
+# koşulla açılan tarifler (wiki): Spartan dron tasarımı ve CPU'lar kalıcı olarak açık
+UNLOCK = {'recipe_blueprint-spartan': lambda p: True,
+          'recipe_blueprint-immunizer-cpu': lambda p: True,
+          'recipe_blueprint-ss-cpu': lambda p: True}
 SKIP_U_PER_MIN = 1                                                # uyarlama: kalan dakikası 1 uridyum
 NO_LIMIT = 'ALWAYS_USABLE'
 # kaynağı henüz olmayan malzemeler (yol haritası E8: Flower kutu avı): tarifleri gizli. Proxium (Permafrost Fissure'ın UFO ve Ufonit
@@ -47,8 +48,8 @@ NO_LIMIT = 'ALWAYS_USABLE'
 NO_SOURCE = {'resource_collectable_flower-token'}
 CHAMPION = 'resource_collectable_champion-token'                  # aylık ödül (rutbe.py): jetonlu tarifler elde jeton varken
 TEST = 'recipe_recipe-test'
-BOT = set()                       # Saturn Transmitter (recipe_blueprint-ss-cpu) açık: Saturn uzaylıları PvP görevinde oyuncu sayılır
-                                  # (resmî forum 127576; savas_esya uzayli_cpu ss-cpu, dunya npc_reward)
+BOT = set()
+FREE_RECIPES = ('recipe_recipe-test18', 'recipe_recipe-test29')
 # resmî sunucu kaydı (2026-10-25): girişte tarif listesinden sonra iki boş liste ve pencerenin üç süzgeci (filterType 2, 1, 0;
 # saklanmamışsa bütün kategoriler)
 FILTER_TYPES = (2, 1, 0)
@@ -142,6 +143,7 @@ class Assembly:
         self.send = None              # zamanlayıcıyla biten üretimin bildirimi (oturum bağlar)
         self.next_tick = self.next_list = 0.0
         self.shown = None             # istemcideki tarif listesi (content); etkinlik bitince düşenler kaldırılır
+        self.free_last = None
         self.up = YK.Yukseltme(profil, log)   # Upgrade ve Disassembly sekmeleri (yukseltme.py)
 
     @property
@@ -156,12 +158,15 @@ class Assembly:
         """Pencerede görünen tarifler, kayıttaki sırayla; sonra depoda olan ONLY_WHEN_OWNED tarifler, koşulla açılanlar, kayıtta
         olmayanlar (event_recipes) ve üretimi süren ya da toplanmamış olanlar (etkinlik bitse de)."""
         out = sorted((k for k, r in T.items() if 'kayitta' in r and k not in BOT), key=lambda k: T[k]['kayitta'])
-        out += sorted(k for k, r in T.items() if 'kayitta' not in r and r['gorunurluk'] == 'ONLY_WHEN_OWNED' and self.p.resource(k) > 0)
+        out += sorted(k for k, r in T.items() if 'kayitta' not in r and r['gorunurluk'] == 'ONLY_WHEN_OWNED')
         out += [k for k, cond in UNLOCK.items() if k not in out and cond(self.p)]
         seen = set(out)
         out += [k for k in event_recipes(self.p) if k not in seen]
+        if AY.get('assembly_ucretsiz'):
+            out += [k for k in FREE_RECIPES if k in T and k not in out]
         seen = set(out)
-        return out + sorted(k for k in self.st['uretim'] if k in T and k not in seen)
+        out += sorted(k for k in self.st['uretim'] if k in T and k not in seen)
+        return [k for k in out if k != 'recipe_blueprint-ouroboros']
 
     def used_today(self, key):
         """Bu dönemdeki üretim adedi (period_of: etkinlik dönemi ya da gün)."""
@@ -170,6 +175,8 @@ class Assembly:
 
     def limit_left(self, key):
         """Kalan kullanım (None: sınırsız)."""
+        if AY.get('assembly_ucretsiz'):
+            return None
         r = T[key]
         if r['kullanim'] == NO_LIMIT:
             return None
@@ -180,6 +187,8 @@ class Assembly:
 
     def cost(self, key, amount):
         """Malzemeler x adet; CostScalingFactor: bugünkü her üretimde bir kat daha (1,1 …)."""
+        if AY.get('assembly_ucretsiz'):
+            return {}
         r = T[key]
         f = r['olcek'] ** self.used_today(key) if r['olcek'] != 1 else 1
         return {loot: int(math.ceil(n * f * amount)) for loot, n in r['parcalar'].items()}
@@ -225,6 +234,9 @@ class Assembly:
         keys = self.visible()
         self.shown = set(keys)
         return ('AssemblyRecipeContentModule', {'recipes': [self.recipe(k) for k in keys] + self.up.recipes()})
+
+    def up_content(self):
+        return ('AssemblyRecipeContentModule', {'recipes': self.up.recipes()})
 
     def login_msgs(self):
         """Girişte: tarif listesi, iki boş liste ve süzgeçler (resmî sunucunun sırası)."""
@@ -313,7 +325,7 @@ class Assembly:
         for c in f.get('allRequests') or []:
             g = dict(recipeLootId=c.get('lootId') or c.get('recipeLootId', ''), targetItemId=c.get('targetId') or c.get('targetItemId', 0))
             msgs += self.up.collect(g) if g['recipeLootId'] in YK.UP else self.collect(g)
-        return msgs + ([self.content()] if self.up_state() != before else [])        # H61
+        return msgs + ([self.up_content()] if self.up_state() != before else [])        # H61
 
     def skip(self, f):
         key = f.get('recipeLootId', '')
@@ -351,7 +363,7 @@ class Assembly:
         return {k: b['bitis'] for k, b in self.up.st.items()}
 
     def handle(self, name, f):
-        self.up.m, self.up.send, self.up.refresh = self.m, self.send, self.content
+        self.up.m, self.up.send, self.up.refresh = self.m, self.send, self.up_content
         if self.up.handles(name, f):
             before = self.up_state()
             msgs = self.up.handle(name, f)
@@ -359,7 +371,7 @@ class Assembly:
                 # hedefli yükseltme eklendi, atlandı ya da toplandı: istemci durum güncellemesini yalnız listesindeki (tarif, hedef)
                 # satırına uygular ve Update/Upgrade panelini ancak tarif listesi gelince yeniden çizer (canlı test H39: Build'den
                 # sonra yükseltme görünmüyordu; H61: Skip ve Collect'ten sonra panel eski sayaçta/"Collect"te kalıyordu)
-                msgs = msgs + [self.content()]
+                msgs = msgs + [self.up_content()]
             return msgs
         fn = {'AssemblyBuildRequest': self.build, 'AssemblyCollectRequest': self.collect, 'AssemblyCollectAllRequest': self.collect_all,
               'AssemblySkipRequest': self.skip, 'AssemblyRecipeSelectRequest': self.select,
@@ -373,6 +385,11 @@ class Assembly:
         if now < self.next_tick:
             return
         self.next_tick = now + 1.0
+        free = AY.get('assembly_ucretsiz')
+        if free != self.free_last:
+            self.free_last = free
+            if self.m and self.send:
+                self.send(self.m.count_msgs())
         if now >= self.next_list and self.shown is not None and self.send:
             self.next_list = now + LIST_CHECK_SN
             keys = self.visible()
@@ -384,7 +401,7 @@ class Assembly:
             if set(keys) - self.shown:
                 self.send([self.content()])
             self.shown = set(keys)
-        self.up.m, self.up.send, self.up.refresh = self.m, self.send, self.content
+        self.up.m, self.up.send, self.up.refresh = self.m, self.send, self.up_content
         self.up.tick(now)
         done = [k for k, b in self.st['uretim'].items() if not b.get('bildirildi') and now >= b['bitis']]
         for k in done:
