@@ -1,4 +1,4 @@
-"""RSB-75/RCB-140 shots return to the previously selected laser ammo; manual choice stays possible."""
+"""RSB-75/RCB-140 stay selected after their shot (original game); the previous laser ammo is not reselected."""
 import sys,tempfile,time,unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -28,7 +28,7 @@ class ReloadingLaserSelection(unittest.TestCase):
         self.w.attacking=False   # selected during an attack, RSB/RCB fire at once (test_rsb_instant_shot)
         self.w.menu_action(dict(menuItemId=ammo,actionType=0,sourceType=0))
 
-    def test_npc_and_station_shots_return_to_previous_ammo(self):
+    def test_npc_and_station_shots_keep_the_ammo_selected(self):
         for i,(target,ammo) in enumerate((target,ammo) for target in (self.npc.id,cbs.asset_id(2))
                                         for ammo in ('ammunition_laser_rsb-75','ammunition_laser_rcb-140')):
             with self.subTest(target=target,ammo=ammo):
@@ -37,10 +37,10 @@ class ReloadingLaserSelection(unittest.TestCase):
                 with patch.object(dunya.random,'random',return_value=1):
                     self.w.hero_laser(now)
                 self.assertEqual(self.p.ammo(ammo),99)
-                self.assertEqual(self.p.d['secili']['lazer'],self.old)
+                self.assertEqual(self.p.d['secili']['lazer'],ammo)
                 self.assertEqual(self.p.ammo(self.old),100)
 
-    def test_manual_laser_choice_during_rsb_reload_remains_possible(self):
+    def test_manual_laser_choice_after_rsb_shot_remains_possible(self):
         rsb='ammunition_laser_rsb-75';self.select(rsb)
         self.w.target=self.npc.id;self.w.attacking=True
         with patch.object(dunya.random,'random',return_value=1):self.w.hero_laser(time.time())

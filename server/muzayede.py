@@ -129,6 +129,11 @@ def rival(lot, end, now, bid=None, level=None):
     return (v, pl['ad'], pl['id']) if v else (0, '', 0)
 
 
+def is_drone(loot):
+    import magaza as MG
+    return loot in MG.DRONES
+
+
 def stamp(t):
     return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(t))
 
@@ -157,6 +162,24 @@ class Muzayede:
         b = self.bid_rec(lot, now)
         return b['teklif'] if b else 0
 
+    def owned(self, lot):
+        """Oyuncunun zaten sahip olduğu benzersiz lot (gemi, gemi tasarımı) ya da yeri kalmayan dron: müzayedede listelenmez
+        (oyuncu bildirimi 2026-10-27: kazanılan gemi ve tasarımlar listede kalıyordu, azami Iris'te Iris de)."""
+        m = self.m
+        if not m:
+            return False
+        loot = lot['loot']
+        return m.owned_unique(loot) or (is_drone(loot) and not m.drone_room(loot))
+
+    def unit_price(self, lot):
+        """Anında alım bedeli (uridyum): dronda kaçıncı dron olduğuna göre mağaza fiyatı (Iris 15.000'den artar), ötekilerde lotun sabiti."""
+        m = self.m
+        if m and is_drone(lot['loot']):
+            cur, price = m.drone_price(lot['loot'])
+            if cur == 'uridium':
+                return price
+        return lot['fiyat']
+
     def data(self, lot, now):
         b = self.bid_rec(lot, now)
         mine = b['teklif'] if b else 0
@@ -167,7 +190,7 @@ class Muzayede:
             riv, rname, rid = o[0], o[2], o[3]
         lead = mine and mine > riv
         pl = self.p.d['pilot']
-        return mod('AuctionDataCommand', instantBuy=lot['anlik'], price=lot['fiyat'], highestBid=max(mine, riv),
+        return mod('AuctionDataCommand', instantBuy=lot['anlik'], price=self.unit_price(lot), highestBid=max(mine, riv),
                    highestBidderName=pl.get('userName', '') if lead else rname, id=lot['loot'], myBid=mine, type=lot['tur'],
                    highestBidderId=self.p.user_id if lead else rid, group=lot['grup'], amount=lot['adet'])
 
@@ -179,7 +202,7 @@ class Muzayede:
             'weekSubSec': period_end('week', now) - int(now), 'hourSubSec': period_end('hour', now) - int(now),
             'daySubSec': period_end('day', now) - int(now), 'historyList': hist,
             'myBidList': [self.data(l, now) for l in LOTS.values() if self.bid_of(l, now)],
-            'auctionList': [self.data(l, now) for l in LOTS.values()]})
+            'auctionList': [self.data(l, now) for l in LOTS.values() if not self.owned(l)]})
 
     def history(self, now):
         """Oyuncunun kazandıkları ve kaybettikleri + (rakipler açıksa) son biten dönemlerin rakip kazananları."""
@@ -236,6 +259,8 @@ class Muzayede:
                                  self.list_cmd(now), self.flag_cmd()]
         if not lot:
             return fail('auction_error_generic')
+        if self.owned(lot) and not self.bid_rec(lot, now):
+            return fail('drone_have_max' if is_drone(lot['loot']) else 'items_shop_error_ship_contains_ship')
         end = period_end(lot['tur'], now)
         rec = self.bid_rec(lot, now)
         mine = rec['teklif'] if rec else 0
@@ -258,10 +283,14 @@ class Muzayede:
         lot = LOTS.get((f.get('type'), f.get('lootId')))
         if not lot or not lot['anlik'] or not lot['fiyat']:
             return [('AuctionQuickBuyCommand', {'success': False, 'stack': stack_msg('auction_buy_instant_invalid')})]
+        if self.owned(lot):
+            return [('AuctionQuickBuyCommand', {'success': False, 'stack': stack_msg(
+                'drone_have_max' if is_drone(lot['loot']) else 'items_shop_error_ship_contains_ship')})]
+        price = self.unit_price(lot)
         import envanter as INV
-        if INV.spend(self.p, {'currency_uridium': lot['fiyat']}, 'buy_SPECIAL', lot['loot']) is None:
+        if INV.spend(self.p, {'currency_uridium': price}, 'buy_SPECIAL', lot['loot']) is None:
             return [('AuctionQuickBuyCommand', {'success': False, 'stack': stack_msg('not_enough_uridium')})]
-        self.log('   müzayede anında alım: %s x%d (%d U)' % (lot['loot'], lot['adet'], lot['fiyat']))
+        self.log('   müzayede anında alım: %s x%d (%d U)' % (lot['loot'], lot['adet'], price))
         msgs = self.m.reward(lot['loot'], lot['adet']) if self.m else []
         return [('AuctionQuickBuyCommand', {'success': True, 'stack': stack_msg('empty')}), self.list_cmd(now)] + \
             (self.m.money_msgs() if self.m else []) + msgs

@@ -41,6 +41,7 @@ ALIEN_CPUS.update(json.load(open(os.path.join(HERE, 'data', 'etkinlik_kapilari.j
 FORMATIONS = _E['formasyonlar']               # drone formation menu items: one shared wait between two changes (S['formasyon'])
 TOGGLE_DEFAULT = {'nisan': False}             # Xenomit harcar: kendiliğinden açılmaz; ötekiler takılınca açık
 XENOMIT = 3
+REPBOT_MENU = 'equipment_extra_repbot_rep'
 HM7 = 'equipment_extra_hmd-07'                # ticaret dronu: kısayol çubuğu simgesi ticaret penceresini açar (dunya.menu_action)
 TIMERS = 'bekleme_gruplari'                   # profilde: {grup: [bitiş, azami ms]}
 # havai fişek (K6): istemcinin fireworkDescriptor kimlikleri 31-35 (canlıda istemcinin sözlüğünden okundu; başkası FireWorkInfo.Init'te
@@ -326,6 +327,15 @@ def menu_status(p, menu_id, st):
                 lines = (st.get(tip) or {}).get('commandList')
                 if lines:
                     lines[:] = [l for l in lines if l.get('baseKey') != 'ttip_cpu_not_equipped']
+        return st
+    if menu_id == REPBOT_MENU:                     # onarım robotu: şablon hep REP-2; takılı robota göre, takılı değilse devre dışı
+        loot = next((e for e in EK.equipped(p) if e in _E['onarim_robotlari']), None)
+        if loot:
+            _tips(st, [_line('ttip_robot_cpu', [('%TYPE%', loot, 1)])])
+            st.update(visible=True, available=True, activatable=True, iconLootId=loot)
+        else:
+            _tips(st, [_line('ttip_cpu_not_equipped')])
+            st.update(visible=True, available=False, activatable=False, selected=False)
         return st
     if menu_id in TOGGLES:
         key = TOGGLES[menu_id]
@@ -995,9 +1005,6 @@ class Esyalar:
         with p.lock:
             p.d['cpu_gizli'] = True
             p.dirty = True
-        for n in w.npcs.values():
-            if n.engaged:
-                w.disengage(n, now)
         self.send([legacy('0|n|INV|%d|1' % w.hid)] + self.status(S['gizlenme_cpu']['menu']))
         self.log('   gizlendi (%s, kalan %d)' % (loot, left))
 

@@ -289,9 +289,11 @@ def quest_giver(m, map_id):
 
 
 def gates(map_id, faction=None):
-    """faction: oyuncunun firması (arkadaş sunucusunda her oyuncunun kendisi; verilmezse PLAYER_FACTION)."""
+    """faction: oyuncunun firması (arkadaş sunucusunda her oyuncunun kendisi; verilmezse PLAYER_FACTION): kendi firmasının portalları önde."""
     fac = faction if faction is not None else PLAYER_FACTION
-    return [g for g in GATES.get(int(map_id), []) if not g.get('yalniz_firma') or fac in (None, g['yalniz_firma'])]
+    # başka firmanın portalı görünmez ama çalışır (oyuncu bildirimi 2026-10-27: gerçek oyunda korsan haritalarında hepsi atlanıyor);
+    # kendi firmanınki önce gelir: arrival() geri dönüş portalını ilk eşleşmeden alır
+    return sorted(GATES.get(int(map_id), []), key=lambda g: bool(g.get('yalniz_firma')) and fac not in (None, g['yalniz_firma']))
 
 
 def arrival(src_map, dst_map, faction=None):

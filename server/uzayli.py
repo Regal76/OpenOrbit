@@ -99,7 +99,9 @@ class Yetenekler:
     def hero_open(self, now, n=None):
         """NPC abilities share laser retaliation rules, with portal/spawn/cloak protection."""
         w = self.w
-        if (w.hero_dead or w.jumping or now < w.invuln_until or w.abilities.cloaked(now) or w.items.cloaked()):
+        if w.hero_dead or w.jumping or now < w.invuln_until:
+            return False
+        if (w.abilities.cloaked(now) or w.items.cloaked()) and not (n is not None and n.engaged):      # saldıran uzaylı gizlenmeye aldırmaz
             return False
         return not w.in_peace(*w.hero_pos(now)) or bool(n is not None and w.npc_retaliating(n))
 

@@ -332,7 +332,6 @@ class World:
         self.next_laser = 0.0
         self.ammo_ready = {}           # kendi beklemesi olan cephane (RSB-75, RCB-140: 3 sn) -> yeniden atabileceği an
         self.ammo_timer_end = {}       # cooldown group -> end of the countdown shown on the shortcut bar (ammo_timer)
-        self.ammo_back = None          # laser ammo selected before RSB-75 / RCB-140: reselected after their shot (ammo_return)
         self.rocket_ready = 0.0
         self.running = False
         self.hero_dead = False
@@ -1476,13 +1475,13 @@ class World:
             if not (self.at_trade() or cbs or by_pet or by_hm7) or price is None or n <= 0 or n > have:
                 self.log('   satış olmadı: tür %s x%d (elde %d, istasyonda %s)' % (t, n, have, self.at_trade()))
                 return
-            if by_pet and self.pet.d['yakit'] < self.pet.trade_fuel():      # satışın yakıt bedeli (istemci: "You have to use P.E.T. fuel to trade")
+            if by_pet and not self.pet.trade_paid and self.pet.d['yakit'] < self.pet.trade_fuel():      # satışın yakıt bedeli (istemci: "You have to use P.E.T. fuel to trade")
                 self.log('   P.E.T. satışı olmadı: yakıt yetmiyor (%d < %d)' % (self.pet.d['yakit'], self.pet.trade_fuel()))
                 self.send([legacy('0|A|STM|msg_pet_no_fuel_to_activate')])
                 return
             if by_pet:
                 price = int(price * (1 + self.pet.trade_bonus()))     # G-TRA1: +%5/15/30
-                self.pet.trade_used(time.time())      # kargo tüccarı bekleme süresine girer
+                self.pet.trade_charge()               # oturumun yakıtı ilk satışta; soğuma pencere kapanınca başlar (pet.trade_close)
             elif by_hm7:
                 self.log('   HM-7 ile satış (kalan %d)' % EK.use(self.p, 'equipment_extra_hmd-07'))
             totals = self.p.remove_ores({t: n})
@@ -1610,6 +1609,8 @@ class World:
     def on_move(self, f):
         with self.lock:
             now = time.time()
+            if self.pet and self.pet.trading:
+                self.pet.trade_close(now)      # istemci ticaret penceresini kapatınca bir şey göndermiyor; hareket ya da başka modül seçmek ticareti bitirir (orijinal oyun)
             self._effect_destination = None
             speed = self.p.d['gemi'].get('speed', 300)
             x, y = f['targetX'], f['targetY']
@@ -2701,20 +2702,6 @@ class World:
         """Laser ammo with its own cooldown (RSB-75, RCB-140)."""
         return bool(ammo and ESYA['lazer_cephane'].get(ammo, {}).get('aralik_sn'))
 
-    def ammo_return(self, ammo):
-        """After an RSB-75 / RCB-140 shot, select again the laser ammo used before it (ammo_back) -> status messages.
-        Nothing happens if that ammo is gone: the slow ammo stays selected and fires again after its cooldown."""
-        back = self.ammo_back
-        if not back or not self.slow_ammo(ammo) or self.p.d['secili'].get('lazer') != ammo:
-            return []
-        if self.p.ammo(back) <= 0:
-            self.ammo_back = None
-            return []
-        self.p.d['secili']['lazer'] = back
-        self.p.dirty = True
-        self.log('   back to %s after %s' % (back, ammo))
-        return [('MenuItemStatusCommand', st) for st in (self.p.menu_status(ammo), self.p.menu_status(back)) if st]
-
     def slow_ammo_shot(self, ammo, now=None):
         """RSB-75 / RCB-140 fire as soon as they are selected during an attack, like on the official server, instead of
         waiting for the next laser tick (next_laser). Nothing happens while the ammo cools down: the tick fires it later.
@@ -2759,7 +2746,7 @@ class World:
         self.next_laser = now + SAVAS['lazer_aralik_sn']
         if cooldown:
             self.ammo_ready[ammo] = now + cooldown
-        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + self.ammo_return(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid,laserColor=self.laser_color(ammo),
+        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=uid,laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
         self.p.ach('shot', silah='LASER')
@@ -2827,7 +2814,7 @@ class World:
         self.next_laser = now + SAVAS['lazer_aralik_sn']
         if cooldown:
             self.ammo_ready[ammo] = now + cooldown
-        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + self.ammo_return(ammo) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=n.id,
+        self.send(self.ammo_msgs(ammo) + self.ammo_timer(ammo, now) + [('AttackLaserRunCommand', dict(attackerId=self.hid, targetId=n.id,
                                                                          laserColor=self.laser_color(ammo),
                                                                          isDiminishedBySkillShield=False, skilledLaser=self.skilled_laser(),
                                                                          visualType=0))])
@@ -2880,11 +2867,6 @@ class World:
                     return
                 self.p.d['secili'][kind] = item
                 self.p.dirty = True
-                if kind == 'lazer':                     # RSB-75 / RCB-140: remember the ammo to go back to after the shot
-                    if not self.slow_ammo(item):
-                        self.ammo_back = None
-                    elif not self.slow_ammo(old):
-                        self.ammo_back = old
                 self.send([('MenuItemStatusCommand', st) for st in (self.p.menu_status(old), self.p.menu_status(item)) if st])
                 self.log('   %s cephanesi: %s' % (kind, item))
                 if act == 1 and kind == 'lazer' and self.quickslot_on() and not self.attacking:
@@ -3844,8 +3826,10 @@ class World:
         retaliating = self.npc_retaliating(n)
         # protected zone (station, portal, layout safe zone): nobody attacks the pilot, except the alien he attacked (permission set in hit_npc)
         zoned = self.in_peace(hx, hy) and not retaliating
-        hidden = self.hero_dead or self.jumping or self.abilities.cloaked(now) or self.items.cloaked()     # gizlenme CPU'su
-        hero_safe = zoned or hidden
+        cloaked = self.abilities.cloaked(now) or self.items.cloaked()
+        hidden = self.hero_dead or self.jumping
+        hero_safe = zoned or hidden                 # peşini bırakma nedenleri; gizlenme yok: saldıran uzaylı EMP-01'e dek vazgeçmez (oyuncu bildirimi)
+        spared = hero_safe or cloaked               # yeni saldırı başlatma nedenleri
         phase = self.alien.low_health(n, now)
         if phase:                               # düşük can (uzayli.low_health): kaçış; varınca park (ateş etmez). Kaçarken menzildeyse ateş eder
             if (phase == 'kac' and n.engaged and not hero_safe and not n.etki.frozen(now) and dist <= self.alien.flee_range(n)
@@ -3860,9 +3844,9 @@ class World:
         hunt = n.hunt and not getattr(n, 'pasif', False)
         post = self.ward_of(n)
         tied = bool(post) and self.leashed(n, post, hx, hy, now)       # koruyucu: oyuncu çağıranından uzak
-        if hunt and not n.engaged and not hero_safe and now >= n.next_think:
+        if hunt and not n.engaged and not spared and now >= n.next_think:
             n.engaged = True                    # oyuncu yine ulaşılabilir (dirildi, gizlenme bitti, EMP geçti …)
-        if (self.aggressive(n) and not getattr(n, 'pasif', False) and not hero_safe
+        if (self.aggressive(n) and not getattr(n, 'pasif', False) and not spared
                 and dist < n.d.get('fark_mesafe', SAVAS['npc_fark_mesafe']) * AY.carpan('npc_fark')
                 and not self.in_peace(nx, ny)
                 and not n.engaged and not tied and now >= n.blocked):

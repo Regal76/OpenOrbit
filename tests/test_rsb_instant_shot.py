@@ -53,7 +53,7 @@ class InstantSlowAmmoShot(unittest.TestCase):
                     self.select(ammo, act)
                     self.assertEqual(len(self.shots()), 1)
                     self.assertEqual(self.p.ammo(ammo), before - 1)
-                    self.assertEqual(self.p.d['secili']['lazer'], OLD)       # back to the previous ammo
+                    self.assertEqual(self.p.d['secili']['lazer'], ammo)      # stays selected (original game)
                     timers = [m for m in self.sent if m[0] == 'MenuItemCooldownGroupTimerCommand']
                     self.assertEqual(timers[0][1]['cooldownType']['typeValue'], 10)
                     # the next normal salvo waits a full interval from the instant shot
@@ -90,7 +90,7 @@ class InstantSlowAmmoShot(unittest.TestCase):
             self.select(RSB)
         self.assertTrue(self.w.attacking)
         self.assertEqual(len(self.shots()), 1)
-        self.assertEqual(self.p.d['secili']['lazer'], OLD)
+        self.assertEqual(self.p.d['secili']['lazer'], RSB)
 
 
 if __name__ == '__main__':

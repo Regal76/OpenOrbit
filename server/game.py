@@ -1278,6 +1278,9 @@ class Session:
             if name == 'UIWindowUpdateRequest':
                 if f.get('maximized'):
                     self.pencereler.opened(f.get('itemId'))
+                if 'trade' in str(f.get('itemId')) and not f.get('maximized') and w:       # ticaret penceresi kapandı (P.E.T. kargo tüccarı)
+                    with w.lock:
+                        self.pet.trade_close(time.time())
                 resp = self.ek.window_update(f)        # pencere açıldı/kapandı (UIButtonTriggerRequest göndermeyenler)
                 if resp:
                     self.send(resp, 'pencere: %s' % f.get('itemId'))

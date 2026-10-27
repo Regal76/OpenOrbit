@@ -53,6 +53,7 @@ DESIGNS = PET['tasarimlar']
 # istemcinin PetGearType enum'u
 PASSIVE, GUARD, AUTO_LOOT, AUTO_RESOURCE, ENEMY_LOCATOR, RESOURCE_LOCATOR = 1, 2, 4, 5, 6, 7
 TRADE_POD, REPAIR_PET, KAMIKAZE, COMBO_REPAIR, COMBO_GUARD = 8, 9, 10, 11, 12
+TRADE_BUFF = 3                          # istemcinin game.xml petBuffs: trade_buff.png / ttip_pet_trading
 RETARGETING, HP_LINK, MEGA_MINE, COMBAT_BEACON, HP_BEACON, HEAT_RELEASE = 15, 16, 17, 18, 19, 20
 WORKING = {PASSIVE, GUARD, AUTO_LOOT, AUTO_RESOURCE, ENEMY_LOCATOR, RESOURCE_LOCATOR, TRADE_POD, REPAIR_PET, KAMIKAZE, COMBO_REPAIR,
            COMBO_GUARD, HEAT_RELEASE, HP_LINK, COMBAT_BEACON, HP_BEACON}
@@ -177,6 +178,8 @@ class Pet:
         self.targets_sent = {}       # bulucu dişli -> istemciye gönderilen hedef listesi
         self.trading = False         # kargo tüccarı seçili: rafineri penceresi uzayda açık
         self.trade_ready = 0.0
+        self.trade_wait = False      # kargo tüccarı soğuyor: P.E.T. penceresi kilitli, "Trade buff" simgesi (trade_close)
+        self.trade_paid = False      # bu ticaret oturumunun yakıtı ödendi (pencere açıkken istenen kadar satış)
         self.fuel_sent, self.next_fuel_msg = 0, 0.0
         self.release_end = 0.0       # G-HR1 (Heat Release) çalışıyorsa bitişi
         self.release_ready = 0.0     # G-HR1 bekleme bitişi
@@ -699,7 +702,7 @@ class Pet:
 
     def launch(self):
         w = self.w
-        if self.active or not w or w.hero_dead:
+        if self.active or not w or w.hero_dead or (self.trade_wait and time.time() < self.trade_ready):
             return
         if self.d['yikik']:
             self.send([self.repair_button(), legacy('0|A|STM|msg_pet_is_dead')])
@@ -774,8 +777,11 @@ class Pet:
             self.send([self.select_msg()])
             return
         now = time.time()
-        if t == TRADE_POD and now < self.trade_ready:
-            self.log('   kargo tüccarı beklemede (%d sn)' % (self.trade_ready - now))
+        if self.trading and t != TRADE_POD:
+            self.trade_close(now)                # başka modül seçmek de ticareti bitirir (oyuncu doğrulaması, orijinal oyun)
+            return
+        if self.trade_wait and now < self.trade_ready:
+            self.log('   P.E.T. kilitli: ticaret bekleme süresi (%d sn)' % (self.trade_ready - now))
             self.send([self.select_msg()])
             return
         if t == TRADE_POD and self.d['yakit'] < self.trade_fuel():      # satışın yakıt bedeli karşılanmıyor: pencere açılmaz
@@ -823,6 +829,7 @@ class Pet:
             self.shooting = None
         self.trading = t == TRADE_POD
         if self.trading:
+            self.trade_paid = False
             msgs.append(('PetTradeWindowShowCommand', {}))
             if self.active and self.w:                   # 1.1.115 istemcisi PetTradeWindowShow olayını dinlemiyor: pencereyi yalnız
                 msgs.append(self.w.trade_info())         # OreTradeInfoCommand (TradeType.PET) açar (bildirim 2026-10-26)
@@ -998,6 +1005,8 @@ class Pet:
 
     def on_ready(self):
         """Harita yüklendi (ReadyRequest): bir önceki haritada etkinse yeniden çıkar."""
+        if self.trade_wait and self.w:
+            self.send(self.trade_block_msgs(time.time()))          # harita değişti: istemci kilidi ve simgeyi yeniden ister
         if self.relaunch and self.w:
             self.relaunch = False
             with self.w.lock:
@@ -1020,6 +1029,8 @@ class Pet:
 
     def tick(self, now):
         """Dünya döngüsünden (kilit altında): izleme, toplama, ateş, yakıt, onarım, bulucu."""
+        if self.trade_wait and self.w and now >= self.trade_ready:
+            self.trade_unblock()
         if not self.active or not self.alive or not self.w:
             return
         w = self.w
@@ -1116,6 +1127,8 @@ class Pet:
                 msgs.append(('HitpointInfoCommand', dict(hitpoints=int(ship['hitPoints']), hitpointsMax=ship.get('hitMax', 0),
                                                          nanoHull=ship.get('nanoHull', 0), nanoHullMax=ship.get('maxNanoHull', 0))))
                 msgs += w.heal_msgs(hp0)                                  # "+can" sayısı (Ö1)
+                px, py = self.pos(now)                                    # onarım ışını (istemci Heal_Beam: kaynak P.E.T., hedef gemi)
+                msgs.append(('HealBeamCommand', dict(sourceId=str(self.pid), sourcePositionX=int(px), sourcePositionY=int(py), targetId=w.hid)))
         if g in (ENEMY_LOCATOR, RESOURCE_LOCATOR):
             # No target (none chosen, none on the map or none in range): the client expects (-1, -1) and dims the arrow
             # (LocatorGearEffect3D.UpdateGearInfo: alpha 0.2, no rotation). Sending nothing left the arrow at its default
@@ -1308,15 +1321,45 @@ class Pet:
         G-TRA1 ticaret_yakit; AI-ECO ve panelin yakıt çarpanı diğer yakıt giderleri gibi uygulanır."""
         return self.gear(TRADE_POD).get('ticaret_yakit', 0) * (1 + self.proto('yakit')) * AY.carpan('pet_yakit')
 
-    def trade_used(self, now):
-        """Kargo tüccarıyla satış yapıldı: yakıt düşer, dişli bekleme süresine girer (wiki: 300 sn), P.E.T. korumaya döner."""
+    def trade_charge(self):
+        """Ticaret oturumunda ilk satış: yakıt bir kez düşer; pencere açıkken istenen kadar satılır (gerçek oyun, oyuncu bildirimi
+        2026-10-27)."""
+        if self.trade_paid:
+            return
+        self.trade_paid = True
         with self.p.lock:
             self.d['yakit'] = max(0, self.d['yakit'] - self.trade_fuel())
             self.p.dirty = True
         self.send([self.fuel_msg()])
-        self.trade_ready = now + self.gear(TRADE_POD).get('bekleme_sn', 0)
-        self.trading = False
-        self.select(GUARD)
+
+    def trade_block_msgs(self, now):
+        """Soğuma sürerken P.E.T. penceresi: düğmeler kilitli ve "Trade buff" simgesi geri sayımla (istemcinin game.xml'i petBuffs 3 =
+        ttip_pet_trading; PetBuffCommand eylem 0 ekler, süre saniye: canlıda ms gönderince 8:19:58 göründü)."""
+        return [('PetBlockUICommand', dict(blocked=True, blockAll=True)),
+                ('PetBuffCommand', dict(effectAction=0, effectId=TRADE_BUFF, addingParameters=[int(self.trade_ready - now)]))]
+
+    def trade_close(self, now):
+        """Ticaret penceresi kapandı (gerçek oyun): P.E.T. gizlenir, Pasif kipe geçer, pencere kilitlenir ve soğuma başlar (dişli
+        seviyesine göre 300/120/30 sn); bitince pencere açılır, P.E.T. yeniden çıkarılabilir."""
+        if not self.trading:
+            return
+        self.trading = self.trade_paid = False
+        cool = self.gear(TRADE_POD).get('bekleme_sn', 0)
+        self.trade_ready = now + cool
+        self.trade_wait = cool > 0
+        self.relaunch = False
+        with self.p.lock:
+            self.d['disli'] = PASSIVE
+            self.p.dirty = True
+        self.deactivate(notify=False)            # pencere P.E.T.'i tanımaya devam etmeli (PetInfo): yalnız birim kalkar, buff ona bağlanır
+        self.send([self.select_msg()] + (self.trade_block_msgs(now) if self.trade_wait else []) + [('ShipRemoveCommand', {'userId': self.pid})])
+        self.log('   ticaret bitti: P.E.T. %d sn kilitli' % cool)
+
+    def trade_unblock(self):
+        self.trade_wait = False
+        self.send([('PetBlockUICommand', dict(blocked=False, blockAll=False)),
+                   ('PetBuffCommand', dict(effectAction=1, effectId=TRADE_BUFF, addingParameters=[]))])
+        self.log('   P.E.T. ticaret soğuması bitti')
 
     def targets(self, g):
         """Bulucu dişlinin seçilebilir hedefleri: haritadaki düşman NPC'lerin istemci kimlikleri (locator_id) ya da cevher türleri."""
