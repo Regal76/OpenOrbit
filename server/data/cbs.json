@@ -7,64 +7,64 @@
    "kimlik": 1,
    "ad": "Aries",
    "harita": 3,
-   "x_yuzde": 50,
-   "y_yuzde": 18,
+   "x_yuzde": 50.59048,
+   "y_yuzde": 18.64885,
    "ad_anahtari": "battleStation_name_1"
   },
   {
    "kimlik": 2,
    "ad": "Balzar",
    "harita": 4,
-   "x_yuzde": 21,
-   "y_yuzde": 68,
+   "x_yuzde": 21.3,
+   "y_yuzde": 70.33588,
    "ad_anahtari": "battleStation_name_2"
   },
   {
    "kimlik": 3,
    "ad": "Cetus",
    "harita": 17,
-   "x_yuzde": 82,
-   "y_yuzde": 18,
+   "x_yuzde": 82.07143,
+   "y_yuzde": 19.46565,
    "ad_anahtari": "battleStation_name_3"
   },
   {
    "kimlik": 4,
    "ad": "Draco",
    "harita": 18,
-   "x_yuzde": 47,
-   "y_yuzde": 46,
+   "x_yuzde": 47.69524,
+   "y_yuzde": 47.66412,
    "ad_anahtari": "battleStation_name_4"
   },
   {
    "kimlik": 5,
    "ad": "Equleus",
    "harita": 19,
-   "x_yuzde": 47,
-   "y_yuzde": 53,
+   "x_yuzde": 47.78571,
+   "y_yuzde": 55.41985,
    "ad_anahtari": "battleStation_name_5"
   },
   {
    "kimlik": 6,
    "ad": "Fornax",
    "harita": 7,
-   "x_yuzde": 50,
-   "y_yuzde": 18,
+   "x_yuzde": 50.59048,
+   "y_yuzde": 18.64885,
    "ad_anahtari": "battleStation_name_6"
   },
   {
    "kimlik": 7,
    "ad": "Gemini",
    "harita": 8,
-   "x_yuzde": 77,
-   "y_yuzde": 63,
+   "x_yuzde": 77.07619,
+   "y_yuzde": 65.56489,
    "ad_anahtari": "battleStation_name_7"
   },
   {
    "kimlik": 8,
    "ad": "Hydra",
    "harita": 21,
-   "x_yuzde": 49,
-   "y_yuzde": 66,
+   "x_yuzde": 49.84286,
+   "y_yuzde": 68.99237,
    "ad_anahtari": "battleStation_name_8"
   },
   {
@@ -79,87 +79,87 @@
    "kimlik": 10,
    "ad": "Julius",
    "harita": 23,
-   "x_yuzde": 49,
-   "y_yuzde": 43,
+   "x_yuzde": 49.84286,
+   "y_yuzde": 44.67939,
    "ad_anahtari": "battleStation_name_10"
   },
   {
    "kimlik": 11,
    "ad": "Kepler",
    "harita": 11,
-   "x_yuzde": 50,
-   "y_yuzde": 18,
+   "x_yuzde": 50.59048,
+   "y_yuzde": 18.64885,
    "ad_anahtari": "battleStation_name_11"
   },
   {
    "kimlik": 12,
    "ad": "Lynx",
    "harita": 12,
-   "x_yuzde": 22,
-   "y_yuzde": 66,
+   "x_yuzde": 22.28095,
+   "y_yuzde": 68.69466,
    "ad_anahtari": "battleStation_name_12"
   },
   {
    "kimlik": 13,
    "ad": "Mensa",
    "harita": 25,
-   "x_yuzde": 51,
-   "y_yuzde": 67,
+   "x_yuzde": 51.52381,
+   "y_yuzde": 69.14504,
    "ad_anahtari": "battleStation_name_13"
   },
   {
    "kimlik": 14,
    "ad": "Nashira",
    "harita": 26,
-   "x_yuzde": 46,
-   "y_yuzde": 61,
+   "x_yuzde": 46.66667,
+   "y_yuzde": 63.47328,
    "ad_anahtari": "battleStation_name_14"
   },
   {
    "kimlik": 15,
    "ad": "Orion",
    "harita": 27,
-   "x_yuzde": 50,
-   "y_yuzde": 34,
+   "x_yuzde": 50.02857,
+   "y_yuzde": 35.72519,
    "ad_anahtari": "battleStation_name_15"
   },
   {
    "kimlik": 16,
    "ad": "Volan",
    "harita": 13,
-   "x_yuzde": 47,
-   "y_yuzde": 42,
+   "x_yuzde": 47.97143,
+   "y_yuzde": 43.63359,
    "ad_anahtari": "battleStation_name_16"
   },
   {
    "kimlik": 17,
    "ad": "Wican",
    "harita": 14,
-   "x_yuzde": 54,
-   "y_yuzde": 43,
+   "x_yuzde": 54.60476,
+   "y_yuzde": 44.9771,
    "ad_anahtari": "battleStation_name_17"
   },
   {
    "kimlik": 18,
    "ad": "Xenitor",
    "harita": 15,
-   "x_yuzde": 42,
-   "y_yuzde": 44,
+   "x_yuzde": 42.18095,
+   "y_yuzde": 46.16794,
    "ad_anahtari": "battleStation_name_18"
   },
   {
    "kimlik": 19,
    "ad": "Yukian",
    "harita": 16,
-   "x_yuzde": 21,
-   "y_yuzde": 21,
+   "x_yuzde": 21.55714,
+   "y_yuzde": 22.6374,
    "ad_anahtari": "battleStation_name_19"
   },
   {
    "kimlik": 20,
    "ad": "Zerpan",
    "harita": 29,
-   "x_yuzde": 28.65715,
+   "x_yuzde": 28.65714,
    "y_yuzde": 21.44275,
    "ad_anahtari": "battleStation_name_20"
   },
@@ -175,8 +175,8 @@
    "kimlik": 22,
    "ad": "Kardlatot",
    "harita": 307,
-   "x_yuzde": 61.0239,
-   "y_yuzde": 64.4504,
+   "x_yuzde": 61.02381,
+   "y_yuzde": 64.45038,
    "ad_anahtari": "battleStation_name_22"
   },
   {

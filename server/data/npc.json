@@ -7,6 +7,7 @@
    "kalkan": 400,
    "hasar": 20,
    "hiz": 172,
+   "genisleme": 1,
    "saldirgan": false,
    "odul": {
     "ep": 400,
@@ -27,6 +28,7 @@
    "kalkan": 800,
    "hasar": 40,
    "hiz": 200,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 500,
@@ -47,6 +49,7 @@
    "kalkan": 1000,
    "hasar": 70,
    "hiz": 212,
+   "genisleme": 1,
    "saldirgan": false,
    "odul": {
     "ep": 700,
@@ -68,6 +71,7 @@
    "kalkan": 2000,
    "hasar": 80,
    "hiz": 242,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 800,
@@ -92,6 +96,7 @@
    "kalkan": 8000,
    "hasar": 320,
    "hiz": 240,
+   "genisleme": 2,
    "saldirgan": true,
    "odul": {
     "ep": 3200,
@@ -121,7 +126,8 @@
    "hp": 3200,
    "kalkan": 1600,
    "hasar": 100,
-   "hiz": 220,
+   "hiz": 173,
+   "genisleme": 1,
    "saldirgan": false,
    "odul": {
     "ep": 1600,
@@ -148,7 +154,8 @@
    "hp": 100000,
    "kalkan": 100000,
    "hasar": 1200,
-   "hiz": 150,
+   "hiz": 123,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 6400,
@@ -175,7 +182,8 @@
    "hp": 20000,
    "kalkan": 10000,
    "hasar": 390,
-   "hiz": 200,
+   "hiz": 52,
+   "genisleme": 2,
    "saldirgan": true,
    "odul": {
     "ep": 3200,
@@ -203,6 +211,7 @@
    "kalkan": 6000,
    "hasar": 200,
    "hiz": 280,
+   "genisleme": 2,
    "saldirgan": true,
    "odul": {
     "ep": 1600,
@@ -228,7 +237,8 @@
    "hp": 80000,
    "kalkan": 40000,
    "hasar": 1500,
-   "hiz": 180,
+   "hiz": 78,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 12800,
@@ -260,7 +270,8 @@
    "hp": 24000,
    "kalkan": 12000,
    "hasar": 800,
-   "hiz": 250,
+   "hiz": 272,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 6400,
@@ -292,7 +303,8 @@
    "hp": 400000,
    "kalkan": 400000,
    "hasar": 4650,
-   "hiz": 140,
+   "hiz": 122,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 26500,
@@ -325,6 +337,7 @@
    "kalkan": 200000,
    "hasar": 2650,
    "hiz": 150,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 12800,
@@ -351,7 +364,8 @@
    "hp": 800000,
    "kalkan": 800000,
    "hasar": 12350,
-   "hiz": 140,
+   "hiz": 92,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 51000,
@@ -383,7 +397,8 @@
    "hp": 40000,
    "kalkan": 40000,
    "hasar": 3200,
-   "hiz": 300,
+   "hiz": 272,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 3200,
@@ -410,7 +425,8 @@
    "hp": 300000,
    "kalkan": 200000,
    "hasar": 3600,
-   "hiz": 200,
+   "hiz": 172,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 25600,
@@ -438,6 +454,7 @@
    "kalkan": 160000,
    "hasar": 4350,
    "hiz": 280,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 12800,
@@ -470,6 +487,7 @@
    "kalkan": 800000,
    "hasar": 16000,
    "hiz": 180,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 102400,
@@ -501,7 +519,8 @@
    "hp": 50000,
    "kalkan": 40000,
    "hasar": 1650,
-   "hiz": 300,
+   "hiz": 272,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 6400,
@@ -528,7 +547,8 @@
    "hp": 400000,
    "kalkan": 300000,
    "hasar": 4450,
-   "hiz": 200,
+   "hiz": 172,
+   "genisleme": 3,
    "saldirgan": false,
    "menzil": 550,
    "odul": {
@@ -558,6 +578,7 @@
    "kalkan": 1200000,
    "hasar": 0,
    "hiz": 30,
+   "genisleme": 1,
    "saldirgan": false,
    "odul": {
     "ep": 512000,
@@ -587,6 +608,7 @@
    "kalkan": 160000,
    "hasar": 4700,
    "hiz": 280,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 25600,
@@ -618,7 +640,8 @@
    "hp": 1600000,
    "kalkan": 1200000,
    "hasar": 20000,
-   "hiz": 180,
+   "hiz": 171,
+   "genisleme": 3,
    "saldirgan": false,
    "menzil": 550,
    "odul": {
@@ -651,7 +674,8 @@
    "hp": 75000,
    "kalkan": 60000,
    "hasar": 1700,
-   "hiz": 300,
+   "hiz": 373,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 6400,
@@ -668,7 +692,8 @@
    "hp": 40000,
    "kalkan": 30000,
    "hasar": 1000,
-   "hiz": 300,
+   "hiz": 272,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 6000,
@@ -693,7 +718,8 @@
    "hp": 80000,
    "kalkan": 40000,
    "hasar": 2000,
-   "hiz": 280,
+   "hiz": 268,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 12800,
@@ -723,7 +749,8 @@
    "hp": 1200000,
    "kalkan": 750000,
    "hasar": 12000,
-   "hiz": 450,
+   "hiz": 422,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 55000,
@@ -755,6 +782,7 @@
    "kalkan": 3200,
    "hasar": 160,
    "hiz": 250,
+   "genisleme": 2,
    "saldirgan": true,
    "odul": {
     "ep": 3200,
@@ -777,7 +805,8 @@
    "hp": 16000,
    "kalkan": 16000,
    "hasar": 640,
-   "hiz": 250,
+   "hiz": 272,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 6400,
@@ -805,7 +834,8 @@
    "hp": 160000,
    "kalkan": 80000,
    "hasar": 3120,
-   "hiz": 200,
+   "hiz": 71,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 25600,
@@ -834,6 +864,7 @@
    "kalkan": 24000,
    "hasar": 1600,
    "hiz": 250,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 12800,
@@ -890,6 +921,7 @@
    "kalkan": 320000,
    "hasar": 8000,
    "hiz": 280,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 25600,
@@ -946,6 +978,7 @@
    "kalkan": 1600000,
    "hasar": 32000,
    "hiz": 180,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 204800,
@@ -1002,7 +1035,8 @@
    "hp": 3200000,
    "kalkan": 2400000,
    "hasar": 40000,
-   "hiz": 180,
+   "hiz": 171,
+   "genisleme": 3,
    "saldirgan": false,
    "menzil": 550,
    "odul": {
@@ -1034,6 +1068,7 @@
    "kalkan": 240000,
    "hasar": 7500,
    "hiz": 280,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 48000,
@@ -1058,7 +1093,8 @@
    "hp": 60000,
    "kalkan": 40000,
    "hasar": 500,
-   "hiz": 320,
+   "hiz": 572,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 7500,
@@ -1089,7 +1125,8 @@
    "hp": 180000,
    "kalkan": 100000,
    "hasar": 6000,
-   "hiz": 280,
+   "hiz": 375,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 15000,
@@ -1120,7 +1157,8 @@
    "hp": 200000,
    "kalkan": 150000,
    "hasar": 4000,
-   "hiz": 260,
+   "hiz": 428,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 22500,
@@ -1151,7 +1189,8 @@
    "hp": 300000,
    "kalkan": 200000,
    "hasar": 15000,
-   "hiz": 240,
+   "hiz": 322,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 75000,
@@ -1183,7 +1222,8 @@
    "hp": 330000,
    "kalkan": 260000,
    "hasar": 16500,
-   "hiz": 200,
+   "hiz": 322,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 83300,
@@ -1212,7 +1252,8 @@
    "hp": 750000,
    "kalkan": 600000,
    "hasar": 14000,
-   "hiz": 200,
+   "hiz": 334,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 187500,
@@ -1237,6 +1278,7 @@
    "kalkan": 320000,
    "hasar": 4000,
    "hiz": 320,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 30000,
@@ -1277,7 +1319,8 @@
    "hp": 1440000,
    "kalkan": 800000,
    "hasar": 48000,
-   "hiz": 280,
+   "hiz": 372,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 60000,
@@ -1317,7 +1360,8 @@
    "hp": 1600000,
    "kalkan": 1200000,
    "hasar": 32000,
-   "hiz": 260,
+   "hiz": 347,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 90000,
@@ -1403,7 +1447,8 @@
    "hp": 2640000,
    "kalkan": 2080000,
    "hasar": 51200,
-   "hiz": 200,
+   "hiz": 322,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 320000,
@@ -1433,7 +1478,8 @@
    "hp": 9000000,
    "kalkan": 4800000,
    "hasar": 17000,
-   "hiz": 150,
+   "hiz": 127,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 350000,
@@ -1600,7 +1646,8 @@
    "hp": 800000,
    "kalkan": 0,
    "hasar": 12000,
-   "hiz": 300,
+   "hiz": 772,
+   "genisleme": 3,
    "saldirgan": false,
    "odul": {
     "ep": 57750,
@@ -1619,7 +1666,8 @@
    "hp": 50000,
    "kalkan": 40000,
    "hasar": 1500,
-   "hiz": 420,
+   "hiz": 472,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 6400,
@@ -1693,6 +1741,7 @@
    "kalkan": 0,
    "hasar": 15000,
    "hiz": 250,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 10000000,
@@ -1810,7 +1859,8 @@
    "hp": 600000,
    "kalkan": 0,
    "hasar": 6000,
-   "hiz": 250,
+   "hiz": 722,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 15000,
@@ -1836,7 +1886,8 @@
    "hp": 300000,
    "kalkan": 300000,
    "hasar": 6000,
-   "hiz": 250,
+   "hiz": 422,
+   "genisleme": 3,
    "saldirgan": true,
    "odul": {
     "ep": 15000,
@@ -3147,7 +3198,7 @@
    "hp": 10000,
    "kalkan": 7500,
    "hasar": 100,
-   "hiz": 280,
+   "hiz": 221,
    "saldirgan": true,
    "odul": {
     "ep": 800,
@@ -3175,7 +3226,7 @@
    "hp": 20000,
    "kalkan": 15000,
    "hasar": 300,
-   "hiz": 280,
+   "hiz": 221,
    "saldirgan": true,
    "odul": {
     "ep": 2000,
@@ -3203,7 +3254,7 @@
    "hp": 32000,
    "kalkan": 24000,
    "hasar": 600,
-   "hiz": 280,
+   "hiz": 221,
    "saldirgan": true,
    "odul": {
     "ep": 3200,
@@ -3232,7 +3283,7 @@
    "hp": 94000,
    "kalkan": 70500,
    "hasar": 1200,
-   "hiz": 280,
+   "hiz": 221,
    "saldirgan": true,
    "odul": {
     "ep": 8600,
@@ -3260,7 +3311,7 @@
    "hp": 180000,
    "kalkan": 135000,
    "hasar": 3100,
-   "hiz": 280,
+   "hiz": 221,
    "saldirgan": true,
    "odul": {
     "ep": 17601,
@@ -3288,7 +3339,7 @@
    "hp": 270000,
    "kalkan": 202500,
    "hasar": 4300,
-   "hiz": 280,
+   "hiz": 221,
    "saldirgan": true,
    "odul": {
     "ep": 26601,
@@ -3316,7 +3367,7 @@
    "hp": 360000,
    "kalkan": 270000,
    "hasar": 5700,
-   "hiz": 280,
+   "hiz": 221,
    "saldirgan": true,
    "odul": {
     "ep": 36000,
@@ -3345,6 +3396,7 @@
    "kalkan": 150000,
    "hasar": 1500,
    "hiz": 300,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 20480,
@@ -3375,6 +3427,7 @@
    "kalkan": 300000,
    "hasar": 4000,
    "hiz": 300,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 51200,
@@ -3405,6 +3458,7 @@
    "kalkan": 480000,
    "hasar": 10000,
    "hiz": 300,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 81920,
@@ -3435,6 +3489,7 @@
    "kalkan": 1410000,
    "hasar": 20000,
    "hiz": 300,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 220160,
@@ -3465,6 +3520,7 @@
    "kalkan": 2700000,
    "hasar": 40000,
    "hiz": 300,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 335600,
@@ -3495,6 +3551,7 @@
    "kalkan": 4050000,
    "hasar": 55000,
    "hiz": 300,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 507200,
@@ -3525,6 +3582,7 @@
    "kalkan": 5400000,
    "hasar": 80000,
    "hiz": 300,
+   "genisleme": 1,
    "saldirgan": true,
    "odul": {
     "ep": 922000,
@@ -8063,6 +8121,188 @@
    },
    "kargo": {},
    "_kaynak": "resmî Türk forumu 130098: Plagued Gygerthrall (X-6) DP 90.000, kalkan 75.000, ödül 16 U / 12.800 kredi / 6.400 TP / 32 şeref; Plagued Kristallin öldürülünce doğar; hasar ve hız uyarlama; model game.xml (246, npcId 154)"
+  },
+  "saturn_aegis": {
+   "ad": "-={ Saturn Aegis }=-",
+   "hp": 275000,
+   "kalkan": 150000,
+   "hasar": 5000,
+   "hiz": 372,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 25000,
+    "onur": 250,
+    "kredi": 50000,
+    "uridyum": 56
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   },
+   "npc_kimlik": 99,
+   "model": "ship_aegis",
+   "_kaynak": "resmî sunucu kaydı 2026-10-27: X-4..X-8, 4-X ve BL haritalarında dolaşan Saturn gemisi (ad, model, hız, expansionStage; kahramana kendiliğinden ateş etmedi: saldırgan değil). Can, kalkan, hasar, ödül ve kargo Kronos Kapısının aynı gemisinden (kapilar.json; uyarlama)"
+  },
+  "saturn_diminisher": {
+   "ad": "-={ Saturn Diminisher }=-",
+   "hp": 1500000,
+   "kalkan": 450000,
+   "hasar": 8500,
+   "hiz": 422,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 51200,
+    "onur": 512,
+    "kredi": 45000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   },
+   "npc_kimlik": 90,
+   "model": "ship_diminisher",
+   "_kaynak": "resmî sunucu kaydı 2026-10-27: X-4..X-8, 4-X ve BL haritalarında dolaşan Saturn gemisi (ad, model, hız, expansionStage; kahramana kendiliğinden ateş etmedi: saldırgan değil). Can, kalkan, hasar, ödül ve kargo Kronos Kapısının aynı gemisinden (kapilar.json; uyarlama); can ve kalkan kayıttan (ShipSelectionCommand 1.500.000 / 450.001)"
+  },
+  "saturn_goliath": {
+   "ad": "-={ Saturn Goliath }=-",
+   "hp": 256000,
+   "kalkan": 150000,
+   "hasar": 7000,
+   "hiz": 322,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 51200,
+    "onur": 512,
+    "kredi": 45000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   },
+   "npc_kimlik": 85,
+   "model": "ship_goliath",
+   "_kaynak": "resmî sunucu kaydı 2026-10-27: X-4..X-8, 4-X ve BL haritalarında dolaşan Saturn gemisi (ad, model, hız, expansionStage; kahramana kendiliğinden ateş etmedi: saldırgan değil). Can, kalkan, hasar, ödül ve kargo Kronos Kapısının aynı gemisinden (kapilar.json; uyarlama)"
+  },
+  "saturn_sentinel": {
+   "ad": "-={ Saturn Sentinel }=-",
+   "hp": 256000,
+   "kalkan": 150000,
+   "hasar": 7000,
+   "hiz": 272,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 51200,
+    "onur": 512,
+    "kredi": 45000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   },
+   "npc_kimlik": 88,
+   "model": "ship_sentinel",
+   "_kaynak": "resmî sunucu kaydı 2026-10-27: X-4..X-8, 4-X ve BL haritalarında dolaşan Saturn gemisi (ad, model, hız, expansionStage; kahramana kendiliğinden ateş etmedi: saldırgan değil). Can, kalkan, hasar, ödül ve kargo Kronos Kapısının aynı gemisinden (kapilar.json; uyarlama)"
+  },
+  "saturn_solace": {
+   "ad": "-={ Saturn Solace }=-",
+   "hp": 256000,
+   "kalkan": 150000,
+   "hasar": 8500,
+   "hiz": 322,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 51200,
+    "onur": 512,
+    "kredi": 45000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   },
+   "npc_kimlik": 91,
+   "model": "ship_solace",
+   "_kaynak": "resmî sunucu kaydı 2026-10-27: X-4..X-8, 4-X ve BL haritalarında dolaşan Saturn gemisi (ad, model, hız, expansionStage; kahramana kendiliğinden ateş etmedi: saldırgan değil). Can, kalkan, hasar, ödül ve kargo Kronos Kapısının aynı gemisinden (kapilar.json; uyarlama)"
+  },
+  "saturn_spectrum": {
+   "ad": "-={ Saturn Spectrum }=-",
+   "hp": 256000,
+   "kalkan": 150000,
+   "hasar": 7000,
+   "hiz": 272,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 51200,
+    "onur": 512,
+    "kredi": 45000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   },
+   "npc_kimlik": 89,
+   "model": "ship_spectrum",
+   "_kaynak": "resmî sunucu kaydı 2026-10-27: X-4..X-8, 4-X ve BL haritalarında dolaşan Saturn gemisi (ad, model, hız, expansionStage; kahramana kendiliğinden ateş etmedi: saldırgan değil). Can, kalkan, hasar, ödül ve kargo Kronos Kapısının aynı gemisinden (kapilar.json; uyarlama)"
+  },
+  "saturn_venom": {
+   "ad": "-={ Saturn Venom }=-",
+   "hp": 256000,
+   "kalkan": 150000,
+   "hasar": 8500,
+   "hiz": 522,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 51200,
+    "onur": 512,
+    "kredi": 45000,
+    "uridyum": 100
+   },
+   "kargo": {
+    "0": 150,
+    "2": 150,
+    "1": 150,
+    "4": 100,
+    "5": 100,
+    "6": 12
+   },
+   "npc_kimlik": 87,
+   "model": "ship_venom",
+   "_kaynak": "resmî sunucu kaydı 2026-10-27: X-4..X-8, 4-X ve BL haritalarında dolaşan Saturn gemisi (ad, model, hız, expansionStage; kahramana kendiliğinden ateş etmedi: saldırgan değil). Can, kalkan, hasar, ödül ve kargo Kronos Kapısının aynı gemisinden (kapilar.json; uyarlama)"
   }
  },
  "haritalar": {
@@ -8230,6 +8470,10 @@
     {
      "tip": "252",
      "adet": 2
+    },
+    {
+     "tip": "saturn_aegis",
+     "adet": 1
     }
    ],
    "bonus_kutu": 15,
@@ -8431,6 +8675,10 @@
     {
      "tip": "npc121",
      "adet": 3
+    },
+    {
+     "tip": "saturn_goliath",
+     "adet": 1
     }
    ],
    "bonus_kutu": 8,
@@ -8453,6 +8701,10 @@
     {
      "tip": "npc121",
      "adet": 3
+    },
+    {
+     "tip": "saturn_solace",
+     "adet": 1
     }
    ],
    "bonus_kutu": 8,
@@ -8587,6 +8839,10 @@
     {
      "tip": "35",
      "adet": 1
+    },
+    {
+     "tip": "saturn_sentinel",
+     "adet": 1
     }
    ],
    "bonus_kutu": 12,
@@ -8624,6 +8880,10 @@
     {
      "tip": "214",
      "adet": 2
+    },
+    {
+     "tip": "saturn_diminisher",
+     "adet": 1
     }
    ],
    "bonus_kutu": 12,
@@ -8673,6 +8933,14 @@
     {
      "tip": "252",
      "adet": 2
+    },
+    {
+     "tip": "saturn_diminisher",
+     "adet": 1
+    },
+    {
+     "tip": "saturn_sentinel",
+     "adet": 1
     }
    ],
    "bonus_kutu": 12,
@@ -8761,6 +9029,14 @@
     {
      "tip": "35",
      "adet": 1
+    },
+    {
+     "tip": "saturn_diminisher",
+     "adet": 1
+    },
+    {
+     "tip": "saturn_sentinel",
+     "adet": 1
     }
    ],
    "bonus_kutu": 12,
@@ -8798,6 +9074,14 @@
     {
      "tip": "214",
      "adet": 2
+    },
+    {
+     "tip": "saturn_spectrum",
+     "adet": 1
+    },
+    {
+     "tip": "saturn_venom",
+     "adet": 1
     }
    ],
    "bonus_kutu": 12,
@@ -8847,6 +9131,14 @@
     {
      "tip": "252",
      "adet": 2
+    },
+    {
+     "tip": "saturn_goliath",
+     "adet": 1
+    },
+    {
+     "tip": "saturn_solace",
+     "adet": 1
     }
    ],
    "bonus_kutu": 12,
@@ -9109,6 +9401,10 @@
     {
      "tip": "256",
      "adet": 2
+    },
+    {
+     "tip": "saturn_solace",
+     "adet": 1
     }
    ],
    "bonus_kutu": 8,
@@ -9336,6 +9632,14 @@
     },
     {
      "tip": "320",
+     "adet": 1
+    },
+    {
+     "tip": "saturn_diminisher",
+     "adet": 1
+    },
+    {
+     "tip": "saturn_solace",
      "adet": 1
     }
    ],

@@ -722,7 +722,8 @@ class World:
     def ship_create(self, n):
         x, y = n.mover.pos(time.time())
         return ('ShipCreateCommand', dict(
-            userId=n.id, typeId=n.model, expansionStage=1, clanTag='', userName=n.d['ad'], x=int(x), y=int(y), factionId=0, clanId=0,
+            # expansionStage: görünen lazer sayısı; türe göre 1-3 (npc.json genisleme, resmî sunucu kaydı 2026-10-27)
+            userId=n.id, typeId=n.model, expansionStage=n.d.get('genisleme', 1), clanTag='', userName=n.d['ad'], x=int(x), y=int(y), factionId=0, clanId=0,
             dailyRank=0, warnBox=False, clanDiplomacy=mod('ClanRelationModule', type=0), galaxyGatesDone=0, useSystemFont=False, npc=True,
             cloaked=bool(getattr(n, 'gizli', False)), motherShipId=0, positionIndex=0, designSet='',      # Infiltration
             modifier=[mod('VisualModifierCommand', **v) for v in n.vm.values()] + ([mod(

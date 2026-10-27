@@ -107,14 +107,16 @@ TUTORIAL_GATE, TUTORIAL_MAX_LEVEL = 150000774, 10
 # portalı X-3'te (low.py).
 # (harita, anahtar, x, y, hedef, ek alanlar); portal kimliği GATE_ID_BASE + anahtar (istemcinin anahtarları 920042'ye kadar)
 _SILVER = {'ucret': 'gumus_anahtar', 'ipucu': 'ttip_jumpgate_hiddenPirateMap'}
+# LoW portalı: resmî sunucu kaydı 2026-10-27, 1-3 ve 2-3'te (2000, 2000), 3-3'te (18500, 2000); tasarım 34
+LOW_DESIGN = 34
 LOW_START = (1000, 11800)       # LoW'a girişin varış yeri: haritanın sol alt köşesi (wiki "lower left corner"; emu-dark LowPortal.cs)
 EXTRA_GATES = [(92, 990006, 18500, 11500, 94, dict(_SILVER, firma=1, yalniz_firma=1)),
                (92, 990001, 18500, 11500, 94, dict(_SILVER, firma=2, yalniz_firma=2)),
                (92, 990007, 18500, 11500, 94, dict(_SILVER, firma=3, yalniz_firma=3)),
                (94, 990002, 4000, 13000, 92, {}),
-               (3, 990003, 10500, 2000, 200, {'low': True, 'varis': LOW_START}),
-               (7, 990004, 10500, 2000, 200, {'low': True, 'varis': LOW_START}),
-               (11, 990005, 10500, 2000, 200, {'low': True, 'varis': LOW_START})]
+               (3, 990003, 2000, 2000, 200, {'low': True, 'varis': LOW_START, 'tasarim': LOW_DESIGN}),
+               (7, 990004, 2000, 2000, 200, {'low': True, 'varis': LOW_START, 'tasarim': LOW_DESIGN}),
+               (11, 990005, 18500, 2000, 200, {'low': True, 'varis': LOW_START, 'tasarim': LOW_DESIGN})]
 for _m, _k, _x, _y, _to, _extra in EXTRA_GATES:
     GATES.setdefault(_m, []).append(dict(gateId=GATE_ID_BASE + _k, key=_k, x=_x, y=_y, hedef=_to, **_extra))
 # korsan ve Black Light haritalarının portalları düzendeki yerlerinde (ipucu ızgarasına oturtulan yer kabaca); varış yeri portala
@@ -159,7 +161,10 @@ CORNERS = [(19000, 2000), (2000, 2000), (19000, 11100), (2000, 11100)]
 # istasyonun ve yapının oyundaki yeri (merkez); yazılmayan haritada portallardan en uzak köşe. 2-8: üst orta (resmî sunucu kaydı
 # 2026-10-25); 1-8 sol, 3-8 sağ kenarın ortası (fandom 1-8/3-8; Kalaazu ve 2009 emülatörü y 6000); 5-2 pazarı ortada (fandom 5-2,
 # darkorbitwiki harita görseli). 5-2'nin korsan istasyonu ve X-BL'nin görev vericisi harita_duzeni.json'da (yapi)
-STATION_POS = {24: (10500, 2000), 20: (2000, 6550), 28: (19000, 6550)}
+STATION_POS = {24: (10500, 2000), 20: (2000, 6750), 28: (19000, 6750), 9: (19000, 11500)}
+# üs düzeninin 2-1'inkine göre dönüşü (derece; X-8'de ön karakolun dönüşüne eklenir). Resmî sunucu kaydı 2026-10-27: 1-1'de hangar
+# merkezin doğusunda, görev verici güneyinde; 3-1'de görev verici kuzeyinde; 1-8, 3-8 de 270 / 90 derece; 2-1, 2-8 kayıttaki gibi
+STATION_TURN = {1: 270, 9: 90, 20: 270, 28: 90}
 # ön karakolun düzeni ana üssünkinin -45 derece dönmüşü (resmî sunucu kaydı: 2-8'in binaları merkezden 763 birim çaprazda, 16 küçük
 # taret 1.800 birimlik çemberde (1800, 0)'dan başlayarak; 2-1'de binalar 1.080 birim dikte). 1-8 ve 3-8 ölçülmedi: aynı
 OUTPOST_TURN = -math.pi / 4
@@ -186,7 +191,7 @@ def map_world(map_id, tpl):
         return {'giris': giris, 'hazir': hazir + gate_msgs + HD.poi_msgs(map_id)}
     cx, cy = STATION_POS.get(int(map_id)) or max(CORNERS, key=lambda c: min((math.hypot(c[0] - g['x'], c[1] - g['y']) for g in gs),
                                                                             default=0))
-    turn = OUTPOST_TURN if int(map_id) in OUTPOST_MAPS else 0
+    turn = (OUTPOST_TURN if int(map_id) in OUTPOST_MAPS else 0) + math.radians(STATION_TURN.get(int(map_id), 0))
     cos, sin = math.cos(turn), math.sin(turn)
 
     def place(x, y):
@@ -280,7 +285,7 @@ def quest_giver(m, map_id):
     if m['type']['typeValue'] != QUEST_GIVER or not fac:
         return m
     design = 12 if n.startswith('BL-') else QUEST_GIVER_DESIGN[n[2:]] + 3 * (fac - 1)
-    return dict(m, designId=design, userName=QUEST_GIVER_NAME[fac])
+    return dict(m, designId=design, userName=BL_QUEST_GIVER_NAME if n.startswith('BL-') else QUEST_GIVER_NAME[fac])
 
 
 def gates(map_id, faction=None):
@@ -353,6 +358,7 @@ ASSET_RANGE = 500
 QUEST_GIVER = 34                 # AssetCreateCommand.type: görev verici (kayıt: Reginald Crowley, 2-1)
 QUEST_GIVER_DESIGN = {'1': 3, '8': 4, '5': 5, '4': 5}                  # X-1, X-8, X-5: MMO'nunki; EIC +3, VRU +6 (quest_giver)
 QUEST_GIVER_NAME = {1: 'Morgus Petterson', 2: 'Reginald Crowley', 3: 'Vanessa Arkadium'}
+BL_QUEST_GIVER_NAME = 'Mysterious Outpost'        # resmî sunucu kaydı 2026-10-27 (2-BL)
 
 
 def asset_available(asset_id, tip, near, wild=()):

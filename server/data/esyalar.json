@@ -12045,6 +12045,13 @@
     "hasar_turu": "dogrudan",
     "can": 0.2
    },
+   "curcubitor_mayini": {
+    "tip": 20,
+    "hasar_turu": "dogrudan",
+    "can": 0.2,
+    "omur_sn": 15,
+    "_kaynak": "Curcubitor'un Trick mayını (istemcinin curcubitorMine modeli): resmî sunucu kaydı 2026-10-27, ölümden 1,4 sn sonra öldüğü yerde typeId 20, 15 sn sonra kalkar; etkisi DDM-01 gibi (wiki: canın %20'si)"
+   },
    "ammunition_mine_sabm-01": {
     "tip": 3,
     "kalkan": 0.5

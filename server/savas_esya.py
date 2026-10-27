@@ -651,7 +651,7 @@ class Esyalar:
         self.seq += 1
         h = 'U%d_%d' % (owner, self.seq)
         self.mines[h] = dict(loot=loot, x=x, y=y, sahip=owner, kurulma=now + MINES[loot].get('kurulma_sn', M['kurulma_sn']),
-                             bitis=now + M['omur_sn'])
+                             bitis=now + MINES[loot].get('omur_sn', M['omur_sn']))
         self.send([('AddMineCommand', dict(hash=h, x=int(x), y=int(y), typeId=MINES[loot]['tip'], maxSkill1=False, maxSkill5b=False))])
 
     def field_mine(self, x, y, now):

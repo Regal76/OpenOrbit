@@ -5,18 +5,18 @@
    "_ad": "Cubikon",
    "vurulunca_cagir": {
     "tur": "81",
-    "adet": 25,
+    "adet": 20,
     "en_cok": 30,
     "bekleme_sn": 4,
-    "ilk_bekleme_sn": 3,
+    "ilk_bekleme_sn": 5.4,
     "aralik_sn": 1,
     "grup": [
      2,
      3
     ],
     "dogma": [
-     500,
-     1100
+     100,
+     2650
     ],
     "suru_gorsel": true,
     "koru": {
@@ -51,7 +51,7 @@
     "bekleme_sn": 10
    },
    "_kaynak": "aliens.md: vurulunca Protegit salar (tabloda 30x Protegit), saldırılmazken saniyede 125.000'e kadar can; fandom: Protegit'ler 20-30'luk sürüyle hemen çıkar, Cubikon ölünce kimseyi kovalamadan dolaşır ve sonra kaybolur",
-   "_uyarlama": "çağrıda 25 Protegit (en çok 30), 4 sn bekleme; sürü saniyede 2-3'lük gruplarla oyuncunun 500-1100 birim çevresinde (biraz uzağından ekranın hemen dışına) çıkar; çağrı başında ShipSpawnChildSwarmCommand Cubikon'u açar (istemci SpawnChildrenEffect, animatör npc_cubikon open; kullanıcı bildirimi ve video 2026-10-27); ilk vuruştan 3 sn sonra çıkarlar (kullanıcı bildirimi 2026-10-25: ilk atışta hemen çıkıyorlardı); yenilenme 10 sn vurulmayınca; Cubikon ölünce Protegit'ler 10-20 sn dolaşıp kaybolur (kullanıcı bildirimi 2026-10-25: en çok 20 sn; öteki Cubikon'larınkiler etkilenmez). Protegit'ler saldırırken vur-kaç yapar: oyuncunun 150-320 birim yanına gelir, 1-2,5 sn (bir iki atış), 450-850 birime uzaklaşır (menzildeyse atış sürer), 0,8-2,5 sn sonra yine yaklaşır; her biri kendi yanında, dağınık (kullanıcı bildirimi 2026-10-27; önceden hepsi oyuncunun dibinde toplanıyordu); saldırmazken Cubikon'un 250-750 birim çevresinde dolaşır; oyuncu Cubikon'dan 1.600 birimden uzaksa peşini bırakır, Cubikon'un çevresinde dolaşır (kullanıcı bildirimi 2026-10-25: oyuncuyu çok uzağa kovalıyorlardı)",
+   "_uyarlama": "çağrıda 25 Protegit (en çok 30), 4 sn bekleme; sürü saniyede 2-3'lük gruplarla oyuncunun 500-1100 birim çevresinde (biraz uzağından ekranın hemen dışına) çıkar; çağrı başında ShipSpawnChildSwarmCommand Cubikon'u açar (istemci SpawnChildrenEffect, animatör npc_cubikon open; kullanıcı bildirimi ve video 2026-10-27); ilk vuruştan 3 sn sonra çıkarlar (kullanıcı bildirimi 2026-10-25: ilk atışta hemen çıkıyorlardı); yenilenme 10 sn vurulmayınca; Cubikon ölünce Protegit'ler 10-20 sn dolaşıp kaybolur (kullanıcı bildirimi 2026-10-25: en çok 20 sn; öteki Cubikon'larınkiler etkilenmez). Protegit'ler saldırırken vur-kaç yapar: oyuncunun 150-320 birim yanına gelir, 1-2,5 sn (bir iki atış), 450-850 birime uzaklaşır (menzildeyse atış sürer), 0,8-2,5 sn sonra yine yaklaşır; her biri kendi yanında, dağınık (kullanıcı bildirimi 2026-10-27; önceden hepsi oyuncunun dibinde toplanıyordu); saldırmazken Cubikon'un 250-750 birim çevresinde dolaşır; oyuncu Cubikon'dan 1.600 birimden uzaksa peşini bırakır, Cubikon'un çevresinde dolaşır (kullanıcı bildirimi 2026-10-25: oyuncuyu çok uzağa kovalıyorlardı); resmî sunucu kaydı 2026-10-27: ilk vuruştan 5,4 sn sonra 20 Protegit (0|n|s|<Cubikon>|20|<kimlikler>), Cubikon'un ve oyuncunun 100-2.650 birim çevresinde (ortanca ~1.500) doğar; adet, ilk bekleme ve doğma yarıçapı buna göre (gruplama takılmaya karşı kalır)",
    "olunce_cagrilar_dagilir": {
     "omur_sn": [
      10,

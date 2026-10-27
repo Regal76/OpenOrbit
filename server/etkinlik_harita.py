@@ -9,7 +9,7 @@ Takvimde etkin bir etkinliğin harita bölümü bu haritanın sınıfını (X-2 
     npc_valentine, npc_chaos-protegit), npcID, bossInfo {bossCount, leftToKill}, timeInfo {timeToNextSpawn, timeToEndSpawn sn}}
   - düşmeler ('dusme': tür -> {lootId: [en az, en çok]}, harita sürümü etk_x_x5 varsa o, yoksa taban tür; etkinlik parası kaynak
     deposuna, ganimet günlüğünde) ve Curcubitor'un
-    "Trick or Treat"i: ölünce ya Trick ('hile': olasılık; toplanamayan DDM-01 uzaylı mayını, kurulunca yakındaysan canın %20'si) ya da
+    "Trick or Treat"i: ölünce ya Trick ('hile': olasılık; toplanamayan Curcubitor mayını, kurulunca yakındaysan canın %20'si) ya da
     Treat (kutu_dusme'deki sandık), ikisi birden değil. 2026-10-18'e dek ikisi bağımsızdı: mayın sandığın altında kalıyor, sandığı
     toplarken patlıyordu (kullanıcı bildirimi)
   - kargo kutusu olmayan uzaylılar ('kargo_yok': temel türler; Curcubitor ve Boss Curcubitor yalnız sandıklarını düşürür) -> no_cargo
@@ -37,7 +37,8 @@ import ayar as AY
 from eski_protokol import legacy
 from kapi import screen
 
-TRICK_MINE = 'ammunition_mine_ddm-01'
+TRICK_MINE = 'curcubitor_mayini'        # istemcinin curcubitorMine modeli (esyalar.json mayinlar)
+TRICK_DELAY = 1.4                         # resmî sunucu kaydı 2026-10-27: mayın ölümden 1,4 sn sonra çıkar
 BOSS_TEXT = {'curcubitor': ('curcubitor_boss_spawn', 'msg_curcubitor_ran_away'), 'agatusbreach': ('agatusbreach_boss_spawn', None),
              'npc_valentine': ('npc_valentine_boss_spawn', None), 'npc_hitacAssault': ('npc_hitacAssault_boss_spawn', None)}
 
@@ -219,7 +220,7 @@ class HaritaEtkinlik:
         trick = (n.tip.startswith('etk_') and w.items is not None
                  and random.random() < max([s.get('hile', {}).get(b, 0) for k, s in self.here(now)] or [0]))
         if trick:                                                       # Trick: sandık yerine toplanamayan mayın
-            w.items.alien_mine(TRICK_MINE, x, y, n.id, now)
+            w.later(TRICK_DELAY, lambda: w.items.alien_mine(TRICK_MINE, x, y, n.id, time.time()))
         for k, s in self.here(now):
             kd = by_tip(s.get('kutu_dusme', {}))
             for v in pay if kd and not trick else ():
