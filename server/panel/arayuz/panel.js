@@ -460,16 +460,36 @@ function meter(label, v, max, cls) {
   return h('div', { class: 'meter ' + (cls || '') }, h('div', { class: 'row between small' }, h('span', { class: 'muted' }, label), h('b', null, fmtN(v) + ' / ' + fmtN(max))),
     h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } })));
 }
+function lootPicker(placeholder) {
+  const input = h('input', { class: 'input', placeholder, autocomplete: 'off' });
+  const results = h('div', { class: 'loot-results', hidden: true });
+  const wrap = h('div', { class: 'loot-picker' }, input, results);
+  let items = [];
+  const close = () => { results.hidden = true; results.replaceChildren(); };
+  const draw = () => {
+    const query = input.value.trim().toLocaleLowerCase();
+    if (query.length < 2) return close();
+    const rows = items.filter(([id, name]) => (id + ' ' + name).toLocaleLowerCase().includes(query)).slice(0, 12);
+    results.replaceChildren(...rows.map(([id, name]) => h('button', { type: 'button', onclick: () => {
+      input.value = id; close(); input.focus();
+    } }, h('b', { class: 'mono' }, id), name ? h('span', null, name) : null)));
+    results.hidden = !rows.length;
+  };
+  input.addEventListener('input', draw);
+  input.addEventListener('focus', draw);
+  input.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  api('/api/esya_listesi').then(r => { items = r.esyalar || []; draw(); }).catch(() => {});
+  return { input, el: wrap };
+}
 async function liveGrantModal() {
   const players = await act(() => api('/api/canli/oyuncular')); if (!players || !players.oyuncular.length) return;
   const target = h('select', { class: 'input' }, players.oyuncular.map(p => h('option', { value: p.id }, p.ad)));
-  const loot = h('input', { class: 'input', placeholder: T('lootId — ör. ammunition_laser_lcb-10'), list: 'live-loot-ids' });
+  const picker = lootPicker(T('lootId — ör. ammunition_laser_lcb-10'));
+  const loot = picker.input;
   const amount = h('input', { class: 'input', type: 'number', min: 1, value: 1, style: { width: '100px' } });
-  const list = h('datalist', { id: 'live-loot-ids' });
-  api('/api/esya_listesi').then(r => list.replaceChildren(...r.esyalar.map(([id, name]) => h('option', { value: id }, name)))).catch(() => {});
   const m = modal({ title: T('Bağlı oyuncuya eşya ver'), wide: true,
     sub: T('Yalnız bu Panel oturumu bunu yapabilir. Başarılı veriliş herkesin sohbetine duyurulur.'),
-    body: [field(T('Oyuncu'), target), field(T('Eşya'), loot, list), field(T('Adet'), amount)],
+    body: [field(T('Oyuncu'), target), field(T('Eşya'), picker.el), field(T('Adet'), amount)],
     foot: [btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Ver ve duyur'), async ev => {
       if (!loot.value.trim()) return toast(T('Bir eşya seçin.'), 'err');
       const b = ev.currentTarget; b.disabled = true;
@@ -828,10 +848,9 @@ async function editModal(id) {
   const onar = h('input', { type: 'checkbox' }), us = h('input', { type: 'checkbox' }), tus = h('input', { type: 'checkbox' });
   // ---- eşya / gemi ver (oyunun ödül yolu; profil_araci.py ver) ve durum sıfırlama
   const give = [], giveList = h('div', { class: 'chips' });
-  const lootInp = h('input', { class: 'input', placeholder: T('lootId — ör. ship_goliath, equipment_weapon_laser_lf-4'), list: 'loot-ids' });
+  const picker = lootPicker(T('lootId — ör. ship_goliath, equipment_weapon_laser_lf-4'));
+  const lootInp = picker.input;
   const lootN = h('input', { class: 'input', type: 'number', min: 1, value: 1, style: { width: '90px' } });
-  const lootDl = h('datalist', { id: 'loot-ids' });
-  api('/api/esya_listesi').then(r => lootDl.replaceChildren(...r.esyalar.map(([k, t]) => h('option', { value: k }, t)))).catch(() => {});
   const drawGive = () => giveList.replaceChildren(...give.map((g, i) => h('span', { class: 'chip' }, g[0], h('b', null, '×' + fmtN(g[1])),
     h('button', { class: 'btn ghost sm icon', type: 'button', onclick: () => { give.splice(i, 1); drawGive(); } }, icon('x')))));
   const addGive = () => { const l = lootInp.value.trim(); if (!l) return; give.push([l, Math.max(1, +lootN.value || 1)]); lootInp.value = ''; lootN.value = 1; drawGive(); lootInp.focus(); };
@@ -850,7 +869,7 @@ async function editModal(id) {
         h('label', { class: 'row small' }, h('span', { class: 'switch' }, us, h('span')), T('Gemiyi firmanın ana istasyonuna taşı (bir haritada takılı kaldıysan)')),
         h('label', { class: 'row small' }, h('span', { class: 'switch' }, tus, h('span')), T('Tuş atamalarını varsayılana döndür (oyundaki Ayarlar > Reset sunucuya ulaşmıyor)'))),
       field(T('Eşya, gemi, dron, cephane ver (görev ödülü gibi: ekipman boş yuvaya takılır)'),
-        h('div', { class: 'row' }, lootInp, lootN, btn(T('Ekle'), addGive, 'sm', 'plus')), lootDl, giveList),
+        h('div', { class: 'row' }, picker.el, lootN, btn(T('Ekle'), addGive, 'sm', 'plus')), giveList),
       field(T('Durum sıfırlama'),
         h('div', { class: 'stack', style: { gap: '8px' } }, RESETS.map(([k, t]) => h('label', { class: 'row small' }, h('span', { class: 'switch' }, resetBox[k], h('span')), t))))],
     foot: [btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Kaydet'), async () => {
