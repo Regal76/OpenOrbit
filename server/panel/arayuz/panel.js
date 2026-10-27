@@ -466,10 +466,14 @@ function lootPicker(placeholder) {
   const wrap = h('div', { class: 'loot-picker' }, input, results);
   let items = [];
   const close = () => { results.hidden = true; results.replaceChildren(); };
+  const terms = value => String(value).toLocaleLowerCase().replace(/[_-]+/g, ' ').split(/\s+/).filter(Boolean);
   const draw = () => {
-    const query = input.value.trim().toLocaleLowerCase();
-    if (query.length < 2) return close();
-    const rows = items.filter(([id, name]) => (id + ' ' + name).toLocaleLowerCase().includes(query)).slice(0, 12);
+    const query = terms(input.value);
+    if (!query.length || input.value.trim().length < 2) return close();
+    const rows = items.filter(([id, name]) => {
+      const haystack = (id + ' ' + name).toLocaleLowerCase();
+      return query.every(term => haystack.includes(term));
+    }).slice(0, 12);
     results.replaceChildren(...rows.map(([id, name]) => h('button', { type: 'button', onclick: () => {
       input.value = id; close(); input.focus();
     } }, h('b', { class: 'mono' }, id), name ? h('span', null, name) : null)));
