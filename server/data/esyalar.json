@@ -3485,7 +3485,7 @@
    "ammunition_laser_mcb-50": 0,
    "ammunition_laser_ucb-100": 3,
    "ammunition_laser_sab-50": 4,
-   "ammunition_laser_rsb-75": 5,
+   "ammunition_laser_rsb-75": 6,
    "ammunition_laser_cbo-100": 8,
    "ammunition_laser_rb-214": 10,
    "ammunition_laser_pib-100": 109,
@@ -7374,16 +7374,6 @@
    {
     "lootId": "drone_designs_hercules",
     "uridyum": 100000,
-    "sablon": "drone_designs_demon-silver"
-   },
-   {
-    "lootId": "drone_designs_hermes",
-    "uridyum": 100000,
-    "sablon": "drone_designs_demon-silver"
-   },
-   {
-    "lootId": "drone_designs_spartan",
-    "uridyum": 200000,
     "sablon": "drone_designs_demon-silver"
    },
    {

@@ -100,10 +100,11 @@ SCHEMA = [
        'uzaylıların atışları gemini yavaşlatır. Kapatılırsa yalnız hasar verirler.', varsayilan=True),
     _c('radyasyon', 'Radyasyon hasarı', 'savas', 'Harita sınırının dışındaki radyasyonun gövdeye verdiği hasar. 0: radyasyon '
        'zarar vermez.', lo=0.0, hi=5.0, sinir=100.0),
-    _b('bot_oyuncular', 'Haritalarda rakip oyuncular', 'savas', 'Haritalarda dolaşan, rakip firmalardan yapay zekâlı oyuncu gemileri (PvP).', varsayilan=True),
+    _b('bot_oyuncular', 'Haritalarda rakip oyuncular', 'savas', 'Haritalarda dolaşan, rakip firmalardan yapay zekâlı oyuncu gemileri (PvP).'),
     _n('bot_oyuncu_sayisi', 'Harita başına bot oyuncu sayısı', 'savas', 'Her haritada aynı anda dolaşabilecek en çok bot oyuncu sayısı.', lo=1, hi=10, varsayilan=3, birim='oyuncu', sinir=20),
     _c('bot_zorluk', 'Rakip oyuncu zorluğu (hasar ve can)', 'savas', 'Haritalardaki rakip oyuncu gemilerinin can, kalkan ve hasar çarpanı.', lo=0.5, hi=5.0, varsayilan=1.0, sinir=20.0),
-    _b('cbs_saldiri_acik', 'Klan istasyonları her zaman saldırılabilir', 'savas', 'Rakip klan istasyonlarının deflector kalkanı kapalı tutulur ve her zaman saldırılabilir olur. Kapatılırsa yalnızca prime time saatlerinde saldırılabilir.', varsayilan=True),
+    _b('cbs_saldiri_acik', 'Klan istasyonları her zaman saldırılabilir', 'savas', 'Rakip klan istasyonlarının deflector kalkanı kapalı tutulur ve her zaman saldırılabilir olur. Kapatılırsa yalnızca prime time saatlerinde saldırılabilir.'),
+    _b('genisletilmis_assembly_tarifleri', 'Genişletilmiş Assembly tarifleri', 'ekonomi', 'Normalde gizli veya sahip olununca açılan deneysel Assembly tariflerini gösterir.'),
     _c('cbs_hasar', 'Klan istasyonu hasar çarpanı', 'savas', 'Rakip klan savaş istasyonlarının (CBS) silah modüllerinin oyuncuya verdiği hasar çarpanı.', lo=0.1, hi=5.0, varsayilan=1.0, sinir=20.0),
     # ---------------------------------------------------------------- ödüller
     _c('kredi', 'Kredi kazancı', 'odul', 'Uzaylı, kutu, görev, kapı ve etkinliklerden kazanılan kredi (satış ve iadeler '
@@ -368,24 +369,6 @@ def clean(raw):
 
 def read(path):
     """Dosyadaki ayarlar (temizlenmiş); dosya yoksa ya da bozuksa {}."""
-    try:
-        import sys
-        main_mod = sys.modules.get('__main__')
-        if main_mod and hasattr(main_mod, 'SOHBET') and main_mod.SOHBET:
-            try:
-                import sohbet as SH
-                import komutlar
-                import importlib
-                importlib.reload(SH)
-                importlib.reload(komutlar)
-                main_mod.SOHBET.oyun = main_mod
-                main_mod.SOHBET.relay = SH.Sohbet.relay.__get__(main_mod.SOHBET, SH.Sohbet)
-                main_mod.SOHBET.whisper = SH.Sohbet.whisper.__get__(main_mod.SOHBET, SH.Sohbet)
-                main_mod.SOHBET.cevap = SH.Sohbet.cevap.__get__(main_mod.SOHBET, SH.Sohbet)
-            except Exception:
-                pass
-    except Exception:
-        pass
     try:
         with open(path, encoding='utf8') as fh:
             return clean(json.load(fh))

@@ -37,9 +37,9 @@ T = json.load(open(os.path.join(HERE, 'data', 'tarifler.json'), encoding='utf8')
 INGREDIENTS = {loot for r in T.values() for loot in r.get('parcalar', {})}      # girişte sayaçları gönderilenler (magaza.count_msgs)
 ALREADY_OWNS, ALREADY_USED, ALREADY_USED_LIMIT = 0, 1, 2          # RecipeUnavailableType (istemci)
 # koşulla açılan tarifler (wiki): Spartan dron tasarımı ve CPU'lar kalıcı olarak açık
-UNLOCK = {'recipe_blueprint-spartan': lambda p: True,
+UNLOCK = {'recipe_blueprint-spartan': lambda p: ((p.d.get('kapilar') or {}).get('kapilar', {}).get('kronos') or {}).get('tamam', 0) > 0,
           'recipe_blueprint-immunizer-cpu': lambda p: True,
-          'recipe_blueprint-ss-cpu': lambda p: True}
+          'recipe_blueprint-ss-cpu': lambda p: AY.get('genisletilmis_assembly_tarifleri')}
 SKIP_U_PER_MIN = 1                                                # uyarlama: kalan dakikası 1 uridyum
 NO_LIMIT = 'ALWAYS_USABLE'
 # kaynağı henüz olmayan malzemeler (yol haritası E8: Flower kutu avı): tarifleri gizli. Proxium (Permafrost Fissure'ın UFO ve Ufonit
@@ -158,15 +158,16 @@ class Assembly:
         """Pencerede görünen tarifler, kayıttaki sırayla; sonra depoda olan ONLY_WHEN_OWNED tarifler, koşulla açılanlar, kayıtta
         olmayanlar (event_recipes) ve üretimi süren ya da toplanmamış olanlar (etkinlik bitse de)."""
         out = sorted((k for k, r in T.items() if 'kayitta' in r and k not in BOT), key=lambda k: T[k]['kayitta'])
-        out += sorted(k for k, r in T.items() if 'kayitta' not in r and r['gorunurluk'] == 'ONLY_WHEN_OWNED')
+        out += sorted(k for k, r in T.items() if 'kayitta' not in r and r['gorunurluk'] == 'ONLY_WHEN_OWNED'
+                      and (AY.get('genisletilmis_assembly_tarifleri') or self.p.resource(k) > 0))
         out += [k for k, cond in UNLOCK.items() if k not in out and cond(self.p)]
         seen = set(out)
         out += [k for k in event_recipes(self.p) if k not in seen]
-        if AY.get('assembly_ucretsiz'):
+        if AY.get('assembly_ucretsiz') and AY.get('genisletilmis_assembly_tarifleri'):
             out += [k for k in FREE_RECIPES if k in T and k not in out]
         seen = set(out)
         out += sorted(k for k in self.st['uretim'] if k in T and k not in seen)
-        return [k for k in out if k != 'recipe_blueprint-ouroboros']
+        return out
 
     def used_today(self, key):
         """Bu dönemdeki üretim adedi (period_of: etkinlik dönemi ya da gün)."""
