@@ -164,6 +164,21 @@ def write_json(path, d):
     os.replace(tmp, path)
 
 
+def owner_request(path, body=None):
+    """Call the game server's loopback-only, Panel-authenticated owner channel."""
+    if not YON.running():
+        raise Hata(_('Oyun sunucusu açık değil.'))
+    data = None if body is None else json.dumps(body).encode('utf8')
+    request = Request('http://127.0.0.1:8098' + path, data=data,
+                      headers={'X-OpenOrbit-Owner': YON.yonetim_anahtar, 'Content-Type': 'application/json'},
+                      method='POST' if body is not None else 'GET')
+    try:
+        with urlopen(request, timeout=3) as response:
+            return json.loads(response.read().decode('utf8'))
+    except Exception as exc:
+        raise Hata(_('Panel yönetim kanalı yanıt vermedi: %s', exc))
+
+
 def game_settings():
     return AY.read(YOL.AYARLAR)
 
@@ -1066,6 +1081,8 @@ def h_get(path, q):
         import takvim as TK
         d['etkinlik_adlari'] = [_(TK.EVENTS.get(k, {}).get('ad', k)) for k in d.get('etkinlikler', [])]
         return {'var': True, 'sunucu_acik': True, 'yas': max(0, time.time() - d.get('zaman', 0)), 'durum': d}
+    if path == '/api/canli/oyuncular':
+        return owner_request('/oyuncular')
     if path == '/api/arkadas':                      # Arkadaşlarınla Oyna: Host (sunucu, adresler, misafirler) ve Join (oturum)
         canli = read_json(os.path.join(YOL.LOGS, 'canli_durum.json'), None) if YON.running() else None
         return {'host': ARK.host_durumu(canli), 'misafir': ARK.durum(), 'kayitlar': KAY.list(), 'aktif': KAY.active(),
@@ -1148,6 +1165,8 @@ def h_post(path, b):
         time.sleep(0.5)
         return YON.foreign_ports()
     # ---- oyun ayarları
+    if path == '/api/canli/ver':
+        return owner_request('/ver', b)
     if path == '/api/ayarlar':
         vals = game_settings()
         for k, v in (b.get('degerler') or {}).items():

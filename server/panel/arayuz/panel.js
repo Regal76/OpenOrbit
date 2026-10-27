@@ -460,6 +460,25 @@ function meter(label, v, max, cls) {
   return h('div', { class: 'meter ' + (cls || '') }, h('div', { class: 'row between small' }, h('span', { class: 'muted' }, label), h('b', null, fmtN(v) + ' / ' + fmtN(max))),
     h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } })));
 }
+async function liveGrantModal() {
+  const players = await act(() => api('/api/canli/oyuncular')); if (!players || !players.oyuncular.length) return;
+  const target = h('select', { class: 'input' }, players.oyuncular.map(p => h('option', { value: p.id }, p.ad)));
+  const loot = h('input', { class: 'input', placeholder: T('lootId — ör. ammunition_laser_lcb-10'), list: 'live-loot-ids' });
+  const amount = h('input', { class: 'input', type: 'number', min: 1, value: 1, style: { width: '100px' } });
+  const list = h('datalist', { id: 'live-loot-ids' });
+  api('/api/esya_listesi').then(r => list.replaceChildren(...r.esyalar.map(([id, name]) => h('option', { value: id }, name)))).catch(() => {});
+  const m = modal({ title: T('Bağlı oyuncuya eşya ver'), wide: true,
+    sub: T('Yalnız bu Panel oturumu bunu yapabilir. Başarılı veriliş herkesin sohbetine duyurulur.'),
+    body: [field(T('Oyuncu'), target), field(T('Eşya'), loot, list), field(T('Adet'), amount)],
+    foot: [btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Ver ve duyur'), async ev => {
+      if (!loot.value.trim()) return toast(T('Bir eşya seçin.'), 'err');
+      const b = ev.currentTarget; b.disabled = true;
+      const r = await act(() => api('/api/canli/ver', { oyuncu: target.value, esya: loot.value.trim(), adet: amount.value }),
+        x => T('{0} oyuncusuna {1} x{2} verildi ve duyuruldu.', x.oyuncu, x.esya, fmtN(x.adet)));
+      b.disabled = false; if (r) m.close();
+    }, 'primary', 'plus')],
+  });
+}
 function liveCard() {
   const r = S.live;
   const head = h('h2', null, icon('zap'), T('Canlı durum'));
@@ -471,7 +490,9 @@ function liveCard() {
     [T('Kutu / cevher'), w.kutu != null ? fmtN(w.kutu) + ' / ' + fmtN(w.cevher) : '—'], [T('Hedef'), w.hedef || '—'], [T('Oynama'), fmtDur(d.oynama_sn)]];
   if (w.kapi) facts.push([T('Kapı'), `${w.kapi.ad || ''}${w.kapi.dalga ? ' · ' + w.kapi.dalga : ''}${w.kapi.evre ? ' · ' + w.kapi.evre : ''}`]);
   if (w.dongu) facts.push([T('Döngü'), T('{0} ms ort. · en çok {1} ms', w.dongu.ort_ms, w.dongu.en_cok_ms) + (w.dongu.yavas ? ' · ' + T('{0} yavaş adım', fmtN(w.dongu.yavas)) : '')]);
-  return h('div', { class: 'card', id: 'canli-card' }, h('div', { class: 'row between wrap' }, head, h('div', { class: 'row wrap', style: { gap: '6px' } }, flags)),
+  const actions = h('div', { class: 'row wrap', style: { gap: '6px' } }, flags,
+    d.bagli ? btn(T('Eşya ver'), liveGrantModal, 'sm', 'plus') : null);
+  return h('div', { class: 'card', id: 'canli-card' }, h('div', { class: 'row between wrap' }, head, actions),
     h('div', { class: 'grid g3', style: { marginTop: '12px' } },
       h('div', { class: 'stack', style: { gap: '10px' } }, meter(T('Can'), g.can, g.can_azami, 'hp'), meter(T('Kalkan'), g.kalkan, g.kalkan_azami, 'sh'), meter(T('Kargo'), g.kargo, g.kargo_azami, 'cg')),
       h('div', { class: 'kv one' }, facts.map(([a, b]) => h('div', null, h('span', { class: 'muted' }, a), h('b', null, b)))),

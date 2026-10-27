@@ -444,17 +444,6 @@ class Sohbet:
         msg = str(data.get('msg', ''))[:500]
         if not msg:
             return
-        m_strip = msg.strip()
-        first_w = m_strip.split()[0].lower() if m_strip else ''
-        if m_strip.startswith(('!', '.', '/')) or first_w in ('give', 'item', 'grant', 'help'):
-            try:
-                import komutlar
-                if komutlar.handle_chat_command(self, c, path, msg):
-                    return
-            except Exception as e:
-                self.log('komut hatası: %r' % e)
-                self.cevap(c, path, 'Command error: %s' % e)
-                return
         now = time.time()
         c.gecmis = [t for t in c.gecmis if now - t < SEL_SN] + [now]
         if len(c.gecmis) > SEL_SINIRI:
@@ -467,21 +456,6 @@ class Sohbet:
         """Fısıltı: istemci /whisper/<InstanceID>_<alıcının adı>/ yoluna yazar, alıcının istemcisi kendi adıyla bu yolu dinler
         (AChat, giriş sonrası). Ad büyük/küçük harf ayırmaz. Alıcı yoksa hata yanıtı: istemci "kullanıcı yok ya da çevrimdışı" yazar."""
         msg = str(data.get('msg', ''))[:500]
-        m_strip = msg.strip()
-        first_w = m_strip.split()[0].lower() if m_strip else ''
-        if m_strip.startswith(('!', '.', '/')) or first_w in ('give', 'item', 'grant', 'help'):
-            try:
-                import komutlar
-                if komutlar.handle_chat_command(self, c, path, msg):
-                    if rid is not None:
-                        c.send({'t': T_RESPONSE, 'requestId': rid})
-                    return
-            except Exception as e:
-                self.log('komut hatası: %r' % e)
-                self.cevap(c, path, 'Command error: %s' % e)
-                if rid is not None:
-                    c.send({'t': T_RESPONSE, 'requestId': rid})
-                return
         want = path.lower()
         with self.lock:
             conns = [x for x in self.conns.values() if x.user and x is not c]
