@@ -444,6 +444,17 @@ class Sohbet:
         msg = str(data.get('msg', ''))[:500]
         if not msg:
             return
+        m_strip = msg.strip()
+        first_w = m_strip.split()[0].lower() if m_strip else ''
+        if m_strip.startswith(('!', '.', '/')) or first_w in ('give', 'item', 'grant', 'help'):
+            try:
+                import komutlar
+                if komutlar.handle_chat_command(self, c, path, msg):
+                    return
+            except Exception as e:
+                self.log('komut hatası: %r' % e)
+                self.cevap(c, path, 'Command error: %s' % e)
+                return
         now = time.time()
         c.gecmis = [t for t in c.gecmis if now - t < SEL_SN] + [now]
         if len(c.gecmis) > SEL_SINIRI:
@@ -456,6 +467,21 @@ class Sohbet:
         """Fısıltı: istemci /whisper/<InstanceID>_<alıcının adı>/ yoluna yazar, alıcının istemcisi kendi adıyla bu yolu dinler
         (AChat, giriş sonrası). Ad büyük/küçük harf ayırmaz. Alıcı yoksa hata yanıtı: istemci "kullanıcı yok ya da çevrimdışı" yazar."""
         msg = str(data.get('msg', ''))[:500]
+        m_strip = msg.strip()
+        first_w = m_strip.split()[0].lower() if m_strip else ''
+        if m_strip.startswith(('!', '.', '/')) or first_w in ('give', 'item', 'grant', 'help'):
+            try:
+                import komutlar
+                if komutlar.handle_chat_command(self, c, path, msg):
+                    if rid is not None:
+                        c.send({'t': T_RESPONSE, 'requestId': rid})
+                    return
+            except Exception as e:
+                self.log('komut hatası: %r' % e)
+                self.cevap(c, path, 'Command error: %s' % e)
+                if rid is not None:
+                    c.send({'t': T_RESPONSE, 'requestId': rid})
+                return
         want = path.lower()
         with self.lock:
             conns = [x for x in self.conns.values() if x.user and x is not c]
@@ -484,6 +510,23 @@ class Sohbet:
         for x in conns:
             x.send(out)
         return len(conns)
+
+    def cevap(self, c, path, text):
+        """Yalnızca komutu yazan oyuncuya sistem mesajı olarak yanıt gönderir."""
+        lines = [line.strip().replace('|', '/') for line in str(text).splitlines() if line.strip()]
+        if not lines:
+            return
+        target_path = path if path and path in c.handlers else next((p for p in c.handlers if p.startswith('/room/')), None)
+        for line in lines:
+            msg = '|'.join([SISTEM_ANAHTARI] + ([SISTEM_METNI[c.dil], line] if c.dil in SISTEM_METNI else
+                                                 [v for k in ('en', 'tr') for v in (SISTEM_METNI[k], line)]))
+            data = {'msg': msg, 'sentAt': str(int(time.time() * 1000))}
+            if target_path:
+                c.send({'t': T_MESSAGE, 'path': target_path, 'data': data,
+                        'endpointObject': {'path': '/endpoint/sistem/', 'endpoint': 'sistem',
+                                           'data': {'userId': 'System', 'id': '0', 'globalId': '0', 'role': 'system'}}})
+            else:
+                c.pending.append(('global', line))
 
     # -------------------------------------------------------- oyun sunucusundan
     def authenticate(self, ep, user, rooms, dil=None):

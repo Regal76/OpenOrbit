@@ -79,7 +79,8 @@ class Yetenekler:
 
     def reset_price(self):
         tbl, n = Y['sifirlama'], state(self.p)['sifirlama']
-        return tbl[n] if n < len(tbl) else tbl[-1] * 2 ** (n - len(tbl) + 1)
+        raw = tbl[n] if n < len(tbl) else tbl[-1] * 2 ** (n - len(tbl) + 1)
+        return int(AY.fiyat('hizmet_fiyat', raw))
 
     def info_list(self):
         return [mod('SkillTreeInfoCommand', id=sid, curLevel=level(self.p, sid)) for sid in SKILLS]
@@ -122,33 +123,39 @@ class Yetenekler:
         s = SKILLS.get(sid)
         cur = level(self.p, sid)
         cost = s['maliyet'][cur] if s and cur < len(s['degerler']) else None
+        free = AY.get('assembly_ucretsiz')
+        have_credits = 2_000_000_000 if free else self.p.d['pilot'].get('credits', 0)
+        have_seprom = 2_000_000_000 if free else self.seprom()
         why = ('yetenek yok' if not s else 'en üst seviye' if cost is None else 'ön koşul' if not requirements_met(self.p, sid)
-               else 'puan yetmiyor' if st['puan'] < cost['puan'] else 'kredi yetmiyor' if self.p.d['pilot'].get('credits', 0) < cost['kredi']
-               else 'Seprom yetmiyor' if self.seprom() < cost['seprom'] else None)
+               else 'puan yetmiyor' if st['puan'] < cost['puan'] else 'kredi yetmiyor' if have_credits < cost['kredi']
+               else 'Seprom yetmiyor' if have_seprom < cost['seprom'] else None)
         if why:
             self.log('   yetenek %s yükselmedi: %s' % (sid, why))
             stack = {'ön koşul': lambda: self.m.neden('on_kosul'), 'puan yetmiyor': lambda: self.m.neden('arastirma_puani'),
                      'kredi yetmiyor': lambda: self.m.stack('not_enough_credits'),
                      'Seprom yetmiyor': lambda: self.m.stack('tf_message_not_enough_seprom')}.get(why, lambda: self.m.stack('eqt_error_generic'))
             return [('UpLevelSkillTreeCommand', dict(id=sid, researchPoints=st['puan'], stack=stack(), success=False, curLevel=cur))]
+        deduct_credit = 0 if free else cost['kredi']
         with self.p.lock:
             st['puan'] -= cost['puan']
-            self.p.d['pilot']['credits'] -= cost['kredi']
+            if deduct_credit:
+                self.p.d['pilot']['credits'] -= deduct_credit
             st['seviye'][sid] = cur + 1
             self.p.dirty = True
-        RT.money(self.p, 'kredi', -cost['kredi'], 'buy_SPECIAL')
+        if deduct_credit:
+            RT.money(self.p, 'kredi', -deduct_credit, 'buy_SPECIAL')
         msgs = []
-        cargo = min(cost['seprom'], self.p.ore_count(SEPROM))
+        cargo = 0 if free else min(cost['seprom'], self.p.ore_count(SEPROM))
         if cargo:
             totals = self.p.remove_ores({SEPROM: cargo})
             msgs += [('AttributeOreCountUpdateCommand', {'oreCountList': totals}), self.m.ore_pack([SEPROM])]
-        if cost['seprom'] > cargo:
+        if not free and cost['seprom'] > cargo:
             with self.p.lock:
                 depo = self.p.d['skylab']['depo']
                 depo[SKYLAB_SEPROM] = depo.get(SKYLAB_SEPROM, 0) - (cost['seprom'] - cargo)
                 self.p.dirty = True
             self.log('   yetenek: %d Seprom Skylab deposundan' % (cost['seprom'] - cargo))
-        self.log('   yetenek %s (%s) seviye %d (-%d kredi, -%d Seprom)' % (sid, s['ad'], cur + 1, cost['kredi'], cost['seprom']))
+        self.log('   yetenek %s (%s) seviye %d (-%d kredi, -%d Seprom)' % (sid, s['ad'], cur + 1, deduct_credit, 0 if free else cost['seprom']))
         return ([('UpLevelSkillTreeCommand', dict(id=sid, researchPoints=st['puan'], stack=None, success=True, curLevel=cur + 1))]
                 + self.m.money_msgs() + msgs + self.m.apply_stats() + ([shield_cmd(self.p)] if sid in ('8', '17') else []))
 
@@ -157,15 +164,17 @@ class Yetenekler:
         st = state(self.p)
         price = self.reset_price()
         spent = sum(sum(c['puan'] for c in SKILLS[s]['maliyet'][:lv]) for s, lv in st['seviye'].items() if s in SKILLS)
-        ok = spent > 0 and self.p.d['pilot'].get('uridium', 0) >= price
+        ok = spent > 0 and (price == 0 or self.p.d['pilot'].get('uridium', 0) >= price)
         if ok:
             with self.p.lock:
-                self.p.d['pilot']['uridium'] -= price
+                if price > 0:
+                    self.p.d['pilot']['uridium'] -= price
                 st['seviye'] = {}
                 st['puan'] += spent
                 st['sifirlama'] += 1
                 self.p.dirty = True
-            RT.money(self.p, 'uridyum', -price, 'buy_SPECIAL')
+            if price > 0:
+                RT.money(self.p, 'uridyum', -price, 'buy_SPECIAL')
             self.log('   yetenekler sıfırlandı: %d puan geri, -%d U' % (spent, price))
         msgs = [('ResetSkillTreeCommand', dict(resetPrice=self.reset_price(), stack=None if ok else self.m.stack('eqt_error_generic'),
                                                list=self.info_list(), logFiles=self.logs(), researchPoints=st['puan'],

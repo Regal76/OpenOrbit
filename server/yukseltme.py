@@ -29,6 +29,8 @@ D = json.load(open(os.path.join(HERE, 'data', 'istemci_esyalari.json'), encoding
 UP, DIS, ITEMS = D['yukseltmeler'], D['disassembly'], D['esyalar']
 UP_OF = {loot: k for k, c in UP.items() for loot in c['esyalar']}
 DIS_OF = {loot: k for k, c in DIS.items() for loot in c['esyalar']}
+INGREDIENTS = {loot for groups in (UP, DIS) for recipe in groups.values() for level in recipe['seviyeler']
+               for costs in (level.get('maliyet', {}), level.get('atla', {})) for loot in costs}
 HOUR = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))['yukseltme_saati']
 LASER, SHIELD, ROCKET = 'LASER_DAMAGE_UPGRADE', 'GENERATOR_SHIELD_UPGRADE', 'ROCKETLAUNCHER_DAMAGE_UPGRADE'
 DRONE_DAMAGE, DRONE_SHIELD = 'DRONE_DAMAGE_UPGRADE', 'DRONE_SHIELD_UPGRADE'
@@ -150,7 +152,7 @@ class Yukseltme:
     def recipes(self, now=None):
         """Girişteki listeye: her sınıf bir kez (hedefsiz) ve süren/hazır yükseltmeler hedefleriyle."""
         out = [mod('AssemblyRecipeModule', recipeLootId=k, targetItemId=0, type=mod('AssemblyRecipeRegularTypeModule'),
-                   status=self.status(k, 0, now)) for k in list(UP) + list(DIS)]
+                   status=self.status(k, 0, now)) for k in list(UP) + list(DIS) if k != 'upgrade_upgrade-class2-ouroboros']
         for kt in sorted(self.st):
             k, t = kt.split('|')
             out.append(mod('AssemblyRecipeModule', recipeLootId=k, targetItemId=int(t), type=mod('AssemblyRecipeRegularTypeModule'),
@@ -169,6 +171,8 @@ class Yukseltme:
         off = bonus_hour(now)
         if off and need.get('currency_uridium'):
             need['currency_uridium'] = int(math.ceil(need['currency_uridium'] * (1 - off)))
+        if AY.get('assembly_ucretsiz'):
+            need = {}
         return need, AY.sure(sum(r['sure_sn'] for r in rows), 'yukseltme')            # panel: bekleme
 
     def build(self, f, now=None):
@@ -260,7 +264,7 @@ class Yukseltme:
         for r in rows:
             for loot, a in r.get('atla', {}).items():
                 need[loot] = need.get(loot, 0) + a
-        return {loot: max(1, int(a * frac + 0.5)) for loot, a in need.items()}
+        return {} if AY.get('assembly_ucretsiz') else {loot: max(1, int(a * frac + 0.5)) for loot, a in need.items()}
 
     def skip(self, f, now=None):
         now = now or time.time()
@@ -298,7 +302,7 @@ class Yukseltme:
         if not row:
             self.log('   Disassembly: %s seviye %d sökülmez' % (loot, lv))
             return [self.update(key, iid)]
-        fee = {l: a for l, a in row['maliyet'].items() if a > 0}
+        fee = {} if AY.get('assembly_ucretsiz') else {l: a for l, a in row['maliyet'].items() if a > 0}
         back = {l: -a for l, a in row['maliyet'].items() if a < 0}
         if INV.missing(self.p, fee):
             self.log('   Disassembly: ücret yetmiyor %s' % fee)
