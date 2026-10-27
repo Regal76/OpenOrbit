@@ -100,7 +100,7 @@ def roll(loot, rng=random):
     kz = info['kararsiz']
     main = rng.choice(POOL.get(info['tur'], POOL['DAMAGE']))
     vals = [[main, pick_value(kz, main, rng)]]
-    vals += [[a, rng.randint(1, 3) / 100.0] for a in rng.sample([a for a in IKINCIL if a != main], rng.choices((0, 1, 2), (6, 3, 1))[0])]
+    vals += [[a, rng.randint(1, max(3, kz['aralik']['buyuk'][1])) / 100.0] for a in rng.sample([a for a in IKINCIL if a != main], rng.choices((0, 1, 2), (6, 3, 1))[0])]
     rng.shuffle(vals)                      # kayıtta ana nitelik ilk olmayabiliyor (DMG-XT10: DMG_NPC sonuncu)
     pref = list(kz.get('tercih', []))
     rest = [s for s in all_ships() if s not in pref and s not in kz.get('haric', ())]      # serinin çıkmadığı gemiler (forum 162335)

@@ -41,7 +41,8 @@ VE_THERMAL, VE_ELECTRO, VM_CORROSIVE = 8, 9, 146     # VisualEffectType, VisualM
 COOLDOWN_CANNON, COOLDOWN_DRIVE = 60, 61             # CooldownType (kısayol çubuğu grupları)
 CPU_CANNON, CPU_DRIVE = 'equipment_extra_cpu_rg-sl', 'equipment_extra_cpu_ags-x'
 DMG_KEY = {'thermal': 'cannon_damage_thermal', 'corrosive': 'cannon_corrosive_damage', 'electro': 'cannon_electro_damage'}
-DRIVE_SHIP_KEYS = {'drive_experience': 'ep', 'drive_honour': 'onur', 'drive_evasion': 'kacinma'}     # sürücü/merceğin gemiye etkisi
+DRIVE_SHIP_KEYS = {'drive_experience': 'ep', 'drive_honour': 'onur', 'drive_evasion': 'kacinma',     # sürücü/merceğin ve kırıcının gemiye etkisi
+                   'experience': 'ep', 'honour': 'onur', 'hitpoints': 'can'}
 
 
 def mod(_cls, **f):
@@ -189,10 +190,15 @@ def cannon_for(p, element):
     return next((i for i in equipped(p, 'cannon') if CANNONS.get(p.d['esyalar'][str(i)], {}).get('element') == element), None)
 
 
+def shield_npc(p, e):
+    """Takılı kırıcıların uzaylıya e elementi hasar bonusu (puan)."""
+    return sum(attrs(p, i).get('cannon_damage_npc_' + e, 0) for i in equipped(p, 'cannonShield'))
+
+
 def mods(p, ship_loot, cfg):
     """Takılı sürücü ve merceklerin gemiye etkileri (EP, onur, kaçınma)."""
     out = {}
-    for slot in ('drive', 'lens'):
+    for slot in ('drive', 'lens', 'cannonShield'):
         for iid in cfg.get(slot, []):
             if str(iid) not in p.d['esyalar']:
                 continue
@@ -469,7 +475,7 @@ class Atis:
             w.send([('AttackMissedCommand', dict(attackType=attack_type(CANNON_ATTACK), targetUserId=n.id, skillColorId=0))])
             return True
         dmg = base_damage(p, iid, p.ship()['lootId']) * (1 + 0.005 * (level(p, iid) - 1)) * SLUGS[slug]['carpan']
-        dmg *= random.uniform(*C['hasar_araligi']) * (1 + (a.get(DMG_KEY[e], 0) + a.get('cannon_damage_npc_' + e, 0)) / 100.0)
+        dmg *= random.uniform(*C['hasar_araligi']) * (1 + (a.get(DMG_KEY[e], 0) + a.get('cannon_damage_npc_' + e, 0) + shield_npc(p, e)) / 100.0)
         dmg *= 1 + p.mods().get('top', 0)
         crit = random.random() < C['kritik'] + a.get('cannon_strike_' + e, 0) / 100.0
         if crit:
