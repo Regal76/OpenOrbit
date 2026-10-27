@@ -1291,5 +1291,7 @@
 "Ver ve duyur": "Give and announce",
 "Bir eşya seçin.": "Choose an item.",
 "{0} oyuncusuna {1} x{2} verildi ve duyuruldu.": "Gave {1} x{2} to {0} and announced it.",
-"Eşya ver": "Give item"
+"Eşya ver": "Give item",
+"Oyun sunucusu açık değil.": "The game server is not running.",
+"Panel yönetim kanalı yanıt vermedi: %s": "The Panel management channel did not respond: %s"
 }
