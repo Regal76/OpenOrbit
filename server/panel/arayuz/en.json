@@ -1282,5 +1282,14 @@
 "Portallarda hangar": "Hangar at portals",
 "Portalların güvenli bölgesinde de hangara girip donanım değiştirebilirsin (kolaylık; gerçek oyunda yalnız istasyonda). Kapatılırsa yalnız istasyonda.": "You can also open the hangar and change equipment in the safe zone of portals (convenience; in the real game only at the station). When off, only at the station.",
 "Benzersiz paketler bir kez": "Unique packages once",
-"Mağazada içinde gemi, gemi tasarımı, formasyon, P.E.T. ya da tekil dron olan paketler (Defcom-Raven, Stellar, Dusklight …) oyundaki gibi bir kez alınır, sonra listeden kalkar. Kapatılırsa tekrar alınabilir (sahip olduğun içerik atlanır).": "Shop packages containing a ship, ship design, formation, P.E.T. or unique drone (Defcom-Raven, Stellar, Dusklight …) can be bought once, as in the game, and then leave the list. When off they can be bought again (content you already own is skipped)."
+"Mağazada içinde gemi, gemi tasarımı, formasyon, P.E.T. ya da tekil dron olan paketler (Defcom-Raven, Stellar, Dusklight …) oyundaki gibi bir kez alınır, sonra listeden kalkar. Kapatılırsa tekrar alınabilir (sahip olduğun içerik atlanır).": "Shop packages containing a ship, ship design, formation, P.E.T. or unique drone (Defcom-Raven, Stellar, Dusklight …) can be bought once, as in the game, and then leave the list. When off they can be bought again (content you already own is skipped).",
+"Bağlı oyuncuya eşya ver": "Give an item to a connected player",
+"Yalnız bu Panel oturumu bunu yapabilir. Başarılı veriliş herkesin sohbetine duyurulur.": "Only this Panel session can do this. Successful grants are announced to everyone in chat.",
+"Oyuncu": "Player",
+"Eşya": "Item",
+"Adet": "Amount",
+"Ver ve duyur": "Give and announce",
+"Bir eşya seçin.": "Choose an item.",
+"{0} oyuncusuna {1} x{2} verildi ve duyuruldu.": "Gave {1} x{2} to {0} and announced it.",
+"Eşya ver": "Give item"
 }
