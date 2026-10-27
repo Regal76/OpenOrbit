@@ -1485,6 +1485,7 @@ def main():
         adres = CO.AYAR['adres']
         KL.configure(os.path.join(YOL.SAVE, 'klanlar.json'))     # ortak klanlar: çevrimdışı üyeye olanlar sonraki girişte
     SOHBET = SH.Sohbet(log, adres=adres)
+    SOHBET.oyun = sys.modules[__name__]
     SOHBET.start()                # yerel sohbet (7771); istemci girişteki ChatParamCommand ile buraya bağlanır
     threading.Thread(target=autosave, daemon=True).start()
     CD.start(sys.modules[__name__], LOG_DIR, log)     # panelin canlı durum sayfası (<günlükler>/canli_durum.json)

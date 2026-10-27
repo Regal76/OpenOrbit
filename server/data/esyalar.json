@@ -7377,6 +7377,16 @@
     "sablon": "drone_designs_demon-silver"
    },
    {
+    "lootId": "drone_designs_hermes",
+    "uridyum": 100000,
+    "sablon": "drone_designs_demon-silver"
+   },
+   {
+    "lootId": "drone_designs_spartan",
+    "uridyum": 200000,
+    "sablon": "drone_designs_demon-silver"
+   },
+   {
     "lootId": "drone_designs_beacon",
     "uridyum": 5000,
     "sablon": "drone_designs_demon-silver",

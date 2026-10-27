@@ -66,12 +66,12 @@ class YeniSistemler:
                 (update_msgs(self.m, self.p, [K['yenileme_esya'], K['kilit_esya']]) if ok else [])
         return []
 
-    def reward(self, loot, n):
+    def reward(self, loot, n, ship=None):
         """Mağazanın ödül yolu: N.O.V.A. (captain_*) kadroya, QFC (equipment_core_*) bağlı gemisiyle envantere; değilse None."""
         if loot.startswith('captain_'):
             return self.nova.hire(loot, n)
         if loot.startswith(QF.PREFIX):
-            return self.qfc.grant(loot, n)
+            return self.qfc.grant(loot, n, ship=ship)
         if PC.is_item(loot):
             return self.particle(loot, n)
         return None

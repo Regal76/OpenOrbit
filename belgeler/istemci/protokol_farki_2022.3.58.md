@@ -1,0 +1,1957 @@
+# Protokol farkı: 1.1.115 -> 2022.3.58
+
+`tools/il2cpp/protokol_guncelle.py` ile üretildi (2026-10-24 09:03). Yeni dosyalar `server/data/protokol/2022.3.58/`. Önce "sunucuda kullanılıyor" işaretlilere bakılmalı.
+
+| | Sayı |
+|---|---|
+| Eklenen mesaj | 0 |
+| Silinen mesaj | 27 |
+| Kimliği değişen | 971 |
+| Alanları değişen | 465 |
+| Kodlaması (write) değişen | 334 |
+| Okuma adımları değişen | 458 |
+| Düzeltilen belirsiz alan | 5 |
+| Kalan belirsiz alan | 7 |
+
+## Silinen mesajlar
+
+- `ApotheosisProgressCommand` **(sunucuda kullanılıyor)**
+- `ApotheosisProgressRequest` **(sunucuda kullanılıyor)**
+- `ApotheosisRankingEntryModule` **(sunucuda kullanılıyor)**
+- `ApotheosisRewardModule` **(sunucuda kullanılıyor)**
+- `ArmoryUnlockClaimInfoGroupCommand` **(sunucuda kullanılıyor)**
+- `ArmoryUnlockSelectGroupRequest` **(sunucuda kullanılıyor)**
+- `ChatParamCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassActionRequest` **(sunucuda kullanılıyor)**
+- `RecallBattlePassActionResultCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassLevelModule` **(sunucuda kullanılıyor)**
+- `RecallBattlePassLevelPurchaseCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassLevelPurchaseRequest` **(sunucuda kullanılıyor)**
+- `RecallBattlePassMissionInfoCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassMissionModule` **(sunucuda kullanılıyor)**
+- `RecallBattlePassMissionRefreshInfo` **(sunucuda kullanılıyor)**
+- `RecallBattlePassMissionRefreshRequest` **(sunucuda kullanılıyor)**
+- `RecallBattlePassMissionRefreshResultCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassMissionRequest` **(sunucuda kullanılıyor)**
+- `RecallBattlePassMissionStatusModule` **(sunucuda kullanılıyor)**
+- `RecallBattlePassPointsInfoCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassRewardClaimAllRequest` **(sunucuda kullanılıyor)**
+- `RecallBattlePassRewardClaimAllResultCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassRewardClaimRequest` **(sunucuda kullanılıyor)**
+- `RecallBattlePassRewardClaimResultCommand` **(sunucuda kullanılıyor)**
+- `RecallBattlePassRewardTrackModule` **(sunucuda kullanılıyor)**
+- `RecallBattlePassViewCommand` **(sunucuda kullanılıyor)**
+- `SynthesisModuleListCommand` **(sunucuda kullanılıyor)**
+
+## Kimliği değişen
+
+- `AccountStatusChangeCommand`: 22032 -> 4294952774
+- `ActivationZoneStatusCommand`: 10128 -> 28236
+- `ActivePerkModule`: 4294935221 -> 4294945942 **(sunucuda kullanılıyor)**
+- `ActivePerkUpdateCommand`: 4294936388 -> 13654 **(sunucuda kullanılıyor)**
+- `ActivityModule`: 4294954214 -> 7374 **(sunucuda kullanılıyor)**
+- `AddBeaconCommand`: 4294954834 -> 13565
+- `AddBoxCommand`: 4294945312 -> 27006 **(sunucuda kullanılıyor)**
+- `AddFireworkBoxCommand`: 4294951215 -> 4294949925 **(sunucuda kullanılıyor)**
+- `AddMapEntityCommand`: 9987 -> 28805
+- `AddMineCommand`: 4294941224 -> 11156 **(sunucuda kullanılıyor)**
+- `AgatusEventBossInfoCommand`: 4294954091 -> 4294952092
+- `AgatusEventInfoCommand`: 4294952945 -> 31604 **(sunucuda kullanılıyor)**
+- `AgatusEventTimeInfoCommand`: 4294945175 -> 16020
+- `ArenaMatchEndRequest`: 27141 -> 4294944862
+- `ArenaMatchResultModule`: 28973 -> 4294950588
+- `ArenaStatusCommand`: 4294945983 -> 4294957959
+- `ArenaSurvivorsUpdateCommand`: 4294961242 -> 18820
+- `AssemblyBuildRequest`: 4294934528 -> 28885 **(sunucuda kullanılıyor)**
+- `AssemblyCollectAllRequest`: 4294941387 -> 12236 **(sunucuda kullanılıyor)**
+- `AssemblyCollectRequest`: 4294950290 -> 26367 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeAvailableStatusModule`: 4294963065 -> 4294955575 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeBuildStatusModule`: 16469 -> 13983 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeContentModule`: 26796 -> 20314 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeKeyModule`: 4294934535 -> 4442 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeModule`: 28793 -> 4294965171 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeReadyToCollectStatusModule`: 4294953128 -> 4294938918 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeRegularTypeModule`: 4294953769 -> 4294957380 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeRemoveCommand`: 31289 -> 6036 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeSelectRequest`: 25271 -> 4294962176 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeStatusModule`: 27752 -> 4294951110
+- `AssemblyRecipeStatusUpdateCommand`: 4294937635 -> 31734 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeTemporaryTypeModule`: 15938 -> 16421 **(sunucuda kullanılıyor)**
+- `AssemblyRecipeTypeModule`: 4294953559 -> 20453
+- `AssemblyRecipeUnavailableStatusModule`: 4294935354 -> 23184 **(sunucuda kullanılıyor)**
+- `AssemblySetFilterRequest`: 31727 -> 7868 **(sunucuda kullanılıyor)**
+- `AssemblySkipRequest`: 15489 -> 24754 **(sunucuda kullanılıyor)**
+- `AssemblyWindowSettingsModule`: 5585 -> 4294942502 **(sunucuda kullanılıyor)**
+- `AssetCreateCommand`: 12979 -> 4294958735 **(sunucuda kullanılıyor)**
+- `AssetInformationModule`: 30172 -> 4294945766 **(sunucuda kullanılıyor)**
+- `AttackAbortLaserCommand`: 4294949742 -> 4294965942 **(sunucuda kullanılıyor)**
+- `AttackHitNoLockCommand`: 9117 -> 4294941212
+- `AttackRangeExceededCommand`: 13250 -> 14337 **(sunucuda kullanılıyor)**
+- `BattlePassCollectRequest`: 4294949642 -> 4294944184 **(sunucuda kullanılıyor)**
+- `BattlePassInfoCommand`: 20728 -> 14513 **(sunucuda kullanılıyor)**
+- `BattlePassKeyExchangeInfoCommand`: 4294956830 -> 14439 **(sunucuda kullanılıyor)**
+- `BattlePassKeyExchangeLootModule`: 4294954859 -> 4294961892
+- `BattlePassKeyExchangeRequest`: 10925 -> 1621 **(sunucuda kullanılıyor)**
+- `BattlePassKeyExchangeRewardModule`: 19393 -> 4294947867
+- `BattlePassKeyExchangeUpdateCommand`: 4294943403 -> 4294937509 **(sunucuda kullanılıyor)**
+- `BattlePassQuestModule`: 6656 -> 31566 **(sunucuda kullanılıyor)**
+- `BattlePassSetFilterRequest`: 4294938265 -> 4294964113 **(sunucuda kullanılıyor)**
+- `BattlePassUpdateStatusCommand`: 4294962542 -> 4294965581 **(sunucuda kullanılıyor)**
+- `BattlePassWindowSettingsModule`: 4294954806 -> 2118 **(sunucuda kullanılıyor)**
+- `BeaconCommand`: 30103 -> 4294966821 **(sunucuda kullanılıyor)**
+- `BoosterBattleStationDetailModule`: 30186 -> 4294946118
+- `BoosterDetailModule`: 4294952696 -> 4294944855
+- `BoosterEquipmentDetailModule`: 4294937962 -> 4294954085
+- `BoosterPlayerDetailModule`: 4294943950 -> 19694 **(sunucuda kullanılıyor)**
+- `BoosterSharedDetailModule`: 16574 -> 4294938004
+- `CCAbstractRangeModule`: 4294936820 -> 31369 **(sunucuda kullanılıyor)**
+- `CCAttributeModule`: 4294954304 -> 28556 **(sunucuda kullanılıyor)**
+- `CCBooleanRangeModule`: 15941 -> 4294955073
+- `CCBooleanValueModule`: 4294938363 -> 4294945374
+- `CCCooldownValueModule`: 1574 -> 20368
+- `CCDateRangeModule`: 4294959715 -> 8153
+- `CCDateValueModule`: 8720 -> 4294943544
+- `CCInitCommand`: 4294947618 -> 4294956469 **(sunucuda kullanılıyor)**
+- `CCInitRequest`: 4653 -> 19736 **(sunucuda kullanılıyor)**
+- `CCIntValueModule`: 29558 -> 16432
+- `CCItemValueModule`: 7860 -> 19266
+- `CCListRangeModule`: 25612 -> 4294938370 **(sunucuda kullanılıyor)**
+- `CCNumericRangeModule`: 30174 -> 31512 **(sunucuda kullanılıyor)**
+- `CCQuestValueModule`: 16747 -> 27970 **(sunucuda kullanılıyor)**
+- `CCRequestAttributeModule`: 4294959670 -> 14052
+- `CCStringValueModule`: 13750 -> 19576 **(sunucuda kullanılıyor)**
+- `CCValueModule`: 5000 -> 21364
+- `CCommandModule`: 4294947244 -> 4294940351 **(sunucuda kullanılıyor)**
+- `CCommandRequest`: 4294955071 -> 4294953168 **(sunucuda kullanılıyor)**
+- `CPUInitializationCommand`: 10587 -> 17041 **(sunucuda kullanılıyor)**
+- `CaptchaBoxModule`: 15583 -> 4294965149
+- `CaptchaCollectRequest`: 4294943338 -> 7586
+- `CaptchaExplodeCommand`: 4294936147 -> 1589
+- `CaptchaResolvedCommand`: 4294961750 -> 4294943321
+- `CaptchaTriggerCommand`: 4294957887 -> 4294958995
+- `ChangeLeaderRequest`: 8076 -> 3143 **(sunucuda kullanılıyor)**
+- `ChatAuthenticateUserRequest`: 1251 -> 4294961618 **(sunucuda kullanılıyor)**
+- `ChrominUpdateCommand`: 4294948480 -> 15343 **(sunucuda kullanılıyor)**
+- `ClanModule`: 15126 -> 4294942231 **(sunucuda kullanılıyor)**
+- `ClanRelationChangedCommand`: 4294952142 -> 24146
+- `ClearMarkersCommand`: 4294950040 -> 4294947798
+- `CloakDeviceActivityModule`: 4294946882 -> 4294945068 **(sunucuda kullanılıyor)**
+- `CombatMusicCommand`: 23424 -> 4294951532 **(sunucuda kullanılıyor)**
+- `CommandCenterDontShowInfoCommand`: 17857 -> 4294952591 **(sunucuda kullanılıyor)**
+- `CommandCenterGetDontShowRequest`: 15158 -> 4294967088 **(sunucuda kullanılıyor)**
+- `CommandCenterInfoCommand`: 9828 -> 8047 **(sunucuda kullanılıyor)**
+- `CommandCenterNewsClickedRequest`: 8347 -> 4294936247 **(sunucuda kullanılıyor)**
+- `CommandCenterNewsInfoRequest`: 19294 -> 8613 **(sunucuda kullanılıyor)**
+- `CommandCenterNewsModule`: 4294945205 -> 5807 **(sunucuda kullanılıyor)**
+- `CommandCenterUpdateDontShowRequest`: 4294961253 -> 4294951648 **(sunucuda kullanılıyor)**
+- `ContactListBlockInvitationsModule`: 17113 -> 4294940349 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeBaseModule`: 4294937621 -> 24227
+- `ContactListEntryAttributeClanModule`: 22880 -> 4294934941 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeClanRelationModule`: 4294934843 -> 4294941842 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeClanTagModule`: 1938 -> 4294949529 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeCommand`: 4294959625 -> 4294954246 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeLevelModule`: 25072 -> 22283 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeMapModule`: 1473 -> 4294953540 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeNameModule`: 4294951544 -> 25672 **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeOnlineModule`: 4294937572 -> 4294962940 **(sunucuda kullanılıyor)**
+- `ContactListEntryModule`: 4294955394 -> 4294965661 **(sunucuda kullanılıyor)**
+- `ContactListEntryTypeCommand`: 4294960824 -> 7272 **(sunucuda kullanılıyor)**
+- `ContactListEntryTypeModule`: 4294959577 -> 4294957831 **(sunucuda kullanılıyor)**
+- `ContactListInitializationCommand`: 4294947176 -> 4294967089 **(sunucuda kullanılıyor)**
+- `ContactListRemoveContactsCommand`: 4294936698 -> 31444 **(sunucuda kullanılıyor)**
+- `ContactListSettingsModule`: 4294934793 -> 20857 **(sunucuda kullanılıyor)**
+- `ContactListUpdateContactsCommand`: 20117 -> 26318 **(sunucuda kullanılıyor)**
+- `ContactRequest`: 4294958433 -> 21705 **(sunucuda kullanılıyor)**
+- `ContactUiUnblockCommand`: 4294935905 -> 11068 **(sunucuda kullanılıyor)**
+- `CreateMinimapMark`: 4294966106 -> 4294942023 **(sunucuda kullanılıyor)**
+- `Curcubitor2019Command`: 4294960689 -> 8917
+- `Curcubitor2019TimeUpdateCommand`: 4294957689 -> 14128
+- `DesignSetUpdateCommand`: 4294939425 -> 25314
+- `DiminishingQuestAcceptQuestRequest`: 4294949839 -> 4294966366 **(sunucuda kullanılıyor)**
+- `DiminishingQuestAcceptQuestResponse`: 4294952671 -> 4294958927 **(sunucuda kullanılıyor)**
+- `DiminishingQuestInitializationCommand`: 11651 -> 4294958489 **(sunucuda kullanılıyor)**
+- `DiminishingQuestRemoveQuestCommand`: 4294947216 -> 27193 **(sunucuda kullanılıyor)**
+- `DisassemblyRequest`: 15878 -> 514 **(sunucuda kullanılıyor)**
+- `DispatchActiveEventCommand`: 21178 -> 17379 **(sunucuda kullanılıyor)**
+- `DispatchBuySlotRequest`: 21389 -> 1157 **(sunucuda kullanılıyor)**
+- `DispatchCollectGateRewardRequest`: 3124 -> 4294955133 **(sunucuda kullanılıyor)**
+- `DispatchCollectRetrieverRequest`: 26034 -> 14882 **(sunucuda kullanılıyor)**
+- `DispatchGateModule`: 4294957978 -> 20324 **(sunucuda kullanılıyor)**
+- `DispatchGetGateListCommand`: 5686 -> 4294934658 **(sunucuda kullanılıyor)**
+- `DispatchGetGateListRequest`: 2234 -> 22940 **(sunucuda kullanılıyor)**
+- `DispatchGetRetrieverListCommand`: 4294956754 -> 4294939411 **(sunucuda kullanılıyor)**
+- `DispatchGetRetrieverListRequest`: 32481 -> 4294955693 **(sunucuda kullanılıyor)**
+- `DispatchGetRewardPackageCommand`: 24014 -> 4294940084 **(sunucuda kullanılıyor)**
+- `DispatchGetRewardPackageRequest`: 4294962952 -> 12616 **(sunucuda kullanılıyor)**
+- `DispatchInstantCompleteRequest`: 28743 -> 4294947518 **(sunucuda kullanılıyor)**
+- `DispatchLootMessageCommand`: 4294961576 -> 17388 **(sunucuda kullanılıyor)**
+- `DispatchMessageCommand`: 4294938354 -> 7795 **(sunucuda kullanılıyor)**
+- `DispatchModule`: 14071 -> 2362 **(sunucuda kullanılıyor)**
+- `DispatchRewardModule`: 6491 -> 25029 **(sunucuda kullanılıyor)**
+- `DispatchSendGateRequest`: 4294948782 -> 3381 **(sunucuda kullanılıyor)**
+- `DispatchSendRetrieverRequest`: 23007 -> 4294961402 **(sunucuda kullanılıyor)**
+- `DispatchSlotCostCommand`: 4294948153 -> 28293 **(sunucuda kullanılıyor)**
+- `DispatchSlotInfoCommand`: 9928 -> 4294947808 **(sunucuda kullanılıyor)**
+- `DispatchSlotModule`: 4294948110 -> 4294964207 **(sunucuda kullanılıyor)**
+- `DisplayOfferCommand`: 4294934568 -> 21327 **(sunucuda kullanılıyor)**
+- `DominationFactionInfluenceUpdateCommand`: 24258 -> 1897
+- `DroneRemovedCommand`: 15561 -> 4294967262
+- `EggTriggerRequest`: 5649 -> 4294960439 **(sunucuda kullanılıyor)**
+- `EmoteActivationCommand`: 29643 -> 19001 **(sunucuda kullanılıyor)**
+- `EmperorSibelonBuffRingCommand`: 4294939862 -> 4294962998 **(sunucuda kullanılıyor)**
+- `EnergyUpdateCommand`: 7029 -> 9751 **(sunucuda kullanılıyor)**
+- `EpicFightMessageCommand`: 15927 -> 4294936831
+- `EpicFightMessageModule`: 26353 -> 30599
+- `EpicFightMessageTypeModule`: 4294959241 -> 26909
+- `EpicNumberedFightMessageTypeModule`: 12719 -> 13325
+- `EquipAttributeModule`: 26671 -> 25136 **(sunucuda kullanılıyor)**
+- `EquipReadyCommand`: 4294936631 -> 4294941720 **(sunucuda kullanılıyor)**
+- `EternalBlacklightBoosterCommand`: 3525 -> 4294941136 **(sunucuda kullanılıyor)**
+- `EternalBlacklightBoosterInfoCommand`: 31773 -> 16561 **(sunucuda kullanılıyor)**
+- `EternalBlacklightChooseOptionRequest`: 11739 -> 30448 **(sunucuda kullanılıyor)**
+- `EternalBlacklightCpuInfoCommand`: 31085 -> 23520 **(sunucuda kullanılıyor)**
+- `EternalBlacklightInfoCommand`: 4294956553 -> 4294960166 **(sunucuda kullanılıyor)**
+- `EternalBlacklightRankInfoCommand`: 4294953396 -> 19580 **(sunucuda kullanılıyor)**
+- `EternalBlacklightRankModule`: 4294960817 -> 4294955369 **(sunucuda kullanılıyor)**
+- `EternalBlacklightRankingEventInfoCommand`: 4294956924 -> 4294960623 **(sunucuda kullanılıyor)**
+- `EternalBlacklightSkillPointInfoCommand`: 6446 -> 4294938217 **(sunucuda kullanılıyor)**
+- `EternalBlacklightWaveInfoCommand`: 7528 -> 25946 **(sunucuda kullanılıyor)**
+- `EternalGateBoosterCommand`: 4294962371 -> 20321
+- `EternalGateBoosterInfoCommand`: 3023 -> 32010
+- `EternalGateChooseOptionRequest`: 1175 -> 4294960399
+- `EternalGateInfoCommand`: 4294937770 -> 4294957200
+- `EternalGateKeyInfoCommand`: 4294962259 -> 4294961925
+- `EternalGateRankInfoCommand`: 19888 -> 4294951143
+- `EternalGateRankModule`: 4294948373 -> 5224
+- `EternalGateSelectionCommand`: 29593 -> 4294936212
+- `EternalGateSkillPointInfoCommand`: 4294957047 -> 1900
+- `EternalGateWaveInfoCommand`: 4294955243 -> 4294936363
+- `EventActivationAttributeModule`: 4294953596 -> 4294964138
+- `EventActivationFactionAttributeModule`: 4294965106 -> 11831
+- `EventActivationIntegerAttributeModule`: 24707 -> 7103 **(sunucuda kullanılıyor)**
+- `EventActivationMapExchangeAttributeModule`: 4294953612 -> 25766
+- `EventModule`: 4294959462 -> 4294955716 **(sunucuda kullanılıyor)**
+- `EventProgressCollectRequest`: 18234 -> 22285
+- `EventProgressInfoCommand`: 4294967293 -> 4294942847
+- `EventRewardConfirmationCommand`: 4294946758 -> 20694 **(sunucuda kullanılıyor)**
+- `EventUpdateCommand`: 26651 -> 4294946079 **(sunucuda kullanılıyor)**
+- `FactionInfluenceUpdateCommand`: 23108 -> 4294943636
+- `FightActivityModule`: 4294964263 -> 4294942519 **(sunucuda kullanılıyor)**
+- `FollowRequest`: 4294944667 -> 22582 **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthInfoCommand`: 30389 -> 4430 **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthKeyInfoCommand`: 21833 -> 767 **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthRankInfoCommand`: 24493 -> 15739 **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthRankModule`: 5048 -> 4294943574 **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthSynkInfoCommand`: 4294963517 -> 4294961394 **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthTimeInfoCommand`: 10928 -> 4294938992 **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthTopRankerInfoCommand`: 4294966334 -> 4294941252
+- `GalaxyGateBuilderBatteryItemModule`: 29521 -> 5999 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderBonusGGRewardModule`: 3121 -> 31115 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderBuyLifeCommand`: 5957 -> 4294936885 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderBuyLifeRequest`: 15328 -> 4294965838 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGateCompleteCommand`: 4294965875 -> 4294947874 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGateLifeLostCommand`: 4294939648 -> 4294936487 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGateModule`: 4294949800 -> 18784 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGateWaveUpdateCommand`: 4294960475 -> 4294942449 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGetGatePartsCommand`: 3305 -> 21429 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGetGatePartsRequest`: 4294952591 -> 4294961210 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderInfoCommand`: 22635 -> 4294949957 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderInfoRequest`: 4541 -> 4294954961 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderItemModule`: 4294952093 -> 4294963682
+- `GalaxyGateBuilderLootItemModule`: 4294962337 -> 22388 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiEnergyCommand`: 8853 -> 18216 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiEnergyRequest`: 4294957695 -> 6212 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiGateProgressModule`: 23796 -> 4294945256 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiplierItemModule`: 4294963628 -> 4294935734
+- `GalaxyGateBuilderPartItemModule`: 4294940761 -> 4294934647 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderProbabilityModule`: 4294936951 -> 14803
+- `GalaxyGateBuilderSaveSpinAmountRequest`: 19374 -> 4294936168 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderSetupGateCommand`: 4294952094 -> 4294938866 **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderSetupGateRequest`: 4294959573 -> 4294963530 **(sunucuda kullanılıyor)**
+- `GroupCloseCommand`: 14648 -> 4294947033 **(sunucuda kullanılıyor)**
+- `GroupErrorCommand`: 8229 -> 4294950651 **(sunucuda kullanılıyor)**
+- `GroupInitializationCommand`: 4294938760 -> 4294953480 **(sunucuda kullanılıyor)**
+- `GroupInvitationBlockToggleRequest`: 4294961805 -> 12945 **(sunucuda kullanılıyor)**
+- `GroupMemberInitializationCommand`: 15986 -> 4294955488 **(sunucuda kullanılıyor)**
+- `GroupMemberSelectRequest`: 26469 -> 1533
+- `GroupMemberUpdateCommand`: 16865 -> 4294952202 **(sunucuda kullanılıyor)**
+- `HealthModule`: 4294955055 -> 4294964414 **(sunucuda kullanılıyor)**
+- `HighlightTypeModule`: 4294950304 -> 4294963229 **(sunucuda kullanılıyor)**
+- `HintModule`: 4294946778 -> 4294940997
+- `HintWindowAddComand`: 4294961978 -> 14107 **(sunucuda kullanılıyor)**
+- `HintWindowClosedRequest`: 4294960594 -> 4294945538 **(sunucuda kullanılıyor)**
+- `HintWindowListInitCommand`: 4294960478 -> 18811 **(sunucuda kullanılıyor)**
+- `HintWindowModule`: 22093 -> 4294948222 **(sunucuda kullanılıyor)**
+- `HuntInfoCommand`: 4294936846 -> 4294951000
+- `HuntRewardCommand`: 17491 -> 25188
+- `HuntRewardRequest`: 13942 -> 4294941573
+- `InstantRepairAssetInformationModule`: 887 -> 4294952528
+- `InstantRepairRequest`: 4294935997 -> 6284 **(sunucuda kullanılıyor)**
+- `InventoryItemAttributeModule`: 4294940499 -> 15805
+- `InventoryItemModule`: 4294960008 -> 4294934602 **(sunucuda kullanılıyor)**
+- `InventoryItemRemovedCommand`: 21973 -> 19153 **(sunucuda kullanılıyor)**
+- `InventoryItemUpdatedCommand`: 4294961145 -> 4294956341 **(sunucuda kullanılıyor)**
+- `InvitationAcceptRequest`: 1138 -> 28455 **(sunucuda kullanılıyor)**
+- `InvitationBlockModule`: 4294959994 -> 31811 **(sunucuda kullanılıyor)**
+- `InvitationCancelRequest`: 31835 -> 4294946020 **(sunucuda kullanılıyor)**
+- `InvitationCreationRequest`: 4294943771 -> 29338 **(sunucuda kullanılıyor)**
+- `InvitationErrorCommand`: 31765 -> 4294943543 **(sunucuda kullanılıyor)**
+- `InvitationInitializationCommand`: 9931 -> 4294961311 **(sunucuda kullanılıyor)**
+- `InvitationModeModule`: 28368 -> 4294949439 **(sunucuda kullanılıyor)**
+- `InvitationModeRequest`: 4294939933 -> 4294937751 **(sunucuda kullanılıyor)**
+- `InvitationRejectRequest`: 9911 -> 20346 **(sunucuda kullanılıyor)**
+- `InvitationRemovalCommand`: 20418 -> 4294935885 **(sunucuda kullanılıyor)**
+- `ItemCommand`: 4294960321 -> 24563
+- `JackpotArenaMatchResultCommand`: 24029 -> 4294944870
+- `JackpotArenaMatchResultModule`: 30963 -> 16613
+- `JumpGateRemoveCommand`: 18906 -> 4294957634 **(sunucuda kullanılıyor)**
+- `KickMemberRequest`: 1357 -> 24251 **(sunucuda kullanılıyor)**
+- `KillUiCloseMessageCommand`: 4294945596 -> 9280
+- `KillUiFullMessageCommand`: 23664 -> 12702
+- `KillUiInfoMessageCommand`: 4294945129 -> 4294946387
+- `LeaderChangeCommand`: 15100 -> 28618 **(sunucuda kullanılıyor)**
+- `LeaveGroupRequest`: 22321 -> 4294957065 **(sunucuda kullanılıyor)**
+- `LevelModule`: 4294946279 -> 31185 **(sunucuda kullanılıyor)**
+- `LocationModule`: 6898 -> 28578 **(sunucuda kullanılıyor)**
+- `LogBoxInformationRequest`: 4294940679 -> 25204
+- `LogMessageCommand`: 4294952347 -> 4294948575
+- `LoginResponse`: 31042 -> 4294955484 **(sunucuda kullanılıyor)**
+- `MapAddControlPOIZoneCommand`: 4294956684 -> 13891
+- `MapAddPOICommand`: 15743 -> 4294940965 **(sunucuda kullanılıyor)**
+- `MapAssetActivationRequest`: 4294949512 -> 4819 **(sunucuda kullanılıyor)**
+- `MapAssetIconAddHighlightCommand`: 29547 -> 14704
+- `MapAssetIconRemoveHighlightCommand`: 31761 -> 4323
+- `MarkPositionCommand`: 7964 -> 4294935193
+- `MarkRangeCommand`: 4294961797 -> 22736
+- `MemberDestructionCommand`: 31813 -> 1018
+- `MemberJumpCommand`: 14874 -> 28192
+- `MemberLeaveCommand`: 4294954832 -> 32630 **(sunucuda kullanılıyor)**
+- `MemberLoggedOutModule`: 4294948266 -> 4294940229 **(sunucuda kullanılıyor)**
+- `MenuActionRequest`: 24957 -> 9411 **(sunucuda kullanılıyor)**
+- `MenuCategoryInitializationCommand`: 17128 -> 15224
+- `MenuInitializationCommand`: 4294951337 -> 3796 **(sunucuda kullanılıyor)**
+- `MenuItemCooldownGroupTimerCommand`: 17190 -> 8812 **(sunucuda kullanılıyor)**
+- `MenuItemInitializationCommand`: 26660 -> 4294950577
+- `MenuItemStatusCommand`: 4294960575 -> 4294950623 **(sunucuda kullanılıyor)**
+- `MenuItemTimerCommand`: 4294962123 -> 4294959444 **(sunucuda kullanılıyor)**
+- `MenuItemToolTipReplacementCommand`: 4294946175 -> 16094
+- `MessageCommand`: 20439 -> 30922 **(sunucuda kullanılıyor)**
+- `MessageKeyListWildcardCommand`: 4294937242 -> 4672 **(sunucuda kullanılıyor)**
+- `MessageKeyListWildcardModule`: 4294946824 -> 23620 **(sunucuda kullanılıyor)**
+- `MessageModule`: 13596 -> 4294946328
+- `MileageMarketBuyCommand`: 14831 -> 4294959309
+- `MileageMarketEventBuyRequest`: 4294948688 -> 4294960387 **(sunucuda kullanılıyor)**
+- `MileageMarketExchangeRequest`: 4294962229 -> 15895 **(sunucuda kullanılıyor)**
+- `MileageMarketInfoCommand`: 4294957038 -> 4294948206 **(sunucuda kullanılıyor)**
+- `MileageMarketInfoUpdateCommand`: 9725 -> 4294935248 **(sunucuda kullanılıyor)**
+- `MileageMarketInsufficientResourcesCommand`: 4294946096 -> 4294944660 **(sunucuda kullanılıyor)**
+- `MileageMarketPackageBuyRequest`: 4294964658 -> 757 **(sunucuda kullanılıyor)**
+- `MileageMarketPackageModule`: 4294951362 -> 5818 **(sunucuda kullanılıyor)**
+- `MileageMarketPackageUpdateCommand`: 3889 -> 4294950943 **(sunucuda kullanılıyor)**
+- `MiniClientItemRewardModule`: 4294938545 -> 21940 **(sunucuda kullanılıyor)**
+- `MiniClientRewardClaimRequest`: 4294943267 -> 4294942654 **(sunucuda kullanılıyor)**
+- `MiniClientRewardDayInfoCommand`: 7906 -> 25433 **(sunucuda kullanılıyor)**
+- `MiniClientRewardInfoCommand`: 20332 -> 24825 **(sunucuda kullanılıyor)**
+- `MinimapStrategyModule`: 11144 -> 24365 **(sunucuda kullanılıyor)**
+- `MonthlyDeluxeClaimRequest`: 4294956056 -> 30532 **(sunucuda kullanılıyor)**
+- `MonthlyDeluxeDayInfoCommand`: 4294950865 -> 4294941890 **(sunucuda kullanılıyor)**
+- `MonthlyDeluxeInfoCommand`: 28632 -> 19784 **(sunucuda kullanılıyor)**
+- `MonthlyDeluxeRewardModule`: 25974 -> 4294956146 **(sunucuda kullanılıyor)**
+- `MonthlyDeluxeTimeInfoCommand`: 19974 -> 4294951241 **(sunucuda kullanılıyor)**
+- `NameChangeCommand`: 11832 -> 13974
+- `NewQuestsAvailableCommand`: 4294935159 -> 4294951403
+- `NpcEventBossInfoCommand`: 31715 -> 4294955227 **(sunucuda kullanılıyor)**
+- `NpcEventInfoCommand`: 4294943462 -> 30917 **(sunucuda kullanılıyor)**
+- `NpcEventTimeInfoCommand`: 4294952858 -> 2340
+- `OfferRequest`: 27949 -> 4294964506
+- `OreTradeInfoCommand`: 8727 -> 323 **(sunucuda kullanılıyor)**
+- `OreTypeModule`: 4294945684 -> 4294966243 **(sunucuda kullanılıyor)**
+- `PVPSummerEventFeverInfoCommand`: 25548 -> 4294962802
+- `PVPSummerEventInfoCommand`: 21341 -> 23884
+- `PVPSummerEventReputationUpdateCommand`: 8188 -> 20963
+- `PVPSummerEventSelfReputationUpdateCommand`: 15433 -> 19559
+- `PVPSummerEventShuffleInfoCommand`: 24558 -> 4294960296
+- `PageRefreshCommand`: 31939 -> 4294942173
+- `PayloadEscortInfoCommand`: 4294963282 -> 4294950335 **(sunucuda kullanılıyor)**
+- `PayloadEscortKeyInfoCommand`: 18256 -> 12915 **(sunucuda kullanılıyor)**
+- `PayloadEscortScoreCommand`: 4294963278 -> 3730 **(sunucuda kullanılıyor)**
+- `PayloadEscortTimeInfoCommand`: 6099 -> 7741 **(sunucuda kullanılıyor)**
+- `PetFuelCargoFullMessage`: 4294961775 -> 16122 **(sunucuda kullanılıyor)**
+- `PetGearActivationChangeCommand`: 4294949902 -> 4294945034 **(sunucuda kullanılıyor)**
+- `PetHeatUpdateCommand`: 4935 -> 21376 **(sunucuda kullanılıyor)**
+- `PingCommand`: 4294945574 -> 4294948104 **(sunucuda kullanılıyor)**
+- `PingMemberRequest`: 11205 -> 10609 **(sunucuda kullanılıyor)**
+- `PingPositionRequest`: 4294953436 -> 4294940869 **(sunucuda kullanılıyor)**
+- `PlaySoundCommand`: 16704 -> 4294966622
+- `PlayVisualEffectCommand`: 4294962308 -> 4294944909 **(sunucuda kullanılıyor)**
+- `PlayerAttributeModule`: 19944 -> 4294944705
+- `PlayerInfluenceUpdateCommand`: 4294948123 -> 4294956452
+- `PlayerUpdateCommand`: 4294952625 -> 4294957425
+- `PlutusInfoCommand`: 10702 -> 8146 **(sunucuda kullanılıyor)**
+- `PlutusPointsUpdateCommand`: 16686 -> 4294953657 **(sunucuda kullanılıyor)**
+- `PlutusScoreEntryModule`: 20202 -> 11292 **(sunucuda kullanılıyor)**
+- `PlutusStatusCommand`: 25571 -> 4294958426 **(sunucuda kullanılıyor)**
+- `PopupErrorMessageCommand`: 32100 -> 4294953743
+- `PreBlackFridaySalesInfoCommand`: 4294940209 -> 4294958878 **(sunucuda kullanılıyor)**
+- `ProActionBarOpenStateChangeRequest`: 4294945388 -> 12442 **(sunucuda kullanılıyor)**
+- `QuantumFluidCoreData`: 9496 -> 29425 **(sunucuda kullanılıyor)**
+- `QuantumFluidCoreDataListCommand`: 21230 -> 16072 **(sunucuda kullanılıyor)**
+- `QuantumFluidCoreRequest`: 4294965941 -> 4294953707 **(sunucuda kullanılıyor)**
+- `QuestGiverWindowClosedRequest`: 30065 -> 22566 **(sunucuda kullanılıyor)**
+- `QuestLocalizationModule`: 896 -> 31422 **(sunucuda kullanılıyor)**
+- `QuestSettingsModule`: 28690 -> 13092
+- `QuestSettingsRequest`: 4294949867 -> 4294950416 **(sunucuda kullanılıyor)**
+- `RaidGateGameStageModule`: 13247 -> 16323 **(sunucuda kullanılıyor)**
+- `RankInfoCommand`: 17413 -> 4294946239
+- `RankModule`: 4294941523 -> 4294946790 **(sunucuda kullanılıyor)**
+- `RankRewardCommand`: 4294949135 -> 4294947776 **(sunucuda kullanılıyor)**
+- `RankRewardRangeModule`: 7780 -> 7273 **(sunucuda kullanılıyor)**
+- `RankRewardRequest`: 31037 -> 4294935511 **(sunucuda kullanılıyor)**
+- `RankingsEventsInfoModule`: 19060 -> 11753
+- `RankingsEventsInfoRequest`: 4294945087 -> 17765 **(sunucuda kullanılıyor)**
+- `RefreshSelectedUICategoryCommand`: 4294944875 -> 4294952907 **(sunucuda kullanılıyor)**
+- `ReloginCommand`: 32373 -> 4294949633
+- `RemoveCollectableCommand`: 4294942088 -> 27258 **(sunucuda kullanılıyor)**
+- `RemoveMineCommand`: 18225 -> 16154 **(sunucuda kullanılıyor)**
+- `RemoveMinimapMark`: 9132 -> 4294948235 **(sunucuda kullanılıyor)**
+- `ReplacementModule`: 4294958235 -> 4294934654
+- `ReplacementTypeModule`: 4294958599 -> 4294942573 **(sunucuda kullanılıyor)**
+- `RerollWindowSettingsModule`: 13809 -> 27710
+- `RerollWindowSettingsRequest`: 3930 -> 4294949593 **(sunucuda kullanılıyor)**
+- `ReturneeLoginBundleBuyCommand`: 4294967052 -> 15884
+- `ReturneeLoginBundleBuyRequest`: 25018 -> 19349 **(sunucuda kullanılıyor)**
+- `ReturneeLoginBundleInfoCommand`: 4294941978 -> 19135 **(sunucuda kullanılıyor)**
+- `ReturneeLoginHideUIItemRequest`: 4294953919 -> 4294956566 **(sunucuda kullanılıyor)**
+- `ReturneeLoginInitialRewardClaimableInfoCommand`: 4294937518 -> 2644 **(sunucuda kullanılıyor)**
+- `ReturneeLoginInitialRewardInfoCommand`: 4525 -> 4294940112 **(sunucuda kullanılıyor)**
+- `ReturneeLoginItemRewardModule`: 1284 -> 4294941877 **(sunucuda kullanılıyor)**
+- `ReturneeLoginRewardClaimRequest`: 4294935737 -> 4294954361 **(sunucuda kullanılıyor)**
+- `ReturneeLoginRewardDayInfoCommand`: 4294944777 -> 4294942025 **(sunucuda kullanılıyor)**
+- `ReturneeLoginRewardInfoCommand`: 4294940517 -> 4294949799 **(sunucuda kullanılıyor)**
+- `RewardAchievementModule`: 4294959049 -> 4294937089
+- `RewardContentCommand`: 26740 -> 681
+- `RewardContentModule`: 4294946910 -> 4294944176
+- `RewardContentRequest`: 17254 -> 4294964652
+- `RewardTitleModule`: 28608 -> 4294945281 **(sunucuda kullanılıyor)**
+- `RogueLiteCashOutCommand`: 4294954171 -> 4294965440 **(sunucuda kullanılıyor)**
+- `RogueLiteChangeEquipmentRequest`: 4294936657 -> 23992 **(sunucuda kullanılıyor)**
+- `RogueLiteCpuInfoCommand`: 6552 -> 4294937067 **(sunucuda kullanılıyor)**
+- `RogueLiteDisableEquipCommand`: 932 -> 4294947035
+- `RogueLiteDroneModule`: 27326 -> 6356 **(sunucuda kullanılıyor)**
+- `RogueLiteGateRewardModule`: 4294935095 -> 4294945276
+- `RogueLiteInfoCommand`: 22530 -> 6603 **(sunucuda kullanılıyor)**
+- `RogueLiteInventoryCommand`: 4294959529 -> 29044 **(sunucuda kullanılıyor)**
+- `RogueLiteModifierModule`: 14627 -> 23283
+- `RogueLiteRankEventInfoCommand`: 4294936204 -> 4294956281 **(sunucuda kullanılıyor)**
+- `RogueLiteRankInfoCommand`: 4294946705 -> 5497 **(sunucuda kullanılıyor)**
+- `RogueLiteScoreInfoCommand`: 4294961922 -> 17753 **(sunucuda kullanılıyor)**
+- `RogueLiteSelectRewardCommand`: 4294937373 -> 10996 **(sunucuda kullanılıyor)**
+- `RogueLiteSelectRewardRequest`: 2183 -> 5367 **(sunucuda kullanılıyor)**
+- `RogueLiteSelectShipCommand`: 4294939221 -> 17452 **(sunucuda kullanılıyor)**
+- `RogueLiteSelectShipRequest`: 2618 -> 4294957859 **(sunucuda kullanılıyor)**
+- `RogueLiteShipModule`: 4294954136 -> 7869 **(sunucuda kullanılıyor)**
+- `RzoneCancelRequest`: 30333 -> 4294941278
+- `RzoneCancelSignUpRequest`: 4294939265 -> 4294965002
+- `RzoneClosingMapStatusModule`: 16754 -> 4294951649
+- `RzoneConfirmRequest`: 6075 -> 16084
+- `RzoneConfirmationStatusModule`: 4294934588 -> 23305
+- `RzoneLeaveMapRequest`: 2856 -> 4294954948
+- `RzoneLeavingStatusModule`: 2923 -> 4294966723
+- `RzoneOnRZoneStatusModule`: 29965 -> 32375
+- `RzoneQueueingStatusModule`: 4294939810 -> 4294946883
+- `RzoneRegistrationStatusModule`: 11780 -> 4294955622
+- `RzoneSignUpRequest`: 4294936524 -> 4294960029
+- `RzoneStatusCommand`: 23482 -> 6249 **(sunucuda kullanılıyor)**
+- `RzoneStatusModule`: 30444 -> 18936
+- `RzoneUnavailibleStatusModule`: 4294955847 -> 7822
+- `SeasonPassCaptainLimitCommand`: 4294960316 -> 6056 **(sunucuda kullanılıyor)**
+- `SeasonPassLevelPurchaseCommand`: 17553 -> 4294941327 **(sunucuda kullanılıyor)**
+- `SeasonPassLevelPurchaseRequest`: 4294948446 -> 4294934725 **(sunucuda kullanılıyor)**
+- `SeasonPassMissionInfoCommand`: 18600 -> 4294939466 **(sunucuda kullanılıyor)**
+- `SeasonPassMissionModule`: 14618 -> 27691 **(sunucuda kullanılıyor)**
+- `SeasonPassMissionStatusModule`: 4294963299 -> 24433 **(sunucuda kullanılıyor)**
+- `SeasonPassRewardClaimAllRequest`: 4294940236 -> 22741 **(sunucuda kullanılıyor)**
+- `SeasonPassRewardClaimCommand`: 21505 -> 4294953801 **(sunucuda kullanılıyor)**
+- `SeasonPassRewardClaimRequest`: 30587 -> 9404 **(sunucuda kullanılıyor)**
+- `SeasonPassRewardInfoCommand`: 4294955681 -> 4294936413 **(sunucuda kullanılıyor)**
+- `SeasonPassRewardModule`: 4294944673 -> 4294942959 **(sunucuda kullanılıyor)**
+- `SeasonPassRewardUnclaimedInfoCommand`: 30842 -> 4294962067 **(sunucuda kullanılıyor)**
+- `SeasonPassStatusCommand`: 4294949698 -> 4294960770 **(sunucuda kullanılıyor)**
+- `SeasonPointsInfoCommand`: 4294935057 -> 4294964602 **(sunucuda kullanılıyor)**
+- `SectorControlSectorStateCommand`: 329 -> 5022
+- `ShipBoostEventAttributeModule`: 2056 -> 10168 **(sunucuda kullanılıyor)**
+- `ShipBoostEventBoostInfoCommand`: 4294942905 -> 16339 **(sunucuda kullanılıyor)**
+- `ShipBoostEventInfoCommand`: 4294965294 -> 4294961609 **(sunucuda kullanılıyor)**
+- `ShipBoostEventModule`: 30525 -> 4294959100 **(sunucuda kullanılıyor)**
+- `ShipBoostEventUpdateInfoCommand`: 4294954778 -> 4294962041 **(sunucuda kullanılıyor)**
+- `ShipDesignAddedCommand`: 8494 -> 28505 **(sunucuda kullanılıyor)**
+- `ShipIconModule`: 21049 -> 4294948158 **(sunucuda kullanılıyor)**
+- `ShipUpgradeModuleUpdateCommand`: 4294964076 -> 4294958818 **(sunucuda kullanılıyor)**
+- `SlotBarConfigSetRequest`: 4294950803 -> 6117 **(sunucuda kullanılıyor)**
+- `SlotBarInitializationCommand`: 4294948487 -> 4294956684 **(sunucuda kullanılıyor)**
+- `SlotInfoCommand`: 4294945565 -> 8673 **(sunucuda kullanılıyor)**
+- `SoundTriggerModule`: 21194 -> 4294940492 **(sunucuda kullanılıyor)**
+- `SpacePlagueBossSummoningProgressCommand`: 4294945466 -> 4294957055
+- `SpacePlagueCounterDataModule`: 4294957011 -> 4294959330
+- `SpacePlagueInfectionStatusCommand`: 13142 -> 19787
+- `SpacePlagueRatingStatusCommand`: 18976 -> 4294945605
+- `SpacePlagueStatusCommand`: 19655 -> 21733
+- `SpaceStationCommand`: 4294961673 -> 4294961333 **(sunucuda kullanılıyor)**
+- `StartCapsuleCollectCommand`: 16022 -> 3819 **(sunucuda kullanılıyor)**
+- `StayinAlive`: 4294960094 -> 14665 **(sunucuda kullanılıyor)**
+- `StopCapsuleCollectCommand`: 4294936123 -> 23963 **(sunucuda kullanılıyor)**
+- `TargetModule`: 26018 -> 25727 **(sunucuda kullanılıyor)**
+- `TdmResultCommand`: 4294962014 -> 4294954061
+- `TeamDeathMatchExitRequest`: 17883 -> 4294965596
+- `TeamDeathMatchResultScreenCommand`: 19454 -> 8290
+- `TieredArenaEventInfoCommand`: 4294953337 -> 19584
+- `TieredArenaEventReputationUpdateCommand`: 4294956761 -> 4294966606
+- `TieredArenaEventScheduleInfoCommand`: 4294963219 -> 4294936306
+- `TieredArenaEventSelfReputationUpdateCommand`: 4294941417 -> 4294952952
+- `TieredArenaEventTierUpdateCommand`: 4294958847 -> 20957
+- `TimerStateModule`: 4294962168 -> 6218 **(sunucuda kullanılıyor)**
+- `TitleFrenzyInfoCommand`: 597 -> 13378 **(sunucuda kullanılıyor)**
+- `TitleFrenzyOwnerUpdateCommand`: 18987 -> 23455 **(sunucuda kullanılıyor)**
+- `TitleFrenzyRankingInfoCommand`: 13560 -> 10783 **(sunucuda kullanılıyor)**
+- `TitleFrenzyRankingInfoModule`: 4294936281 -> 26800 **(sunucuda kullanılıyor)**
+- `TitleFrenzyScheduleUpdateCommand`: 12078 -> 21476 **(sunucuda kullanılıyor)**
+- `TrackIntVariableModule`: 4294961123 -> 27815
+- `TrackStringVariableModule`: 20871 -> 17927
+- `TrackVariableModule`: 4294959275 -> 4294961648
+- `TrackVariableRequest`: 2977 -> 8094 **(sunucuda kullanılıyor)**
+- `TrainingArenaPerformanceEntryCommand`: 27246 -> 4294947292
+- `TrainingArenaPerformanceInfoCommand`: 20828 -> 4294939824
+- `TrainingArenaRankInfoCommand`: 4294953982 -> 26374
+- `TrainingArenaSeasonInfoCommand`: 4294939858 -> 14069
+- `TrainingArenaSeasonRewardEntryCommand`: 8096 -> 4294964983
+- `TrainingGroundCancelRequest`: 4294947875 -> 4294952352
+- `TrainingGroundConfirmRequest`: 4294938024 -> 4294956833
+- `TrainingGroundConfirmationStatusCommand`: 14921 -> 16264
+- `TrainingGroundFightInfoCommand`: 4294938355 -> 31744
+- `TrainingGroundFightStatusCommand`: 4294965055 -> 4294944316
+- `TrainingGroundLookingForOpponentStatusCommand`: 23732 -> 17463
+- `TrainingGroundPlayerCombatStatusInfoCommand`: 4294960932 -> 4294958356
+- `TrainingGroundPreparingForFightStatusCommand`: 4294956551 -> 4294939203
+- `TrainingGroundRegistrationStatusCommand`: 4294934612 -> 4294945509
+- `TrainingGroundRegistrationUnavailableLowGearScoreCommand`: 9325 -> 4294942708
+- `TrainingGroundRegistrationUnavailableStatusCommand`: 31646 -> 5587
+- `TrainingGroundRemainingTimeToTimeoutCommand`: 4294966484 -> 15390
+- `TrainingGroundRoundInfoCommand`: 4294943842 -> 4294937975
+- `TrainingGroundSignUpRequest`: 28957 -> 5717
+- `TrainingGroundStatusCommand`: 4294941355 -> 5875
+- `TrainingGroundStatusDataModule`: 23535 -> 4294961861
+- `TrainingGroundSummingUpStatusCommand`: 4294963745 -> 4294943298
+- `UIButtonTriggerRequest`: 9143 -> 4294956565 **(sunucuda kullanılıyor)**
+- `UIFeatureBarCommand`: 21227 -> 5394
+- `UIItemAddHighlightCommand`: 26481 -> 4294956835 **(sunucuda kullanılıyor)**
+- `UIItemRemoveHighlightCommand`: 21252 -> 4294941078 **(sunucuda kullanılıyor)**
+- `UILayoutCommand`: 20901 -> 4690 **(sunucuda kullanılıyor)**
+- `UIWindowUpdateRequest`: 22941 -> 4294957525 **(sunucuda kullanılıyor)**
+- `UiItemSourceModule`: 4294940167 -> 32035 **(sunucuda kullanılıyor)**
+- `UnstableAttributeModule`: 17688 -> 17805 **(sunucuda kullanılıyor)**
+- `UnstableModuleModule`: 4294945744 -> 20781 **(sunucuda kullanılıyor)**
+- `UnstableModuleRecycleRequest`: 4366 -> 25097 **(sunucuda kullanılıyor)**
+- `UnstableModuleRecycleResultCommand`: 20333 -> 30557 **(sunucuda kullanılıyor)**
+- `UnstableModuleRerollRequest`: 4294958738 -> 4294961163 **(sunucuda kullanılıyor)**
+- `UnstableModuleRestabiliseRequest`: 4294956918 -> 10141 **(sunucuda kullanılıyor)**
+- `UnstableModuleRestabilizeResultCommand`: 4294937783 -> 6885 **(sunucuda kullanılıyor)**
+- `UnstableModulesListCommand`: 4294962443 -> 4294940847 **(sunucuda kullanılıyor)**
+- `UnstableModulesShardCommand`: 20400 -> 4294956868 **(sunucuda kullanılıyor)**
+- `UridiumBankClaimCommand`: 10139 -> 4294945687
+- `UridiumBankClaimRequest`: 4294941309 -> 14227 **(sunucuda kullanılıyor)**
+- `UridiumBankInfoCommand`: 4294950376 -> 30614 **(sunucuda kullanılıyor)**
+- `UserInventoryModule`: 2573 -> 19789 **(sunucuda kullanılıyor)**
+- `UserSettingsCommand`: 3076 -> 17728 **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeBuyCommand`: 15503 -> 4294943872
+- `VIPMerchantExchangeBuyRequest`: 1722 -> 4294942138 **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeInfoCommand`: 4294962818 -> 14742 **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeInsufficientResourcesCommand`: 4294960213 -> 4294945158 **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeItemModule`: 4294955441 -> 4294958546 **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeModule`: 22185 -> 4294955966 **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangePackageUpdateCommand`: 4294938309 -> 4294965075 **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeRequest`: 25514 -> 10592 **(sunucuda kullanılıyor)**
+- `WarGameExitRequest`: 15881 -> 4294965972
+- `WarGameInitLobbyCommand`: 4294943078 -> 4294951152
+- `WarGameInitLobbyRequest`: 4294944614 -> 25971
+- `WarGameJoinRequest`: 4294941844 -> 4294943845
+- `WarGameLeaveQueueRequest`: 4850 -> 27053
+- `WarGameLobbyStatusModule`: 4294960021 -> 4294947026
+- `WarGameScoreUpdateCommand`: 111 -> 4294943860
+- `WarGameStatusUpdateCommand`: 3997 -> 4294936005
+- `WarGameTeamCountUpdateCommand`: 4294935014 -> 10648
+- `WildcardMessageModule`: 4294948694 -> 4294955164 **(sunucuda kullanılıyor)**
+- `WindowItemCommand`: 29304 -> 4294945922 **(sunucuda kullanılıyor)**
+- `WorldBossCompletionModule`: 4294944932 -> 4294943247
+- `WorldBossInfoCommand`: 4294958883 -> 4294939798
+- `WorldBossInfoUpdateCommand`: 4294954013 -> 6999
+- `WorldBossRankingInfoCommand`: 4294939021 -> 4294962648 **(sunucuda kullanılıyor)**
+- `WorldBossRankingInfoModule`: 15560 -> 4294965796 **(sunucuda kullanılıyor)**
+- `WorldBossRankingRewardsInfoCommand`: 4294966939 -> 4294962838
+- `WorldBossRewardModule`: 4294965298 -> 4294938568
+- `WorldBossRewardsInfoCommand`: 3356 -> 4294964879
+- `WorldBossRewardsTierUpdateCommand`: 4294961293 -> 4294940169
+- `AutopilotStatus`: 4294945428 -> 22781 **(sunucuda kullanılıyor)**
+- `EchoRequest`: 4294936685 -> 2605
+- `SummonNPCRequest`: 4294946654 -> 4294946116
+- `ReqDroneBoostInfo`: 17096 -> 3439
+- `RefreshQuestInfo`: 4294957050 -> 4294940080 **(sunucuda kullanılıyor)**
+- `SeasonPassRefreshCountCommand`: 20624 -> 15732
+- `SeasonPassRefreshRequest`: 4294959261 -> 4294963907 **(sunucuda kullanılıyor)**
+- `AllowUnityOnlyCommand`: 21587 -> 21496
+- `NormalTipsCommand`: 4294967183 -> 4294959881 **(sunucuda kullanılıyor)**
+- `EventCommand`: 4294950836 -> 15194 **(sunucuda kullanılıyor)**
+- `PlanetCommand`: 19379 -> 21581 **(sunucuda kullanılıyor)**
+- `SpaceSearchEventsCommand`: 4294944421 -> 4294951795 **(sunucuda kullanılıyor)**
+- `SpaceSearchInfoCommand`: 4294941114 -> 30789 **(sunucuda kullanılıyor)**
+- `SpaceSearchMissionListCommand`: 16737 -> 26255 **(sunucuda kullanılıyor)**
+- `SpaceSearchRequest`: 10069 -> 4294953426 **(sunucuda kullanılıyor)**
+- `SpaceSearchSectorRewards`: 4294946558 -> 4294952235 **(sunucuda kullanılıyor)**
+- `SpaceSearchSectorRewardsCommand`: 4294938848 -> 4294958482 **(sunucuda kullanılıyor)**
+- `UpdateSpaceSearchKeyCommand`: 26908 -> 24707 **(sunucuda kullanılıyor)**
+- `TupleThreeModule`: 4294957252 -> 4294941463
+- `TupleTwoModule`: 4294947351 -> 4294940572 **(sunucuda kullanılıyor)**
+- `AchievementInfoCommand`: 4294950110 -> 4294955309 **(sunucuda kullanılıyor)**
+- `AchievementListCommand`: 4972 -> 5585 **(sunucuda kullanılıyor)**
+- `AchievementListRequest`: 4294950852 -> 18551 **(sunucuda kullanılıyor)**
+- `AchievementTitleCommand`: 4294965496 -> 4294954119 **(sunucuda kullanılıyor)**
+- `AchievementValueCommand`: 4294952222 -> 4294963370
+- `EventQuestCompletedCommand`: 27095 -> 11344 **(sunucuda kullanılıyor)**
+- `EventQuestDefinitionModule`: 21030 -> 4294961216 **(sunucuda kullanılıyor)**
+- `EventQuestListCommand`: 1452 -> 4294944940 **(sunucuda kullanılıyor)**
+- `EventANewHopeActionCommand`: 4294956853 -> 27833
+- `EventANewHopeActionRequest`: 4294939038 -> 4294959960 **(sunucuda kullanılıyor)**
+- `EventANewHopeContributorCommand`: 4294936500 -> 4294941342
+- `EventANewHopeContributorListCommand`: 4294937019 -> 4294964021
+- `EventANewHopeQuestCommand`: 4294940660 -> 4294938121
+- `EventANewHopeStatusCommand`: 4294952949 -> 22829
+- `EventReturnOfHeroActionCommand`: 25961 -> 4294936708 **(sunucuda kullanılıyor)**
+- `EventReturnOfHeroActionRequest`: 31326 -> 4294936598 **(sunucuda kullanılıyor)**
+- `EventReturnOfHeroContributorCommand`: 4294951184 -> 4294941897
+- `EventReturnOfHeroContributorListCommand`: 19869 -> 8354 **(sunucuda kullanılıyor)**
+- `EventReturnOfHeroQuestCommand`: 4294940717 -> 4294950214 **(sunucuda kullanılıyor)**
+- `EventReturnOfHeroStatusCommand`: 4294962889 -> 4294935441
+- `ClaimUnityClientRewardRequest`: 8169 -> 8310 **(sunucuda kullanılıyor)**
+- `EventUnityClientRewardQuestCommand`: 4294950913 -> 4294941361 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockClaimCommand`: 2042 -> 29908 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockClaimInfoCommand`: 4294949043 -> 6977 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockClaimRequest`: 4294939451 -> 28945 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockDrawCommand`: 5245 -> 16607 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockDrawRequest`: 17481 -> 4294949059 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockInfoCommand`: 30225 -> 4294948722 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockInfoRequest`: 4294958698 -> 4294954330 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockLootShowCommand`: 4294960832 -> 4294966997 **(sunucuda kullanılıyor)**
+- `ArmoryUnlockLootShowListCommand`: 4294944267 -> 4294965930 **(sunucuda kullanılıyor)**
+- `AuctionBidCommand`: 30876 -> 12216 **(sunucuda kullanılıyor)**
+- `AuctionBidRequest`: 4294950701 -> 13877 **(sunucuda kullanılıyor)**
+- `AuctionDataCommand`: 4294945796 -> 32758 **(sunucuda kullanılıyor)**
+- `AuctionHistoryCommand`: 4294949536 -> 4294956314 **(sunucuda kullanılıyor)**
+- `AuctionListCommand`: 13182 -> 4294941271 **(sunucuda kullanılıyor)**
+- `AuctionListRequest`: 29885 -> 25651 **(sunucuda kullanılıyor)**
+- `AuctionQuickBuyCommand`: 29281 -> 23841 **(sunucuda kullanılıyor)**
+- `AuctionQuickBuyRequest`: 4294954693 -> 4294941450 **(sunucuda kullanılıyor)**
+- `AuctionTestCommand`: 4294947446 -> 4294939842 **(sunucuda kullanılıyor)**
+- `AuctionTestRequest`: 4294940700 -> 28794 **(sunucuda kullanılıyor)**
+- `GetNamFIagRequest`: 21379 -> 30506 **(sunucuda kullanılıyor)**
+- `GetNamFlagCommand`: 4294964622 -> 4294961055 **(sunucuda kullanılıyor)**
+- `UpdateNamFIagCommand`: 4294943881 -> 4294959482 **(sunucuda kullanılıyor)**
+- `UpdateNamFIagRequest`: 1826 -> 24984 **(sunucuda kullanılıyor)**
+- `AutopilotInfoCommand`: 4294960854 -> 28951 **(sunucuda kullanılıyor)**
+- `AutopilotInfoRequest`: 4294948270 -> 4294937944 **(sunucuda kullanılıyor)**
+- `AutopilotInfoSaveCommand`: 15883 -> 4294957852 **(sunucuda kullanılıyor)**
+- `AutopilotInfoSaveRequest`: 4294937589 -> 4294937066 **(sunucuda kullanılıyor)**
+- `BalanceInfoCommand`: 4294949799 -> 4564 **(sunucuda kullanılıyor)**
+- `BalanceInfoListCommand`: 10918 -> 7702 **(sunucuda kullanılıyor)**
+- `BalanceInfoListRequest`: 4294961013 -> 4294938476 **(sunucuda kullanılıyor)**
+- `BattleStationHistoryInfoCommand`: 20127 -> 4294939917 **(sunucuda kullanılıyor)**
+- `BattleStationHistoryListCommand`: 27570 -> 22110 **(sunucuda kullanılıyor)**
+- `BattleStationHistoryListRequest`: 4268 -> 11208 **(sunucuda kullanılıyor)**
+- `BattleStationOverviewInfoCommand`: 6144 -> 17094 **(sunucuda kullanılıyor)**
+- `ClanBattleStationInfoCommand`: 10067 -> 18669 **(sunucuda kullanılıyor)**
+- `ClanBattleStationInfoRequest`: 4294940096 -> 30958 **(sunucuda kullanılıyor)**
+- `Birthday2025ClaimRequest`: 1173 -> 2425 **(sunucuda kullanılıyor)**
+- `Birthday2025GateEnterRequest`: 4294961812 -> 26696 **(sunucuda kullanılıyor)**
+- `Birthday2025GateRewardCommand`: 4294965149 -> 1286 **(sunucuda kullanılıyor)**
+- `Birthday2025GateWindowCommand`: 4294934672 -> 4294951512 **(sunucuda kullanılıyor)**
+- `Birthday2025PointRewardCommand`: 17906 -> 11543 **(sunucuda kullanılıyor)**
+- `Birthday2025PointRewardRequest`: 4294963341 -> 4294966652 **(sunucuda kullanılıyor)**
+- `CannonAttackCommand`: 4294937998 -> 22999 **(sunucuda kullanılıyor)**
+- `CannonUnstableModuleModule`: 4294957310 -> 17965 **(sunucuda kullanılıyor)**
+- `CaptainActionRequest`: 14375 -> 26474 **(sunucuda kullanılıyor)**
+- `CaptainCommand`: 32137 -> 11712 **(sunucuda kullanılıyor)**
+- `CaptainDismissBackCommand`: 4294955783 -> 4294946903 **(sunucuda kullanılıyor)**
+- `CaptainGetResourcesBackCommand`: 19724 -> 4294965555 **(sunucuda kullanılıyor)**
+- `CaptainPerkCommand`: 4294958430 -> 4294940089 **(sunucuda kullanılıyor)**
+- `CaptainPerkUpgradLevelCommand`: 4294964264 -> 4294935178 **(sunucuda kullanılıyor)**
+- `CaptainPerkUpgradLevelCostCommand`: 7749 -> 4294947458 **(sunucuda kullanılıyor)**
+- `CaptainRosterListCommand`: 14243 -> 12088 **(sunucuda kullanılıyor)**
+- `CaptainUpdateActiveBackCommand`: 7833 -> 31638 **(sunucuda kullanılıyor)**
+- `CaptainUpgradPerkBackCommand`: 4294967197 -> 28066 **(sunucuda kullanılıyor)**
+- `ApplyAcceptCommand`: 4294951336 -> 23489
+- `ApplyAcceptRequest`: 14507 -> 29164 **(sunucuda kullanılıyor)**
+- `ApplyClanCommand`: 16590 -> 4294951725 **(sunucuda kullanılıyor)**
+- `ApplyClanRequest`: 4294940487 -> 4294965215 **(sunucuda kullanılıyor)**
+- `ApplyDeclineCommand`: 4294962765 -> 4294943588
+- `ApplyDeclineRequest`: 12192 -> 4294946650 **(sunucuda kullanılıyor)**
+- `ChangeClanDescriptionCommand`: 4294958458 -> 4294960427 **(sunucuda kullanılıyor)**
+- `ChangeClanDescriptionRequest`: 15438 -> 4294957296 **(sunucuda kullanılıyor)**
+- `ChangeClanFirmaCommand`: 4294944388 -> 5299 **(sunucuda kullanılıyor)**
+- `ChangeClanFirmaRequest`: 4294965233 -> 26166 **(sunucuda kullanılıyor)**
+- `ChangeClanLeaderCommand`: 4294966110 -> 27372 **(sunucuda kullanılıyor)**
+- `ChangeClanLeaderRequest`: 16545 -> 4294960276 **(sunucuda kullanılıyor)**
+- `ChangeClanTaxCommand`: 26854 -> 4294954628 **(sunucuda kullanılıyor)**
+- `ChangeClanTaxRequest`: 19838 -> 29344 **(sunucuda kullanılıyor)**
+- `ClanAddNewsCommand`: 12917 -> 4294955873 **(sunucuda kullanılıyor)**
+- `ClanAddNewsRequest`: 30744 -> 4294937660 **(sunucuda kullanılıyor)**
+- `ClanAllInfoCommand`: 4294943406 -> 23577 **(sunucuda kullanılıyor)**
+- `ClanApplyInfoCommand`: 28023 -> 4294950614
+- `ClanApplyInfoListCommand`: 193 -> 1469 **(sunucuda kullanılıyor)**
+- `ClanApplyInfoListRequest`: 4294964096 -> 4294940500 **(sunucuda kullanılıyor)**
+- `ClanDeleteAllMessageCommand`: 4294937457 -> 15341 **(sunucuda kullanılıyor)**
+- `ClanDeleteAllMessageRequest`: 20080 -> 25132 **(sunucuda kullanılıyor)**
+- `ClanDeleteDiploCommand`: 4294934842 -> 4294936161 **(sunucuda kullanılıyor)**
+- `ClanDeleteDiploRequest`: 1301 -> 2457 **(sunucuda kullanılıyor)**
+- `ClanDeleteMessageCommand`: 4294960293 -> 23425 **(sunucuda kullanılıyor)**
+- `ClanDeleteMessageRequest`: 4294946970 -> 20643 **(sunucuda kullanılıyor)**
+- `ClanDeleteOpenDiploCommand`: 26348 -> 27359 **(sunucuda kullanılıyor)**
+- `ClanDeleteOpenDiploRequest`: 4294936602 -> 4294938755 **(sunucuda kullanılıyor)**
+- `ClanDeleteRankCommand`: 6069 -> 24833 **(sunucuda kullanılıyor)**
+- `ClanDeleteRankRequest`: 4294944362 -> 4294962794 **(sunucuda kullanılıyor)**
+- `ClanDiploInfoCommand`: 7603 -> 10519
+- `ClanDiploReqInfoCommand`: 4294965650 -> 23284
+- `ClanEditDiploOfferCommand`: 4294935936 -> 8655 **(sunucuda kullanılıyor)**
+- `ClanEditDiploOfferRequest`: 4294953653 -> 4294958931 **(sunucuda kullanılıyor)**
+- `ClanFilterSearchInfoCommand`: 4166 -> 7326 **(sunucuda kullanılıyor)**
+- `ClanFilterSearchRequest`: 4294966418 -> 4294948675 **(sunucuda kullanılıyor)**
+- `ClanInfoCommand`: 4942 -> 1735 **(sunucuda kullanılıyor)**
+- `ClanListCommand`: 4294959168 -> 4294959694 **(sunucuda kullanılıyor)**
+- `ClanListRequest`: 26122 -> 16131 **(sunucuda kullanılıyor)**
+- `ClanMemberInfoCommand`: 4294944763 -> 26513 **(sunucuda kullanılıyor)**
+- `ClanMemberListCommand`: 16774 -> 4294960786 **(sunucuda kullanılıyor)**
+- `ClanMemberListRequest`: 4294945037 -> 4294938599 **(sunucuda kullanılıyor)**
+- `ClanMessageInfoCommand`: 12566 -> 25134 **(sunucuda kullanılıyor)**
+- `ClanMessageListCommand`: 4702 -> 4294962828 **(sunucuda kullanılıyor)**
+- `ClanMessageListRequest`: 9187 -> 16109 **(sunucuda kullanılıyor)**
+- `ClanNameTagInfoCommand`: 4294956485 -> 4294964982 **(sunucuda kullanılıyor)**
+- `ClanNewDiplomacyCommand`: 8181 -> 14538 **(sunucuda kullanılıyor)**
+- `ClanNewDiplomacyRequest`: 24426 -> 16745 **(sunucuda kullanılıyor)**
+- `ClanNewRankCommand`: 27171 -> 4294965547 **(sunucuda kullanılıyor)**
+- `ClanNewRankRequest`: 3461 -> 4294943624 **(sunucuda kullanılıyor)**
+- `ClanNewsInfoCommand`: 27611 -> 10162 **(sunucuda kullanılıyor)**
+- `ClanNewsListCommand`: 7919 -> 18741 **(sunucuda kullanılıyor)**
+- `ClanNewsListRequest`: 24581 -> 26736 **(sunucuda kullanılıyor)**
+- `ClanRankInfoCommand`: 24541 -> 21807 **(sunucuda kullanılıyor)**
+- `ClanRankListCommand`: 6168 -> 812 **(sunucuda kullanılıyor)**
+- `ClanRankListRequest`: 4294951391 -> 5558 **(sunucuda kullanılıyor)**
+- `ClanReportAdminCommand`: 4294952554 -> 18263 **(sunucuda kullanılıyor)**
+- `ClanReportAdminRequest`: 4294949122 -> 23834 **(sunucuda kullanılıyor)**
+- `ClanSearchNameTagCommand`: 4294937206 -> 9494 **(sunucuda kullanılıyor)**
+- `ClanSearchNameTagRequest`: 28749 -> 4294948712 **(sunucuda kullanılıyor)**
+- `ClanSendAllMessageCommand`: 11598 -> 4294967258 **(sunucuda kullanılıyor)**
+- `ClanSendAllMessageRequest`: 27486 -> 8627 **(sunucuda kullanılıyor)**
+- `ClanSendMessageCommand`: 12058 -> 4294944971 **(sunucuda kullanılıyor)**
+- `ClanSendMessageRequest`: 8004 -> 4294945665 **(sunucuda kullanılıyor)**
+- `ClanTaxInfoCommand`: 22347 -> 15154 **(sunucuda kullanılıyor)**
+- `ClanTaxLogCommand`: 4294963867 -> 1976 **(sunucuda kullanılıyor)**
+- `ClanTestCommand`: 4294935663 -> 2093
+- `ClearClanCommand`: 11454 -> 4294957333 **(sunucuda kullanılıyor)**
+- `CompanyDateInfoCommand`: 4294956372 -> 16114 **(sunucuda kullanılıyor)**
+- `DelClanCommand`: 4294947487 -> 4294966213 **(sunucuda kullanılıyor)**
+- `DelClanRequest`: 4294961029 -> 4294958240 **(sunucuda kullanılıyor)**
+- `DeleteClanApplyCommand`: 6681 -> 965 **(sunucuda kullanılıyor)**
+- `DeleteClanApplyRequest`: 24564 -> 19498 **(sunucuda kullanılıyor)**
+- `DeleteClanCommand`: 16637 -> 4294967189 **(sunucuda kullanılıyor)**
+- `DeleteClanMemberCommand`: 4294963845 -> 4294960333 **(sunucuda kullanılıyor)**
+- `DeleteClanMemberRequest`: 4294948602 -> 4294942631 **(sunucuda kullanılıyor)**
+- `DeleteClanRequest`: 11401 -> 4294937018 **(sunucuda kullanılıyor)**
+- `DeleteMyRankCommand`: 4294955076 -> 2105 **(sunucuda kullanılıyor)**
+- `DeleteMyRankRequest`: 4294965026 -> 4294964136 **(sunucuda kullanılıyor)**
+- `EditClanInfoCommand`: 6191 -> 4294954709 **(sunucuda kullanılıyor)**
+- `EditClanInfoRequest`: 19169 -> 25825 **(sunucuda kullanılıyor)**
+- `EditClanMemberCommand`: 4294947387 -> 4294942008 **(sunucuda kullanılıyor)**
+- `EditClanMemberRequest`: 32510 -> 4294944833 **(sunucuda kullanılıyor)**
+- `EditClanRanksCommand`: 4294958358 -> 22526 **(sunucuda kullanılıyor)**
+- `EditClanRanksRequest`: 5008 -> 18179 **(sunucuda kullanılıyor)**
+- `FoundClanCommand`: 24931 -> 32480 **(sunucuda kullanılıyor)**
+- `FoundClanRequest`: 4294958631 -> 4294953770 **(sunucuda kullanılıyor)**
+- `JoinClanCommand`: 4294947573 -> 16968 **(sunucuda kullanılıyor)**
+- `LeaveClanCommand`: 30797 -> 4294967225 **(sunucuda kullanılıyor)**
+- `LeaveClanRequest`: 17073 -> 22799 **(sunucuda kullanılıyor)**
+- `LoginInitClanCommand`: 6146 -> 4294956858 **(sunucuda kullanılıyor)**
+- `LoginInitClanRequest`: 4294959007 -> 4294967203 **(sunucuda kullanılıyor)**
+- `LoginInitMyApplyCommand`: 718 -> 4294955668 **(sunucuda kullanılıyor)**
+- `NotifyNewDiploCommand`: 4294959161 -> 4294957673
+- `NotifyNewDiploReqCommand`: 27418 -> 17391
+- `PayoutClanCommand`: 4294946318 -> 23057 **(sunucuda kullanılıyor)**
+- `PayoutClanRequest`: 8278 -> 21795 **(sunucuda kullanılıyor)**
+- `ShowClanInfoCommand`: 31598 -> 4294943186 **(sunucuda kullanılıyor)**
+- `ShowClanInfoRequest`: 4294941643 -> 4294936539 **(sunucuda kullanılıyor)**
+- `DailyLoginClaimTodayCommand`: 4294957727 -> 4294944433 **(sunucuda kullanılıyor)**
+- `DailyLoginClaimTodayRequest`: 4294950188 -> 4294963488 **(sunucuda kullanılıyor)**
+- `DailyLoginRewardDayCommand`: 4294957190 -> 28579 **(sunucuda kullanılıyor)**
+- `DailyLoginRewardDayRequest`: 4294943742 -> 8078 **(sunucuda kullanılıyor)**
+- `EndEventSummaryScoreCommand`: 23478 -> 26078
+- `EventLootShowCommand`: 9168 -> 4294936088 **(sunucuda kullanılıyor)**
+- `EventPaymentActorCommand`: 3510 -> 8680 **(sunucuda kullanılıyor)**
+- `EventSummaryScoreCommand`: 4294963145 -> 4294952682
+- `LootProbabilityModule`: 4294943410 -> 26810 **(sunucuda kullanılıyor)**
+- `SpecialEventPaymentActorCommand`: 29726 -> 28227
+- `UpdateEventSummaryScoreCommand`: 4294954117 -> 4294963111
+- `EvoucherHistoryInfoCommand`: 25651 -> 11969
+- `EvoucherHistoryListCommand`: 28308 -> 16599 **(sunucuda kullanılıyor)**
+- `EvoucherHistoryListRequest`: 4294954400 -> 4877 **(sunucuda kullanılıyor)**
+- `ExpeditionActivateShipRequest`: 4294966420 -> 4294938607 **(sunucuda kullanılıyor)**
+- `ExpeditionBackRequest`: 4294958374 -> 20612 **(sunucuda kullanılıyor)**
+- `ExpeditionBuyTicketCommand`: 6283 -> 14733 **(sunucuda kullanılıyor)**
+- `ExpeditionBuyTicketRequest`: 4294951445 -> 4294950398 **(sunucuda kullanılıyor)**
+- `ExpeditionClearanceTimeCommand`: 3873 -> 30029 **(sunucuda kullanılıyor)**
+- `ExpeditionInfoCommand`: 4294936464 -> 4294951759 **(sunucuda kullanılıyor)**
+- `ExpeditionInfoRequest`: 18978 -> 3002 **(sunucuda kullanılıyor)**
+- `ExpeditionJumpLevelInfoCommand`: 11642 -> 4294964551 **(sunucuda kullanılıyor)**
+- `ExpeditionJumpTargetLevelCommand`: 4294942842 -> 4294962196 **(sunucuda kullanılıyor)**
+- `ExpeditionJumpTargetLevelRequest`: 4294961761 -> 1000 **(sunucuda kullanılıyor)**
+- `ExpeditionRankUserInfoCommand`: 15865 -> 5708 **(sunucuda kullanılıyor)**
+- `ExpeditionResetRequest`: 4294950953 -> 23235 **(sunucuda kullanılıyor)**
+- `ExpeditionRewardCommand`: 21296 -> 4294957237 **(sunucuda kullanılıyor)**
+- `ExpeditionSelectShipCommand`: 3712 -> 32530 **(sunucuda kullanılıyor)**
+- `ExpeditionSelectShipRequest`: 5208 -> 4294939632 **(sunucuda kullanılıyor)**
+- `ExpeditionSelectedShipListCommand`: 18221 -> 4294939406 **(sunucuda kullanılıyor)**
+- `ExpeditionShipCommand`: 16940 -> 11527 **(sunucuda kullanılıyor)**
+- `ExpeditionShipListCommand`: 24896 -> 23359 **(sunucuda kullanılıyor)**
+- `ExpeditionShipListRequest`: 11132 -> 4294941905 **(sunucuda kullanılıyor)**
+- `ExpeditionShowUiCommand`: 10010 -> 24594 **(sunucuda kullanılıyor)**
+- `ExpeditionStartInstanceCommand`: 7774 -> 4294964667 **(sunucuda kullanılıyor)**
+- `HallOfFameDataCommand`: 29827 -> 4294947982 **(sunucuda kullanılıyor)**
+- `HallOfFameDataListCommand`: 4294958509 -> 4294943013 **(sunucuda kullanılıyor)**
+- `HallOfFameDataListRequest`: 4294942685 -> 4294951678 **(sunucuda kullanılıyor)**
+- `HallOfFamePages`: 19285 -> 4294954221 **(sunucuda kullanılıyor)**
+- `HallOfFamePagesRequest`: 29331 -> 32701 **(sunucuda kullanılıyor)**
+- `HallOfFameRankingPoints`: 32204 -> 27206 **(sunucuda kullanılıyor)**
+- `HallOfFameTopDataListCommand`: 4294940887 -> 4294965080 **(sunucuda kullanılıyor)**
+- `HallOfFameTopRequest`: 29275 -> 4294951857 **(sunucuda kullanılıyor)**
+- `HangarDroneEquipmentMsg`: 4294965092 -> 25364 **(sunucuda kullanılıyor)**
+- `HangarListRequest`: 4294954505 -> 25571 **(sunucuda kullanılıyor)**
+- `HangarPetEquipmentMsg`: 4294961998 -> 4294940009 **(sunucuda kullanılıyor)**
+- `HangarShipActivateShipCommand`: 20212 -> 4294957587 **(sunucuda kullanılıyor)**
+- `HangarShipActivateShipRequest`: 12098 -> 4294962038 **(sunucuda kullanılıyor)**
+- `HangarShipAutoBuyCpuAmmoCommand`: 4294950147 -> 4294941215 **(sunucuda kullanılıyor)**
+- `HangarShipAutoBuyCpuAmmoRequest`: 14403 -> 4294942485 **(sunucuda kullanılıyor)**
+- `HangarShipBriefCommand`: 4294961639 -> 19174 **(sunucuda kullanılıyor)**
+- `HangarShipChangeShipModelCommand`: 8206 -> 4294966464 **(sunucuda kullanılıyor)**
+- `HangarShipChangeShipModelRequest`: 29537 -> 16083 **(sunucuda kullanılıyor)**
+- `HangarShipClearConfigCommand`: 25868 -> 5058 **(sunucuda kullanılıyor)**
+- `HangarShipClearConfigRequest`: 4294954059 -> 26977 **(sunucuda kullanılıyor)**
+- `HangarShipDetailCommand`: 4294948846 -> 4294941317 **(sunucuda kullanılıyor)**
+- `HangarShipDetailRequest`: 12785 -> 1050 **(sunucuda kullanılıyor)**
+- `HangarShipDroneView`: 4294946708 -> 4294942806 **(sunucuda kullanılıyor)**
+- `HangarShipEquipmentCommand`: 4294950685 -> 4294947481 **(sunucuda kullanılıyor)**
+- `HangarShipEquipmentInventoryItem`: 4294957435 -> 4294966166 **(sunucuda kullanılıyor)**
+- `HangarShipEquipmentMsg`: 4698 -> 18540
+- `HangarShipEquipmentRequest`: 4294959513 -> 4294956189 **(sunucuda kullanılıyor)**
+- `HangarShipFavouriteCommand`: 27968 -> 4294950992 **(sunucuda kullanılıyor)**
+- `HangarShipFavouriteRequest`: 4294948866 -> 4294939036 **(sunucuda kullanılıyor)**
+- `HangarShipImportConfigCommand`: 4294935199 -> 4127 **(sunucuda kullanılıyor)**
+- `HangarShipImportConfigRequest`: 4294953409 -> 433 **(sunucuda kullanılıyor)**
+- `HangarShipLoadConfigCommand`: 8776 -> 4294962226 **(sunucuda kullanılıyor)**
+- `HangarShipLoadConfigRequest`: 20330 -> 813 **(sunucuda kullanılıyor)**
+- `HangarShipMoveItemsCommand`: 13271 -> 4294934757 **(sunucuda kullanılıyor)**
+- `HangarShipMoveItemsRequest`: 15702 -> 4294949235 **(sunucuda kullanılıyor)**
+- `HangarShipPetView`: 4294936935 -> 4294951714 **(sunucuda kullanılıyor)**
+- `HangarShipRenamePetCommand`: 18972 -> 4294943950 **(sunucuda kullanılıyor)**
+- `HangarShipRenamePetRequest`: 26025 -> 4274 **(sunucuda kullanılıyor)**
+- `HangarShipRepairDroneCommand`: 4294957855 -> 4294945807
+- `HangarShipRepairDroneRequest`: 4294961462 -> 412
+- `HangarShipRepairModuleCommand`: 12980 -> 4294939259 **(sunucuda kullanılıyor)**
+- `HangarShipRepairModuleRequest`: 20612 -> 18959 **(sunucuda kullanılıyor)**
+- `HangarShipSaveConfigCommand`: 4294966782 -> 533 **(sunucuda kullanılıyor)**
+- `HangarShipSaveConfigRequest`: 7480 -> 21985 **(sunucuda kullanılıyor)**
+- `HangarShipSellDroneCommand`: 16966 -> 4294948039 **(sunucuda kullanılıyor)**
+- `HangarShipSellDroneRequest`: 28739 -> 13145 **(sunucuda kullanılıyor)**
+- `HangarShipSellItemCommand`: 4294951984 -> 9875 **(sunucuda kullanılıyor)**
+- `HangarShipSellItemRequest`: 4294960939 -> 4294965395 **(sunucuda kullanılıyor)**
+- `HangarShipUnlockSlotCommand`: 7430 -> 4294959297 **(sunucuda kullanılıyor)**
+- `HangarShipUnlockSlotRequest`: 17943 -> 4294951910 **(sunucuda kullanılıyor)**
+- `HangarShipsCommand`: 7298 -> 26280 **(sunucuda kullanılıyor)**
+- `InventoryItemModifyCommand`: 7637 -> 4990
+- `InventoryItemPack`: 4294947742 -> 4294960668 **(sunucuda kullanılıyor)**
+- `InventoryItemSellPack`: 4294936362 -> 21319
+- `SetBonusInfo`: 21359 -> 4294962332
+- `ShipDesignPack`: 4294957120 -> 4294948701 **(sunucuda kullanılıyor)**
+- `SingleDroneEquipmentMsg`: 4294959171 -> 4294938911 **(sunucuda kullanılıyor)**
+- `LockAttributeItemListCommand`: 4294938550 -> 19611 **(sunucuda kullanılıyor)**
+- `LockAttributeItemModule`: 26492 -> 4294954798 **(sunucuda kullanılıyor)**
+- `LockAttributeItemRerollCommand`: 11218 -> 4294957496 **(sunucuda kullanılıyor)**
+- `LockAttributeItemRerollRequest`: 4294963315 -> 16904 **(sunucuda kullanılıyor)**
+- `LogbookDataCommand`: 13815 -> 4294963841 **(sunucuda kullanılıyor)**
+- `LogbookDataListCommand`: 28240 -> 4294945102 **(sunucuda kullanılıyor)**
+- `LogbookDataListRequest`: 28785 -> 12893 **(sunucuda kullanılıyor)**
+- `LotteryEventFlushCommand`: 27099 -> 6887 **(sunucuda kullanılıyor)**
+- `LotteryLogCommand`: 13093 -> 4294940917 **(sunucuda kullanılıyor)**
+- `LotteryLogRewardCommand`: 16055 -> 11477 **(sunucuda kullanılıyor)**
+- `LotteryRequest`: 4294964675 -> 12042 **(sunucuda kullanılıyor)**
+- `LotteryRequestCommand`: 4294948607 -> 13770 **(sunucuda kullanılıyor)**
+- `ArgStackCommand`: 4294955458 -> 4294937580 **(sunucuda kullanılıyor)**
+- `BaseStackCommand`: 4294935744 -> 1827 **(sunucuda kullanılıyor)**
+- `PassEventCommand`: 4294963940 -> 4294955148
+- `PassItemModule`: 8101 -> 8525 **(sunucuda kullanılıyor)**
+- `InternalPilotBioRequest`: 4294937264 -> 4294944213 **(sunucuda kullanılıyor)**
+- `InternalPilotBioUpdateRequest`: 4113 -> 9101 **(sunucuda kullanılıyor)**
+- `InternalPilotBioUpdateResultsCommand`: 21342 -> 8497 **(sunucuda kullanılıyor)**
+- `InternalPilotBioUpdateStatusRequest`: 4294957760 -> 10874 **(sunucuda kullanılıyor)**
+- `InternalPilotBioUpdateUserNameRequest`: 4294944783 -> 4294937333 **(sunucuda kullanılıyor)**
+- `InternalPilotBioUserProfileCommand`: 1735 -> 4294949745 **(sunucuda kullanılıyor)**
+- `PublicWorldBossInfoCommand`: 4294955679 -> 14518 **(sunucuda kullanılıyor)**
+- `PublicWorldBossRaidCommand`: 4294949137 -> 21369 **(sunucuda kullanılıyor)**
+- `PublicWorldBossRaidIntensity`: 4294946253 -> 13811 **(sunucuda kullanılıyor)**
+- `PublicWorldBossRankCommand`: 17367 -> 5588 **(sunucuda kullanılıyor)**
+- `PublicWorldBossRankReward`: 4294944531 -> 4294963453 **(sunucuda kullanılıyor)**
+- `PublicWorldBossRequest`: 4294958027 -> 4408 **(sunucuda kullanılıyor)**
+- `PublicWorldBossTier`: 4294940056 -> 4294937749 **(sunucuda kullanılıyor)**
+- `ShopItemBuyCommand`: 4294955362 -> 4294951525 **(sunucuda kullanılıyor)**
+- `ShopItemBuyRequest`: 4294953096 -> 25293 **(sunucuda kullanılıyor)**
+- `ShopItemCommand`: 6780 -> 4294944109
+- `ShopItemLevelDataCommand`: 4294938609 -> 4294962023
+- `ShopItemListCommand`: 19460 -> 4294937562 **(sunucuda kullanılıyor)**
+- `ShopItemListRequest`: 6163 -> 4294938959 **(sunucuda kullanılıyor)**
+- `ShopLabelPrompt`: 4294953161 -> 6215
+- `ExchangeShopCommand`: 4294964841 -> 4294948795 **(sunucuda kullanılıyor)**
+- `ExchangeShopRequest`: 21058 -> 4294945120 **(sunucuda kullanılıyor)**
+- `ExchangesShopItem`: 6877 -> 4294962611 **(sunucuda kullanılıyor)**
+- `ConvertResearchPointsCommand`: 4294948816 -> 4294957548 **(sunucuda kullanılıyor)**
+- `ConvertResearchPointsRequest`: 4294955645 -> 27571 **(sunucuda kullanılıyor)**
+- `ResetSkillTreeCommand`: 28390 -> 21335 **(sunucuda kullanılıyor)**
+- `ResetSkillTreeRequest`: 29752 -> 17253 **(sunucuda kullanılıyor)**
+- `SkillTreeInfoCommand`: 19616 -> 4294942748 **(sunucuda kullanılıyor)**
+- `SkillTreeListCommand`: 21933 -> 17662 **(sunucuda kullanılıyor)**
+- `SkillTreeListRequest`: 4294960205 -> 4294955757 **(sunucuda kullanılıyor)**
+- `UpLevelSkillTreeCommand`: 4294942762 -> 4294963512 **(sunucuda kullanılıyor)**
+- `UpLevelSkillTreeRequest`: 4294945563 -> 4294935208 **(sunucuda kullanılıyor)**
+- `UpdateCargoSpaceCommand`: 4294935565 -> 14645 **(sunucuda kullanılıyor)**
+- `SkylabActionRequest`: 4294942738 -> 4294939164 **(sunucuda kullanılıyor)**
+- `SkylabActiveRobotsLeftTimeCommand`: 4294963001 -> 1255 **(sunucuda kullanılıyor)**
+- `SkylabCollectorInfoCommand`: 1179 -> 4294960140 **(sunucuda kullanılıyor)**
+- `SkylabMainViewCommand`: 4294966659 -> 30144 **(sunucuda kullanılıyor)**
+- `SkylabMainViewModuleCommand`: 21769 -> 4294960305 **(sunucuda kullanılıyor)**
+- `SkylabModuleProductivityCommand`: 4294944839 -> 6682 **(sunucuda kullanılıyor)**
+- `SkylabModuleUpgradeCommand`: 4294936505 -> 4294935981 **(sunucuda kullanılıyor)**
+- `SkylabPurchaseRobotRequest`: 4294939670 -> 4294963689 **(sunucuda kullanılıyor)**
+- `SkylabRobotPriceCommand`: 17551 -> 4294966184 **(sunucuda kullanılıyor)**
+- `SkylabStorageInfoCommand`: 4294944472 -> 4294948995 **(sunucuda kullanılıyor)**
+- `SkylabStorageOreCommand`: 19924 -> 4294940484 **(sunucuda kullanılıyor)**
+- `SkylabUnifiedReceiptCommand`: 22560 -> 4294935361 **(sunucuda kullanılıyor)**
+- `SkylabViewModuleBackCommand`: 9237 -> 2314 **(sunucuda kullanılıyor)**
+- `SkylabViewModuleRequest`: 4294947792 -> 4294950355 **(sunucuda kullanılıyor)**
+- `SkylabXenoInfoCommand`: 4294939996 -> 19516 **(sunucuda kullanılıyor)**
+- `SpotLightPositionCommand`: 4294938987 -> 3270
+- `StrikeAndExitInfoCommand`: 5431 -> 4294957532 **(sunucuda kullanılıyor)**
+- `StrikeAndExitInfoRequest`: 4294946688 -> 4294965600 **(sunucuda kullanılıyor)**
+- `StrikeAndExitMapInfoCommand`: 10314 -> 4294967279 **(sunucuda kullanılıyor)**
+- `StrikeAndExitRemoveScoreCommand`: 2366 -> 30404 **(sunucuda kullanılıyor)**
+- `StrikeAndExitScoreCommand`: 28494 -> 17224 **(sunucuda kullanılıyor)**
+- `SynthesisCostLootCommand`: 4294957742 -> 30370 **(sunucuda kullanılıyor)**
+- `SynthesisGroupCommand`: 4294962115 -> 4294937720 **(sunucuda kullanılıyor)**
+- `SynthesisInventoryCommand`: 20438 -> 27591 **(sunucuda kullanılıyor)**
+- `SynthesisInventoryRequest`: 4294960416 -> 4294943970 **(sunucuda kullanılıyor)**
+- `SynthesisItemRequest`: 3700 -> 4294942640 **(sunucuda kullanılıyor)**
+- `SynthesisListCommand`: 8415 -> 10662 **(sunucuda kullanılıyor)**
+- `SynthesisModuleCommand`: 4294948604 -> 25028 **(sunucuda kullanılıyor)**
+- `TrinityTrialsClaimPassRewardRequest`: 4294946619 -> 4294962024 **(sunucuda kullanılıyor)**
+- `TrinityTrialsDropLevelCommand`: 4294961308 -> 4294960231 **(sunucuda kullanılıyor)**
+- `TrinityTrialsDropLevelOptionalCommand`: 19782 -> 24334 **(sunucuda kullanılıyor)**
+- `TrinityTrialsDropLevelOptionalRequest`: 12069 -> 4294961821 **(sunucuda kullanılıyor)**
+- `TrinityTrialsGateEnterRequest`: 4294957188 -> 4294967008 **(sunucuda kullanılıyor)**
+- `TrinityTrialsGateWindowCommand`: 17147 -> 4294946158 **(sunucuda kullanılıyor)**
+- `TrinityTrialsPassCommand`: 2314 -> 4294957328 **(sunucuda kullanılıyor)**
+- `TrinityTrialsRewardDescriptionCommand`: 21113 -> 4294961959 **(sunucuda kullanılıyor)**
+- `TrinityTrialsUIRequest`: 29045 -> 4294959905 **(sunucuda kullanılıyor)**
+- `AbsUserMessageInfoCommand`: 4294938287 -> 6804
+- `BlackListAddCommand`: 4409 -> 17186 **(sunucuda kullanılıyor)**
+- `BlackListAddRequest`: 22582 -> 4294954567 **(sunucuda kullanılıyor)**
+- `BlackListDeleteCommand`: 29042 -> 21722 **(sunucuda kullanılıyor)**
+- `BlackListDeleteRequest`: 22216 -> 13140 **(sunucuda kullanılıyor)**
+- `BlackListGetCommand`: 19487 -> 23694 **(sunucuda kullanılıyor)**
+- `BlackListGetRequest`: 4294961437 -> 4294957420 **(sunucuda kullanılıyor)**
+- `ContactBaseInfoCommand`: 31914 -> 4294942571
+- `ContactFriendAcceptTipsCommand`: 4294935846 -> 25292
+- `ContactFriendInfoCommand`: 4294942911 -> 4294935022 **(sunucuda kullanılıyor)**
+- `ContactInvitationInfoCommand`: 12318 -> 4294956477 **(sunucuda kullanılıyor)**
+- `ContactListBlockInvitationsTipsCommand`: 6621 -> 9322
+- `ContactListCommand`: 23426 -> 4294948569 **(sunucuda kullanılıyor)**
+- `ContactListRequest`: 4294940758 -> 19796 **(sunucuda kullanılıyor)**
+- `UserMessageAuctionInfoCommand`: 4294966692 -> 24551 **(sunucuda kullanılıyor)**
+- `UserMessageClanInfoCommand`: 4294941150 -> 4294945786 **(sunucuda kullanılıyor)**
+- `UserMessageDeleteCommand`: 11669 -> 9986 **(sunucuda kullanılıyor)**
+- `UserMessageDeleteRequest`: 24228 -> 4294943562 **(sunucuda kullanılıyor)**
+- `UserMessageGetTargetCommand`: 21879 -> 32351 **(sunucuda kullanılıyor)**
+- `UserMessageGetTargetRequest`: 8056 -> 28557 **(sunucuda kullanılıyor)**
+- `UserMessageInboxListCommand`: 9788 -> 4294946206 **(sunucuda kullanılıyor)**
+- `UserMessageInboxListRequest`: 27605 -> 4294959280 **(sunucuda kullanılıyor)**
+- `UserMessageInfoCommand`: 4294940396 -> 4294963508 **(sunucuda kullanılıyor)**
+- `UserMessageInfoInfoCommand`: 4294935245 -> 29310 **(sunucuda kullanılıyor)**
+- `UserMessageInitCommand`: 4294941013 -> 4294954081 **(sunucuda kullanılıyor)**
+- `UserMessageInitRequest`: 29112 -> 24985 **(sunucuda kullanılıyor)**
+- `UserMessageLootCommand`: 4294937665 -> 10299 **(sunucuda kullanılıyor)**
+- `UserMessageLootRequest`: 13441 -> 14399 **(sunucuda kullanılıyor)**
+- `UserMessageNewCommand`: 4294963975 -> 18892 **(sunucuda kullanılıyor)**
+- `UserMessageNoteAddCommand`: 24790 -> 4294947504 **(sunucuda kullanılıyor)**
+- `UserMessageNoteAddRequest`: 4508 -> 4294965350 **(sunucuda kullanılıyor)**
+- `UserMessageNoteDeleteCommand`: 4294946920 -> 4294951266 **(sunucuda kullanılıyor)**
+- `UserMessageNoteDeleteRequest`: 4294936955 -> 30488 **(sunucuda kullanılıyor)**
+- `UserMessageNoteInfoCommand`: 4294947945 -> 4294966971 **(sunucuda kullanılıyor)**
+- `UserMessageNoteListCommand`: 28869 -> 4294951020 **(sunucuda kullanılıyor)**
+- `UserMessageNoteListRequest`: 14130 -> 14462 **(sunucuda kullanılıyor)**
+- `UserMessageNoteUpdateCommand`: 6036 -> 4294964994 **(sunucuda kullanılıyor)**
+- `UserMessageNoteUpdateRequest`: 19757 -> 4294936663 **(sunucuda kullanılıyor)**
+- `UserMessageOutboxListCommand`: 4294965001 -> 10442 **(sunucuda kullanılıyor)**
+- `UserMessageOutboxListRequest`: 4294953703 -> 4294966611 **(sunucuda kullanılıyor)**
+- `UserMessageParentInfoCommand`: 4294940010 -> 4294951287
+- `UserMessageSendCommand`: 22224 -> 20555 **(sunucuda kullanılıyor)**
+- `UserMessageSendRequest`: 28460 -> 4294954464 **(sunucuda kullanılıyor)**
+- `UserMessageSystemInfoCommand`: 15441 -> 4294952368 **(sunucuda kullanılıyor)**
+- `UserMessageTargetInfoCommand`: 23072 -> 4294952260 **(sunucuda kullanılıyor)**
+- `UserMessageUpdateStatusCommand`: 4294945997 -> 4294949896 **(sunucuda kullanılıyor)**
+- `UserMessageUpdateStatusRequest`: 25140 -> 12166 **(sunucuda kullanılıyor)**
+- `VoyagersClaimPassRewardRequest`: 23810 -> 11404 **(sunucuda kullanılıyor)**
+- `VoyagersGateEnterRequest`: 23838 -> 18950 **(sunucuda kullanılıyor)**
+- `VoyagersGateStarRewardCommand`: 29574 -> 4294955950 **(sunucuda kullanılıyor)**
+- `VoyagersGateWindowCommand`: 4294953378 -> 17564 **(sunucuda kullanılıyor)**
+- `VoyagersPassCommand`: 8579 -> 13297 **(sunucuda kullanılıyor)**
+- `VoyagersUIRequest`: 4294953382 -> 4294953427 **(sunucuda kullanılıyor)**
+
+## Alanları değişen
+
+- `AchievementEarnedCommand`: eklenen state UnityEngine.TextCore.Glyph.BargainState; silinen state <Nodes>d__18.BargainState; sıra değişti
+- `ActivationRequest`: eklenen activationTypeValue InjectConstructorInfo.ActivationType; silinen activationTypeValue UnityEngine.XR.XRNode.ActivationType; sıra değişti
+- `ActivationStatedRequest`: eklenen activationType Zenject.InjectTypeInfo.ActivationType; silinen activationType UnityEngine.XR.XRNodeState.ActivationType; sıra değişti
+- `ActivationZoneStatusCommand`: eklenen —; silinen —; sıra değişti
+- `ActivePerkModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AddFireworkBoxCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AddMapEntityCommand`: eklenen —; silinen —; sıra değişti
+- `AddMineCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AgatusEventInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AgatusEventTimeInfoCommand`: eklenen —; silinen —; sıra değişti
+- `AlignmentModule`: eklenen alignmentValue <Module>.Alignment; silinen alignmentValue UnityEngine.Video.VideoTimeReference.Alignment; sıra değişti
+- `AmmunitionBuyCommand`: eklenen transactionStatus UnityEngine.ThreadAndSerializationSafeAttribute.TransactionStatus; silinen transactionStatus UnityEngine.TouchType.TransactionStatus; sıra değişti
+- `AmmunitionEmptyCommand`: eklenen ammunitionType UnityEngine.NativeClassAttribute.AmmunitionType; silinen ammunitionType UnityEngine.PenEventType.AmmunitionType; sıra değişti
+- `AmmunitionFallbackCommand`: eklenen ammunitionType UnityEngine.UnityString.AmmunitionType; silinen ammunitionType UnityEngine.PenData.AmmunitionType; sıra değişti
+- `AmmunitionPrizeItem`: eklenen currencyType UnityEngine.Bindings.NativeConditionalAttribute.CurrencyType; silinen currencyType UnityEngine.CameraRaycastHelper.CurrencyType; sıra değişti
+- `AmmunitionTypeModule` **(sunucuda kullanılıyor)**: eklenen typeValue UnityEngine.Bindings.NativeHeaderAttribute.AmmunitionType; silinen typeValue UnityEngine.Input.AmmunitionType; sıra değişti
+- `ArenaMatchResultModule`: eklenen —; silinen —; sıra değişti
+- `ArenaStatusCommand`: eklenen arenaType Unity.IL2CPP.Metadata.__Il2CppFullySharedGenericType.ArenaType, status Unity.IL2CPP.Metadata.__Il2CppFullySharedGenericType.MatchStatus; silinen status <Module>.MatchStatus, arenaType <Module>.ArenaType; sıra değişti
+- `ArenaSurvivorsUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `AssemblyBuildRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AssemblyRecipeBuildStatusModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AssemblyRecipeKeyModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AssemblyRecipeModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AssemblyRecipeReadyToCollectStatusModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AssemblyRecipeStatusUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AssemblySkipRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AssetCreateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AttackHitNoLockCommand`: eklenen —; silinen —; sıra değişti
+- `AttackRangeExceededCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BattlePassInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BattlePassKeyExchangeInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BattlePassKeyExchangeRewardModule`: eklenen —; silinen —; sıra değişti
+- `BattlePassKeyExchangeUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BeaconCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CCAttributeModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CCNumericRangeModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CCRequestAttributeModule`: eklenen —; silinen —; sıra değişti
+- `CCommandModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CCommandRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptchaTriggerCommand`: eklenen —; silinen —; sıra değişti
+- `ChatAuthenticateUserRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ChrominUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanRelationChangedCommand`: eklenen —; silinen —; sıra değişti
+- `CommandCenterNewsModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ContactListEntryAttributeCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ContactListInitializationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CreateMinimapMark` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `Curcubitor2019Command`: eklenen —; silinen —; sıra değişti
+- `DesignSetUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `DiminishingQuestAcceptQuestRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DiminishingQuestAcceptQuestResponse` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DiminishingQuestInitializationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DispatchGateModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DispatchGetRewardPackageCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DispatchLootMessageCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DispatchRewardModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DisplayOfferCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DominationFactionInfluenceUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `EmoteActivationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EmperorSibelonBuffRingCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EnergyUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EpicNumberedFightMessageTypeModule`: eklenen —; silinen —; sıra değişti
+- `EternalBlacklightBoosterInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EternalBlacklightRankInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EternalBlacklightRankModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EternalBlacklightRankingEventInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EternalBlacklightWaveInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EternalGateBoosterCommand`: eklenen —; silinen —; sıra değişti
+- `EternalGateBoosterInfoCommand`: eklenen —; silinen —; sıra değişti
+- `EternalGateInfoCommand`: eklenen —; silinen —; sıra değişti
+- `EternalGateRankInfoCommand`: eklenen —; silinen —; sıra değişti
+- `EternalGateRankModule`: eklenen —; silinen —; sıra değişti
+- `EventActivationMapExchangeAttributeModule`: eklenen —; silinen —; sıra değişti
+- `EventModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventRewardConfirmationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `FactionInfluenceUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `FrozenLabyrinthInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `FrozenLabyrinthRankInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `FrozenLabyrinthRankModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `FrozenLabyrinthSynkInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `FrozenLabyrinthTimeInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderBonusGGRewardModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderBuyLifeCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderGateCompleteCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderGateModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderGetGatePartsCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderItemModule`: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderLootItemModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderMultiEnergyCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderMultiEnergyRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderMultiGateProgressModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderPartItemModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderProbabilityModule`: eklenen —; silinen —; sıra değişti
+- `GalaxyGateBuilderSetupGateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GroupInitializationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `GroupMemberInitializationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HealthModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HintWindowAddComand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HuntInfoCommand`: eklenen —; silinen —; sıra değişti
+- `HuntRewardCommand`: eklenen —; silinen —; sıra değişti
+- `InventoryItemModule` **(sunucuda kullanılıyor)**: eklenen —; silinen extAttributes System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.TupleTwoModule>, star int; sıra değişti
+- `InvitationErrorCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `InvitationInitializationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `InvitationRemovalCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ItemCommand`: eklenen —; silinen —; sıra değişti
+- `JackpotArenaMatchResultCommand`: eklenen —; silinen —; sıra değişti
+- `KillUiFullMessageCommand`: eklenen —; silinen —; sıra değişti
+- `KillUiInfoMessageCommand`: eklenen —; silinen —; sıra değişti
+- `LocationModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LogBoxInformationRequest`: eklenen —; silinen —; sıra değişti
+- `LogMessageCommand`: eklenen —; silinen —; sıra değişti
+- `MapAddControlPOIZoneCommand`: eklenen —; silinen —; sıra değişti
+- `MapAddPOICommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MarkPositionCommand`: eklenen —; silinen —; sıra değişti
+- `MarkRangeCommand`: eklenen —; silinen —; sıra değişti
+- `MemberJumpCommand`: eklenen —; silinen —; sıra değişti
+- `MemberLeaveCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MenuCategoryInitializationCommand`: eklenen —; silinen —; sıra değişti
+- `MenuInitializationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MenuItemCooldownGroupTimerCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MenuItemInitializationCommand`: eklenen —; silinen —; sıra değişti
+- `MenuItemStatusCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MenuItemTimerCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MessageKeyListWildcardModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MileageMarketExchangeRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MileageMarketInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MileageMarketPackageModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MileageMarketPackageUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MiniClientRewardInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MonthlyDeluxeDayInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `MonthlyDeluxeInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `NameChangeCommand`: eklenen —; silinen —; sıra değişti
+- `NpcEventInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `NpcEventTimeInfoCommand`: eklenen —; silinen —; sıra değişti
+- `OfferRequest`: eklenen —; silinen —; sıra değişti
+- `OreTradeInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PVPSummerEventInfoCommand`: eklenen —; silinen —; sıra değişti
+- `PVPSummerEventReputationUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `PVPSummerEventSelfReputationUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `PayloadEscortInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PayloadEscortTimeInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PetHeatUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PingCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PlayVisualEffectCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PlutusInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PlutusScoreEntryModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PlutusStatusCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `QuantumFluidCoreData` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `QuantumFluidCoreRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `QuestLocalizationModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `QuestSettingsModule`: eklenen —; silinen —; sıra değişti
+- `QuestSettingsRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `RankInfoCommand`: eklenen —; silinen —; sıra değişti
+- `RankModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `RankRewardCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ReloginCommand`: eklenen —; silinen —; sıra değişti
+- `RemoveCollectableCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ReturneeLoginInitialRewardInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ReturneeLoginRewardInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `RewardAchievementModule`: eklenen —; silinen —; sıra değişti
+- `RogueLiteDroneModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `RogueLiteGateRewardModule`: eklenen —; silinen —; sıra değişti
+- `RogueLiteInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `RogueLiteInventoryCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `RogueLiteRankEventInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `RogueLiteShipModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassMissionInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassMissionModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassRewardClaimCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassRewardClaimRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassRewardInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassRewardModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassRewardUnclaimedInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassStatusCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SectorControlSectorStateCommand`: eklenen —; silinen —; sıra değişti
+- `ShipBoostEventInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShipBoostEventModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShipBoostEventUpdateInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShipUpgradeModuleUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShipWarpWindowCommand` **(sunucuda kullanılıyor)**: eklenen uridium int; silinen uridium long; sıra değişti
+- `SlotBarConfigSetRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SlotBarInitializationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SpacePlagueBossSummoningProgressCommand`: eklenen —; silinen —; sıra değişti
+- `SpacePlagueCounterDataModule`: eklenen —; silinen —; sıra değişti
+- `SpaceStationCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `StartCapsuleCollectCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TargetModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TdmResultCommand`: eklenen —; silinen —; sıra değişti
+- `TeamDeathMatchResultScreenCommand`: eklenen —; silinen —; sıra değişti
+- `TieredArenaEventInfoCommand`: eklenen —; silinen —; sıra değişti
+- `TieredArenaEventReputationUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `TieredArenaEventSelfReputationUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `TitleFrenzyInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TitleFrenzyOwnerUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TitleFrenzyRankingInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TitleFrenzyRankingInfoModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TrainingArenaPerformanceEntryCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingArenaRankInfoCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingArenaSeasonRewardEntryCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingGroundFightInfoCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingGroundFightStatusCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingGroundPreparingForFightStatusCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingGroundRegistrationStatusCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingGroundRoundInfoCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingGroundStatusCommand`: eklenen —; silinen —; sıra değişti
+- `TrainingGroundSummingUpStatusCommand`: eklenen —; silinen —; sıra değişti
+- `UIFeatureBarCommand`: eklenen —; silinen —; sıra değişti
+- `UIItemAddHighlightCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UIItemRemoveHighlightCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UIWindowUpdateRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UnstableAttributeModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UnstableModuleModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UnstableModuleRecycleResultCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UnstableModuleRerollRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UnstableModuleRestabiliseRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UnstableModulesListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UnstableModulesShardCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UridiumBankInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserInventoryModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserSettingsCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `VIPMerchantExchangeInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `VIPMerchantExchangeItemModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `VIPMerchantExchangeModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `WarGameInitLobbyCommand`: eklenen —; silinen —; sıra değişti
+- `WarGameLobbyStatusModule`: eklenen —; silinen —; sıra değişti
+- `WarGameScoreUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `WarGameStatusUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `WindowItemCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `WorldBossCompletionModule`: eklenen —; silinen —; sıra değişti
+- `WorldBossInfoCommand`: eklenen —; silinen —; sıra değişti
+- `WorldBossInfoUpdateCommand`: eklenen —; silinen —; sıra değişti
+- `WorldBossRankingInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `WorldBossRankingInfoModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `WorldBossRewardsInfoCommand`: eklenen —; silinen —; sıra değişti
+- `SummonNPCRequest`: eklenen —; silinen —; sıra değişti
+- `RefreshQuestInfo` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SeasonPassRefreshCountCommand`: eklenen —; silinen —; sıra değişti
+- `EventCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SpaceSearchEventsCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SpaceSearchInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SpaceSearchRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SpaceSearchSectorRewards` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TupleThreeModule`: eklenen —; silinen —; sıra değişti
+- `TupleTwoModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AchievementInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AchievementListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AchievementTitleCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventQuestDefinitionModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventANewHopeActionCommand`: eklenen —; silinen —; sıra değişti
+- `EventANewHopeActionRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventANewHopeQuestCommand`: eklenen —; silinen —; sıra değişti
+- `EventReturnOfHeroActionCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventReturnOfHeroActionRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventReturnOfHeroContributorCommand`: eklenen —; silinen —; sıra değişti
+- `EventReturnOfHeroQuestCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ArmoryUnlockClaimCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ArmoryUnlockClaimInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ArmoryUnlockDrawCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ArmoryUnlockDrawRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ArmoryUnlockInfoCommand` **(sunucuda kullanılıyor)**: eklenen claimInfoCommandList System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.armoryunlock.ArmoryUnlockClaimInfoCommand>, special net.bigpoint.darkorbit.com.module.porting.armoryunlock.ArmoryUnlockLootShowListCommand; silinen claimInfoGroupCommands System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.armoryunlock.ArmoryUnlockClaimInfoGroupCommand>, selectedGroup int, selectedClaimInfoGroupCommand System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.armoryunlock.ArmoryUnlockClaimInfoCommand>, canReset bool, specials System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.armoryunlock.ArmoryUnlockLootShowListCommand>; sıra değişti
+- `ArmoryUnlockLootShowListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen claimInfoCommandList System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.armoryunlock.ArmoryUnlockClaimInfoCommand>, group int; sıra değişti
+- `AuctionBidCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AuctionBidRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AuctionDataCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AuctionHistoryCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AuctionListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AutopilotInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BalanceInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BalanceInfoListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BattleStationHistoryInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BattleStationHistoryListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BattleStationOverviewInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanBattleStationInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `Birthday2025GateRewardCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `Birthday2025GateWindowCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `Birthday2025PointRewardCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CannonAttackCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CannonUnstableModuleModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —
+- `CaptainActionRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptainCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptainDismissBackCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptainPerkCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptainPerkUpgradLevelCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptainPerkUpgradLevelCostCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptainUpdateActiveBackCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CaptainUpgradPerkBackCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ApplyAcceptCommand`: eklenen —; silinen —; sıra değişti
+- `ApplyClanCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ApplyClanRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ChangeClanDescriptionCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ChangeClanFirmaCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ChangeClanLeaderCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ChangeClanTaxCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanAddNewsCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanAllInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanApplyInfoCommand`: eklenen —; silinen —; sıra değişti
+- `ClanDeleteAllMessageCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanDeleteDiploCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanDeleteOpenDiploCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanDeleteRankCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanDiploInfoCommand`: eklenen —; silinen —; sıra değişti
+- `ClanDiploReqInfoCommand`: eklenen —; silinen —; sıra değişti
+- `ClanEditDiploOfferCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanFilterSearchInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanFilterSearchRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanMemberInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanMessageInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanNewDiplomacyCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanNewDiplomacyRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanNewsInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanRankInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanSearchNameTagCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanSendAllMessageCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanSendAllMessageRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanSendMessageCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanSendMessageRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanTaxInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ClanTaxLogCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `CompanyDateInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DeleteClanMemberCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DeleteMyRankCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EditClanInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EditClanInfoRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EditClanMemberCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EditClanRanksCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `FoundClanCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `FoundClanRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LoginInitMyApplyCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PayoutClanCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PayoutClanRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShowClanInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DailyLoginClaimTodayCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `DailyLoginRewardDayCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventLootShowCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `EventPaymentActorCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LootProbabilityModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SpecialEventPaymentActorCommand`: eklenen —; silinen —; sıra değişti
+- `UpdateEventSummaryScoreCommand`: eklenen —; silinen —; sıra değişti
+- `EvoucherHistoryInfoCommand`: eklenen —; silinen —; sıra değişti
+- `ExpeditionClearanceTimeCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ExpeditionInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ExpeditionRankUserInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ExpeditionSelectedShipListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ExpeditionShipCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ExpeditionShowUiCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HallOfFameDataCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HallOfFameDataListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HallOfFamePages` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HallOfFameRankingPoints` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HallOfFameTopDataListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarDroneEquipmentMsg` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarPetEquipmentMsg` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipActivateShipCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipAutoBuyCpuAmmoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipAutoBuyCpuAmmoRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipBriefCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipChangeShipModelCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipChangeShipModelRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipClearConfigCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipClearConfigRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipDetailCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipDroneView` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipEquipmentCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipEquipmentInventoryItem` **(sunucuda kullanılıyor)**: eklenen —; silinen extAttributes System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.TupleTwoModule>, star int; sıra değişti
+- `HangarShipEquipmentMsg`: eklenen —; silinen —; sıra değişti
+- `HangarShipImportConfigCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipLoadConfigCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipMoveItemsCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipMoveItemsRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipPetView` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipRenamePetCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipRepairDroneCommand`: eklenen —; silinen —; sıra değişti
+- `HangarShipRepairModuleCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipSaveConfigCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipSellDroneCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipUnlockSlotCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `HangarShipsCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `InventoryItemModifyCommand`: eklenen —; silinen —; sıra değişti
+- `SetBonusInfo`: eklenen —; silinen —; sıra değişti
+- `SingleDroneEquipmentMsg` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LockAttributeItemListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LockAttributeItemModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LogbookDataCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LogbookDataListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LotteryLogCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LotteryLogRewardCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `LotteryRequestCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ArgStackCommand` **(sunucuda kullanılıyor)**: eklenen key ArgKey; silinen key System.Configuration.ConfigurationElementCollectionType.ArgKey; sıra değişti
+- `BaseStackCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PassEventCommand`: eklenen —; silinen —; sıra değişti
+- `PassItemModule` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `InternalPilotBioUpdateRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `InternalPilotBioUserProfileCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PublicWorldBossInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PublicWorldBossRaidIntensity` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PublicWorldBossRankReward` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `PublicWorldBossTier` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShopItemBuyCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShopItemBuyRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShopItemCommand`: eklenen —; silinen —; sıra değişti
+- `ShopItemLevelDataCommand`: eklenen —; silinen —; sıra değişti
+- `ShopItemListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ShopLabelPrompt`: eklenen —; silinen —; sıra değişti
+- `ExchangeShopCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ExchangeShopRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ExchangesShopItem` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ConvertResearchPointsCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ResetSkillTreeCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkillTreeListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UpLevelSkillTreeCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabActionRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabActiveRobotsLeftTimeCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabMainViewCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabMainViewModuleCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabModuleProductivityCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabModuleUpgradeCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabPurchaseRobotRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabStorageInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabStorageOreCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabUnifiedReceiptCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabViewModuleBackCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SkylabXenoInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SpotLightPositionCommand`: eklenen —; silinen —; sıra değişti
+- `StrikeAndExitInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `StrikeAndExitMapInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `StrikeAndExitScoreCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SynthesisCostLootCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen star int; sıra değişti
+- `SynthesisGroupCommand` **(sunucuda kullanılıyor)**: eklenen modules System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.synthesis.SynthesisModuleCommand>; silinen button string, moduleList System.Collections.Generic.List<net.bigpoint.darkorbit.com.module.porting.synthesis.SynthesisModuleListCommand>; sıra değişti
+- `SynthesisInventoryCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen remove bool; sıra değişti
+- `SynthesisItemRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `SynthesisModuleCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen star int; sıra değişti
+- `TrinityTrialsClaimPassRewardRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TrinityTrialsDropLevelCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `TrinityTrialsGateWindowCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `AbsUserMessageInfoCommand`: eklenen —; silinen —; sıra değişti
+- `BlackListAddCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BlackListDeleteCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `BlackListGetCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `ContactBaseInfoCommand`: eklenen —; silinen —; sıra değişti
+- `ContactListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageAuctionInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageClanInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageDeleteCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageInboxListCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageInitCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageNewCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageNoteAddCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageNoteDeleteCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageNoteUpdateCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageNoteUpdateRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageParentInfoCommand`: eklenen —; silinen —; sıra değişti
+- `UserMessageSendCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen captchaStatus CaptchaStatus; sıra değişti
+- `UserMessageSendRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen hCaptchaToken string; sıra değişti
+- `UserMessageTargetInfoCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageUpdateStatusCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `UserMessageUpdateStatusRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `VoyagersClaimPassRewardRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `VoyagersGateEnterRequest` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `VoyagersGateStarRewardCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+- `VoyagersGateWindowCommand` **(sunucuda kullanılıyor)**: eklenen —; silinen —; sıra değişti
+
+## Kodlaması ya da okuma adımları değişen
+
+- `ActivationZoneStatusCommand` (write) (read)
+- `ActivePerkModule` (write) (read) **(sunucuda kullanılıyor)**
+- `AddFireworkBoxCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AddMapEntityCommand` (write) (read)
+- `AddMineCommand` (read) **(sunucuda kullanılıyor)**
+- `AgatusEventInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AgatusEventTimeInfoCommand` (read)
+- `ArenaMatchResultModule` (write) (read)
+- `ArenaStatusCommand` (write) (read)
+- `ArenaSurvivorsUpdateCommand` (read)
+- `AssemblyBuildRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `AssemblyRecipeBuildStatusModule` (read) **(sunucuda kullanılıyor)**
+- `AssemblyRecipeKeyModule` (read) **(sunucuda kullanılıyor)**
+- `AssemblyRecipeModule` (write) (read) **(sunucuda kullanılıyor)**
+- `AssemblyRecipeReadyToCollectStatusModule` (read) **(sunucuda kullanılıyor)**
+- `AssemblyRecipeStatusUpdateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AssemblySkipRequest` (read) **(sunucuda kullanılıyor)**
+- `AssetCreateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AttackHitNoLockCommand` (read)
+- `AttackRangeExceededCommand` (read) **(sunucuda kullanılıyor)**
+- `BattlePassInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BattlePassKeyExchangeInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BattlePassKeyExchangeRewardModule` (write) (read)
+- `BattlePassKeyExchangeUpdateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BeaconCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CCAttributeModule` (write) (read) **(sunucuda kullanılıyor)**
+- `CCNumericRangeModule` (read) **(sunucuda kullanılıyor)**
+- `CCRequestAttributeModule` (write) (read)
+- `CCommandModule` (write) (read) **(sunucuda kullanılıyor)**
+- `CCommandRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptchaTriggerCommand` (read)
+- `ChatAuthenticateUserRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `ChrominUpdateCommand` (read) **(sunucuda kullanılıyor)**
+- `ClanRelationChangedCommand` (write) (read)
+- `CommandCenterNewsModule` (write) (read) **(sunucuda kullanılıyor)**
+- `ContactListEntryAttributeCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ContactListInitializationCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CreateMinimapMark` (write) (read) **(sunucuda kullanılıyor)**
+- `Curcubitor2019Command` (read)
+- `DesignSetUpdateCommand` (write) (read)
+- `DiminishingQuestAcceptQuestRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `DiminishingQuestAcceptQuestResponse` (write) (read) **(sunucuda kullanılıyor)**
+- `DiminishingQuestInitializationCommand` (read) **(sunucuda kullanılıyor)**
+- `DispatchGateModule` (read) **(sunucuda kullanılıyor)**
+- `DispatchGetRewardPackageCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `DispatchLootMessageCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `DispatchRewardModule` (write) (read) **(sunucuda kullanılıyor)**
+- `DisplayOfferCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `DominationFactionInfluenceUpdateCommand` (read)
+- `EmoteActivationCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EmperorSibelonBuffRingCommand` (read) **(sunucuda kullanılıyor)**
+- `EnergyUpdateCommand` (read) **(sunucuda kullanılıyor)**
+- `EpicNumberedFightMessageTypeModule` (read)
+- `EternalBlacklightBoosterInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EternalBlacklightRankInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EternalBlacklightRankModule` (read) **(sunucuda kullanılıyor)**
+- `EternalBlacklightRankingEventInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EternalBlacklightWaveInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `EternalGateBoosterCommand` (read)
+- `EternalGateBoosterInfoCommand` (write) (read)
+- `EternalGateInfoCommand` (write) (read)
+- `EternalGateRankInfoCommand` (write) (read)
+- `EternalGateRankModule` (write) (read)
+- `EventActivationMapExchangeAttributeModule` (read)
+- `EventModule` (write) (read) **(sunucuda kullanılıyor)**
+- `EventRewardConfirmationCommand` (read) **(sunucuda kullanılıyor)**
+- `EventUpdateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `FactionInfluenceUpdateCommand` (read)
+- `FrozenLabyrinthInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthRankInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthRankModule` (write) (read) **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthSynkInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `FrozenLabyrinthTimeInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderBatteryItemModule` (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderBonusGGRewardModule` (write) (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderBuyLifeCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGateCompleteCommand` (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGateModule` (write) (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderGetGatePartsCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderItemModule` (read)
+- `GalaxyGateBuilderLootItemModule` (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiEnergyCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiEnergyRequest` (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiGateProgressModule` (write) (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderMultiplierItemModule` (read)
+- `GalaxyGateBuilderPartItemModule` (read) **(sunucuda kullanılıyor)**
+- `GalaxyGateBuilderProbabilityModule` (read)
+- `GalaxyGateBuilderSetupGateCommand` (read) **(sunucuda kullanılıyor)**
+- `GroupInitializationCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `GroupMemberInitializationCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HealthModule` (read) **(sunucuda kullanılıyor)**
+- `HintWindowAddComand` (write) (read) **(sunucuda kullanılıyor)**
+- `HuntInfoCommand` (write) (read)
+- `HuntRewardCommand` (write) (read)
+- `InventoryItemModule` (write) (read) **(sunucuda kullanılıyor)**
+- `InvitationErrorCommand` (read) **(sunucuda kullanılıyor)**
+- `InvitationInitializationCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `InvitationRemovalCommand` (read) **(sunucuda kullanılıyor)**
+- `ItemCommand` (write) (read)
+- `JackpotArenaMatchResultCommand` (write) (read)
+- `KillUiFullMessageCommand` (read)
+- `KillUiInfoMessageCommand` (read)
+- `LocationModule` (read) **(sunucuda kullanılıyor)**
+- `LogBoxInformationRequest` (read)
+- `LogMessageCommand` (write) (read)
+- `MapAddControlPOIZoneCommand` (read)
+- `MapAddPOICommand` (write) (read) **(sunucuda kullanılıyor)**
+- `MarkPositionCommand` (read)
+- `MarkRangeCommand` (read)
+- `MemberJumpCommand` (read)
+- `MemberLeaveCommand` (read) **(sunucuda kullanılıyor)**
+- `MenuCategoryInitializationCommand` (write) (read)
+- `MenuInitializationCommand` (read) **(sunucuda kullanılıyor)**
+- `MenuItemCooldownGroupTimerCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `MenuItemInitializationCommand` (write) (read)
+- `MenuItemStatusCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `MenuItemTimerCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `MessageKeyListWildcardModule` (write) (read) **(sunucuda kullanılıyor)**
+- `MileageMarketExchangeRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `MileageMarketInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `MileageMarketPackageModule` (write) (read) **(sunucuda kullanılıyor)**
+- `MileageMarketPackageUpdateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `MiniClientRewardInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `MonthlyDeluxeDayInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `MonthlyDeluxeInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `NameChangeCommand` (write) (read)
+- `NpcEventInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `NpcEventTimeInfoCommand` (read)
+- `OfferRequest` (write) (read)
+- `OreTradeInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `PVPSummerEventInfoCommand` (read)
+- `PVPSummerEventReputationUpdateCommand` (read)
+- `PVPSummerEventSelfReputationUpdateCommand` (read)
+- `PayloadEscortInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PayloadEscortTimeInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `PetHeatUpdateCommand` (read) **(sunucuda kullanılıyor)**
+- `PingCommand` (read) **(sunucuda kullanılıyor)**
+- `PlayVisualEffectCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PlutusInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PlutusScoreEntryModule` (read) **(sunucuda kullanılıyor)**
+- `PlutusStatusCommand` (read) **(sunucuda kullanılıyor)**
+- `QuantumFluidCoreData` (write) (read) **(sunucuda kullanılıyor)**
+- `QuantumFluidCoreRequest` (read) **(sunucuda kullanılıyor)**
+- `QuestLocalizationModule` (write) (read) **(sunucuda kullanılıyor)**
+- `QuestSettingsModule` (read)
+- `QuestSettingsRequest` (read) **(sunucuda kullanılıyor)**
+- `RankInfoCommand` (write) (read)
+- `RankModule` (write) (read) **(sunucuda kullanılıyor)**
+- `RankRewardCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ReloginCommand` (read)
+- `RemoveCollectableCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ReturneeLoginInitialRewardInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ReturneeLoginRewardInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `RewardAchievementModule` (write) (read)
+- `RogueLiteDroneModule` (write) (read) **(sunucuda kullanılıyor)**
+- `RogueLiteGateRewardModule` (write) (read)
+- `RogueLiteInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `RogueLiteInventoryCommand` (read) **(sunucuda kullanılıyor)**
+- `RogueLiteRankEventInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `RogueLiteShipModule` (write) (read) **(sunucuda kullanılıyor)**
+- `SeasonPassMissionInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SeasonPassMissionModule` (read) **(sunucuda kullanılıyor)**
+- `SeasonPassRewardClaimCommand` (read) **(sunucuda kullanılıyor)**
+- `SeasonPassRewardClaimRequest` (read) **(sunucuda kullanılıyor)**
+- `SeasonPassRewardInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `SeasonPassRewardModule` (write) (read) **(sunucuda kullanılıyor)**
+- `SeasonPassRewardUnclaimedInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SeasonPassStatusCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SectorControlSectorStateCommand` (write) (read)
+- `ShipBoostEventInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ShipBoostEventModule` (write) (read) **(sunucuda kullanılıyor)**
+- `ShipBoostEventUpdateInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ShipUpgradeModuleUpdateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ShipWarpWindowCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SlotBarConfigSetRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `SlotBarInitializationCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SpacePlagueBossSummoningProgressCommand` (write) (read)
+- `SpacePlagueCounterDataModule` (read)
+- `SpaceStationCommand` (read) **(sunucuda kullanılıyor)**
+- `StartCapsuleCollectCommand` (read) **(sunucuda kullanılıyor)**
+- `TargetModule` (write) (read) **(sunucuda kullanılıyor)**
+- `TdmResultCommand` (write) (read)
+- `TeamDeathMatchResultScreenCommand` (write) (read)
+- `TieredArenaEventInfoCommand` (write) (read)
+- `TieredArenaEventReputationUpdateCommand` (read)
+- `TieredArenaEventSelfReputationUpdateCommand` (read)
+- `TitleFrenzyInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `TitleFrenzyOwnerUpdateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `TitleFrenzyRankingInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `TitleFrenzyRankingInfoModule` (write) (read) **(sunucuda kullanılıyor)**
+- `TrainingArenaPerformanceEntryCommand` (write) (read)
+- `TrainingArenaRankInfoCommand` (read)
+- `TrainingArenaSeasonRewardEntryCommand` (write) (read)
+- `TrainingGroundFightInfoCommand` (read)
+- `TrainingGroundFightStatusCommand` (write) (read)
+- `TrainingGroundPreparingForFightStatusCommand` (write) (read)
+- `TrainingGroundRegistrationStatusCommand` (write) (read)
+- `TrainingGroundRoundInfoCommand` (read)
+- `TrainingGroundStatusCommand` (write) (read)
+- `TrainingGroundSummingUpStatusCommand` (write) (read)
+- `UIFeatureBarCommand` (write) (read)
+- `UIItemAddHighlightCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UIItemRemoveHighlightCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UIWindowUpdateRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `UnstableAttributeModule` (write) (read) **(sunucuda kullanılıyor)**
+- `UnstableModuleModule` (write) (read) **(sunucuda kullanılıyor)**
+- `UnstableModuleRecycleResultCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UnstableModuleRerollRequest` (read) **(sunucuda kullanılıyor)**
+- `UnstableModuleRestabiliseRequest` (read) **(sunucuda kullanılıyor)**
+- `UnstableModulesListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UnstableModulesShardCommand` (read) **(sunucuda kullanılıyor)**
+- `UridiumBankInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `UserInventoryModule` (write) (read) **(sunucuda kullanılıyor)**
+- `UserSettingsCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeItemModule` (write) (read) **(sunucuda kullanılıyor)**
+- `VIPMerchantExchangeModule` (write) (read) **(sunucuda kullanılıyor)**
+- `WarGameInitLobbyCommand` (write) (read)
+- `WarGameLobbyStatusModule` (read)
+- `WarGameScoreUpdateCommand` (read)
+- `WarGameStatusUpdateCommand` (read)
+- `WindowItemCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `WorldBossCompletionModule` (write) (read)
+- `WorldBossInfoCommand` (write) (read)
+- `WorldBossInfoUpdateCommand` (read)
+- `WorldBossRankingInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `WorldBossRankingInfoModule` (write) (read) **(sunucuda kullanılıyor)**
+- `WorldBossRewardsInfoCommand` (write) (read)
+- `SummonNPCRequest` (write) (read)
+- `RefreshQuestInfo` (read) **(sunucuda kullanılıyor)**
+- `SeasonPassRefreshCountCommand` (read)
+- `EventCommand` (read) **(sunucuda kullanılıyor)**
+- `SpaceSearchEventsCommand` (read) **(sunucuda kullanılıyor)**
+- `SpaceSearchInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SpaceSearchRequest` (read) **(sunucuda kullanılıyor)**
+- `SpaceSearchSectorRewards` (read) **(sunucuda kullanılıyor)**
+- `TupleThreeModule` (write) (read)
+- `TupleTwoModule` (write) (read) **(sunucuda kullanılıyor)**
+- `AchievementInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AchievementListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AchievementTitleCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EventQuestDefinitionModule` (write) (read) **(sunucuda kullanılıyor)**
+- `EventANewHopeActionCommand` (write) (read)
+- `EventANewHopeActionRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `EventANewHopeQuestCommand` (write) (read)
+- `EventReturnOfHeroActionCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EventReturnOfHeroActionRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `EventReturnOfHeroContributorCommand` (write) (read)
+- `EventReturnOfHeroQuestCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ArmoryUnlockClaimCommand` (read) **(sunucuda kullanılıyor)**
+- `ArmoryUnlockClaimInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ArmoryUnlockDrawCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ArmoryUnlockDrawRequest` (read) **(sunucuda kullanılıyor)**
+- `ArmoryUnlockInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `ArmoryUnlockLootShowListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AuctionBidCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AuctionBidRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `AuctionDataCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AuctionHistoryCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AuctionListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AutopilotInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BalanceInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BalanceInfoListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BattleStationHistoryInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BattleStationHistoryListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BattleStationOverviewInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanBattleStationInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `Birthday2025GateRewardCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `Birthday2025GateWindowCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `Birthday2025PointRewardCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CannonAttackCommand` (read) **(sunucuda kullanılıyor)**
+- `CaptainActionRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptainCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptainDismissBackCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptainPerkCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptainPerkUpgradLevelCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptainPerkUpgradLevelCostCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptainUpdateActiveBackCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CaptainUpgradPerkBackCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ApplyAcceptCommand` (write) (read)
+- `ApplyClanCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ApplyClanRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `ChangeClanDescriptionCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ChangeClanFirmaCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ChangeClanLeaderCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ChangeClanTaxCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanAddNewsCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanAllInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanApplyInfoCommand` (write) (read)
+- `ClanDeleteAllMessageCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanDeleteDiploCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanDeleteOpenDiploCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanDeleteRankCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanDiploInfoCommand` (write) (read)
+- `ClanDiploReqInfoCommand` (write) (read)
+- `ClanEditDiploOfferCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanFilterSearchInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanFilterSearchRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanMemberInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanMessageInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanNewDiplomacyCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanNewDiplomacyRequest` (read) **(sunucuda kullanılıyor)**
+- `ClanNewsInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanRankInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanSearchNameTagCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanSendAllMessageCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanSendAllMessageRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanSendMessageCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanSendMessageRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanTaxInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ClanTaxLogCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `CompanyDateInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `DeleteClanMemberCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `DeleteMyRankCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EditClanInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EditClanInfoRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `EditClanMemberCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EditClanRanksCommand` (read) **(sunucuda kullanılıyor)**
+- `FoundClanCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `FoundClanRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `LoginInitMyApplyCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PayoutClanCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PayoutClanRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `ShowClanInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `DailyLoginClaimTodayCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `DailyLoginRewardDayCommand` (read) **(sunucuda kullanılıyor)**
+- `EventLootShowCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `EventPaymentActorCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `LootProbabilityModule` (write) (read) **(sunucuda kullanılıyor)**
+- `SpecialEventPaymentActorCommand` (write) (read)
+- `UpdateEventSummaryScoreCommand` (write) (read)
+- `EvoucherHistoryInfoCommand` (write) (read)
+- `ExpeditionClearanceTimeCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ExpeditionInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ExpeditionRankUserInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ExpeditionSelectedShipListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ExpeditionShipCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ExpeditionShowUiCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HallOfFameDataCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HallOfFameDataListCommand` (read) **(sunucuda kullanılıyor)**
+- `HallOfFamePages` (write) (read) **(sunucuda kullanılıyor)**
+- `HallOfFameRankingPoints` (write) (read) **(sunucuda kullanılıyor)**
+- `HallOfFameTopDataListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarDroneEquipmentMsg` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarPetEquipmentMsg` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipActivateShipCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipAutoBuyCpuAmmoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipAutoBuyCpuAmmoRequest` (read) **(sunucuda kullanılıyor)**
+- `HangarShipBriefCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipChangeShipModelCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipChangeShipModelRequest` (read) **(sunucuda kullanılıyor)**
+- `HangarShipClearConfigCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipClearConfigRequest` (read) **(sunucuda kullanılıyor)**
+- `HangarShipDetailCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipDroneView` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipEquipmentCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipEquipmentInventoryItem` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipEquipmentMsg` (write) (read)
+- `HangarShipImportConfigCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipLoadConfigCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipMoveItemsCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipMoveItemsRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipPetView` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipRenamePetCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipRepairDroneCommand` (write) (read)
+- `HangarShipRepairModuleCommand` (read) **(sunucuda kullanılıyor)**
+- `HangarShipSaveConfigCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipSellDroneCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipUnlockSlotCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `HangarShipsCommand` (read) **(sunucuda kullanılıyor)**
+- `InventoryItemModifyCommand` (read)
+- `SetBonusInfo` (write) (read)
+- `SingleDroneEquipmentMsg` (write) (read) **(sunucuda kullanılıyor)**
+- `LockAttributeItemListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `LockAttributeItemModule` (write) (read) **(sunucuda kullanılıyor)**
+- `LogbookDataCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `LogbookDataListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `LotteryLogCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `LotteryLogRewardCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `LotteryRequestCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ArgStackCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BaseStackCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PassEventCommand` (write) (read)
+- `PassItemModule` (write) (read) **(sunucuda kullanılıyor)**
+- `InternalPilotBioUpdateRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `InternalPilotBioUserProfileCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PublicWorldBossInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `PublicWorldBossRaidIntensity` (write) (read) **(sunucuda kullanılıyor)**
+- `PublicWorldBossRankReward` (write) (read) **(sunucuda kullanılıyor)**
+- `PublicWorldBossTier` (write) (read) **(sunucuda kullanılıyor)**
+- `ShopItemBuyCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ShopItemBuyRequest` (read) **(sunucuda kullanılıyor)**
+- `ShopItemCommand` (write) (read)
+- `ShopItemLevelDataCommand` (write) (read)
+- `ShopItemListCommand` (read) **(sunucuda kullanılıyor)**
+- `ShopLabelPrompt` (write) (read)
+- `ExchangeShopCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ExchangeShopRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `ExchangesShopItem` (write) (read) **(sunucuda kullanılıyor)**
+- `ConvertResearchPointsCommand` (read) **(sunucuda kullanılıyor)**
+- `ResetSkillTreeCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkillTreeListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UpLevelSkillTreeCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabActionRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabActiveRobotsLeftTimeCommand` (read) **(sunucuda kullanılıyor)**
+- `SkylabMainViewCommand` (read) **(sunucuda kullanılıyor)**
+- `SkylabMainViewModuleCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabModuleProductivityCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabModuleUpgradeCommand` (read) **(sunucuda kullanılıyor)**
+- `SkylabPurchaseRobotRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabStorageInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabStorageOreCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabUnifiedReceiptCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabViewModuleBackCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SkylabXenoInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `SpotLightPositionCommand` (read)
+- `StrikeAndExitInfoCommand` (read) **(sunucuda kullanılıyor)**
+- `StrikeAndExitMapInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `StrikeAndExitScoreCommand` (read) **(sunucuda kullanılıyor)**
+- `SynthesisCostLootCommand` (read) **(sunucuda kullanılıyor)**
+- `SynthesisGroupCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SynthesisInventoryCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SynthesisItemRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `SynthesisListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `SynthesisModuleCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `TrinityTrialsClaimPassRewardRequest` (read) **(sunucuda kullanılıyor)**
+- `TrinityTrialsDropLevelCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `TrinityTrialsGateWindowCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `AbsUserMessageInfoCommand` (write) (read)
+- `BlackListAddCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BlackListDeleteCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `BlackListGetCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `ContactBaseInfoCommand` (write) (read)
+- `ContactListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageAuctionInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageClanInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageDeleteCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageInboxListCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageInitCommand` (read) **(sunucuda kullanılıyor)**
+- `UserMessageNewCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageNoteAddCommand` (read) **(sunucuda kullanılıyor)**
+- `UserMessageNoteDeleteCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageNoteUpdateCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageNoteUpdateRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageParentInfoCommand` (write) (read)
+- `UserMessageSendCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageSendRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageTargetInfoCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageUpdateStatusCommand` (write) (read) **(sunucuda kullanılıyor)**
+- `UserMessageUpdateStatusRequest` (write) (read) **(sunucuda kullanılıyor)**
+- `VoyagersClaimPassRewardRequest` (read) **(sunucuda kullanılıyor)**
+- `VoyagersGateEnterRequest` (read) **(sunucuda kullanılıyor)**
+- `VoyagersGateStarRewardCommand` (read) **(sunucuda kullanılıyor)**
+- `VoyagersGateWindowCommand` (write) (read) **(sunucuda kullanılıyor)**
+
+## Eklenen mesajlar
+
+—
+
+## Belirsiz alanlar
+
+Düzeltilen (metin/bool, alan listesinde aynı ad): DisplayOfferCommand.moveable, DisplayOfferCommand.packageName, DisplayOfferCommand.key, DisplayOfferCommand.link, DisplayOfferCommand.closeable
+
+Kalan (server/protocol.py FIXES ile elle; dönüşümü istemcinin read() sökümünden): QuestSlimInfoModule.acceptabilityStatus? (module), BlackListAddCommand.blackNameList? (list), BlackListDeleteCommand.blackNameList? (list), UserMessageInfoCommand.recipients? (list), SkylabModuleProductivityCommand.type2Price? (module), HangarShipRepairDroneCommand.resultId? (int), HangarShipRepairDroneCommand.weaponEffect? (float)

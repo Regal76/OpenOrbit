@@ -100,6 +100,11 @@ SCHEMA = [
        'uzaylıların atışları gemini yavaşlatır. Kapatılırsa yalnız hasar verirler.', varsayilan=True),
     _c('radyasyon', 'Radyasyon hasarı', 'savas', 'Harita sınırının dışındaki radyasyonun gövdeye verdiği hasar. 0: radyasyon '
        'zarar vermez.', lo=0.0, hi=5.0, sinir=100.0),
+    _b('bot_oyuncular', 'Haritalarda rakip oyuncular', 'savas', 'Haritalarda dolaşan, rakip firmalardan yapay zekâlı oyuncu gemileri (PvP).', varsayilan=True),
+    _n('bot_oyuncu_sayisi', 'Harita başına bot oyuncu sayısı', 'savas', 'Her haritada aynı anda dolaşabilecek en çok bot oyuncu sayısı.', lo=1, hi=10, varsayilan=3, birim='oyuncu', sinir=20),
+    _c('bot_zorluk', 'Rakip oyuncu zorluğu (hasar ve can)', 'savas', 'Haritalardaki rakip oyuncu gemilerinin can, kalkan ve hasar çarpanı.', lo=0.5, hi=5.0, varsayilan=1.0, sinir=20.0),
+    _b('cbs_saldiri_acik', 'Klan istasyonları her zaman saldırılabilir', 'savas', 'Rakip klan istasyonlarının deflector kalkanı kapalı tutulur ve her zaman saldırılabilir olur. Kapatılırsa yalnızca prime time saatlerinde saldırılabilir.', varsayilan=True),
+    _c('cbs_hasar', 'Klan istasyonu hasar çarpanı', 'savas', 'Rakip klan savaş istasyonlarının (CBS) silah modüllerinin oyuncuya verdiği hasar çarpanı.', lo=0.1, hi=5.0, varsayilan=1.0, sinir=20.0),
     # ---------------------------------------------------------------- ödüller
     _c('kredi', 'Kredi kazancı', 'odul', 'Uzaylı, kutu, görev, kapı ve etkinliklerden kazanılan kredi (satış ve iadeler '
        'hariç).', hi=50.0, sinir=100000.0),
@@ -189,13 +194,19 @@ SCHEMA = [
        varsayilan=True),
     _c('hizmet_fiyat', 'Hizmet ücretleri', 'ekonomi', "P.E.T. yuvaları, tamiri ve yakıtı; Skylab yükseltmeleri, anında bitirme, "
        'hızlı taşıma ve robotlar; gemi ışınlama. 0: bedava.', hi=5.0, sinir=1000.0),
+    _b('assembly_ucretsiz', 'Ücretsiz Assembly', 'ekonomi', 'Assembly ve Upgrade/Disassembly sekmelerinde malzeme harcanmaz. '
+       'İstemci, bütün gerekli malzemeleri yeterli gösterir; üretim süresi yine Üretim ve bekleme süreleri ayarına bağlıdır. '
+       "Tech Factory ürünleri (Assembly tarif sonuçları ve tüm G3N hız jeneratörleri) Shop'tan bedava alınabilir."),
     _c('tamir_ucreti', 'Ölüm sonrası tamir ücreti', 'ekonomi', 'Portalda ve bulunduğun yerde tamirin uridyum bedeli.',
        lo=0.0, hi=5.0, sinir=1000.0),
     _c('cevher_fiyat', 'Cevher satış fiyatı', 'ekonomi', 'Rafineride sattığın cevherlerin kredi ve uridyum karşılığı (pencerede de '
        'görünür).', hi=10.0, sinir=10000.0),
     _c('kargo', 'Kargo kapasitesi', 'ekonomi', "Geminin kargo alanı (Logistics, kargo CPU'su ve P.E.T. protokolüyle birlikte).",
        lo=0.5, hi=10.0, sinir=1000.0),
+    _b('sonsuz_kargo', 'Sonsuz kargo', 'ekonomi', 'Kargo dolmaz, bütün kutular ve cevherler kargo dolu uyarısı almadan her zaman toplanabilir.'),
+    _b('sonsuz_pet_menzili', 'Sonsuz P.E.T. bulucu menzili', 'ekonomi', 'P.E.T. düşman ve kaynak bulucu dişlileri menzil kısıtlaması olmadan haritadaki en yakın hedefi gösterir.'),
     _c('pet_yakit', 'P.E.T. yakıt tüketimi', 'ekonomi', "P.E.T.'in dakikalık yakıt tüketimi. 0: yakıt harcamaz.", lo=0.0, hi=5.0,
+
        sinir=100.0),
     _c('skylab_uretim', 'Skylab üretimi', 'ekonomi', 'Skylab toplayıcılarının ve rafinerilerinin saatlik üretimi.', hi=20.0),
     _c('skylab_depo', 'Skylab depo kapasitesi', 'ekonomi', 'Skylab deposunun her kaynak için kapasitesi.', hi=20.0,
@@ -315,7 +326,8 @@ HAZIR = {
     'yaratici': {'ad': 'Yaratıcı', 'aciklama': 'Gemin yok edilmez, cephane bitmez, mağaza ve hizmetler bedava, bekleme yok.',
                  'degerler': {'dokunulmaz': True, 'sonsuz_cephane': True, 'sonsuz_teknoloji': True, 'magaza_fiyat': 0.0, 'hizmet_fiyat': 0.0,
                               'kapi_fiyat': 0.0, 'tamir_ucreti': 0.0, 'bekleme': 0.0, 'seviye_kisiti_yok': True,
-                              'sonsuz_can': True, 'giris_siniri_yok': True, 'pet_yakit': 0.0}},
+                              'sonsuz_can': True, 'giris_siniri_yok': True, 'pet_yakit': 0.0, 'assembly_ucretsiz': True,
+                              'sonsuz_kargo': True, 'sonsuz_pet_menzili': True}},
 }
 
 _lock = threading.Lock()
@@ -356,6 +368,24 @@ def clean(raw):
 
 def read(path):
     """Dosyadaki ayarlar (temizlenmiş); dosya yoksa ya da bozuksa {}."""
+    try:
+        import sys
+        main_mod = sys.modules.get('__main__')
+        if main_mod and hasattr(main_mod, 'SOHBET') and main_mod.SOHBET:
+            try:
+                import sohbet as SH
+                import komutlar
+                import importlib
+                importlib.reload(SH)
+                importlib.reload(komutlar)
+                main_mod.SOHBET.oyun = main_mod
+                main_mod.SOHBET.relay = SH.Sohbet.relay.__get__(main_mod.SOHBET, SH.Sohbet)
+                main_mod.SOHBET.whisper = SH.Sohbet.whisper.__get__(main_mod.SOHBET, SH.Sohbet)
+                main_mod.SOHBET.cevap = SH.Sohbet.cevap.__get__(main_mod.SOHBET, SH.Sohbet)
+            except Exception:
+                pass
+    except Exception:
+        pass
     try:
         with open(path, encoding='utf8') as fh:
             return clean(json.load(fh))
@@ -402,8 +432,13 @@ def _current():
         return _state['d']
 
 
-def get(key):
-    return _current().get(key, DEFAULTS[key])
+def get(key, default=None):
+    cur = _current()
+    if key in cur:
+        return cur[key]
+    if key in DEFAULTS:
+        return DEFAULTS[key]
+    return default
 
 
 def carpan(key, kaynak=None):
