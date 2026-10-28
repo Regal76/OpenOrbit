@@ -228,10 +228,11 @@ const PAGES = [
   { id: 'sunucu', ad: N('Sunucu'), ic: 'server', sub: N('Sunucu süreçleri, portlar, davranış ve günlükler.') },
   { id: 'panel', ad: N('Panel'), ic: 'info', sub: N('Dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu, klasörler ve panel hakkında.') },
   // oyun içi menüler: kenar çubuğunun ayrı bölümünde, yalnız oyun açıkken (panel_kanali.py); simge oyunun kendi görseli (sprite)
+  // sıra sayfaların üstündeki sekmelerle aynı (OYUN_SAYFALARI)
   { id: 'magaza', ad: N('Mağaza'), ic: 'cart', sprite: 'shop_normal', oyun: true, sub: N('Oyundaki mağaza: aldığın eşya oyuna anında gelir.') },
+  { id: 'hangar', ad: N('Hangar'), ic: 'hangar', sprite: 'hangar_normal', oyun: true, sub: N('Gemilerin ve donanımları: tıkladığın eşya takılır ya da çıkarılır, oyunda da anında değişir.') },
   { id: 'skylab', ad: N('Skylab'), ic: 'lab', sprite: 'skylab_normal', oyun: true, sub: N('Modüller, üretim, depo ve gemiye taşıma; oyundaki Skylab ile aynı.') },
   { id: 'muzayede', ad: N('Açık Artırma'), ic: 'gavel', sprite: 'auction_normal', oyun: true, sub: N('Teklif ver, hepsine katıl, otomatik teklif ve alarm kur; panel kapalıyken de oyunda işler.') },
-  { id: 'hangar', ad: N('Hangar'), ic: 'hangar', sprite: 'hangar_normal', oyun: true, sub: N('Gemilerin ve donanımları: tıkladığın eşya takılır ya da çıkarılır, oyunda da anında değişir.') },
 ];
 const S = { durum: null, page: null, sig: {}, timers: [] };
 
@@ -509,13 +510,13 @@ function liveCard() {
   if (w.kapi) facts.push([T('Kapı'), `${w.kapi.ad || ''}${w.kapi.dalga ? ' · ' + w.kapi.dalga : ''}${w.kapi.evre ? ' · ' + w.kapi.evre : ''}`]);
   if (w.dongu) facts.push([T('Döngü'), T('{0} ms ort. · en çok {1} ms', w.dongu.ort_ms, w.dongu.en_cok_ms) + (w.dongu.yavas ? ' · ' + T('{0} yavaş adım', fmtN(w.dongu.yavas)) : '')]);
   return h('div', { class: 'card', id: 'canli-card' }, h('div', { class: 'row between wrap' }, head, h('div', { class: 'row wrap', style: { gap: '6px' } }, flags)),
-    h('div', { class: 'grid g3', style: { marginTop: '12px' } },
+    h('div', { class: 'grid g2', style: { marginTop: '12px' } },
       h('div', { class: 'stack', style: { gap: '10px' } }, meter(T('Can'), g.can, g.can_azami, 'hp'), meter(T('Kalkan'), g.kalkan, g.kalkan_azami, 'sh'), meter(T('Kargo'), g.kargo, g.kargo_azami, 'cg')),
-      h('div', { class: 'kv one' }, facts.map(([a, b]) => h('div', null, h('span', { class: 'muted' }, a), h('b', null, b)))),
-      h('div', null, h('div', { class: 'stats', style: { marginTop: 0, gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' } },
-        [[T('Seviye'), p.seviye, 'lv'], [T('Kredi'), p.kredi, 'cr'], [T('Uridyum'), p.uridyum, 'ur'], [T('Onur'), p.onur, 'hn']].map(([a, v, c]) =>
-          h('div', { class: 'stat' }, h('div', { class: 'k' }, a), h('div', { class: 'v ' + c }, fmtN(v))))),
-        d.etkinlik_adlari && d.etkinlik_adlari.length ? h('div', { class: 'chips', style: { marginTop: '10px' } }, d.etkinlik_adlari.map(n => h('span', { class: 'chip' }, n))) : null)));
+      h('div', { class: 'kv one' }, facts.map(([a, b]) => h('div', null, h('span', { class: 'muted' }, a), h('b', { title: b }, b))))),
+    h('div', { class: 'live-alt' }, h('div', { class: 'stats', style: { marginTop: 0 } },
+      [[T('Seviye'), p.seviye, 'lv'], [T('Kredi'), p.kredi, 'cr'], [T('Uridyum'), p.uridyum, 'ur'], [T('Onur'), p.onur, 'hn']].map(([a, v, c]) =>
+        h('div', { class: 'stat' }, h('div', { class: 'k' }, a), h('div', { class: 'v ' + c }, fmtN(v))))),
+      d.etkinlik_adlari && d.etkinlik_adlari.length ? h('div', { class: 'chips', style: { marginTop: '10px' } }, d.etkinlik_adlari.map(n => h('span', { class: 'chip' }, n))) : null));
 }
 
 async function switchSaveMenu(anchor) {
@@ -769,7 +770,7 @@ async function renderKayitlar() {
             act(() => api('/api/kayitlar/cop_bosalt', {}), T('Çöp kutusu boşaltıldı.')).then(renderKayitlar);
         }, 'danger sm', 'trash')) : null)] : [];
   $('#content').replaceChildren(h('div', { class: 'stack' }, tools,
-    cards.length ? h('div', { class: 'grid gauto' }, cards) :
+    cards.length ? h('div', { class: 'grid gauto saves' }, cards) :
       h('div', { class: 'card empty' }, art('bos_kayit'), h('h3', null, T('Henüz kayıt yok')), h('div', null, T('Yeni bir kayıt oluştur ya da bir yedeği içe aktar.'))),
     ...trash));
 }
@@ -1262,7 +1263,8 @@ function tkvSummary(r) {
         : h('p', { class: 'desc' }, T('Şu an açık etkinlik yok.'))),
     h('div', { class: 'card' }, h('h2', null, icon('clock'), T('Sıradakiler')),
       next.length ? h('div', { class: 'tk-next' }, next.map(e => h('div', { class: 'row', onclick: () => tkvDetail(e.anahtar) }, dotc(e.anahtar),
-        h('span', { class: 'ellipsis', style: { maxWidth: 'none', flex: 1 } }, e.ad), h('span', { class: 'small muted' }, tkvSpan(e.sonraki[0], e.sonraki[1])),
+        h('div', { class: 'grow' }, h('div', { class: 'ellipsis', style: { maxWidth: 'none' }, title: e.ad }, e.ad),
+          h('div', { class: 'small muted' }, tkvSpan(e.sonraki[0], e.sonraki[1]))),     // tarih adın altında: dar kartta rozet taşmasın
         badge(T('{0} sonra', fmtDur(e.sonraki[0] - now)), 'info'))))
         : h('p', { class: 'desc' }, T('Yakında başlayacak etkinlik yok.'))));
 }
@@ -1562,7 +1564,7 @@ async function renderIstemci(data) {
       btn(T('Klasörü aç'), () => act(() => api('/api/klasor_ac', { ne: 'istemci' })), 'ghost', 'folder')),
     r.adaylar.length > 1 || (r.adaylar.length === 1 && r.adaylar[0].yol !== c.yol) ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('Bulunan istemciler')),
       h('div', { class: 'stack', style: { gap: '8px', marginTop: '8px' } }, r.adaylar.map(a => h('div', { class: 'row' },
-        badge(a.surum || '?', a.uyumlu ? 'ok' : 'warn'), h('span', { class: 'mono', style: { flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' } }, a.yol),
+        badge(a.surum || '?', a.uyumlu ? 'ok' : 'warn'), h('span', { class: 'mono', style: { flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }, title: a.yol }, a.yol),
         a.yol === c.yol ? badge(T('kullanılıyor'), 'info') : btn(T('Kullan'), () => act(() => api('/api/istemci/kullan', { yol: a.yol }), T('Kaydedildi.')).then(x => x && renderIstemci(x)), 'sm'))))] : null);
 
   const { res, scr } = resolutionList(r);
@@ -1576,7 +1578,7 @@ async function renderIstemci(data) {
   const cw = h('div', { class: 'row', style: { display: custom ? '' : 'none' } }, wIn, '×', hIn, btn(T('Uygula'), () => saveCfg({ genislik: +wIn.value, yukseklik: +hIn.value }), 'sm'));
   const mode = h('div', { class: 'seg' }, WINDOW_MODES.map(([k, t]) =>
     h('button', { class: cfg.pencere_modu === k ? 'on info' : '', onclick: () => saveCfg({ pencere_modu: k }) }, T(t))));
-  const mon = h('select', { class: 'input', style: { width: '160px' }, onchange: e => saveCfg({ monitor: +e.target.value }) },
+  const mon = h('select', { class: 'input', style: { width: '220px' }, onchange: e => saveCfg({ monitor: +e.target.value }) },
     [0, 1, 2, 3, 4].map(i => h('option', { value: i, selected: cfg.monitor === i }, i ? T('Ekran {0}', i) : T('Varsayılan'))));
   const extra = h('input', { class: 'input mono', value: cfg.ek_argumanlar, placeholder: T('ör. -force-d3d11'), onchange: e => saveCfg({ ek_argumanlar: e.target.value }) });
   const dispCard = h('div', { class: 'card' }, h('h2', null, icon('monitor'), T('Görüntü')),
@@ -1720,7 +1722,8 @@ function renderServerCards() {
     card(T('Oyun sunucusu'), 'server', o, o.portlar, h('div', { class: 'small muted' }, s.kayit ? T('Kayıt: {0}', s.kayit) + (s.kontrol_kanali ? ' · ' + T('kontrol kanalı açık (8099)') : '') : T('Oyun dünyası, kayıt, sohbet (7771).')),
       [srvOn ? btn(T('Durdur'), () => act(() => api('/api/sunucu/durdur', {}), T('Durduruldu.')), 'danger sm', 'stop', { disabled: cl || busy, title: cl ? T('Önce oyunu kapatın') : '' })
         : btn(T('Başlat'), () => act(() => api('/api/oyna', { sadece_sunucu: true })), 'primary sm', 'play', { disabled: busy }),
-      btn(T('Yeniden başlat'), () => act(() => api('/api/sunucu/yeniden', {}), T('Yeniden başlatıldı.')), 'sm', 'refresh', { disabled: busy || !srvOn, title: T('Oyun açıksa istemci yeniden bağlanmalı') }),
+      // yalnız simge: dört düğme kart genişliğine sığsın, "Konsol" tek başına alta düşmesin
+      btn(null, () => act(() => api('/api/sunucu/yeniden', {}), T('Yeniden başlatıldı.')), 'sm icon', 'refresh', { disabled: busy || !srvOn, title: T('Yeniden başlat') + ' — ' + T('Oyun açıksa istemci yeniden bağlanmalı') }),
       btn(T('Günlük'), () => showLog('gs.log'), 'ghost sm'), btn(T('Konsol'), () => showLog('oyun_konsol.log'), 'ghost sm')]),
     card(T('İstemci'), 'monitor', s.istemci, null, h('div', { class: 'small muted' }, s.istemci.son ? T('Son kapanış {0} · {1} açık kaldı', s.istemci.son.zaman, fmtDur(s.istemci.son.sure_sn)) : T('Orijinal Unity istemcisi.')),
       [cl ? btn(T('Kapat'), async () => { if (await confirmBox(T('İstemci kapatılsın mı?'), T('Oyun penceresi kapatılır.'), { ok: T('Kapat'), danger: true })) act(() => api('/api/istemci/kapat', {})); }, 'danger sm', 'power')
@@ -1810,7 +1813,7 @@ async function renderPanel() {
   const r = await act(() => api('/api/hakkinda')); if (!r || S.page !== 'panel') return;
   const pathRow = (label, p, ne) => h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, label), h('div', { class: 'help mono' }, p)),
     h('div', { class: 'ctl' }, ne ? btn(T('Aç'), () => act(() => api('/api/klasor_ac', { ne })), 'sm', 'folder') : null));
-  const langSeg = h('div', { class: 'seg' }, I18N.list.map(({ kod: k, ad: t }) => h('button', { class: I18N.lang === k ? 'on info' : '', onclick: async () => {
+  const langSeg = h('div', { class: 'seg diller' }, I18N.list.map(({ kod: k, ad: t }) => h('button', { class: I18N.lang === k ? 'on info' : '', onclick: async () => {
     if (k === I18N.lang) return;
     const x = await act(() => api('/api/panel_ayarlari', { degerler: { dil: k } })); if (x) location.reload();
   } }, t)));
@@ -1846,7 +1849,7 @@ async function renderPanel() {
       pathRow(T('Oyun ayarları dosyası'), r.ayarlar), pathRow(T('Panel ayarları dosyası'), r.panel)),
     h('div', { class: 'card' }, h('h2', null, icon('info'), T('Hakkında')),
       h('div', { class: 'kv', style: { maxWidth: '520px' } }, h('div', null, T('Panel sürümü'), h('b', null, r.surum)), h('div', null, 'Python', h('b', null, r.python)),
-        h('div', null, T('Panel adresi'), h('b', null, '127.0.0.1:' + r.port)), h('div', null, T('İnternet'), h('b', null, T('güncelleme, oyunu indirme ve oyun görselleri için')))),
+        h('div', null, T('Panel adresi'), h('b', null, '127.0.0.1:' + r.port)), h('div', { style: { gridColumn: '1 / -1' } }, T('İnternet'), h('b', null, T('güncelleme, oyunu indirme ve oyun görselleri için')))),
       h('p', { class: 'desc', style: { marginTop: '14px' } }, T("OpenOrbit: tek oyunculu, çevrimdışı yerel sunucu. İstemci, grafikler ve metinler Bigpoint GmbH'ye aittir; yalnız kişisel kullanım içindir.")))));
 }
 
@@ -2170,7 +2173,8 @@ function magazaKart(it) {
   const sv = Math.min(MG.seviye[it.lootId] || 1, seviyeli ? Math.max(1, it.maxAmount) : 1);
   const cok = !seviyeli && (!!it.amountsSelectable || it.maxAmount > 1);
   const adet = cok ? h('input', { class: 'input num', type: 'number', min: 1, max: it.maxAmount > 0 ? it.maxAmount : null, value: 1 }) : null;
-  const fiyat = seviyeli ? fmtN(it.price[sv - 1]) + (it.currency === 'real' ? ' U.' : ' C.') : it.cost;
+  // sunucunun cost metni İngilizce biçimli ("190,000 U."): fiyat panelin sayı biçimiyle yazılır
+  const fiyat = it.price?.length ? fmtN(it.price[sv - 1]) + (it.currency === 'real' ? ' U.' : ' C.') : it.cost;
   return h('div', { class: 'mg-kart' + (yetmez ? ' yetmez' : '') },
     oyunIkon(it.lootId, 84, MG.veri.firma, 'cart'),
     h('div', { class: 'mg-ad', title: it.lootId }, esyaAdi(it.lootId)),
@@ -2537,7 +2541,9 @@ function muzayedeKart(l, v) {
     h('div', { class: 'row', style: { gap: '10px', alignItems: 'flex-start' } }, oyunIkon(l.loot, 64, v.firma, 'gavel'),
       h('div', { class: 'grow' }, h('div', { class: 'mg-ad', style: { minHeight: 0 } }, esyaAdi(l.loot)),
         h('div', { class: 'row wrap', style: { gap: '4px', marginTop: '4px' } }, badge(T(MZ_TUR[l.tur])), l.adet > 1 ? badge('× ' + fmtN(l.adet)) : null,
-          l.oto ? badge(T('Oto ≤ {0}', fmtN(l.oto.azami)), 'info') : null, l.alarm ? h('span', { class: 'badge orange', title: T('Alarm kurulu') }, icon('bell')) : null))),
+          l.oto ? badge(T('Oto ≤ {0}', fmtN(l.oto.azami)), 'info') : null)),
+      // alarm düğmesi başlıkta (alt satırda yer kalmayınca tek başına alta düşüyordu); kuruluysa turuncu
+      btn(null, () => muzayedeAlarmPencere(l), 'sm icon ' + (l.alarm ? 'orange' : 'ghost'), 'bell', { title: l.alarm ? T('Alarm kurulu') : T('Alarm') })),
     h('div', { class: 'mz-satir' }, h('span', { class: 'muted' }, T('En yüksek')), h('b', null, l.en_yuksek ? paraYaz('credits', l.en_yuksek) : '—')),
     h('div', { class: 'mz-satir' }, h('span', { class: 'muted' }, T('Senin teklifin')), h('b', { class: l.onde ? 'mz-ben' : '' }, l.benim ? paraYaz('credits', l.benim) : '—')),
     h('div', { class: 'row', style: { gap: '6px' } }, durum),
@@ -2546,8 +2552,7 @@ function muzayedeKart(l, v) {
     h('div', { class: 'row wrap', style: { gap: '6px' } },
       l.anlik ? btn(T('Anında al ({0})', paraYaz('uridium', l.fiyat)), async e => await confirmBox(T('{0} anında alınsın mı?', esyaAdi(l.loot)), T('{0} uridyum harcanır.', fmtN(l.fiyat)), { ok: T('Al') })
         && muzayedeAnlik(l), 'sm ghost') : null,
-      btn(l.oto ? T('Otomatik: açık') : T('Otomatik teklif'), () => muzayedeOtoPencere(l, v), 'sm ' + (l.oto ? 'primary' : 'ghost')),
-      btn(null, () => muzayedeAlarmPencere(l), 'sm icon ' + (l.alarm ? 'orange' : 'ghost'), 'bell', { title: T('Alarm') })));
+      btn(l.oto ? T('Otomatik: açık') : T('Otomatik teklif'), () => muzayedeOtoPencere(l, v), 'sm ' + (l.oto ? 'primary' : 'ghost'))));
 }
 
 async function muzayedeTeklif(l, fiyat, b) {
