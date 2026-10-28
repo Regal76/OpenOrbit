@@ -71,6 +71,7 @@ import siralama as SR      # noqa: E402
 import gm_konsol as GMK    # noqa: E402
 import ipucu as IP         # noqa: E402
 import odeme as OD         # noqa: E402
+import panel_kanali as PK   # noqa: E402
 import etkinlik_harita as ETH  # noqa: E402
 import canli_durum as CD   # noqa: E402
 import ek_etkinlikler as EKE  # noqa: E402
@@ -1494,6 +1495,7 @@ def main():
     SOHBET.start()                # yerel sohbet (7771); istemci girişteki ChatParamCommand ile buraya bağlanır
     threading.Thread(target=autosave, daemon=True).start()
     CD.start(sys.modules[__name__], LOG_DIR, log)     # panelin canlı durum sayfası (<günlükler>/canli_durum.json)
+    PK.start(sys.modules[__name__], LOG_DIR, log)     # panelin oyun menüleri (Mağaza, Hangar, Skylab, Açık Artırma): yerel kanal
     if KONTROL:
         KT.Kontrol(sys.modules[__name__]).start()
         SOHBET.iz = KT.sohbet_iz          # sohbet çerçeveleri de izde ("Sohbet:<tür>")

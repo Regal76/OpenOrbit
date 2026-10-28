@@ -81,7 +81,7 @@ class Sosyal:
             self.reload()
 
     def tick(self, now):
-        return self.muzayede.settle(now)
+        return self.muzayede.settle(now) + self.muzayede.oto(now)     # panelin otomatik teklifleri ve alarmları
 
     # -------------------------------------------------------- giriş
     def login_replace(self, name, f):

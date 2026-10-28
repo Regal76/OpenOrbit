@@ -24,6 +24,7 @@ zenity), macOS'ta AppleScript (Tk orada yalnız ana iş parçacığında çalı�
 import datetime, json, os, re, secrets, shlex, shutil, subprocess, sys, threading, time, traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 PANEL_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -52,6 +53,7 @@ from coklu import Coklu, CokluHatasi  # noqa: E402
 
 SURUM = '1.0'
 DISCORD = 'https://discord.gg/BUb9rNTKNt'         # topluluk sunucusu (Panel sayfası, README); süresiz davet
+BAGIS = 'https://buymeacoffee.com/kaanumay'       # destek bağlantısı (kenar çubuğunun en altı)
 PORT = 8077
 ARAYUZ = os.path.join(PANEL_DIR, 'arayuz')
 SABLONLAR = os.path.join(YOL.SAVE, 'ayar_sablonlari.json')
@@ -185,6 +187,34 @@ def game_settings():
 
 def client_folder():
     return IST.resolve(CFG.get('istemci_klasoru'))
+
+
+# ------------------------------------------------------------------ oyun menüleri (Mağaza)
+# Oyun açıkken panel oyunu oyun sunucusunun yerel kanalından değiştirir (server/panel_kanali.py; anahtar günlük klasöründe).
+# Görseller istemcinin BepInEx eklentisinin dökümü (eklenti/Gorseller.cs: <istemci>/BepInEx/openorbit/gorsel), /oyun_gorsel/ altında.
+def oyun_kanali(yol, govde=None):
+    k = read_json(os.path.join(YOL.LOGS, 'panel_kanali.json'), None)
+    if not k or not YON.running():
+        raise Hata(_('Oyun açık değil.'))
+    req = Request('http://127.0.0.1:%d%s' % (k['port'], yol), data=None if govde is None else json.dumps(govde).encode('utf8'),
+                  headers={'X-Anahtar': k['anahtar'], 'Content-Type': 'application/json'})
+    try:
+        with urlopen(req, timeout=10) as r:
+            return json.load(r)
+    except HTTPError as e:
+        if e.code == 409:
+            raise Hata(_('Oyuna giriş yapınca açılır.'))
+        raise Hata(_('Oyun sunucusu isteği reddetti (%s).', e.code))
+    except OSError:
+        raise Hata(_('Oyun sunucusuna bağlanılamadı.'))
+
+
+def oyun_gorsel(ad):
+    """Eklentinin döktüğü atlas sayfası, dizin ya da ad dosyası -> yol (yoksa None)."""
+    if not re.fullmatch(r'[\w.-]+\.(png|json)', ad) or not client_folder():
+        return None
+    p = os.path.join(client_folder(), 'BepInEx', 'openorbit', 'gorsel', ad)
+    return p if os.path.isfile(p) else None
 
 
 def _downloaded(path):
@@ -1119,6 +1149,16 @@ def h_get(path, q):
         return dict(UYAR.state(), etkin=IST.supported())
     if path == '/api/esya_listesi':                 # kayıt düzenleyicinin "eşya ver" listesi
         return {'esyalar': KAY.loot_list()}
+    if path == '/api/oyun/magaza':                  # oyun menüleri: mağazanın listesi ve cüzdan (panel_kanali.py)
+        return dict(oyun_kanali('/magaza'), gorsel=bool(oyun_gorsel('dizin.json')))
+    if path == '/api/oyun/hangar':                  # oyun menüleri: gemiler, config'ler, yuvalar ve envanter (?gemi=)
+        return dict(oyun_kanali('/hangar?gemi=%s' % re.sub(r'\D', '', str(q.get('gemi') or ''))), gorsel=bool(oyun_gorsel('dizin.json')))
+    if path == '/api/oyun/muzayede':                # oyun menüleri: açık artırma (lotlar, kurallar, geçmiş, olaylar)
+        return dict(oyun_kanali('/muzayede'), gorsel=bool(oyun_gorsel('dizin.json')))
+    if path == '/api/oyun/muzayede/olaylar':        # açık artırmanın yeni olayları (panelin bildirimleri)
+        return oyun_kanali('/muzayede/olaylar?son=%d' % int(q.get('son') or 0))
+    if path == '/api/oyun/skylab':                  # oyun menüleri: Skylab modülleri, depo, enerji, taşıma
+        return dict(oyun_kanali('/skylab'), gorsel=bool(oyun_gorsel('dizin.json')))
     if path == '/api/canli':                        # canlı durum (oyun sunucusunun canli_durum.json'u; canli_durum.py)
         p = os.path.join(YOL.LOGS, 'canli_durum.json')
         d = read_json(p, None)
@@ -1139,6 +1179,25 @@ def h_get(path, q):
 
 
 def h_post(path, b):
+    if path == '/api/oyun/al':                      # oyun menüleri: mağazadan satın alma (istemcinin isteğiyle aynı yoldan)
+        return oyun_kanali('/magaza/al', {k: b.get(k) for k in ('lootId', 'category', 'amount', 'level')})
+    if path == '/api/oyun/magaza/abone':            # oyun menüleri: booster aboneliği
+        return oyun_kanali('/magaza/abone', {'lootId': b.get('lootId'), 'category': b.get('category')})
+    if path == '/api/oyun/hangar/tasi':             # oyun menüleri: envanter <-> gemi, dron ya da P.E.T. yuvası
+        return oyun_kanali('/hangar/tasi', {k: b.get(k) for k in ('gemi', 'konfig', 'esya', 'yon', 'hedef', 'dron', 'kume')})
+    if path == '/api/oyun/hangar/islem':            # oyun menüleri: config, satış, P.E.T., CPU işlemleri (panel_kanali.ISLEMLER)
+        return oyun_kanali('/hangar/islem', {k: b.get(k) for k in ('islem', 'gemi', 'konfig', 'hedef_gemi', 'favori', 'esyalar', 'dron',
+                                                                    'ad', 'yuva', 'esya', 'cephane', 'lootId')})
+    if path == '/api/oyun/hangar/tasarim':          # oyun menüleri: geminin görünümü (tasarımı)
+        return oyun_kanali('/hangar/tasarim', {'gemi': b.get('gemi'), 'lootId': b.get('lootId')})
+    if path == '/api/oyun/hangar/etkin':            # oyun menüleri: geminin etkinleştirilmesi (yalnız istasyonda)
+        return oyun_kanali('/hangar/etkin', {'gemi': b.get('gemi')})
+    if path == '/api/oyun/skylab/islem':            # oyun menüleri: Skylab yükseltme, aç/kapa, gemiye taşıma
+        return oyun_kanali('/skylab/islem', {k: b.get(k) for k in ('modul', 'islem', 'mod', 'miktarlar')})
+    if path.startswith('/api/oyun/muzayede/') and path.rsplit('/', 1)[1] in ('teklif', 'hepsi', 'anlik', 'oto', 'alarm'):   # açık artırma
+        return oyun_kanali('/muzayede/' + path.rsplit('/', 1)[1], {k: b.get(k) for k in ('tur', 'loot', 'fiyat', 'lotlar', 'azami', 'gecilince', 'dk')})
+    if path == '/api/oyun/skylab/robot':            # oyun menüleri: toplayıcıya robot
+        return oyun_kanali('/skylab/robot', {'modul': b.get('modul'), 'tip': b.get('tip')})
     # ---- oyun ve sunucular
     if path == '/api/oyna':
         return start_launch(b.get('sadece_sunucu'))
@@ -1433,6 +1492,10 @@ def h_post(path, b):
         import webbrowser
         webbrowser.open(DISCORD)
         return {}
+    if path == '/api/bagis':                        # destek sayfası varsayılan tarayıcıda (Buy Me a Coffee)
+        import webbrowser
+        webbrowser.open(BAGIS)
+        return {}
     if path == '/api/kisayol':
         return {'yol': create_shortcut()}
     if path == '/api/kapat':
@@ -1459,7 +1522,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header('Content-Type', ctype)
         self.send_header('Content-Length', str(len(data)))
-        self.send_header('Cache-Control', 'no-store')
+        if 'Cache-Control' not in (extra or {}):
+            self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
         for k, v in (extra or {}).items():
             self.send_header(k, v)
@@ -1493,6 +1557,13 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, {'panel': 'darkorbit', 'surum': SURUM, 'pid': os.getpid()})
         if u.path.startswith('/api/'):
             return self._api(h_get, {k: v[0] for k, v in parse_qs(u.query).items()})
+        if u.path.startswith('/oyun_gorsel/'):
+            p = oyun_gorsel(u.path[len('/oyun_gorsel/'):])
+            if not p:
+                return self._send(404, b'yok', 'text/plain')
+            if p.endswith('.png'):                  # atlas sayfaları büyük, değişmez; dizin ve adlar yeniden dökümde değişir: önbelleksiz
+                return self._send(200, open(p, 'rb').read(), 'image/png', {'Cache-Control': 'max-age=3600'})
+            return self._send(200, open(p, 'rb').read(), 'application/json; charset=utf-8')
         name = 'index.html' if u.path in ('/', '/index.html') else u.path.lstrip('/')
         p = os.path.normpath(os.path.join(ARAYUZ, name))
         if not p.startswith(ARAYUZ + os.sep) or not os.path.isfile(p):

@@ -25,6 +25,11 @@ public class Eklenti : BasePlugin
         Uygula("rütbe penceresi", () => RutbePenceresi.Uygula(h));
         Uygula("mağaza tutarı", () => MagazaTutari.Uygula(h));
         Uygula("otomatik pilot kaçışı", () => OtopilotKacisi.Uygula(h));
+        Uygula("görsel dökümü", () =>
+        {
+            GorselDokumu.Log = Log;
+            AddComponent<GorselDokumu>();
+        });
     }
 
     void Uygula(string ad, Action yama)

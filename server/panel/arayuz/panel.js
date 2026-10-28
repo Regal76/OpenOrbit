@@ -28,6 +28,11 @@ async function setLang(lang) {
 const guessLang = () => (navigator.languages || [navigator.language || '']).map(x => x.toLowerCase().split('-')[0]).find(langOf) || 'en';
 function applyStatic() {
   const sub = $('#brand-sub'); if (sub) sub.textContent = T('Yerel Sunucu Paneli');
+  // kenar çubuğunun en altında destek bağlantısı (Buy Me a Coffee; varsayılan tarayıcıda açılır: /api/bagis)
+  const kahve = $('#kahve');
+  if (kahve) kahve.replaceChildren(h('button', { class: 'kahve', type: 'button', title: 'buymeacoffee.com/kaanumay',
+    onclick: () => act(() => api('/api/bagis', {})) }, art('dron_kahve', 'kahve-dron'),
+    h('span', null, h('b', null, T('Bana bir kahve ısmarla')), h('small', null, T("OpenOrbit'i destekle")))));
 }
 
 // ------------------------------------------------------------------ simgeler (24x24, çizgi)
@@ -40,6 +45,11 @@ const IC = {
   server: '<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>',
   info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
   plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  hangar: '<path d="M3 21V9l9-6 9 6v12"/><path d="M7 21v-7h10v7"/><line x1="7" y1="17" x2="17" y2="17"/>',
+  lab: '<path d="M9 3h6"/><path d="M10 3v6L4 19a1.5 1.5 0 0 0 1.3 2h13.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><line x1="7" y1="15" x2="17" y2="15"/>',
+  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+  gavel: '<path d="M14 13l-7.5 7.5a2.1 2.1 0 0 1-3-3L11 10"/><path d="M16 16l6-6"/><path d="M8 8l6-6"/><path d="M9 7l8 8"/><path d="M21 11l-8-8"/>',
+  cart: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>',
   upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
   download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
   folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
@@ -217,13 +227,22 @@ const PAGES = [
   { id: 'istemci', ad: N('İstemci'), ic: 'monitor', sub: N('Oyun klasörü, sürüm denetimi ve görüntü seçenekleri.') },
   { id: 'sunucu', ad: N('Sunucu'), ic: 'server', sub: N('Sunucu süreçleri, portlar, davranış ve günlükler.') },
   { id: 'panel', ad: N('Panel'), ic: 'info', sub: N('Dil, kurulum sihirbazı, güncellemeler, masaüstü kısayolu, klasörler ve panel hakkında.') },
+  // oyun içi menüler: kenar çubuğunun ayrı bölümünde, yalnız oyun açıkken (panel_kanali.py); simge oyunun kendi görseli (sprite)
+  { id: 'magaza', ad: N('Mağaza'), ic: 'cart', sprite: 'shop_normal', oyun: true, sub: N('Oyundaki mağaza: aldığın eşya oyuna anında gelir.') },
+  { id: 'skylab', ad: N('Skylab'), ic: 'lab', sprite: 'skylab_normal', oyun: true, sub: N('Modüller, üretim, depo ve gemiye taşıma; oyundaki Skylab ile aynı.') },
+  { id: 'muzayede', ad: N('Açık Artırma'), ic: 'gavel', sprite: 'auction_normal', oyun: true, sub: N('Teklif ver, hepsine katıl, otomatik teklif ve alarm kur; panel kapalıyken de oyunda işler.') },
+  { id: 'hangar', ad: N('Hangar'), ic: 'hangar', sprite: 'hangar_normal', oyun: true, sub: N('Gemilerin ve donanımları: tıkladığın eşya takılır ya da çıkarılır, oyunda da anında değişir.') },
 ];
 const S = { durum: null, page: null, sig: {}, timers: [] };
 
 function buildNav() {
   const nav = $('#nav');
-  nav.replaceChildren(...PAGES.map(p => h('button', { 'data-page': p.id, onclick: () => go(p.id) }, icon(p.ic), h('span', null, T(p.ad)),
-    h('span', { class: 'badge', id: 'nav-badge-' + p.id, style: { display: 'none' } }))));
+  const navBtn = p => h('button', { 'data-page': p.id, class: p.id === S.page ? 'active' : null, onclick: () => go(p.id) },
+    p.oyun && OG.dizin?.sprite[p.sprite] ? sprite(p.sprite, 18) : icon(p.ic),
+    h('span', null, T(p.ad)), h('span', { class: 'badge', id: 'nav-badge-' + p.id, style: { display: 'none' } }));
+  nav.replaceChildren(...PAGES.filter(p => !p.oyun).map(navBtn),
+    h('div', { class: 'nav-oyun', id: 'nav-oyun', style: { display: 'none' } }, h('div', { class: 'nav-baslik' }, T('Oyun içi')),
+      PAGES.filter(p => p.oyun).map(navBtn)));
 }
 function go(id, push = true) {
   if (!PAGES.find(p => p.id === id)) id = 'oyna';
@@ -267,6 +286,14 @@ function renderChrome() {
       ark.host ? T('Arkadaş sunucusu açık') : T('Arkadaşın sunucusunda:') + ' ', ark.host ? null : h('b', null, ark.adres)));
   }
   tr.replaceChildren(...kids);
+  const navOyun = $('#nav-oyun'), oyunAcik = st.oyun === 'acik' && st.istemci === 'acik';
+  if (navOyun) navOyun.style.display = oyunAcik ? '' : 'none';
+  // oyun kapanınca oyun içi sayfadaki kullanıcı Oyna sayfasına döner (sayfanın verisi oyun sunucusundan)
+  if (d && !oyunAcik && PAGES.find(p => p.id === S.page)?.oyun) {
+    if (S.oyunAcikti) toast(T('Oyun kapandı: Oyna sayfasına dönüldü.'), 'info');
+    go('oyna');
+  }
+  S.oyunAcikti = oyunAcik;
   const setBadge = (id, text, cls) => {
     const b = $('#nav-badge-' + id); if (!b) return;
     b.style.display = text ? '' : 'none'; b.textContent = text || ''; b.className = 'badge ' + (cls || '');
@@ -288,6 +315,8 @@ async function poll() {
   if (S.page === 'oyna') { renderOynaBody(); liveTick(); }
   if (S.page === 'sunucu') { renderServerCards(); testTick(); }
   if (S.page === 'arkadas' && ARK.veri) arkTick();
+  poll.n = (poll.n || 0) + 1;
+  if (poll.n % 3 === 0) muzayedeOlayTick();      // açık artırma bildirimleri (~5 sn)
   setTimeout(poll, S.durum?.oyna?.calisiyor ? 500 : 1500);
 }
 window.addEventListener('pagehide', () => navigator.sendBeacon && navigator.sendBeacon('/api/kapandi', '{}'));
@@ -2054,8 +2083,558 @@ const WZ_PAGES = {
   },
 };
 
+// ================================================================== OYUN İÇİ: ORTAK
+// Mağaza, Hangar ve Skylab oyun sunucusundan (panel_kanali.py: istemcinin istekleriyle aynı yol; oyundaki pencereler de güncellenir).
+// Görseller ve eşya adları istemcinin BepInEx eklentisinin dökümü (/oyun_gorsel/: atlas sayfaları, dizin.json, adlar_<dil>.json).
+// Üç sayfanın üstünde aynı çubuk: sayfalar arasında geçiş, cüzdan ve güvenli bölge (donanım yalnız orada değişir: panel_kanali.istasyonda).
+const OG = { dizin: null, adlar: {}, dil: null };
+async function ogYukle() {
+  const j = async n => { const r = await fetch('/oyun_gorsel/' + n); if (!r.ok) throw new Error(r.status); return r.json(); };
+  if (!OG.dizin) { try { OG.dizin = await j('dizin.json'); buildNav(); renderChrome(); } catch (e) { /* döküm yok: simgeler, ham adlar */ } }
+  if (OG.dizin && OG.dil !== I18N.lang) { try { OG.adlar = await j('adlar_' + I18N.lang + '.json'); OG.dil = I18N.lang; } catch (e) { OG.adlar = {}; } }
+}
+// oyunun bir sprite'ı: atlas sayfasından kırpılır, kutuya (boy x boy) orantılı sığdırılır (dizin: sayfa, x, y, g, y, tam g, tam y, ox, oy)
+function sprite(ad, boy) {
+  const e = OG.dizin?.sprite[ad], kutu = h('span', { class: 'sprite', style: { width: boy + 'px', height: boy + 'px' } });
+  if (!e) return kutu;
+  const [sayfa, x, y, w, hh, W, H, ox, oy] = e, [pw, ph] = OG.dizin.sayfalar[sayfa], k = boy / Math.max(W, H);
+  kutu.append(h('span', { style: { width: W * k + 'px', height: H * k + 'px', position: 'relative' } }, h('span', { style: {
+    position: 'absolute', left: ox * k + 'px', top: oy * k + 'px', width: w * k + 'px', height: hh * k + 'px',
+    background: 'url("/oyun_gorsel/' + sayfa + '.png") ' + (-x * k) + 'px ' + (-y * k) + 'px / ' + pw * k + 'px ' + ph * k + 'px no-repeat' } })));
+  return kutu;
+}
+// lootId -> sprite adı: kimliğin son parçası (lf-4_100x100); gemiler şirkete göre (aegis-eic), dronlar seviyeyle (flax-1)
+function esyaSprite(lid, firma) {
+  const k = lid.includes('_') ? lid.slice(lid.indexOf('_') + 1) : lid, son = k.split('_').pop();
+  for (const c of [son, k.replace(/_/g, '-'), k, son + '-' + firma, son + '-1'])
+    for (const b of ['_100x100', '_63x63', '_top', '_30x30', '']) if (OG.dizin?.sprite[c + b]) return c + b;
+  return null;
+}
+const esyaAdi = lid => OG.adlar[lid] || lid.slice(lid.indexOf('_') + 1).replace(/[_-]/g, ' ').toUpperCase();
+const oyunIkon = (lid, boy, firma, ic = 'hangar') => { const sp = lid && esyaSprite(lid, firma); return sp ? sprite(sp, boy) : h('span', { class: 'sprite bos', style: { width: boy + 'px', height: boy + 'px' } }, icon(ic)); };
+const paraYaz = (cur, n) => fmtN(n) + (cur === 'credits' || cur === 'kredi' ? ' C.' : ' U.');
+// sunucunun hata ve bilgi anahtarları (BaseKey adları, panel_kanali'nin kendi anahtarları); ham metin (boşluklu) olduğu gibi
+const OY_METIN = { not_enough_credits: N('Yeterli kredin yok.'), not_enough_uridium: N('Yeterli uridyumun yok.'), shop_item_not_found: N('Bu ürün şu an satılmıyor.'),
+  drone_have_max: N('Dron sayısı en çokta.'), info_text_switch_hangar_station_only: N('Gemi yalnız istasyondayken değiştirilebilir.'),
+  error_can_not_equip_to_slot: N('Bu eşya bu yuvaya takılamaz.'), config_change_failed_time: N('Config değiştirmek için biraz bekle.'),
+  items_hangarSlot_max_favs: N('En çok 10 favori gemi olabilir.'), error_pet_name_length: N('P.E.T. adı 1-24 karakter olmalı.'),
+  error_pet_name_char: N('P.E.T. adında yalnız harf ve rakam olabilir.'), drone_slotCPUinUse: N('Yuva CPU\'su kullanımda: önce ekstra yuvalarını boşalt.'),
+  pet_gear_requirement: N('P.E.T.\'in seviyesi bu eşya için yetmiyor.'), special_generic_hint: N('Bu ekstradan config\'te zaten var.') };
+const oyunMetni = k => OY_METIN[k] ? T(OY_METIN[k]) : k && k.includes(' ') ? k : T('İşlem yapılamadı ({0}).', k || '?');
+const OYUN_SAYFALARI = [['magaza', N('Mağaza'), 'shop_normal', 'cart'], ['hangar', N('Hangar'), 'hangar_normal', 'hangar'], ['skylab', N('Skylab'), 'skylab_normal', 'lab'],
+  ['muzayede', N('Açık Artırma'), 'auction_normal', 'gavel']];
+
+// üç sayfanın ortak üst çubuğu; ekler: sayfaya özgü düğmeler (arama, yenile)
+function oyunUstu(v, sayfa, ...ekler) {
+  const para = (ad, n) => h('span', { class: 'pill mg-para' }, art('kaynak_' + ad, 'mg-kaynak'), h('b', null, fmtN(n)));
+  return h('div', { class: 'card oy-ust' },
+    h('div', { class: 'oy-sekmeler' }, OYUN_SAYFALARI.map(([id, ad, sp, ic]) => h('button', { class: 'oy-sekme' + (id === sayfa ? ' on' : ''), type: 'button',
+      onclick: () => id !== sayfa && go(id) }, OG.dizin?.sprite[sp] ? sprite(sp, 22) : icon(ic), h('span', null, T(ad))))),
+    h('div', { class: 'row wrap', style: { gap: '8px', justifyContent: 'flex-end' } }, para('kredi', v.kredi), para('uridyum', v.uridyum),
+      h('span', { class: 'pill ' + (v.istasyonda ? 'oy-guvenli' : 'oy-uzay'), title: v.istasyonda ? T('Donanım değiştirilebilir.') : T('Donanım yalnız güvenli bölgede değiştirilebilir.') },
+        dot(v.istasyonda ? 'ok' : 'warn'), v.istasyonda ? T('Güvenli bölgede') : T('Uzayda')), ...ekler));
+}
+function oyunHatasi(e, sayfa) {
+  $('#content').replaceChildren(h('div', { class: 'card' }, h('div', { class: 'empty' }, h('p', null, e.message), btn(T('Yenile'), () => go(sayfa), '', 'refresh'))));
+}
+
+// ================================================================== OYUN İÇİ: MAĞAZA
+const MG_KATEGORI = { ship: N('Gemiler'), shipdesign: N('Gemi tasarımları'), laser: N('Lazerler'), ammunition: N('Cephane'), generator: N('Jeneratörler'),
+  extras: N('Ekstralar'), booster: N('Boosterlar'), drone: N('Dronlar'), petgear: N('P.E.T. donanımı'), protocol: N('Protokoller'), customization: N('Kişiselleştirme') };
+const MG = { veri: null, kat: null, ara: '', seviye: {} };
+
+async function renderMagaza() {
+  await ogYukle();
+  try { MG.veri = await api('/api/oyun/magaza'); } catch (e) { return oyunHatasi(e, 'magaza'); }
+  if (!MG.veri.kategoriler.includes(MG.kat)) MG.kat = MG.veri.kategoriler[0];
+  const izgara = h('div', { class: 'mg-izgara' });
+  const liste = () => {
+    const q = MG.ara.trim().toLowerCase(), its = (MG.veri.esyalar[MG.kat] || []).filter(it => !q || esyaAdi(it.lootId).toLowerCase().includes(q));
+    izgara.replaceChildren(...its.map(magazaKart));
+    if (!its.length) izgara.append(h('div', { class: 'empty' }, T('Ürün yok.')));
+  };
+  const ara = h('input', { class: 'input oy-ara', placeholder: T('Ara…'), value: MG.ara, oninput: e => { MG.ara = e.target.value; liste(); } });
+  $('#content').replaceChildren(h('div', { class: 'stack' },
+    oyunUstu(MG.veri, 'magaza', ara, btn(null, () => renderMagaza(), 'icon', 'refresh', { title: T('Yenile') })),
+    h('div', { class: 'card' },
+      !MG.veri.gorsel ? h('p', { class: 'desc' }, T('Oyunun görselleri, oyun bir kez BepInEx ile açılınca hazırlanır.')) : null,
+      h('div', { class: 'seg', style: { flexWrap: 'wrap' } }, MG.veri.kategoriler.map(c =>
+        h('button', { class: c === MG.kat ? 'on info' : '', onclick: () => { MG.kat = c; renderMagaza(); } }, MG_KATEGORI[c] ? T(MG_KATEGORI[c]) : c)))),
+    izgara));
+  liste();
+}
+
+function magazaKart(it) {
+  // seviyeli ürün (P.E.T. dişlisi, protokol): fiyat seviye başına, maxAmount P.E.T.'in izin verdiği en yüksek seviye (magaza.shop_list)
+  const seviyeli = (it.price || []).length > 1, yetmez = it.maxAmount === -1;
+  const sv = Math.min(MG.seviye[it.lootId] || 1, seviyeli ? Math.max(1, it.maxAmount) : 1);
+  const cok = !seviyeli && (!!it.amountsSelectable || it.maxAmount > 1);
+  const adet = cok ? h('input', { class: 'input num', type: 'number', min: 1, max: it.maxAmount > 0 ? it.maxAmount : null, value: 1 }) : null;
+  const fiyat = seviyeli ? fmtN(it.price[sv - 1]) + (it.currency === 'real' ? ' U.' : ' C.') : it.cost;
+  return h('div', { class: 'mg-kart' + (yetmez ? ' yetmez' : '') },
+    oyunIkon(it.lootId, 84, MG.veri.firma, 'cart'),
+    h('div', { class: 'mg-ad', title: it.lootId }, esyaAdi(it.lootId)),
+    seviyeli ? h('div', { class: 'seg mg-sv' }, it.price.map((p, i) => h('button', { class: i + 1 === sv ? 'on info' : '', disabled: i + 1 > Math.max(1, it.maxAmount),
+      onclick: () => { MG.seviye[it.lootId] = i + 1; renderMagaza(); } }, T('Sv {0}', i + 1)))) : null,
+    h('div', { class: 'mg-fiyat ' + (it.currency === 'real' ? 'uri' : 'kre') }, fiyat),
+    h('div', { class: 'row', style: { gap: '6px', justifyContent: 'center' } }, adet,
+      btn(T('Satın al'), e => magazaAl(it, adet ? Math.max(1, +adet.value | 0) : 1, sv, e.currentTarget), 'sm primary', null, { disabled: yetmez })),
+    it.canBeSubscribedTo ? btn(it.isSubscriptionRunning ? T('Aboneliği bitir') : T('Abone ol'), e => magazaAbone(it, e.currentTarget), 'sm ghost') : null);
+}
+
+async function magazaAl(it, n, sv, b) {
+  b.disabled = true;
+  const r = await act(() => api('/api/oyun/al', { lootId: it.lootId, category: it.category, amount: n, level: sv }));
+  b.disabled = false;
+  if (!r) return;
+  if (!r.tamam) return toast(OY_METIN[r.hata] ? T(OY_METIN[r.hata]) : T('Satın alınamadı ({0}).', r.hata || '?'), 'err');
+  toast(T('Satın alındı: {0}', (n > 1 ? fmtN(n) + ' × ' : '') + esyaAdi(it.lootId)), 'ok');
+  renderMagaza();                       // cüzdan ve liste (alınan tekil eşya listeden düşer, adetler paraya göre)
+}
+
+async function magazaAbone(it, b) {
+  b.disabled = true;
+  const r = await act(() => api('/api/oyun/magaza/abone', { lootId: it.lootId, category: it.category }));
+  if (r && !r.tamam) toast(oyunMetni(r.hata), 'err');
+  renderMagaza();
+}
+
+// ================================================================== OYUN İÇİ: HANGAR
+// Gemiler, iki config; gemi, dron ve P.E.T. yuvaları, CPU'lar (panel_kanali.py /hangar). Envanterdeki eşyaya tıklayınca seçili config'te
+// seçili bölüme (gemi, seçili dron, P.E.T. ya da HEAT yuvası) takılır, yuvadakine tıklayınca çıkarılır (HangarShipMoveItemsRequest).
+// Satış kipinde envanterden seçilenler birlikte satılır. Güvenli bölge dışında donanım değişmez (düğmeler kapalı, sunucu da reddeder).
+const HG_YUVA = { laser: N('Lazerler'), rocket: N('Roketatar'), generators: N('Jeneratörler'), extra: N('Ekstralar'), upgrades: N('Gemi modülleri'),
+  QuantumFluidCore: 'Quantum Fluid Core', cannon: N('Parçacık topları'), cannonShield: N('Kırıcılar'), drive: 'Singularity Drive', lens: N('Mercekler'),
+  lasers: N('Lazerler'), gears: N('Dişliler'), protocols: N('Protokoller'), visual: N('Görünüm'), heat: 'HEAT', tasarim: N('Dron tasarımları'), diger: N('Diğer') };
+const yuvaAdi = y => HG_YUVA[y] ? T(HG_YUVA[y]) : y;
+const HG = { gemi: null, konfig: null, bolum: 'ship', dron: null, yuva: {}, kip: 'tak', kume: '', secili: {} };
+
+async function renderHangar() {
+  await ogYukle();
+  let v;
+  try { v = await api('/api/oyun/hangar?gemi=' + encodeURIComponent(HG.gemi || '')); } catch (e) { return oyunHatasi(e, 'hangar'); }
+  HG.gemi = v.gemi;
+  if (!v.konfigler[HG.konfig]) HG.konfig = v.aktif_konfig;
+  if (HG.bolum === 'pet' && !v.pet) HG.bolum = 'ship';
+  const dronlar = v.dronlar[HG.konfig] || [], kilit = !v.istasyonda, ikon = (lid, boy) => oyunIkon(lid, boy, v.firma);
+  if (!dronlar.find(d => d.id === HG.dron)) HG.dron = dronlar[0]?.id ?? null;
+  const gemi = v.gemiler.find(g => g.id === v.gemi);
+  const svRozet = e => e.seviye ? h('span', { class: 'hg-sv' }, '+' + e.seviye) : null;
+  const cikar = (e, hedef, dron) => h('button', { class: 'hg-esya', type: 'button', disabled: kilit, title: esyaAdi(e.lootId) + ' — ' + T('çıkarmak için tıkla'),
+    onclick: ev => hangarTasi({ esya: e.id, yon: 'cikar', hedef, dron }, ev.currentTarget) }, ikon(e.lootId, 44));
+  const bos = n => Array.from({ length: Math.max(0, n) }, () => h('span', { class: 'hg-esya bos' }));
+  const yuvaKutusu = (ad, c, hedef, ek) => h('div', { class: 'hg-yuva' }, h('div', { class: 'row between' }, h('b', null, yuvaAdi(ad)),
+    h('span', { class: 'row', style: { gap: '6px' } }, ek, h('span', { class: 'mono' }, c.esyalar.length + ' / ' + c.kapasite))),
+    h('div', { class: 'hg-izgara' }, c.esyalar.map(e => cikar(e, hedef)), bos(c.kapasite - c.esyalar.length)));
+  // gemiler: etkin önce; yıldız favori (oyunda ışınlanabilen gemiler)
+  const gemiler = h('div', { class: 'hg-gemiler' }, [...v.gemiler].sort((a, b) => b.aktif - a.aktif || b.favori - a.favori).map(g => h('div', { class: 'hg-gemi' + (g.id === v.gemi ? ' on' : ''),
+    title: esyaAdi(g.lootId), onclick: () => { HG.gemi = g.id; renderHangar(); } },
+    h('button', { class: 'hg-yildiz' + (g.favori ? ' on' : ''), type: 'button', title: g.favori ? T('Favoriden çıkar') : T('Favori yap'),
+      onclick: ev => { ev.stopPropagation(); hangarIslem({ islem: 'favori', gemi: g.id, favori: !g.favori }); } }, icon('star')),
+    ikon(g.tasarim || g.lootId, 54), h('span', null, esyaAdi(g.lootId)), g.aktif ? badge(T('Etkin'), 'ok') : null)));
+  const gorunum = v.tasarimlar.length > 1 ? h('div', { class: 'row wrap', style: { gap: '6px' } }, h('span', { class: 'lbl' }, T('Görünüm')),
+    v.tasarimlar.map(t => h('button', { class: 'hg-esya' + (t === v.gorunum ? ' on' : ''), type: 'button', title: esyaAdi(t), disabled: kilit && t !== v.gorunum,
+      onclick: ev => t !== v.gorunum && hangarTasarim(t, ev.currentTarget) }, ikon(t, 44)))) : null;
+  const araclar = h('div', { class: 'row wrap hg-arac' },
+    gemi.aktif ? null : btn(T('Etkin gemi yap'), e => hangarEtkin(v.gemi, e.currentTarget), 'sm primary', null, { disabled: kilit }),
+    gemi.aktif && HG.konfig !== v.aktif_konfig ? btn(T('Bu config\'i kullan'), () => hangarIslem({ islem: 'konfig', konfig: HG.konfig }, T('Config değişti.')), 'sm primary') : null,
+    btn(T('Kaydet'), () => hangarIslem({ islem: 'kaydet', gemi: v.gemi }, T('İki config kaydedildi.')), 'sm', 'save', { title: T('İki config\'in donanımını bu gemi için saklar.') }),
+    gemi.kayitli ? btn(T('Yükle'), () => hangarIslem({ islem: 'yukle', gemi: v.gemi }, T('Kayıtlı donanım takıldı.')), 'sm', 'download', { disabled: kilit }) : null,
+    btn(T('Aktar…'), () => hangarAktar(v), 'sm', 'copy', { disabled: kilit, title: T('Bu geminin donanımını başka bir gemiye taşır.') }),
+    btn(T('Temizle'), async () => await confirmBox(T('Config {0} boşaltılsın mı?', HG.konfig), T('Gemideki, dronlardaki ve P.E.T.\'teki eşyalar envantere iner.'),
+      { ok: T('Temizle'), danger: true }) && hangarIslem({ islem: 'temizle', gemi: v.gemi, konfig: HG.konfig }), 'sm', 'trash', { disabled: kilit }));
+  // seçili bölüm
+  let bolum;
+  if (HG.bolum === 'ship') bolum = h('div', { class: 'hg-yuvalar' }, v.yuvalar.map(y => yuvaKutusu(y, v.konfigler[HG.konfig][y], 'ship')));
+  else if (HG.bolum === 'drone') bolum = dronlar.length ? h('div', { class: 'hg-dronlar' }, dronlar.map(d => h('div', { class: 'hg-dron' + (d.id === HG.dron ? ' on' : ''),
+    onclick: () => { if (HG.dron !== d.id) { HG.dron = d.id; renderHangar(); } } },
+    ikon(d.lootId, 40), h('div', { class: 'grow' }, h('b', null, esyaAdi(d.lootId)), d.id === HG.dron ? h('div', { class: 'lbl' }, T('envanterden takılacak dron')) : null),
+    h('div', { class: 'hg-izgara' }, d.esyalar.map(e => cikar(e, 'drone', d.id)), bos(d.kapasite - d.esyalar.length),
+      [d.tasarim, d.gorunum].map(e => e ? cikar(e, 'drone', d.id) : null)),
+    btn(T('Sat'), async ev => { ev.stopPropagation(); if (await confirmBox(T('{0} satılsın mı?', esyaAdi(d.lootId)), T('Üstündeki eşyalar envantere iner.'), { ok: T('Sat'), danger: true }))
+      hangarIslem({ islem: 'dron_sat', dron: d.id }, T('Dron satıldı.')); }, 'sm ghost', null, { disabled: kilit })))) : h('div', { class: 'empty' }, T('Dron yok.'));
+  else if (HG.bolum === 'pet') {
+    const pb = v.pet_bilgi, pc = v.pet[HG.konfig];
+    const yuvaAc = y => pc[y].fiyat > 0 ? btn('+1 (' + paraYaz('uridium', pc[y].fiyat) + ')', async () => await confirmBox(T('{0} yuvası açılsın mı?', yuvaAdi(y)),
+      T('{0} uridyum harcanır.', fmtN(pc[y].fiyat)), { ok: T('Aç') }) && hangarIslem({ islem: 'pet_yuva', yuva: y }, T('Yuva açıldı.')), 'sm ghost') : null;
+    bolum = h('div', { class: 'stack' },
+      h('div', { class: 'row wrap', style: { gap: '10px' } }, h('b', null, pb.ad || 'P.E.T.'), badge(T('Sv {0}', pb.seviye), 'info'),
+        btn(T('Adını değiştir ({0})', paraYaz('uridium', pb.ad_fiyati)), async () => { const ad = await promptBox(T('P.E.T.\'in adı'), T('1-24 harf ya da rakam'), pb.ad || '');
+          if (ad != null && ad !== pb.ad) hangarIslem({ islem: 'pet_ad', ad }, T('P.E.T.\'in adı değişti.')); }, 'sm ghost'),
+        pc.heat.kapasite ? h('div', { class: 'seg' }, [['', T('Normal yuvalar')], ['heat', 'HEAT']].map(([k, t]) => h('button', { class: HG.kume === k ? 'on info' : '',
+          onclick: () => { HG.kume = k; renderHangar(); } }, t))) : null),
+      !pb.heat_acik && pc.heat.kapasite ? h('p', { class: 'desc', style: { margin: 0 } }, T('HEAT yuvaları P.E.T.\'in HEAT seviyesi yükselince etkinleşir.')) : null,
+      h('div', { class: 'hg-yuvalar' }, v.pet_yuvalari.filter(y => y !== 'heat' || pc.heat.kapasite || pc.heat.fiyat).map(y => yuvaKutusu(y, pc[y], 'pet', yuvaAc(y)))));
+  } else bolum = v.cpular.length ? h('div', { class: 'hg-cpular' }, v.cpular.map(c => h('div', { class: 'hg-cpu' }, ikon(c.lootId, 40),
+    h('div', { class: 'grow' }, h('b', null, esyaAdi(c.lootId)), c.tur === 'cephane' ? h('div', { class: 'lbl' }, T('{0} altına inince {1} alır', fmtN(c.esik), fmtN(c.adet))) : null),
+    c.tur === 'ackapa' ? btn(c.acik ? T('Açık') : T('Kapalı'), () => hangarIslem({ islem: 'cpu', lootId: c.lootId }), 'sm ' + (c.acik ? 'primary' : 'ghost'))
+      : h('select', { class: 'input', onchange: e => hangarIslem({ islem: 'cpu_cephane', esya: c.id, cephane: e.target.value }, T('Otomatik alım cephanesi seçildi.')) },
+        h('option', { value: '', disabled: true, selected: !c.secili }, T('Cephane seç')),
+        c.secenekler.map(o => h('option', { value: o, selected: o === c.secili }, esyaAdi(o)))))))
+    : h('div', { class: 'empty' }, T('Etkin config\'te ayarı olan CPU yok.'));
+  const bolumler = [['ship', T('Gemi')], ['drone', T('Dronlar')]].concat(v.pet ? [['pet', 'P.E.T.']] : [], gemi.aktif ? [['cpu', 'CPU']] : []);
+  if (!bolumler.find(([k]) => k === HG.bolum)) HG.bolum = 'ship';
+  $('#content').replaceChildren(h('div', { class: 'stack' },
+    oyunUstu(v, 'hangar', btn(null, () => renderHangar(), 'icon', 'refresh', { title: T('Yenile') })),
+    h('div', { class: 'card' }, gemiler),
+    h('div', { class: 'card hg-gemi-kart' },
+      kilit ? h('div', { class: 'hg-uyari' }, icon('alert'), v.portal_hangar ? T('Donanım yalnız istasyonda ya da portalın güvenli bölgesinde (savaştan biraz sonra) değiştirilebilir.')
+        : T('Donanım yalnız istasyonda (savaştan biraz sonra) değiştirilebilir.')) : null,
+      h('div', { class: 'row between wrap', style: { gap: '10px' } },
+        h('div', { class: 'row', style: { gap: '12px' } }, ikon(gemi.tasarim || gemi.lootId, 64), h('div', null, h('h2', { style: { margin: 0 } }, esyaAdi(gemi.lootId)),
+          gemi.aktif ? h('span', { class: 'lbl' }, T('Etkin gemi')) : null)),
+        h('div', { class: 'seg' }, Object.keys(v.konfigler).map(c => h('button', { class: c === HG.konfig ? 'on info' : '', onclick: () => { HG.konfig = c; renderHangar(); } },
+          T('Config {0}', c), gemi.aktif && c === v.aktif_konfig ? ' •' : '')))),
+      araclar, gorunum,
+      h('div', { class: 'seg' }, bolumler.map(([k, t]) => h('button', { class: k === HG.bolum ? 'on info' : '', onclick: () => { HG.bolum = k; renderHangar(); } }, t))),
+      bolum),
+    hangarEnvanter(v, kilit, ikon, svRozet)));
+}
+
+// envanter kartı: takma kipinde seçili bölüme takılabilenler, satış kipinde satılabilenler (aynı eşyalar tek kutuda, sayısıyla)
+function hangarEnvanter(v, kilit, ikon, svRozet) {
+  const sat = HG.kip === 'sat' && HG.bolum !== 'cpu';
+  const uygun = v.envanter.filter(e => sat ? e.satis : HG.bolum !== 'cpu' && e.hedefler.includes(HG.bolum));
+  const turler = [...new Set(uygun.map(e => e.yuva))], anahtar = sat ? 'sat' : HG.bolum;
+  if (!turler.includes(HG.yuva[anahtar])) HG.yuva[anahtar] = turler[0];
+  const grup = {};
+  for (const e of uygun.filter(e => e.yuva === HG.yuva[anahtar])) (grup[e.lootId] = grup[e.lootId] || []).push(e);
+  for (const id of Object.keys(HG.secili)) if (!v.envanter.find(e => String(e.id) === id && e.satis)) delete HG.secili[id];
+  const secilen = v.envanter.filter(e => HG.secili[e.id]), toplam = {};
+  for (const e of secilen) toplam[e.satis[0]] = (toplam[e.satis[0]] || 0) + e.satis[1];
+  const kutular = Object.entries(grup).sort((a, b) => esyaAdi(a[0]).localeCompare(esyaAdi(b[0]))).map(([lid, es]) => {
+    const n = es.filter(e => HG.secili[e.id]).length;
+    return h('button', { class: 'hg-esya' + (n ? ' on' : ''), type: 'button', disabled: !sat && kilit,
+      title: esyaAdi(lid) + (sat ? ' — ' + T('satış değeri {0}', paraYaz(es[0].satis[0], es[0].satis[1])) + ' · ' + T('seçmek için tıkla, sağ tıkla bırak') : ' — ' + T('takmak için tıkla')),
+      onclick: ev => { if (!sat) return hangarTasi({ esya: es[0].id, yon: 'tak', hedef: HG.bolum, dron: HG.dron, kume: HG.bolum === 'pet' ? HG.kume : '' }, ev.currentTarget);
+        const e = es.find(x => !HG.secili[x.id]); if (e) { HG.secili[e.id] = true; renderHangar(); } },
+      oncontextmenu: ev => { if (!sat) return; ev.preventDefault(); const e = es.find(x => HG.secili[x.id]); if (e) { delete HG.secili[e.id]; renderHangar(); } } },
+      ikon(lid, 44), svRozet(es[0]), es.length > 1 ? h('span', { class: 'hg-adet' }, (n ? n + '/' : '') + fmtN(es.length)) : n ? h('span', { class: 'hg-adet' }, '✓') : null);
+  });
+  return h('div', { class: 'card' },
+    h('div', { class: 'row between wrap', style: { gap: '10px' } },
+      h('div', { class: 'row', style: { gap: '10px' } }, h('h2', { style: { margin: 0 } }, T('Envanter')),
+        HG.bolum !== 'cpu' ? h('div', { class: 'seg' }, [['tak', T('Tak')], ['sat', T('Sat')]].map(([k, t]) => h('button', { class: HG.kip === k ? 'on info' : '',
+          onclick: () => { HG.kip = k; renderHangar(); } }, t))) : null),
+      h('div', { class: 'seg', style: { flexWrap: 'wrap' } }, turler.map(y => h('button', { class: y === HG.yuva[anahtar] ? 'on info' : '', onclick: () => { HG.yuva[anahtar] = y; renderHangar(); } }, yuvaAdi(y))))),
+    h('div', { class: 'hg-izgara', style: { marginTop: '12px' } }, kutular.length ? kutular : h('div', { class: 'empty' }, sat ? T('Satılabilecek eşya yok.') : T('Takılabilecek eşya yok.'))),
+    sat && secilen.length ? h('div', { class: 'hg-satis' }, h('span', null, T('{0} eşya seçili', secilen.length), ' · ', h('b', null, Object.entries(toplam).map(([c, n]) => paraYaz(c, n)).join(' + '))),
+      h('div', { class: 'row', style: { gap: '6px' } }, btn(T('Seçimi temizle'), () => { HG.secili = {}; renderHangar(); }, 'sm ghost'),
+        btn(T('Seçilenleri sat'), async () => await confirmBox(T('{0} eşya satılsın mı?', secilen.length), T('Karşılığında {0} alırsın. Bu geri alınamaz.',
+          Object.entries(toplam).map(([c, n]) => paraYaz(c, n)).join(' + ')), { ok: T('Sat'), danger: true })
+          && hangarIslem({ islem: 'sat', esyalar: secilen.map(e => e.id) }, T('Satıldı.'), () => { HG.secili = {}; }), 'sm primary'))) : null);
+}
+
+async function hangarTasi(istek, b) {
+  b.disabled = true;
+  const r = await act(() => api('/api/oyun/hangar/tasi', Object.assign({ gemi: HG.gemi, konfig: HG.konfig }, istek)));
+  if (r && !r.tamam) toast(r.hata === 'istasyon' ? T('Donanım yalnız güvenli bölgede değiştirilebilir.') : oyunMetni(r.hata), 'err');
+  renderHangar();
+}
+
+// hangarın öteki işlemleri (panel_kanali.ISLEMLER): başarıda bilgi metni, sonra yenile
+async function hangarIslem(istek, okMetin, sonra) {
+  const r = await act(() => api('/api/oyun/hangar/islem', Object.assign({ gemi: HG.gemi }, istek)));
+  if (r && !r.tamam) toast(r.hata === 'istasyon' ? T('Donanım yalnız güvenli bölgede değiştirilebilir.') : oyunMetni(r.hata), 'err');
+  else if (r) { if (okMetin) toast(okMetin, 'ok'); if (sonra) sonra(); }
+  renderHangar();
+}
+
+// Transfer System: bu geminin donanımı başka bir gemiye (hedefin yuvaları yetmeli)
+function hangarAktar(v) {
+  let hedef = null;
+  const liste = h('div', { class: 'hg-gemiler', style: { flexWrap: 'wrap' } }, v.gemiler.filter(g => g.id !== v.gemi).map(g => h('div', { class: 'hg-gemi', onclick: ev => {
+    hedef = g.id; liste.querySelectorAll('.hg-gemi').forEach(x => x.classList.toggle('on', x === ev.currentTarget)); } },
+    oyunIkon(g.tasarim || g.lootId, 54, v.firma), h('span', null, esyaAdi(g.lootId)))));
+  const m = modal({ title: T('Donanımı aktar'), sub: T('{0} gemisinin iki config\'i, dronları ve P.E.T. donanımı seçtiğin gemiye taşınır.', esyaAdi(v.gemiler.find(g => g.id === v.gemi).lootId)),
+    body: [liste], wide: true, foot: [btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Aktar'), () => { if (!hedef) return toast(T('Bir gemi seç.'), 'err');
+      m.close(); hangarIslem({ islem: 'aktar', gemi: v.gemi, hedef_gemi: hedef }, T('Donanım aktarıldı.')); }, 'primary')] });
+}
+
+async function hangarEtkin(gemi, b) {
+  b.disabled = true;
+  const r = await act(() => api('/api/oyun/hangar/etkin', { gemi }));
+  if (r && !r.tamam) toast(oyunMetni(r.hata), 'err');
+  else if (r) toast(T('Etkin gemi değişti.'), 'ok');
+  renderHangar();
+}
+
+async function hangarTasarim(lootId, b) {
+  b.disabled = true;
+  const r = await act(() => api('/api/oyun/hangar/tasarim', { gemi: HG.gemi, lootId }));
+  if (r && !r.tamam) toast(r.hata === 'istasyon' ? T('Donanım yalnız güvenli bölgede değiştirilebilir.') : oyunMetni(r.hata), 'err');
+  renderHangar();
+}
+
+// ================================================================== OYUN İÇİ: SKYLAB
+// Modüller, depo, enerji, robotlar ve taşıma (panel_kanali.py /skylab): işlemler istemcinin SkylabActionRequest ve
+// SkylabPurchaseRobotRequest'i (kurallar, bedeller ve süreler oyundakiyle aynı). Modül görseli yok: üretilen cevherin görseli.
+const SK_CEVHER = { PROMETIUM_COLLECTOR: 'prometium', ENDURIUM_COLLECTOR: 'endurium', TERBIUM_COLLECTOR: 'terbium', PROMETID_REFINERY: 'prometid',
+  DURANIUM_REFINERY: 'duranium', PROMERIUM_REFINERY: 'promerium', SEPROM_REFINERY: 'seprom', XENO_MODULE: 'xenomit' };
+const SK_MODUL = { BASE_MODULE: N('Ana modül'), SOLAR_MODULE: N('Güneş modülü'), STORAGE_MODULE: N('Depo modülü'), TRANSPORT_MODULE: N('Taşıma modülü'),
+  XENO_MODULE: N('Xeno modülü') };
+const cevherAdi = ad => esyaAdi('resource_ore_' + ad.toLowerCase());
+const skModulAdi = k => SK_MODUL[k] ? T(SK_MODUL[k]) : k.endsWith('_COLLECTOR') ? T('{0} toplayıcısı', cevherAdi(SK_CEVHER[k]))
+  : T('{0} rafinerisi', cevherAdi(SK_CEVHER[k]));
+const SK_METIN = {
+  skylab_message_transport_isNotActive: N('Taşıma modülü çalışmıyor.'), skylab_message_upgrade_maximumLevel: N('Modül en yüksek seviyede.'),
+  skylab_message_upgrade_basemoduleLevel: N('Önce ana modülü yükselt.'), skylab_message_upgrade_credits: N('Yeterli kredin yok.'),
+  skylab_message_upgrade_prometium: N('Skylab deposunda yeterli Prometium yok.'), skylab_message_upgrade_endurium: N('Skylab deposunda yeterli Endurium yok.'),
+  skylab_message_upgrade_terbium: N('Skylab deposunda yeterli Terbium yok.'), skylab_history_module_activate_notBuiltYet: N('Modül henüz kurulmadı.'),
+  skylab_history_module_deactivated: N('Modül kapatıldı.'), skylab_history_module_activated: N('Modül açıldı.'),
+  skylab_history_module_activate_lowpower: N('Güneş modülünün enerjisi yetmiyor.'), skylab_history_module_upgrade_lowpower: N('Güneş modülünün enerjisi yetmiyor.'),
+  skylab_message_upgrade_success: N('Yükseltme başladı.'), skylab_message_upgrade_inProgress: N('Başka bir yükseltme sürüyor.'),
+  skylab_history_upgrade_canceled: N('Yükseltme iptal edildi.'), skylab_message_upgrade_uridium: N('Yeterli uridyumun yok.'),
+  skylab_history_upgrade_instant: N('Modül yükseltildi.'), skylab_history_upgrade_finished: N('Yükseltme bitti.'),
+  skylab_message_transport_notEnoughUridium: N('Yeterli uridyumun yok.'), skylab_message_transport_alreadyActive: N('Bir taşıma zaten sürüyor.'),
+  skylab_message_transport_requestedOreAmountIsZero: N('Gönderilecek cevher seç.'), skylab_message_transport_notEnoughSpaceInShipStorage: N('Geminin kargosunda yer yok.'),
+  skylab_message_transport_isEmpty: N('Depoda gönderilecek cevher yok.'), skylab_history_transfer_ship_started: N('Taşıma başladı.'),
+  skylab_history_transfer_ship_finished: N('Cevherler gemiye ulaştı.') };
+const skMetni = k => SK_METIN[k] ? T(SK_METIN[k]) : oyunMetni(k);
+const SK = { gonder: {} };
+
+async function renderSkylab() {
+  await ogYukle();
+  let v;
+  try { v = await api('/api/oyun/skylab'); } catch (e) { return oyunHatasi(e, 'skylab'); }
+  const cevherIkon = (ad, boy) => OG.dizin?.sprite[ad + '_100x100'] ? sprite(ad + '_100x100', boy) : h('span', { class: 'sprite bos', style: { width: boy + 'px', height: boy + 'px' } }, icon('lab'));
+  const depo = v.depo.map(o => h('div', { class: 'sk-cevher' }, cevherIkon(o.ad.toLowerCase(), 44),
+    h('div', { class: 'grow' }, h('div', { class: 'row between' }, h('b', null, cevherAdi(o.ad)), h('span', { class: 'mono' }, fmtN(o.miktar) + ' / ' + fmtN(o.kapasite))),
+      h('div', { class: 'sk-bar' }, h('span', { style: { width: Math.min(100, 100 * o.miktar / Math.max(1, o.kapasite)) + '%' } })))));
+  const moduller = v.moduller.map(m => {
+    const kur = m.seviye === 0, durum = m.kalan != null ? badge(T('Yükseltiliyor: {0}', fmtDur(m.kalan)), 'info')
+      : kur ? badge(T('Kurulmadı')) : m.durum === 'ACTIVE' ? badge(T('Çalışıyor'), 'ok') : badge(T('Kapalı'), 'warn');
+    const c = m.maliyet, dugmeler = [];
+    if (m.kalan != null) {
+      dugmeler.push(btn(T('Bitir ({0} U.)', fmtN(m.bitirme)), () => skylabIslem(m.id, 'instantFinishUpgrade'), 'sm primary'),
+        btn(T('İptal'), async () => await confirmBox(T('Yükseltme iptal edilsin mi?'), T('Harcananlar geri gelmez.'), { ok: T('İptal et'), danger: true })
+          && skylabIslem(m.id, 'abortUpgrade'), 'sm'));
+    } else if (c) {
+      dugmeler.push(btn(kur ? T('Kur') : T('Yükselt'), () => skylabIslem(m.id, 'upgrade'), 'sm primary'));
+      if (c.uridyum) dugmeler.push(btn(T('Anında ({0} U.)', fmtN(c.uridyum)), () => skylabIslem(m.id, 'instantUpgrade'), 'sm'));
+    }
+    if (m.acilir && !kur && m.kalan == null) dugmeler.push(btn(m.durum === 'ACTIVE' ? T('Kapat') : T('Aç'),
+      () => skylabIslem(m.id, m.durum === 'ACTIVE' ? 'setInactive' : 'setActive'), 'sm ghost'));
+    return h('div', { class: 'sk-modul' + (m.durum === 'ACTIVE' ? ' on' : '') },
+      h('div', { class: 'row', style: { gap: '10px' } }, SK_CEVHER[m.id] ? cevherIkon(SK_CEVHER[m.id], 48) : h('span', { class: 'sprite bos', style: { width: '48px', height: '48px' } }, icon('lab')),
+        h('div', { class: 'grow' }, h('b', null, skModulAdi(m.id)), h('div', { class: 'mono' }, T('Sv {0} / {1}', m.seviye, m.azami)))),
+      h('div', { class: 'row wrap', style: { gap: '6px' } }, durum,
+        m.uretim ? badge(T('{0} / sa', fmtN(m.uretim)), '') : null, m.enerji ? badge(T('{0} enerji', fmtN(m.enerji)), 'orange') : null,
+        m.verim ? badge(T('verim %{0}', m.verim), '') : null),
+      c && m.kalan == null ? h('div', { class: 'sk-bedel' }, T('{0} C., her birinden {1} Prometium / Endurium / Terbium, {2}', fmtN(c.kredi), fmtN(c.kaynak), fmtDur(c.sure_sn))) : null,
+      h('div', { class: 'row wrap', style: { gap: '6px' } }, dugmeler),
+      m.robot && !kur ? h('div', { class: 'sk-robot' }, h('span', { class: 'lbl' }, T('Robotlar: {0} / {1}', m.robot.etkin, m.robot.azami) + (m.robot.depoda ? ' · ' + T('depoda {0}', m.robot.depoda) : '')),
+        h('div', { class: 'row', style: { gap: '6px' } }, ['1', '2'].map(t => btn('+' + (t === '1' ? '1%' : '4%') + ' · ' + paraYaz(m.robot.fiyat[t][0], m.robot.fiyat[t][1]),
+          () => skylabRobot(m.id, t), 'sm ghost', null, { title: T('48 saat çalışan robot') })))) : null);
+  });
+  const t = v.tasima, gonder = v.depo.map(o => h('label', { class: 'sk-gonder' }, cevherIkon(o.ad.toLowerCase(), 28),
+    h('input', { class: 'input num', type: 'number', min: 0, max: o.miktar, value: SK.gonder[o.id] || 0, oninput: e => { SK.gonder[o.id] = +e.target.value | 0; } })));
+  const tasima = t ? h('div', { class: 'stack' }, h('p', { class: 'desc', style: { margin: 0 } }, T('Taşıma sürüyor: {0} kaldı.', fmtDur(t.kalan))),
+    h('div', null, btn(T('Hemen bitir ({0} U.)', fmtN(v.hizli_fiyat)), () => skylabIslem('TRANSPORT_MODULE', 'startTransport', 'instantFinish'), 'sm primary')))
+    : h('div', { class: 'stack' }, h('div', { class: 'row wrap', style: { gap: '10px' } }, gonder),
+      h('div', { class: 'row wrap', style: { gap: '8px' } }, btn(T('Gönder'), () => skylabIslem('TRANSPORT_MODULE', 'startTransport', ''), 'sm primary'),
+        btn(T('Hızlı gönder ({0} U.)', fmtN(v.hizli_fiyat)), () => skylabIslem('TRANSPORT_MODULE', 'startTransport', 'fast'), 'sm')));
+  $('#content').replaceChildren(h('div', { class: 'stack' },
+    oyunUstu(v, 'skylab', h('span', { class: 'pill' + (v.enerji.kullanilan > v.enerji.gunes ? ' err' : '') }, T('Enerji'), ' ', h('b', null, fmtN(v.enerji.kullanilan) + ' / ' + fmtN(v.enerji.gunes))),
+      btn(null, () => renderSkylab(), 'icon', 'refresh', { title: T('Yenile') })),
+    h('div', { class: 'card' }, h('h2', null, T('Depo')), h('div', { class: 'sk-depo' }, depo)),
+    h('div', { class: 'sk-moduller' }, moduller),
+    h('div', { class: 'card' }, h('h2', null, T('Gemiye taşıma')), tasima)));
+}
+
+async function skylabIslem(modul, islem, mod) {
+  const miktarlar = islem === 'startTransport' && mod !== 'instantFinish' ? SK.gonder : {};
+  const r = await act(() => api('/api/oyun/skylab/islem', { modul, islem, mod: mod || '', miktarlar }));
+  if (r) {
+    if (r.hatalar.length) toast(skMetni(r.hatalar[0]), 'err');
+    else if (r.basarilar.length) toast(skMetni(r.basarilar[r.basarilar.length - 1]), 'ok');
+    if (r.tamam && islem === 'startTransport') SK.gonder = {};
+  }
+  renderSkylab();
+}
+
+async function skylabRobot(modul, tip) {
+  const r = await act(() => api('/api/oyun/skylab/robot', { modul, tip }));
+  if (r && !r.tamam) toast(skMetni(r.hatalar[0]), 'err');
+  else if (r) toast(T('Robot alındı.'), 'ok');
+  renderSkylab();
+}
+
+// ================================================================== OYUN İÇİ: AÇIK ARTIRMA
+// Lotlar, teklifler ve anında alım istemcinin Auction* istekleriyle (panel_kanali.py /muzayede). Otomatik teklif ve alarm kuralları
+// oyun sunucusunda (muzayede.oto): panel kapalıyken de işler, alarm oyunda ekran mesajı olur. Olaylar (geçildin, kazandın, otomatik
+// teklif…) panelin her sayfasında bildirim olarak çıkar (muzayedeOlayTick; masaüstü bildirimi izin verilirse).
+const MZ_TUR = { hour: N('Saatlik'), day: N('Günlük'), week: N('Haftalık') };
+const MZ_GRUP = { ship: N('Gemiler'), shipdesign: N('Gemi tasarımları'), extra: N('Ekstralar'), module: N('Modüller'), booster: N('Boosterlar'),
+  battery: N('Lazer cephanesi'), rocket: N('Roketler'), generator: N('Jeneratörler'), weapon: N('Silahlar'), special: N('Özel') };
+const MZ_DURUM = [['hepsi', N('Hepsi')], ['teklif', N('Teklif verdiklerim')], ['onde', N('Öndeyim')], ['degil', N('Önde değilim')], ['oto', N('Otomatik')], ['alarm', N('Alarmlı')]];
+Object.assign(OY_METIN, { auction_bid_minBid_not_reached: N('Teklif, en yüksek tekliften en az 10.000 kredi fazla olmalı.'), auction_bid_credits_to_little: N('Yeterli kredin yok.'),
+  auction_buy_instant_invalid: N('Bu lot anında alınamaz.'), items_shop_error_ship_contains_ship: N('Bu gemi zaten sende.'), auction_error_generic: N('Açık artırma işlemi yapılamadı.') });
+const MZ = { tur: 'hepsi', grup: 'hepsi', durum: 'hepsi', ara: '', bitis: {}, son: null };
+const mzKey = l => l.tur + '|' + l.loot;
+function mzOlayMetni(o) {
+  const ad = esyaAdi(o.loot);
+  return { gecildi: () => T('Teklifin geçildi: {0}', ad), bitiyor: () => T('{0} için {1} dk kaldı.', ad, o.dk), kazanildi: () => T('Kazandın: {0} ({1})', ad, paraYaz('credits', o.fiyat)),
+    kaybedildi: () => T('Kaybettin: {0}', ad), oto_teklif: () => T('Otomatik teklif: {0}, {1}', ad, paraYaz('credits', o.fiyat)),
+    oto_sinir: () => T('Otomatik teklif sınırına ulaşıldı: {0} ({1} gerekiyor)', ad, paraYaz('credits', o.gereken)) }[o.tip]?.() || o.tip;
+}
+const mzOlayTuru = t => ({ kazanildi: 'ok', oto_teklif: 'info', gecildi: 'err', oto_sinir: 'err', kaybedildi: 'err', bitiyor: 'info' }[t] || 'info');
+
+async function renderMuzayede() {
+  await ogYukle();
+  let v;
+  try { v = await api('/api/oyun/muzayede'); } catch (e) { return oyunHatasi(e, 'muzayede'); }
+  const simdi = Date.now() / 1000;
+  for (const [k, n] of Object.entries(v.kalan)) MZ.bitis[k] = simdi + n;
+  if (v.olaylar.length) MZ.son = Math.max(MZ.son || 0, v.olaylar[0].no);
+  const gruplar = [...new Set(v.lotlar.map(l => l.grup))];
+  const sec = l => (MZ.tur === 'hepsi' || l.tur === MZ.tur) && (MZ.grup === 'hepsi' || l.grup === MZ.grup)
+    && (!MZ.ara || esyaAdi(l.loot).toLowerCase().includes(MZ.ara.toLowerCase()))
+    && ({ hepsi: true, teklif: l.benim > 0, onde: l.onde, degil: !l.onde, oto: !!l.oto, alarm: !!l.alarm })[MZ.durum];
+  const gorunen = v.lotlar.filter(sec).sort((a, b) => (b.onde - a.onde) || (!!b.oto - !!a.oto) || ['hour', 'day', 'week'].indexOf(a.tur) - ['hour', 'day', 'week'].indexOf(b.tur)
+    || esyaAdi(a.loot).localeCompare(esyaAdi(b.loot)));
+  const katilinacak = gorunen.filter(l => !l.onde), toplam = katilinacak.reduce((t, l) => t + l.sonraki, 0);
+  const sayac = k => h('span', { class: 'pill mz-sayac', 'data-tur': k }, h('span', { class: 'lbl' }, T(MZ_TUR[k])), h('b', null, fmtDur(MZ.bitis[k] - simdi)));
+  const ara = h('input', { class: 'input oy-ara', placeholder: T('Ara…'), value: MZ.ara, oninput: e => { MZ.ara = e.target.value; clearTimeout(MZ.araT); MZ.araT = setTimeout(renderMuzayede, 250); } });
+  const seg = (liste, deger, ata) => h('div', { class: 'seg', style: { flexWrap: 'wrap' } }, liste.map(([k, t]) => h('button', { class: k === deger ? 'on info' : '', onclick: () => { ata(k); renderMuzayede(); } }, t)));
+  $('#content').replaceChildren(h('div', { class: 'stack' },
+    oyunUstu(v, 'muzayede', ara, btn(null, () => renderMuzayede(), 'icon', 'refresh', { title: T('Yenile') })),
+    h('div', { class: 'card mz-ust' },
+      h('div', { class: 'row between wrap', style: { gap: '10px' } },
+        h('div', { class: 'row wrap', style: { gap: '8px' } }, ['hour', 'day', 'week'].map(sayac)),
+        h('div', { class: 'row wrap', style: { gap: '6px' } },
+          btn(T('Hepsine katıl ({0} lot)', katilinacak.length), async () => katilinacak.length && await confirmBox(T('{0} lota teklif verilsin mi?', katilinacak.length),
+            T('Her lota en düşük geçerli teklif verilir (toplam {0}). Teklifi geçilen lotun kredisi hemen geri gelir.', paraYaz('credits', toplam)), { ok: T('Katıl') })
+            && muzayedeHepsi(katilinacak), 'sm primary', 'gavel', { disabled: !katilinacak.length }),
+          btn(T('Görünenlere otomatik teklif…'), () => muzayedeTopluOto(gorunen, v), 'sm', null, { disabled: !gorunen.length }),
+          gorunen.some(l => l.oto) ? btn(T('Otomatikleri kapat'), () => muzayedeTopluKapat(gorunen.filter(l => l.oto)), 'sm ghost') : null)),
+      h('div', { class: 'row wrap', style: { gap: '8px', marginTop: '12px' } },
+        seg([['hepsi', T('Hepsi')]].concat(['hour', 'day', 'week'].map(k => [k, T(MZ_TUR[k])])), MZ.tur, k => { MZ.tur = k; }),
+        seg(MZ_DURUM.map(([k, t]) => [k, T(t)]), MZ.durum, k => { MZ.durum = k; })),
+      h('div', { style: { marginTop: '8px' } }, seg([['hepsi', T('Bütün gruplar')]].concat(gruplar.map(g => [g, MZ_GRUP[g] ? T(MZ_GRUP[g]) : g])), MZ.grup, k => { MZ.grup = k; })),
+      !v.rakip ? h('p', { class: 'desc', style: { margin: '10px 0 0' } }, T('Sanal rakipler kapalı: teklif veren tek kişi sensin. Oyun Ayarları > Müzayede\'den açılabilir.')) : null),
+    h('div', { class: 'mz-izgara' }, gorunen.length ? gorunen.map(l => muzayedeKart(l, v)) : h('div', { class: 'empty' }, T('Lot yok.'))),
+    h('div', { class: 'mz-alt' },
+      h('div', { class: 'card' }, h('h2', null, icon('bell'), T('Olaylar')), v.olaylar.length ? h('div', { class: 'mz-liste' }, v.olaylar.map(o => h('div', { class: 'mz-olay ' + mzOlayTuru(o.tip) },
+        dot(mzOlayTuru(o.tip) === 'ok' ? 'ok' : mzOlayTuru(o.tip) === 'err' ? 'warn' : ''), h('span', { class: 'grow' }, mzOlayMetni(o)),
+        h('span', { class: 'mono muted' }, new Date(o.zaman * 1000).toLocaleTimeString(LOC(), { hour: '2-digit', minute: '2-digit' })))))
+        : h('div', { class: 'empty' }, T('Henüz olay yok.'))),
+      h('div', { class: 'card' }, h('h2', null, icon('clock'), T('Geçmiş')), v.gecmis.length ? h('div', { class: 'mz-liste' }, v.gecmis.map(g => h('div', { class: 'mz-olay' },
+        oyunIkon(g.loot, 26, v.firma, 'gavel'), h('span', { class: 'grow' }, esyaAdi(g.loot), h('span', { class: 'muted' }, ' · ' + T(MZ_TUR[g.tur] || g.tur))),
+        h('span', { class: g.kim === v.kimlik ? 'mz-ben' : 'muted' }, g.ad || '—'), h('span', { class: 'mono' }, paraYaz('credits', g.teklif)))))
+        : h('div', { class: 'empty' }, T('Geçmiş yok.'))))));
+  S.timers.push(setInterval(() => {            // dönem sayaçları; dönem bitince liste yenilenir (kazanılan eşya, yeni dönem)
+    const t = Date.now() / 1000;
+    document.querySelectorAll('.mz-sayac').forEach(el => { el.querySelector('b').textContent = fmtDur(MZ.bitis[el.dataset.tur] - t); });
+    if (Object.values(MZ.bitis).some(b => b - t < -2) && !MZ.yenileniyor) { MZ.yenileniyor = true; setTimeout(() => { MZ.yenileniyor = false; if (S.page === 'muzayede') renderMuzayede(); }, 3000); }
+  }, 1000));
+}
+
+function muzayedeKart(l, v) {
+  const inp = h('input', { class: 'input num', type: 'number', min: l.sonraki, step: v.artis, value: l.sonraki });
+  const durum = l.onde ? badge(T('Öndesin'), 'ok') : l.en_yuksek ? badge(T('En yüksek: {0}', l.en_yuksek_ad || '—'), 'warn') : badge(T('Teklif yok'));
+  return h('div', { class: 'mz-kart' + (l.onde ? ' onde' : '') },
+    h('div', { class: 'row', style: { gap: '10px', alignItems: 'flex-start' } }, oyunIkon(l.loot, 64, v.firma, 'gavel'),
+      h('div', { class: 'grow' }, h('div', { class: 'mg-ad', style: { minHeight: 0 } }, esyaAdi(l.loot)),
+        h('div', { class: 'row wrap', style: { gap: '4px', marginTop: '4px' } }, badge(T(MZ_TUR[l.tur])), l.adet > 1 ? badge('× ' + fmtN(l.adet)) : null,
+          l.oto ? badge(T('Oto ≤ {0}', fmtN(l.oto.azami)), 'info') : null, l.alarm ? h('span', { class: 'badge orange', title: T('Alarm kurulu') }, icon('bell')) : null))),
+    h('div', { class: 'mz-satir' }, h('span', { class: 'muted' }, T('En yüksek')), h('b', null, l.en_yuksek ? paraYaz('credits', l.en_yuksek) : '—')),
+    h('div', { class: 'mz-satir' }, h('span', { class: 'muted' }, T('Senin teklifin')), h('b', { class: l.onde ? 'mz-ben' : '' }, l.benim ? paraYaz('credits', l.benim) : '—')),
+    h('div', { class: 'row', style: { gap: '6px' } }, durum),
+    h('div', { class: 'row', style: { gap: '6px' } }, inp, btn(T('Teklif ver'), e => muzayedeTeklif(l, +inp.value | 0, e.currentTarget), 'sm primary'),
+      btn('+' + fmtN(v.artis), () => { inp.value = (+inp.value | 0) + v.artis; }, 'sm ghost', null, { title: T('Teklifi artır') })),
+    h('div', { class: 'row wrap', style: { gap: '6px' } },
+      l.anlik ? btn(T('Anında al ({0})', paraYaz('uridium', l.fiyat)), async e => await confirmBox(T('{0} anında alınsın mı?', esyaAdi(l.loot)), T('{0} uridyum harcanır.', fmtN(l.fiyat)), { ok: T('Al') })
+        && muzayedeAnlik(l), 'sm ghost') : null,
+      btn(l.oto ? T('Otomatik: açık') : T('Otomatik teklif'), () => muzayedeOtoPencere(l, v), 'sm ' + (l.oto ? 'primary' : 'ghost')),
+      btn(null, () => muzayedeAlarmPencere(l), 'sm icon ' + (l.alarm ? 'orange' : 'ghost'), 'bell', { title: T('Alarm') })));
+}
+
+async function muzayedeTeklif(l, fiyat, b) {
+  b.disabled = true;
+  const r = await act(() => api('/api/oyun/muzayede/teklif', { tur: l.tur, loot: l.loot, fiyat }));
+  if (r && !r.tamam) toast(oyunMetni(r.hata), 'err');
+  else if (r) toast(T('Teklif verildi: {0}, {1}', esyaAdi(l.loot), paraYaz('credits', fiyat)), 'ok');
+  renderMuzayede();
+}
+
+async function muzayedeHepsi(lotlar) {
+  const r = await act(() => api('/api/oyun/muzayede/hepsi', { lotlar: lotlar.map(l => [l.tur, l.loot]) }));
+  if (r) {
+    if (r.verilen) toast(T('{0} lota teklif verildi: toplam {1}', r.verilen, paraYaz('credits', r.tutar)), 'ok');
+    for (const [k, n] of Object.entries(r.hatalar)) toast(oyunMetni(k) + ' (' + n + ')', 'err');
+  }
+  renderMuzayede();
+}
+
+async function muzayedeAnlik(l) {
+  const r = await act(() => api('/api/oyun/muzayede/anlik', { tur: l.tur, loot: l.loot }));
+  if (r && !r.tamam) toast(oyunMetni(r.hata), 'err');
+  else if (r) toast(T('Satın alındı: {0}', esyaAdi(l.loot)), 'ok');
+  renderMuzayede();
+}
+
+// otomatik teklif: azami tutara kadar, geçildikçe en düşük geçerli teklifi verir (oyun sunucusunda; panel kapalıyken de)
+function muzayedeOtoPencere(l, v) {
+  const inp = h('input', { class: 'input', type: 'number', min: v.en_az, step: v.artis, value: l.oto?.azami || Math.max(l.sonraki * 2, v.en_az * 5) });
+  const m = modal({ title: T('Otomatik teklif: {0}', esyaAdi(l.loot)), sub: T('Geçildikçe en düşük geçerli teklif verilir; en çok bu tutara kadar. Panel kapalıyken de oyunda işler.'),
+    body: [field(T('En çok (kredi)'), inp)], foot: [l.oto ? btn(T('Kapat'), () => { m.close(); muzayedeKural('oto', l, { azami: 0 }, T('Otomatik teklif kapandı.')); }, 'ghost') : null,
+      btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Kaydet'), () => { m.close(); muzayedeKural('oto', l, { azami: +inp.value | 0 }, T('Otomatik teklif açık.')); }, 'primary')] });
+}
+
+function muzayedeAlarmPencere(l) {
+  const a = l.alarm || {};
+  const gec = h('input', { type: 'checkbox', checked: a.gecilince ?? true });
+  const dk = h('select', { class: 'input' }, [[0, T('Kapalı')], [5, T('{0} dk', 5)], [15, T('{0} dk', 15)], [30, T('{0} dk', 30)], [60, T('{0} sa', 1)], [180, T('{0} sa', 3)]]
+    .map(([n, t]) => h('option', { value: n, selected: (a.dk || 0) === n }, t)));
+  const m = modal({ title: T('Alarm: {0}', esyaAdi(l.loot)), sub: T('Alarm oyunda ekran mesajı, panelde bildirim olur.'),
+    body: [h('label', { class: 'row', style: { gap: '8px' } }, gec, T('Teklifim geçilince uyar')), field(T('Dönem bitmeden önce uyar'), dk)],
+    foot: [btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Kaydet'), () => { m.close(); mzBildirimIzni();
+      muzayedeKural('alarm', l, { gecilince: gec.checked, dk: +dk.value }, gec.checked || +dk.value ? T('Alarm kuruldu.') : T('Alarm kaldırıldı.')); }, 'primary')] });
+}
+
+async function muzayedeKural(tur, l, alanlar, okMetin) {
+  const r = await act(() => api('/api/oyun/muzayede/' + tur, Object.assign({ tur: l.tur, loot: l.loot }, alanlar)));
+  if (r) toast(okMetin, 'ok');
+  renderMuzayede();
+}
+
+function muzayedeTopluOto(lotlar, v) {
+  const inp = h('input', { class: 'input', type: 'number', min: v.en_az, step: v.artis, value: v.en_az * 10 });
+  const m = modal({ title: T('{0} lota otomatik teklif', lotlar.length), sub: T('Her lot için aynı en çok tutar. Kredin yettiği sürece geçildikçe teklif verilir.'),
+    body: [field(T('Lot başına en çok (kredi)'), inp)], foot: [btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Kaydet'), async () => {
+      m.close(); for (const l of lotlar) await api('/api/oyun/muzayede/oto', { tur: l.tur, loot: l.loot, azami: +inp.value | 0 }).catch(() => null);
+      toast(T('{0} lota otomatik teklif açıldı.', lotlar.length), 'ok'); renderMuzayede(); }, 'primary')] });
+}
+
+async function muzayedeTopluKapat(lotlar) {
+  for (const l of lotlar) await api('/api/oyun/muzayede/oto', { tur: l.tur, loot: l.loot, azami: 0 }).catch(() => null);
+  toast(T('Otomatik teklifler kapandı.'), 'ok');
+  renderMuzayede();
+}
+
+function mzBildirimIzni() {
+  try { if (window.Notification && Notification.permission === 'default') Notification.requestPermission(); } catch (e) { /* desteklenmiyor */ }
+}
+
+// yeni açık artırma olayları: her sayfada bildirim (ilk yoklama yalnız başlangıcı belirler); masaüstü bildirimi izin varsa
+async function muzayedeOlayTick() {
+  if (srvState(S.durum).oyun !== 'acik' || muzayedeOlayTick.busy) return;
+  muzayedeOlayTick.busy = true;
+  try {
+    const r = await api('/api/oyun/muzayede/olaylar?son=' + (MZ.son || 0));
+    const yeni = r.olaylar.filter(o => o.no > (MZ.son || 0)).reverse();
+    if (MZ.son !== null) for (const o of yeni) {
+      toast(T('Açık artırma') + ': ' + mzOlayMetni(o), mzOlayTuru(o.tip), 7000);
+      try { if (window.Notification && Notification.permission === 'granted' && document.visibilityState !== 'visible') new Notification('OpenOrbit', { body: mzOlayMetni(o) }); } catch (e) { /* yok */ }
+    }
+    if (yeni.length || MZ.son === null) MZ.son = Math.max(MZ.son || 0, ...r.olaylar.map(o => o.no), 0);
+    if (yeni.length && S.page === 'muzayede') renderMuzayede();
+  } catch (e) { /* oyuna girilmedi */ } finally { muzayedeOlayTick.busy = false; }
+}
+
 const RENDER = { oyna: renderOyna, arkadas: renderArkadas, kayitlar: renderKayitlar, ayarlar: renderAyarlar, etkinlikler: () => renderEtkinlikler(), istemci: () => renderIstemci(),
-  takvim: enterTakvim, sunucu: renderSunucu, panel: renderPanel };
+  takvim: enterTakvim, sunucu: renderSunucu, panel: renderPanel, magaza: renderMagaza, hangar: renderHangar, skylab: renderSkylab, muzayede: renderMuzayede };
 
 // ------------------------------------------------------------------ başlangıç
 async function boot() {
@@ -2066,6 +2645,7 @@ async function boot() {
   await setLang((cfg && cfg.dil) || guessLang());
   applyStatic();
   buildNav();
+  ogYukle();                                       // oyunun görselleri: oyun içi menülerin simgeleri
   go(location.hash.slice(1) || 'oyna', false);
   poll();
   if (cfg && (!cfg.dil || !cfg.kurulum_tamam)) openWizard(cfg.dil ? 1 : 0);

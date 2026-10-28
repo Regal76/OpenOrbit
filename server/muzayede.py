@@ -18,6 +18,13 @@ adı lot, dönem ve seviye tohumlu (yeniden hesaplanır, saklanmaz).
   son 5 saniyesine kalmadan). Bütçeyi aşan teklif kazanır. Teklifi geçilen oyuncunun kredisi hemen geri gelir, teklif kaydı düşer
   (yeniden tam tutarla teklif verir; resmî forum 127234) ve onay postası açıksa "geçildin" postası.
 Bot oyuncular gelince (Aşama 11) teklifleri rival() döndürecek.
+Panelin Açık Artırma sayfası (panel_kanali.py; kullanıcı isteği 2026-10-28): kurallar profilde, panel kapalıyken de oturumun tick'inde
+işler (Sosyal.tick -> settle + oto):
+  otomatik {"tür|lot": {azami, bildirilen}}  geçilince (ya da hiç teklif yoksa) en düşük geçerli teklifi verir (en yüksek + artış,
+      en az en_az_teklif), azamiyi aşacaksa bir kez "oto_sinir" olayı; dönem bitince kural kalır (her dönem yeniden).
+  alarmlar {"tür|lot": {gecilince, dk, son}}  teklif geçilince, dönemin bitmesine dk dakika kala: oyunda ekran mesajı.
+  olaylar [{no, zaman, tip, tur, loot, ...}]  gecildi, bitiyor, kazanildi, kaybedildi, oto_teklif, oto_sinir (son OLAY_SINIRI; panel
+      yeni olayları bildirim olarak gösterir).
 Çok oyunculu sunucuda lotlar herkes için aynı: öteki oyuncuların teklifleri de yarışır (en yüksek teklif; eşitse önce veren), dönemin
 kazananı ilk hesaplayan oturumda bir kez belirlenir (SONUC): önce her oyuncu kendi teklifiyle aynı lotu kazanabiliyordu.
 """
@@ -59,6 +66,11 @@ SPAN = {'hour': 3600, 'day': 86400, 'week': 7 * 86400}
 SON_SN = 5                      # rakip karşılığını dönemin bitiminden en geç bu kadar önce verir
 LOCK = threading.Lock()
 SONUC = {}                      # (tür, lot, bitiş) -> dönemin en yüksek oyuncu teklifi (teklif, zaman, ad, kimlik)
+OLAY_SINIRI = 60
+# oyundaki ekran mesajı (alarm ve otomatik teklif sınırı): istemcinin diline göre (Türkçe, öteki diller İngilizce)
+EKRAN = {'gecildi': ('Açık artırma: %s teklifin geçildi.', 'Auction: you were outbid on %s.'),
+         'bitiyor': ('Açık artırma: %s için %d dakika kaldı.', 'Auction: %d minutes left for %s.'),
+         'oto_sinir': ('Açık artırma: %s otomatik teklif sınırına ulaştı.', 'Auction: %s reached the auto-bid limit.')}
 
 
 def bids(lot, end, skip=None):
@@ -148,6 +160,9 @@ class Muzayede:
             d.setdefault('teklifler', {})
             d.setdefault('gecmis', [])
             d.setdefault('onay_postasi', False)
+            d.setdefault('otomatik', {})
+            d.setdefault('alarmlar', {})
+            d.setdefault('olaylar', [])
 
     @property
     def d(self):
@@ -296,6 +311,69 @@ class Muzayede:
             (self.m.money_msgs() if self.m else []) + msgs
 
     # -------------------------------------------------------- dönem sonu
+    # -------------------------------------------------------- panel: otomatik teklif, alarm, olaylar
+    def top(self, lot, now):
+        """Lotun bu dönemdeki en yüksek teklifi (oyuncunun, rakibin, öteki oyuncuların) ve oyuncunun önde olup olmadığı."""
+        rec = self.bid_rec(lot, now)
+        mine = rec['teklif'] if rec else 0
+        others = [rival(lot, period_end(lot['tur'], now), now, rec)[0]] + [x[0] for x in bids(lot, period_end(lot['tur'], now), self.p)]
+        return max([mine] + others), bool(mine) and mine > max(others)
+
+    def next_bid(self, lot, now):
+        """En düşük geçerli teklif (bid()'in kuralları)."""
+        rec = self.bid_rec(lot, now)
+        mine = rec['teklif'] if rec else 0
+        top = self.top(lot, now)[0]
+        return max(D['en_az_teklif'], top + D['artis'], mine + D['artis'] if mine else 0)
+
+    def olay(self, tip, lot, ekran=False, **ek):
+        """Olay kaydı (panel bildirimi) -> oyundaki ekran mesajı (ekran: alarm ya da sınır)."""
+        with self.p.lock:
+            no = (self.d['olaylar'][0]['no'] if self.d['olaylar'] else 0) + 1
+            self.d['olaylar'].insert(0, dict(ek, no=no, zaman=int(time.time()), tip=tip, tur=lot['tur'], loot=lot['loot']))
+            del self.d['olaylar'][OLAY_SINIRI:]
+            self.p.dirty = True
+        if not (ekran and tip in EKRAN):
+            return []
+        import kapi as KAPI
+        tr = (getattr(self.m, 'dil', None) or '').startswith('tr')
+        metin, ad = EKRAN[tip][0 if tr else 1], lot['loot'].rsplit('_', 1)[-1].upper()      # sunucuda eşya adı yok: MCB-25
+        metin = metin % (((ad, ek['dk']) if tr else (ek['dk'], ad)) if tip == 'bitiyor' else ad)
+        return [KAPI.screen(metin)]
+
+    def oto(self, now=None):
+        """Otomatik teklifler ve bitiş alarmları (tick) -> mesajlar."""
+        now = now or time.time()
+        msgs = []
+        for key, a in list(self.d['alarmlar'].items()):
+            lot = LOTS.get(tuple(key.split('|', 1)))
+            end = lot and period_end(lot['tur'], now)
+            if lot and a.get('dk') and end - now <= a['dk'] * 60 and a.get('son') != end:
+                with self.p.lock:
+                    a['son'] = end
+                    self.p.dirty = True
+                msgs += self.olay('bitiyor', lot, ekran=True, dk=max(1, int((end - now) // 60)))
+        for key, r in list(self.d['otomatik'].items()):
+            lot = LOTS.get(tuple(key.split('|', 1)))
+            if not lot or self.owned(lot) and not self.bid_rec(lot, now):
+                continue
+            end = period_end(lot['tur'], now)
+            if end - now <= SON_SN or self.top(lot, now)[1]:
+                continue
+            price = self.next_bid(lot, now)
+            if price > r['azami']:
+                if r.get('bildirilen') != end:
+                    with self.p.lock:
+                        r['bildirilen'] = end
+                        self.p.dirty = True
+                    msgs += self.olay('oto_sinir', lot, ekran=True, azami=r['azami'], gereken=price)
+                continue
+            out = self.bid({'type': lot['tur'], 'lootId': lot['loot'], 'price': price}, now)
+            if out and out[0][1].get('success'):
+                self.log('   müzayede otomatik teklif: %s %d (azami %d)' % (lot['loot'], price, r['azami']))
+                msgs += self.olay('oto_teklif', lot, fiyat=price) + [m for m in out[1:]]
+        return msgs
+
     def outbid(self, now):
         """Süren dönemde teklifi geçilen lotlar: kredi hemen iade, kayıt düşer (forum 127234) -> (postalar, iade var mı)."""
         msgs, back = [], False
@@ -313,7 +391,8 @@ class Muzayede:
                 self.p.dirty = True
             self.p.gain(kredi=b['teklif'], neden='auction_bookMoneyBack', detay=loot)
             self.log('   müzayede teklifi geçildi: %s (%d kredi geri)' % (loot, b['teklif']))
-            msgs += self.mail(lot, b, 1)
+            msgs += self.mail(lot, b, 1) + self.olay('gecildi', lot, ekran=bool(self.d['alarmlar'].get(key, {}).get('gecilince')),
+                                                       fiyat=b['teklif'], oto=key in self.d['otomatik'])
             back = True
         return msgs, back
 
@@ -348,7 +427,7 @@ class Muzayede:
                                                 'loot': loot, 'tur': kind, 'ad': rname})
                     del self.d['gecmis'][D['gecmis_siniri']:]
                 self.log('   müzayede kaybedildi: %s (%s %d kredi; teklifin %d geri)' % (loot, rname, riv, b['teklif']))
-                msgs += self.mail(lot, b, 1)
+                msgs += self.mail(lot, b, 1) + self.olay('kaybedildi', lot, fiyat=riv, ad=rname)
                 continue
             pl = self.p.d['pilot']
             with self.p.lock:
@@ -357,7 +436,7 @@ class Muzayede:
                 del self.d['gecmis'][D['gecmis_siniri']:]
                 self.p.dirty = True
             self.log('   müzayede kazanıldı: %s x%d (%d kredi)' % (loot, lot['adet'], b['teklif']))
-            msgs += (self.m.reward(loot, lot['adet']) if self.m else []) + self.mail(lot, b, 2)
+            msgs += (self.m.reward(loot, lot['adet']) if self.m else []) + self.mail(lot, b, 2) + self.olay('kazanildi', lot, fiyat=b['teklif'])
         if (msgs or back) and self.m:
             msgs += self.m.money_msgs()
         return msgs

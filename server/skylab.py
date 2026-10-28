@@ -524,6 +524,7 @@ class Skylab:
         loot = 'currency_' + cur
         if INV.missing(self.p, {loot: price}):
             self.log('   Skylab: robot için %s yetmiyor' % cur)
+            self.son_islem = ([32 if cur == 'credits' else 44], [])
             return self.out(key, 'purchase', [32 if cur == 'credits' else 44], [], [], now) + [self.productivity_msg(key, now)]
         INV.spend(self.p, {loot: price}, reason='buy_SPECIAL', detail='skylab_robot')
         with self.p.lock:
@@ -534,6 +535,7 @@ class Skylab:
                 self.st['yedek'].setdefault(key, []).append(int(kind))
             self.p.dirty = True
         self.log('   Skylab: %s robotu (%s) alındı, etkin %d, depoda %d' % (key, cur, len(rs), len(self.st['yedek'].get(key, []))))
+        self.son_islem = ([], [self.robots_bought()])
         return self.out(key, 'purchase', [], [self.robots_bought()], [loot], now) + [self.productivity_msg(key, now)]
 
     # ------------------------------------------------------------ istekler
@@ -565,6 +567,7 @@ class Skylab:
         else:
             self.log('   Skylab: bilinmeyen işlem %r' % sub)
             err, ok = [], []
+        self.son_islem = (err, ok)          # panelin Skylab sayfası (panel_kanali.py): hata mı başarı mı
         if err:
             self.log('   Skylab: %s %s -> hata %s' % (sub, key, err))
         after = (INV.count(self.p, 'currency_credits'), INV.count(self.p, 'currency_uridium'))
