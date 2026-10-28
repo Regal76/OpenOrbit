@@ -922,18 +922,12 @@ def mac_shortcut(script):
 
 
 def _mac_icon(out):
-    """Panelin simgesi (arayuz/simge.svg) -> .icns; olmazsa None (uygulama genel simgeyle açılır)."""
+    """Panelin simgesi (arayuz/simge.png, 512x512) -> .icns; olmazsa None (uygulama genel simgeyle açılır)."""
     import tempfile
     try:
         with tempfile.TemporaryDirectory() as tmp:
-            with open(os.path.join(ARAYUZ, 'simge.svg'), encoding='utf8') as fh:
-                svg = fh.read().replace('<svg ', '<svg width="1024" height="1024" ', 1)
-            big, iconset = os.path.join(tmp, 'b.png'), os.path.join(tmp, 'OpenOrbit.iconset')
-            with open(os.path.join(tmp, 'b.svg'), 'w', encoding='utf8') as fh:
-                fh.write(svg)
+            big, iconset = os.path.join(ARAYUZ, 'simge.png'), os.path.join(tmp, 'OpenOrbit.iconset')
             run = lambda *a: subprocess.run(list(a), capture_output=True, timeout=30).returncode == 0
-            if not run('sips', '-s', 'format', 'png', os.path.join(tmp, 'b.svg'), '--out', big):
-                return None
             os.makedirs(iconset)
             for n in (16, 32, 128, 256, 512):
                 for k, suffix in ((1, ''), (2, '@2x')):
@@ -951,7 +945,7 @@ def unix_shortcut():
     if sys.platform == 'darwin':
         return mac_shortcut(script)
     text = ('[Desktop Entry]\nType=Application\nName=OpenOrbit\nComment=%s\nExec="%s" "%s"\nPath=%s\nIcon=%s\nTerminal=false\n'
-            'Categories=Game;\n' % (_('OpenOrbit yerel sunucu paneli'), sys.executable, script, ROOT, os.path.join(ARAYUZ, 'simge.svg')))
+            'Categories=Game;\n' % (_('OpenOrbit yerel sunucu paneli'), sys.executable, script, ROOT, os.path.join(ARAYUZ, 'simge.png')))
     menu = os.path.join(os.path.expanduser('~'), '.local', 'share', 'applications')
     os.makedirs(menu, exist_ok=True)
     for d in (menu, desktop_dir()):
@@ -972,8 +966,7 @@ def create_shortcut():
     if not os.path.isfile(target):
         target = sys.executable
     script = os.path.join(ROOT, 'OpenOrbit Panel.pyw')
-    folder = client_folder()
-    icon = os.path.join(folder, 'DarkOrbit.exe') if folder and os.path.isfile(os.path.join(folder, 'DarkOrbit.exe')) else target
+    icon = os.path.join(ARAYUZ, 'simge.ico')
     lnk = os.path.join(desktop_dir(), KISAYOL)
     ps = ("$s=(New-Object -ComObject WScript.Shell).CreateShortcut($env:DO_KISAYOL); $s.TargetPath=$env:DO_HEDEF; "
           "$s.Arguments=('\"'+$env:DO_BETIK+'\"'); $s.WorkingDirectory=$env:DO_KOK; $s.IconLocation=($env:DO_SIMGE+',0'); "
@@ -1452,7 +1445,7 @@ def h_post(path, b):
 
 
 TYPES = {'.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'application/javascript; charset=utf-8',
-         '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.woff2': 'font/woff2'}
+         '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.webp': 'image/webp', '.woff2': 'font/woff2'}
 
 
 class Handler(BaseHTTPRequestHandler):

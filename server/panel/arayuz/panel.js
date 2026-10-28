@@ -100,7 +100,8 @@ const btn = (label, onclick, cls = '', ic = null, props = {}) =>
   h('button', Object.assign({ class: 'btn ' + cls, onclick, type: 'button' }, props), ic ? icon(ic) : null, label ? h('span', null, label) : null);
 const badge = (text, cls = '') => h('span', { class: 'badge ' + cls }, text);
 const dot = cls => h('span', { class: 'dot ' + (cls || '') });
-const N = s => s;      // çevrilecek metin işareti: değişkende durur, T() ile gösterilir (test_panel_dil.py toplar)
+const art = (name, cls = 'art') => h('img', { class: cls, src: 'gorsel/' + name + '.webp', alt: '' });   // arayuz/gorsel/ (Orders.md)
+const N = s => s;     // çevrilecek metin işareti: değişkende durur, T() ile gösterilir (test_panel_dil.py toplar)
 const field = (label, ...ctl) => h('div', { class: 'field' }, h('label', null, label), ...ctl);
 
 // ------------------------------------------------------------------ biçimler
@@ -227,7 +228,7 @@ function buildNav() {
 function go(id, push = true) {
   if (!PAGES.find(p => p.id === id)) id = 'oyna';
   S.timers.forEach(clearInterval); S.timers = [];
-  S.page = id; S.sig = {};
+  S.page = id; S.sig = {}; document.body.dataset.page = id;      // sayfa başlığının sahnesi (panel.css .topbar)
   if (push && location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('active', b.dataset.page === id));
   const p = PAGES.find(x => x.id === id);
@@ -317,7 +318,7 @@ function renderOynaBody() {
     left = h('div', null,
       h('div', { class: 'row', style: { gap: '8px' } }, h('span', { class: 'slot-name' }, a.ad),
         btn(T('Değiştir'), ev => switchSaveMenu(ev.currentTarget), 'ghost sm', 'refresh')),
-      h('div', { class: 'pilot' }, a.pilot, badge(a.firma, firmaCls(a.firma)), a.klan ? badge('[' + a.klan + ']', 'info') : null),
+      h('div', { class: 'pilot' }, firmaCls(a.firma) ? art('firma_' + firmaCls(a.firma), 'crest-sm') : null, a.pilot, badge(a.firma, firmaCls(a.firma)), a.klan ? badge('[' + a.klan + ']', 'info') : null),
       h('div', { class: 'meta' },
         [[T('Seviye'), a.seviye], [T('Gemi'), a.gemi], [T('Harita'), a.harita], [T('Oynama'), fmtDur(a.oynama_sn)],
           [T('Son oynama'), fmtWhen(a.son_oynama || a.son_kayit)]].map(([k, v]) => h('span', null, k + ' ', h('b', null, v)))),
@@ -483,7 +484,7 @@ function liveCard() {
       h('div', { class: 'stack', style: { gap: '10px' } }, meter(T('Can'), g.can, g.can_azami, 'hp'), meter(T('Kalkan'), g.kalkan, g.kalkan_azami, 'sh'), meter(T('Kargo'), g.kargo, g.kargo_azami, 'cg')),
       h('div', { class: 'kv one' }, facts.map(([a, b]) => h('div', null, h('span', { class: 'muted' }, a), h('b', null, b)))),
       h('div', null, h('div', { class: 'stats', style: { marginTop: 0, gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' } },
-        [[T('Seviye'), p.seviye, ''], [T('Kredi'), p.kredi, 'cr'], [T('Uridyum'), p.uridyum, 'ur'], [T('Onur'), p.onur, 'hn']].map(([a, v, c]) =>
+        [[T('Seviye'), p.seviye, 'lv'], [T('Kredi'), p.kredi, 'cr'], [T('Uridyum'), p.uridyum, 'ur'], [T('Onur'), p.onur, 'hn']].map(([a, v, c]) =>
           h('div', { class: 'stat' }, h('div', { class: 'k' }, a), h('div', { class: 'v ' + c }, fmtN(v))))),
         d.etkinlik_adlari && d.etkinlik_adlari.length ? h('div', { class: 'chips', style: { marginTop: '10px' } }, d.etkinlik_adlari.map(n => h('span', { class: 'chip' }, n))) : null)));
 }
@@ -740,7 +741,7 @@ async function renderKayitlar() {
         }, 'danger sm', 'trash')) : null)] : [];
   $('#content').replaceChildren(h('div', { class: 'stack' }, tools,
     cards.length ? h('div', { class: 'grid gauto' }, cards) :
-      h('div', { class: 'card empty' }, icon('save'), h('h3', null, T('Henüz kayıt yok')), h('div', null, T('Yeni bir kayıt oluştur ya da bir yedeği içe aktar.'))),
+      h('div', { class: 'card empty' }, art('bos_kayit'), h('h3', null, T('Henüz kayıt yok')), h('div', null, T('Yeni bir kayıt oluştur ya da bir yedeği içe aktar.'))),
     ...trash));
 }
 
@@ -795,7 +796,7 @@ function pilotForm({ start = true } = {}) {
   const cards = FIRMS.map(([id, k, n, c, m]) => {
     const el = h('div', { class: 'radio-card' + (id === st.firma ? ' on' : ''), style: { '--c': c }, onclick: () => {
       st.firma = id; el.parentNode.querySelectorAll('.radio-card').forEach(x => x.classList.remove('on')); el.classList.add('on');
-    } }, h('b', null, k), h('span', null, n), h('span', null, T('Başlangıç: {0}', m)));
+    } }, art('firma_' + k.toLowerCase(), 'crest'), h('b', null, k), h('span', null, n), h('span', null, T('Başlangıç: {0}', m)));
     return el;
   });
   const el = [field(T('Pilot adı (oyunda görünür)'), pilot), field(T('Firma'), h('div', { class: 'radio-cards' }, cards)),
@@ -905,7 +906,7 @@ async function backupsModal(id) {
         h('label', { class: 'row' }, T('Oyun sırasında her'), iv, T('dakikada (0: kapalı)'))),
       rows.length ? h('div', { class: 'table-wrap' }, h('table', { class: 'table' },
         h('thead', null, h('tr', null, [[N('Zaman'), ''], [N('Tür'), ''], [N('Pilot'), ''], [N('Kredi'), 'num'], [N('Uridyum'), 'num'], [N('Not'), ''], ['', '']].map(([x, c]) => h('th', { class: c }, x ? T(x) : '')))),
-        h('tbody', null, rows))) : h('div', { class: 'empty' }, icon('clock'), h('div', null, T('Bu kaydın yedeği yok.'))),
+        h('tbody', null, rows))) : h('div', { class: 'empty' }, art('bos_kayit'), h('div', null, T('Bu kaydın yedeği yok.'))),
       h('div', { class: 'small dim' }, T('Elle alınan yedekler kendiliğinden silinmez. Otomatik yedeklerin en yeni {0} tanesi kalır.', cfg.yedek_sayisi))];
     if (m) { m.box.querySelector('.body').replaceChildren(...body.filter(Boolean)); }
     else m = modal({ title: T('Yedekler — {0}', k.ad), sub: `${k.pilot} · ${k.firma} · ${T('Seviye')} ${k.seviye}`, wide: true, body, foot: [btn(T('Kapat'), () => m.close(), '')],
@@ -1264,7 +1265,7 @@ function tkvGantt(rows) {
   };
   return h('div', { class: 'card tk-gantt-card' }, rows.length ? h('div', { class: 'tk-gantt' },
     h('div', { class: 'tk-row head' }, h('div', { class: 'tk-name muted small' }, T('{0} etkinlik', rows.length)), h('div', { class: 'tk-track ticks', style: { '--cols': cols } }, ticks)),
-    rows.map(evRow)) : h('p', { class: 'desc' }, T('Bu aralıkta gösterilecek etkinlik yok.')));
+    rows.map(evRow)) : h('div', { class: 'empty' }, art('bos_etkinlik'), h('div', null, T('Bu aralıkta gösterilecek etkinlik yok.'))));
 }
 
 // ---- günlük: seçili günün ayrıntılı listesi (bütün gün sürenler, saatli aralıklar ve seanslar sırayla)
@@ -1809,7 +1810,7 @@ async function renderPanel() {
         h('p', { class: 'desc' }, T('Panel ve panelin açtığı sunucular kapanır. Oyun açıksa önce oyunu kapat.')),
         btn(T('Paneli kapat'), async () => {
           if (await confirmBox(T('Panel kapatılsın mı?'), T('Panel ve açtığı sunucular kapanır.'), { ok: T('Kapat'), danger: true }))
-            act(() => api('/api/kapat', {})).then(x => { if (x) { setTimeout(() => window.close(), 400); document.body.replaceChildren(h('div', { class: 'empty', style: { paddingTop: '30vh' } }, h('h3', null, T('Panel kapandı')), h('div', null, T('Bu pencereyi kapatabilirsin.')))); } });
+            act(() => api('/api/kapat', {})).then(x => { if (x) { setTimeout(() => window.close(), 400); document.body.replaceChildren(h('div', { class: 'empty', style: { paddingTop: '26vh' } }, art('baglanti_yok'), h('h3', null, T('Panel kapandı')), h('div', null, T('Bu pencereyi kapatabilirsin.')))); } });
         }, 'danger', 'power'))),
     h('div', { class: 'card' }, h('h2', null, icon('folder'), T('Klasörler')),
       pathRow(T('Proje'), r.kok, 'proje'), pathRow(T('Kayıt yuvaları'), r.kayitlar, 'kayitlar'), pathRow(T('Günlükler'), r.gunlukler, 'gunlukler'),
@@ -1864,9 +1865,10 @@ async function drawWizard() {
     WZ.step > 0 ? btn(T('Geri'), () => wzGo(WZ.step - 1), '', 'arrowL') : null,
     p.extra || null, nextBtn);
   root.replaceChildren(h('div', { class: 'wz-box' },
-    h('div', { class: 'wz-head' }, h('img', { src: 'simge.svg', alt: '' }),
+    h('div', { class: 'wz-head' }, h('img', { src: 'gorsel/amblem.webp', alt: '' }),
       h('div', null, h('div', { class: 'wz-brand' }, 'OPENORBIT'), h('div', { class: 'wz-kicker' }, WZ.step === 0 ? 'Kurulum · Setup' : T('Kurulum'))), steps),
-    h('div', { class: 'wz-body' }, h('h2', null, p.title), p.sub ? h('div', { class: 'wz-sub' }, p.sub) : null, p.content),
+    h('div', { class: 'wz-body' }, h('div', { class: 'wz-main' }, h('h2', null, p.title), p.sub ? h('div', { class: 'wz-sub' }, p.sub) : null, p.content),
+      art('dron_' + id, 'wz-art')),
     foot));
   if (p.after) p.after();
   const f = root.querySelector('.wz-body input:not([type=checkbox])'); if (f) f.focus();
