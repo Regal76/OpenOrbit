@@ -46,6 +46,7 @@ class CbsRockets(unittest.TestCase):
         self.w.rocket({'targetId': self.uid})
 
     def launcher(self, ammo='ammunition_rocketlauncher_hstrm-01'):
+        self.now += 5.0
         self.p.d['fircatici_dolu'] = [ammo, 5]
         self.w.items.launcher_fire(self.now)
 
@@ -69,15 +70,20 @@ class CbsRockets(unittest.TestCase):
         self.assertEqual(len(salvos), 1)
         self.assertEqual((salvos[0]['targetId'], salvos[0]['currentLoad']), (self.uid, 5))
         self.assertEqual(self.p.d['fircatici_dolu'][1], 0)
-        self.assertAlmostEqual(self.w.timers[0][0] - time.time(), 1.7, delta=.1)
+        self.assertEqual(len(self.w.timers), 5)
+        self.assertAlmostEqual(self.w.timers[0][0] - time.time(), 1.0, delta=.1)
         self.assertEqual(self.m['can'] + self.m['kalkan'], 105000)
         self.land()
         self.assertEqual(self.m['can'] + self.m['kalkan'], 85000)
 
     def test_all_launcher_ammo_preserves_its_native_type_and_damage(self):
+        # With salvo split into per-rocket impacts (commit 99a74b0), on a 5000-shield
+        # module CBR and PIR-100 drain part of the shield on rocket 0 and the rest of the
+        # shield is absorbed by rocket 0's normal damage, leaving 0 shield for subsequent
+        # rockets' shield-drain to consume.
         for suffix, expected_loss in [('hstrm-01', 20000), ('ubr-100', 37500), ('eco-10', 10000),
-                                      ('sar-01', 5000), ('sar-02', 5000), ('cbr', 20000),
-                                      ('bdr1212', 20000), ('pir-100', 22500), ('obr-100', 30000)]:
+                                      ('sar-01', 5000), ('sar-02', 5000), ('cbr', 18000),
+                                      ('bdr1212', 20000), ('pir-100', 20000), ('obr-100', 30000)]:
             with self.subTest(ammo=suffix):
                 self.m.update(can=100000, kalkan=5000)
                 self.sent.clear()
@@ -98,7 +104,7 @@ class CbsRockets(unittest.TestCase):
     def test_shield_drain_heals_only_actual_remaining_shield(self):
         self.p.d['gemi'].update(shield=100, shieldMax=20000)
         self.launcher('ammunition_rocketlauncher_sar-02')
-        self.assertEqual(len(self.w.timers), 1)
+        self.assertEqual(len(self.w.timers), 5)
         self.land()
         self.assertEqual((self.m['can'], self.m['kalkan']), (100000, 0))
         self.assertEqual(self.p.d['gemi']['shield'], 5100)

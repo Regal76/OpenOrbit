@@ -89,19 +89,24 @@ class HellstormAnimation(unittest.TestCase):
                  patch.object(w.abilities, 'reveal'), patch.object(w.items, 'reveal'), \
                  patch.object(w.items, 'status', return_value=[]), patch.object(p, 'ship_row', return_value={}), \
                  patch('savas_esya.random.random', return_value=0.5), patch.object(w, 'hit_npc') as hit:
-                for ammo, cfg in SE.LAUNCHER_AMMO.items():
+                for idx, (ammo, cfg) in enumerate(SE.LAUNCHER_AMMO.items()):
                     with self.subTest(ammo=ammo):
                         sent.clear()
                         delayed.clear()
                         p.d['fircatici_dolu'] = [ammo, 5]
-                        w.items.launcher_fire(100)
+                        w.items.launcher_cd = 0.0
+                        w.items.launcher_fire(100 + idx * 5)
                         salvos = [fields for name, fields in sent if name == 'HellstormAttackCommand']
                         self.assertEqual(len(salvos), 1)
                         self.assertEqual(salvos[0]['currentLoad'], 5)
                         self.assertEqual(salvos[0]['rocketType']['typeValue'], cfg['tur'])
                         self.assertEqual(p.d['fircatici_dolu'], [ammo, 0])
-                        self.assertEqual(len(delayed), 1)
-                        self.assertAlmostEqual(delayed[0][0], 2.0)  # 650/500 + 0.3 + 4*0.5/5
+                        self.assertEqual(len(delayed), 5)
+                        first_delay = delayed[0][0]
+                        self.assertGreaterEqual(first_delay, SE.FIRCATICI_ILK[0])
+                        self.assertLessEqual(first_delay, SE.FIRCATICI_ILK[1])
+                        for i in range(1, 5):
+                            self.assertAlmostEqual(delayed[i][0], first_delay + i * SE.FIRCATICI_ARALIK)
                         hit.assert_not_called()
 
 

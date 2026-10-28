@@ -45,7 +45,7 @@ class MineMechanics(unittest.TestCase):
         p = Profil(path=str(Path(self.tmp.name) / ('%d.json' % uid)))
         p.d['gemi'].update(hitPoints=100000, hitMax=100000, shield=200000, shieldMax=200000, nanoHull=0)
         p.d['kalkan_emme'] = 0.8
-        for loot in SE.MINES:
+        for loot in SE.PLAYER_MINES:
             p.d.setdefault('cephane', {})[loot] = 10
         w = SimpleNamespace(p=p, hid=uid, hero_dead=False, jumping=False, running=True, map_id='3', ortak=None)
         w.pos, w.sent, w.npcs, w.invulnerable = (1000, 1000), [], {}, False
@@ -572,7 +572,7 @@ class MineReplay(unittest.TestCase):
     def test_replay_uses_placement_skill_visual_after_owner_resets_bio(self):
         self.owner.p.d['cephane'][SLM] = 1
         self.owner.p.d['konum'].update(x=9000, y=9000)
-        self.owner.hero.go(9000, 9000, 0, self.now)
+        self.owner.hero = Mover(9000, 9000)
         self.owner.p.d['yetenekler'] = {'seviye': {'1': 5, '5b': 3}}
         self.owner.items.place_mine(SLM, self.now)
         placed = [fields for name, fields in self.owner_sent if name == 'AddMineCommand'][-1]

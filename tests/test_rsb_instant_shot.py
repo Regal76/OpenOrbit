@@ -64,7 +64,7 @@ class InstantSlowAmmoShot(unittest.TestCase):
         self.select(RSB)
         self.sent.clear()
         now = time.time()
-        self.w.step(now + 0.5)                   # half an interval later: no salvo
+        self.w.step(now + 0.2)                   # before the next pulse volley: no salvo
         self.assertEqual(self.shots(), [])
         self.select(RSB)                         # RSB is cooling down: selecting it again does not fire
         self.assertEqual(self.shots(), [])
