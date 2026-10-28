@@ -669,8 +669,7 @@
       "olasilik": 0.05
      }
     ]
-   },
-   "grup_araligi_sn": 10
+   }
   },
   "beta": {
    "kimlik": 2,
@@ -1340,8 +1339,7 @@
       "olasilik": 0.05
      }
     ]
-   },
-   "grup_araligi_sn": 10
+   }
   },
   "gamma": {
    "kimlik": 3,
@@ -2011,8 +2009,7 @@
       "olasilik": 0.1
      }
     ]
-   },
-   "grup_araligi_sn": 10
+   }
   },
   "delta": {
    "kimlik": 4,
@@ -10294,12 +10291,15 @@
   80000
  ],
  "dalga_molasi_sn": 30,
- "alt_dalga_bekleme_sn": 3,
  "giris_bekleme_sn": 6,
  "halka_bekleme_sn": 3,
  "dogma_uzaklik": [
-  1100,
-  1500
+  1500,
+  2000
+ ],
+ "dogma_araligi_sn": [
+  1,
+  2
  ],
  "grup_yaricap": [
   200,
@@ -10488,16 +10488,13 @@
  },
  "_schism": "Giriş bayrağı AllGatesSchism (gerçek trafikte süresiz açık; istemci haberi \"guaranteed rewards for all GGs (Schism)\"): her tamamlamada aralıktan Schism (wiki Booty günü miktarları); Delta, Kronos ve Kuiper'in sabit Schism'inin yerine (üstüne mi yerine mi doğrulanmadı).",
  "geri_sayim": [
-  30,
-  20,
-  10,
   5,
   4,
   3,
   2,
   1
  ],
- "_mesajlar": "Kapı haritasındaki ekran mesajları (istemcinin MessageCommand komutu: buyuk = büyük bildirim + günlük, kisa = üstte kısa mesaj). İstemci İngilizce olduğu için İngilizce; \"key:\" ile başlayanlar istemcinin kendi çeviri metni (log_galaxygate_wave_name: \"%NAME% - Wave %WAVE%\"). {kapi} kapı adı, {dalga} dalga numarası, {toplam} dalga sayısı, {sn} saniye, {grup}/{gruplar} alt dalga, {kalan} kalan uzaylı, {ad} uzaylı adı, {sk} Kronos parçası tekil/çoğul (s/p; adedi %COUNT%). \"kalan\" yalnız grupta 3 ve daha az uzaylı kalınca. Giriş ve devamın ardından kalan can istemcinin lifes_left metniyle (kapi.py). Süreli gruplu kapıda (grup_araligi_sn: Alpha, Beta, Gamma) \"grup_geldi\" her yeni grupta, \"grup_bitti\" yalnız doğanların hepsi ölünce, \"dalga_kalan\" bütün gruplar doğduktan sonra.",
+ "_mesajlar": "Kapı haritasındaki ekran mesajları (istemcinin MessageCommand komutu: buyuk = büyük bildirim + günlük, kisa = üstte kısa mesaj). İstemci İngilizce olduğu için İngilizce; \"key:\" ile başlayanlar istemcinin kendi çeviri metni. {kapi} kapı adı, {dalga} dalga numarası, {toplam} dalga sayısı, {sn} saniye, {gruplar} alt dalga, {kalan} kalan uzaylı, {ad} uzaylı adı, {sk} Kronos parçası tekil/çoğul (s/p; adedi %COUNT%). Geri sayım ve dalga başı gerçek oyunun görüntüsünden (kullanıcı, 2026-10-28): \"-=- 1 -=-\", \"-=- 0 -=-\", kalan can (istemcinin lifes_left metni, kapi.py), \"Map Alpha - Wave 5\". \"dalga_kalan\" bütün uzaylılar doğduktan sonra 3 ve daha az kalınca; \"kalan\" kalkanlı patronun refakat grubunda.",
  "mesajlar": {
   "giris": {
    "kisa": "Galaxy Gate {kapi}: {toplam} attack waves."
@@ -10506,19 +10503,13 @@
    "kisa": "Welcome back! The gate continues from wave {dalga}/{toplam}."
   },
   "geri_sayim": {
-   "kisa": "Attack wave {dalga} begins in {sn} seconds"
+   "kisa": "-=- {sn} -=-"
   },
   "dalga_basladi": {
-   "buyuk": "key:log_galaxygate_wave_name"
-  },
-  "grup_bitti": {
-   "kisa": "Group {grup}/{gruplar} destroyed. Next group in {sn} seconds"
+   "kisa": "Map {kapi} - Wave {dalga}"
   },
   "kalan": {
    "kisa": "Aliens left in this group: {kalan}"
-  },
-  "grup_geldi": {
-   "kisa": "Group {grup}/{gruplar} is coming!"
   },
   "dalga_kalan": {
    "kisa": "Aliens left in this wave: {kalan}"

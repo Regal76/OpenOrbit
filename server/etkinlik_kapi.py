@@ -480,16 +480,15 @@ class Kosu(KAPI.Kosu):
         return len(self.k.order(self.key))
 
     def say(self, event, **extra):
-        """kapi.Kosu.say, dalga sayısı seçilen sırayla (giriş ve devamda kalan can: lifes_left)."""
+        """kapi.Kosu.say, dalga sayısı seçilen sırayla."""
         G = self.k.gate(self.key)
         n = min(G['dalga'], self.wave_count() - 1)
         vals = dict(kapi=self.g['ad'], dalga=n + 1, toplam=self.wave_count(), can=G['can'], anahtar=self.key,
                     gruplar=len(self.wave()['gruplar']), sure='')
         vals.update(extra)
         m = self.messages().get(event, {})
-        out = [KAPI.screen(m[kind].format(**vals), big=kind == 'buyuk', NAME=self.g['ad'], WAVE='%d/%d' % (vals['dalga'], vals['toplam']))
-               for kind in ('buyuk', 'kisa') if kind in m]
-        return out + ([KAPI.stm('lifes_left', '%!', vals['can'])] if event in ('giris', 'devam') else [])
+        return [KAPI.screen(m[kind].format(**vals), big=kind == 'buyuk', NAME=self.g['ad'], WAVE='%d/%d' % (vals['dalga'], vals['toplam']))
+                for kind in ('buyuk', 'kisa') if kind in m]
 
     def cur_map(self):
         return self.wave()['harita']
@@ -505,27 +504,22 @@ class Kosu(KAPI.Kosu):
     def sub_msgs(self):
         return []
 
-    def spawn(self):
-        """kapi.Kosu.spawn'ın etkinlik kapısı türleriyle (eg_*) olanı."""
+    def spawn_one(self, i, group, x, y):
+        """kapi.Kosu.spawn_one'ın etkinlik kapısı türleriyle (eg_*) olanı: kalıcı patron koruyucuları doğup ölmeden hasar almaz."""
         w, G = self.w, self.k.gate(self.key)
-        wave = self.wave()
-        idx = self.k.order(self.key)[G['dalga']]
-        counts = [(i, count if wave['uzaylilar'][i].get('kalici') else AY.adet('dalga_npc', count))   # panel: dalgalardaki uzaylı sayısı
-                  for i, count in wave['gruplar'][self.sub]]
-        hold = time.time() + KAPI.pace('halka_bekleme_sn')
-        for i, x, y in KAPI.ring(*w.hero_pos(), counts, w.map_w, w.map_h):
-            a = wave['uzaylilar'][i]
-            n = w.spawn_npc_at(npc_type(self.key, idx, i), x, y, dalga=True)
-            n.gate, n.hunt = True, True
-            n.next_think = hold
-            self.npcs.add(n.id)
-            if a.get('kalici'):
-                self.keep.add(n.id)
-                n.invulnerable = lambda: any(j in self.w.npcs for j in self.guards)
-                self.boss = a['gorunen_ad']
-                w.send(self.say('koruma', ad=a['gorunen_ad']))
-            else:
-                self.guards.add(n.id)
+        a = self.wave()['uzaylilar'][i]
+        n = w.spawn_npc_at(npc_type(self.key, self.k.order(self.key)[G['dalga']], i), x, y, dalga=True)
+        n.gate, n.hunt = True, True
+        self.npcs.add(n.id)
+        group.add(n.id)
+        if a.get('kalici'):
+            self.keep.add(n.id)
+            n.invulnerable = lambda: bool(self.queue) or any(j in self.w.npcs for j in self.guards)
+            self.boss = a['gorunen_ad']
+            w.send(self.say('koruma', ad=a['gorunen_ad']))
+        else:
+            self.guards.add(n.id)
+        return n
 
     def wave_done(self, now):
         G = self.k.gate(self.key)

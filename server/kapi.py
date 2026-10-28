@@ -21,8 +21,10 @@ kurulu kapıya çekiliş de kabul edilir: her parça kopyadır (çarpan), öteki
 Prepare jump'ı açar ve istemci onu aldığı her bilgide "Kapı ALPHA inşaatı bitti" bildirimini açar (UIGalaxyGatesSystem.RefProgress);
 bildirim bir kez çıksın diye istemcide aynı bilgi varken pencerenin isteği yanıtsız kalır (info_request). Kapı hazırlanınca
 (PREPARE JUMP, portalı X-1'de) durum IN_PROGRESS gönderilir.
-Kapı haritası: ana dalgalar, her biri alt dalgalar ("gruplar"; alt dalga temizlenince sonraki). Alt dalganın uzaylıları
-oyuncunun çevresinde bir halkada doğar, bir an durup her biri kendi yönünden gelir. Ana dalgadan sonra ortada iki portal açılır
+Kapı haritası: ana dalgalar, her biri alt dalgalar ("gruplar": pencerenin dalga sayacının birimi). Dalga başlayınca bütün
+uzaylıları sıraya girer ve dogma_araligi_sn arayla tek tek, oyuncudan dogma_uzaklik ötede doğup üstüne gelir; hepsi ölünce dalga
+biter (kullanıcı bildirimi 2026-10-28: gerçek oyundaki gibi; halkayla toplu doğuş yığılma ve takılma yapıyordu). Kalkanlı patronun
+(Zeta Devourer) refakat grupları patronun çevresinde toplu doğar (boss_spawn). Ana dalgadan sonra ortada iki portal açılır
 (resmî kapı rehberi): solundaki sonraki dalgaya (aynı haritaya; girince geri sayımla başlar), sağındaki eve. Eve dönülürse
 ilerleme saklanır. Vurulunca üste tamir olunur, can 1 azalır; can kalmazsa kapı (parçalarıyla) kaybolur. Değerler
 data/kapilar.json (tools/kapilar.py).
@@ -159,6 +161,22 @@ def ring(hx, hy, groups, map_w, map_h, radius=None):
             y = min(max(cy + math.sin(a) * r, 300), map_h - 300)
             out.append((order[len(out)], x, y))
     return out
+
+
+def far_spot(hx, hy, map_w, map_h):
+    """Tek uzaylının doğma noktası: oyuncudan dogma_uzaklik ötede rastgele yönde; harita kenarında kısalan yönlerden kaçınır (hiçbiri
+    yetmezse en uzağı). Uzakta doğan uzaylı oyuncu öncekini keserken ancak yetişir."""
+    best = None
+    for _ in range(12):
+        a, r = random.uniform(0, 2 * math.pi), random.uniform(*K['dogma_uzaklik'])
+        x = min(max(hx + math.cos(a) * r, 300), map_w - 300)
+        y = min(max(hy + math.sin(a) * r, 300), map_h - 300)
+        d = math.hypot(x - hx, y - hy)
+        if d >= K['dogma_uzaklik'][0]:
+            return x, y
+        if best is None or d > best[0]:
+            best = (d, x, y)
+    return best[1:]
 
 
 def center(map_id):
@@ -867,8 +885,9 @@ class Kosu:
         G = kapilar.gate(key)
         self.npcs = set()            # bu dalganın uzaylıları
         self.keep = set()            # kalıcı uzaylılar (Zeta Devourer): alt dalgalardan bağımsız
-        self.groups = []             # bu dalgada doğan grupların uzaylıları (süreli gruplar: timed_tick)
-        self.due = 0                 # süreli gruplarda sonraki grubun saati
+        self.groups = []             # dalganın gruplarının doğan uzaylıları (pencerenin sayacı: cleared_groups)
+        self.queue = []              # doğacak uzaylılar: (uzaylı sırası, grubu)
+        self.due = 0                 # sıradakinin doğma saati
         self.sub = 0
         self.counted = None          # son gönderilen geri sayım saniyesi
         self.left = None             # son bildirilen kalan uzaylı sayısı
@@ -896,8 +915,7 @@ class Kosu:
         return self.g['dalgalar'][min(G['dalga'], len(self.g['dalgalar']) - 1)]
 
     def say(self, event, wild=None, **extra):
-        """data/kapilar.json "mesajlar"daki olay -> ekran mesajları (büyük ve/veya kısa; wild: "key:" metnin öteki yer tutucuları);
-        giriş ve devamda kalan can istemcinin metniyle (lifes_left "%! lives left")."""
+        """data/kapilar.json "mesajlar"daki olay -> ekran mesajları (büyük ve/veya kısa; wild: "key:" metnin öteki yer tutucuları)."""
         G = self.k.gate(self.key)
         waves = self.g['dalgalar']
         n = min(G['dalga'], len(waves) - 1)
@@ -911,8 +929,6 @@ class Kosu:
                 text = m[kind].format(**vals)
                 out.append(screen(text, big=kind == 'buyuk', NAME=self.g['ad'], WAVE='%d/%d' % (vals['dalga'], vals['toplam']),
                                   **(wild or {})))
-        if event in ('giris', 'devam'):
-            out.append(stm('lifes_left', '%!', vals['can']))
         return out
 
     def messages(self):
@@ -942,38 +958,25 @@ class Kosu:
         return ('GalaxyGateBuilderGateWaveUpdateCommand', dict(gateId=self.g['kimlik'],
                                                                currWave=sub_waves(self.g, G['dalga']) + self.cleared))
 
-    def timed(self):
-        """Süreli gruplar (kapilar.json grup_araligi_sn: Alpha, Beta, Gamma): grubun saniyesi (panelin dalga_bekleme çarpanıyla) ya
-        da None (öteki kapılarda grup, önceki temizlenince gelir)."""
-        sn = self.g.get('grup_araligi_sn')
-        return int(round(sn * AY.carpan('dalga_bekleme'))) if sn else None
+    def pending(self, group):
+        """Grubun doğmamış uzaylısı var mı."""
+        return any(g is group for _, g in self.queue)
 
-    def timed_tick(self, now, alive):
-        """Süreli gruplu dalga: sonraki grup öncekiler yaşarken de süresi dolunca gelir (doğanların hepsi erken ölürse
-        alt_dalga_bekleme_sn sonra); bütün gruplar doğup hepsi ölünce dalga biter (kullanıcı bildirimi 2026-10-25: Gamma'da grup
-        ancak önceki bitince geliyordu). Pencerenin dalga sayacı uzaylısı kalmayan grupları sayar."""
-        w, total = self.w, len(self.wave()['gruplar'])
-        cleared = sum(1 for ids in self.groups if not any(i in w.npcs for i in ids))
-        if cleared != self.cleared:
-            self.cleared = cleared
-            msgs = self.sub_msgs()
-            if not alive and self.sub + 1 < total:
-                self.due = min(self.due, now + pace('alt_dalga_bekleme_sn'))
-                msgs += self.say('grup_bitti', grup=cleared, sn=int(math.ceil(self.due - now)))
-            w.send(msgs)
-        if self.sub + 1 < total:
-            if now >= self.due:
-                self.sub += 1
-                self.spawn()
-                self.left = None
-                w.send(self.say('grup_geldi', grup=self.sub + 1))
+    def cleared_groups(self):
+        """Pencerenin dalga sayacı: bütün uzaylıları doğup ölen grupların payı (group_weights)."""
+        w = self.w
+        return sum(n for group, n in zip(self.groups, group_weights(self.wave()))
+                   if not self.pending(group) and not any(i in w.npcs for i in group))
+
+    def trickle(self, now):
+        """Sıradaki uzaylı: süresi geldiyse oyuncudan uzakta doğar (far_spot); sonraki dogma_araligi_sn sonra (panelin dalga_bekleme
+        çarpanıyla)."""
+        if not self.queue or now < self.due:
             return
-        if alive:
-            if alive <= 3 and alive != self.left:
-                self.left = alive
-                w.send(self.say('dalga_kalan', kalan=alive))
-            return
-        self.wave_done(now)
+        i, group = self.queue.pop(0)
+        self.due = now + random.uniform(*K['dogma_araligi_sn']) * AY.carpan('dalga_bekleme')
+        w = self.w
+        self.spawn_one(i, group, *far_spot(*w.hero_pos(), w.map_w, w.map_h))
 
     def tick(self, now):
         w, G = self.w, self.k.gate(self.key)
@@ -983,31 +986,27 @@ class Kosu:
             if self.boss_wave():
                 self.boss_tick(now)
                 return
-            for nid, ids in list(self.korunan.items()):  # korunanın refakati bitti: Insta-Shield iner
-                if not any(j in w.npcs for j in ids):
+            for nid, guarded in list(self.korunan.items()):  # korunanın refakati bitti: Insta-Shield iner
+                if not guarded():
                     del self.korunan[nid]
                     if nid in w.npcs:
                         w.send(self.shield(w.npcs[nid], False))
+            self.trickle(now)
             alive = sum(1 for i in self.npcs - self.keep if i in w.npcs)
-            if self.timed():
-                self.timed_tick(now, alive)
-                return
-            if alive:
-                if alive <= 3 and alive != self.left:
+            cleared = self.cleared_groups()
+            if cleared != self.cleared:
+                self.cleared = cleared
+                w.send(self.sub_msgs())
+            if self.queue or alive:
+                if not self.queue and alive <= 3 and alive != self.left:
                     self.left = alive
-                    w.send(self.say('kalan', kalan=alive))
-                return
-            self.cleared = sum(group_weights(self.wave())[:self.sub + 1])
-            if self.sub + 1 < len(self.wave()['gruplar']):
-                self.sub += 1
-                self.phase, self.t = 'next', now + pace('alt_dalga_bekleme_sn')
-                w.send(self.sub_msgs() + self.say('grup_bitti', grup=self.sub, sn=pace('alt_dalga_bekleme_sn')))
+                    w.send(self.say('dalga_kalan', kalan=alive))
                 return
             boss = [w.npcs[i] for i in self.keep if i in w.npcs]
             if boss:
                 if not self.exposed:              # diğerleri bitti: kalıcı uzaylı artık hasar alır
                     self.exposed = True
-                    w.send(self.sub_msgs() + self.say('koruma_bitti', ad=self.boss))
+                    w.send(self.say('koruma_bitti', ad=self.boss))
                 return
             self.wave_done(now)
             return
@@ -1017,16 +1016,19 @@ class Kosu:
             return
         if self.phase in ('intro', 'break'):
             self.sub, self.counted, self.exposed, self.cleared, self.groups = 0, None, False, 0, []
-            self.guarding, self.next_group, self.korunan = False, 0, {}
+            self.guarding, self.next_group, self.korunan, self.queue, self.due = False, 0, {}, [], 0
             self.npcs.clear()
             self.keep.clear()
             w.remove_gate(self.k.exit_portal(self.key, self.map)['gateId'])
-            msgs = self.wave_msgs() + [legacy('0|A|STM|atk_wave_started|%%COUNT%%|%d' % (G['dalga'] + 1))] + self.say('dalga_basladi')
+            # geri sayımın sonu, kalan can (istemcinin lifes_left "%! lives left"), dalganın adı (kullanıcının gerçek oyun görüntüsü)
+            msgs = (self.wave_msgs() + [legacy('0|A|STM|atk_wave_started|%%COUNT%%|%d' % (G['dalga'] + 1))] + self.say('geri_sayim', sn=0)
+                    + [stm('lifes_left', '%!', G['can'])] + self.say('dalga_basladi'))
             if G['dalga'] == self.wave_count() - 1:
                 msgs += self.say('son_dalga')
             w.send(msgs)
             w.log('   %s kapısı: dalga %s başladı' % (self.g['ad'], self.wave()['ad']))
         self.spawn()
+        self.trickle(now)                                            # ilki hemen
         if self.phase == 'fight' and G['dalga'] == self.wave_count() - 1 and self.sub == 0 and not getattr(self, 'filmed', False):
             self.filmed = True                                       # son dalga: kamera patrona (Ö2 sinematik giriş)
             boss = next((w.npcs[i] for i in list(self.keep) + list(self.npcs) if i in w.npcs), None)
@@ -1035,61 +1037,82 @@ class Kosu:
         self.left = None
         self.phase = 'fight'
 
-    def spawn(self):
-        """Alt dalga: "gruplar"daki [uzaylı, adet] kümeleri oyuncunun çevresinde bir halkada (ring); halka_bekleme_sn durur, sonra
-        her biri kendi yönünden oyuncunun peşine düşer (hepsi saldırgan). Kalıcı uzaylı (Zeta Devourer) diğerleri yaşadıkça hasar
-        almaz; "oyuncu" görünümlü uzaylı (Kronos Evil You) oyuncunun gemisiyle gelir."""
-        w, G = self.w, self.k.gate(self.key)
-        wave = self.wave()
-        counts = []
-        for i, count in wave['gruplar'][self.sub]:
+    def counts(self, wave, grp):
+        """Grubun [uzaylı, adet]'leri: panelin dalga_npc çarpanıyla (kalıcı patron bir tane); Kronos'ta Evil Iris oyuncunun Iris dronu
+        kadar (wikiwiki.jp Kronos Gate; dronu yoksa wiki'nin 8'i)."""
+        out = []
+        for i, count in grp:
             a = wave['uzaylilar'][i]
             if a['ad'] == 'Evil Iris':
-                # Kronos: oyuncunun Iris dronu kadar Evil Iris (wikiwiki.jp Kronos Gate; dronu yoksa wiki'nin 8'i)
                 iris = sum(1 for d in self.k.p.d.get('dronlar', []) if d.get('lootId') == 'drone_iris')
                 count = min(iris, count) if iris else count
             if not a.get('kalici'):
-                count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyan patron bir tane)
-            counts.append((i, count))
+                count = AY.adet('dalga_npc', count)
+            out.append((i, count))
+        return out
+
+    def spawn(self):
+        """Dalga başladı: bütün grupların uzaylıları sıraya (trickle tek tek doğurur); kalıcı patron önce, grupta korunan önce
+        (refakati arkasından gelir), türler grup içinde karışık. Kalkanlı patronlu dalga (Zeta Devourer) gruplarla: boss_spawn."""
+        if self.boss_wave():
+            self.boss_spawn()
+            return
+        wave = self.wave()
+        first, rest = [], []
+        for grp in wave['gruplar']:
+            group = set()
+            self.groups.append(group)
+            order = sorted(((not wave['uzaylilar'][i].get('korunan'), (j + 0.5) / n), i)
+                           for i, n in self.counts(wave, grp) for j in range(n))
+            for _, i in order:
+                (first if wave['uzaylilar'][i].get('kalici') else rest).append((i, group))
+        self.queue, self.due = first + rest, 0
+
+    def spawn_one(self, i, group, x, y):
+        """Sıradaki uzaylı (x, y)'de doğar ve oyuncunun peşine düşer. Kalıcı uzaylı diğerleri doğup ölmeden hasar almaz; korunan
+        (Delta) grubunun ötekileri doğup ölmeden Insta-Shield'lı (forum 127543); "oyuncu" görünümlü (Kronos Evil You) oyuncunun
+        gemisiyle gelir."""
+        w, G = self.w, self.k.gate(self.key)
+        a = self.wave()['uzaylilar'][i]
+        model = self.k.p.ship_look() if a['tur'] == 'oyuncu' else None
+        n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, model=model, dalga=True)
+        n.gate, n.hunt = True, True
+        self.npcs.add(n.id)
+        group.add(n.id)
+        if a.get('kalici'):
+            self.keep.add(n.id)
+            n.invulnerable = lambda: bool(self.queue) or any(j in self.w.npcs for j in self.npcs - self.keep)
+            self.boss = a['ad']
+            w.send(self.say('koruma', ad=a['ad']))
+        elif a.get('korunan'):
+            guarded = lambda nid=n.id: self.pending(group) or any(j in self.w.npcs for j in group if j != nid)
+            if guarded():
+                n.invulnerable = guarded
+                self.korunan[n.id] = guarded
+                w.send(self.shield(n, True) + self.say('koruma', ad=a['ad']))
+        return n
+
+    def boss_spawn(self):
+        """Kalkanlı patronlu dalganın grubu (Zeta Devourer): patron dalganın başında oyuncunun çevresinde; refakat grubu patronun
+        çevresinde doğar (de.fandom Zeta Gate: Devourer "sendet"), grup yaşarken patronun Insta-Shield'ı açık (kullanıcı bildirimi
+        2026-10-25: gruplar oyuncunun çevresinde doğuyor, kalkan görünmüyordu); halka_bekleme_sn durup peşine düşerler."""
+        w, G = self.w, self.k.gate(self.key)
+        wave = self.wave()
+        counts = self.counts(wave, wave['gruplar'][self.sub])
         hold = time.time() + pace('halka_bekleme_sn')
         group = set()
         self.groups.append(group)
-        if self.timed():
-            self.due = time.time() + self.timed()        # sonraki grubun saati (timed_tick)
-        guarded = self.boss_wave()
         bosses = [(i, c) for i, c in counts if wave['uzaylilar'][i].get('kalici')]
         escort = [(i, c) for i, c in counts if not wave['uzaylilar'][i].get('kalici')]
-        if guarded:
-            spots = ring(*w.hero_pos(), bosses, w.map_w, w.map_h) if bosses else []
-        else:
-            spots = ring(*w.hero_pos(), counts, w.map_w, w.map_h)
-        prot = []
-        for i, x, y in spots:
-            a = wave['uzaylilar'][i]
-            model = self.k.p.ship_look() if a['tur'] == 'oyuncu' else None
-            n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, model=model, dalga=True)
+        for i, x, y in ring(*w.hero_pos(), bosses, w.map_w, w.map_h) if bosses else []:
+            n = w.spawn_npc_at(npc_type(self.key, G['dalga'], i), x, y, dalga=True)
             n.gate, n.hunt = True, True
-            n.next_think = hold                  # halkada bekler; sonra peşine düşer (dunya.think: hunt)
+            n.next_think = hold
             self.npcs.add(n.id)
             group.add(n.id)
-            if a.get('korunan'):
-                prot.append((n, a['ad']))
-            if a.get('kalici'):
-                self.keep.add(n.id)
-                n.invulnerable = (lambda: self.guarding) if guarded else \
-                    (lambda: any(j in self.w.npcs for j in self.npcs - self.keep))
-                self.boss = a['ad']
-                if not guarded:
-                    w.send(self.say('koruma', ad=a['ad']))
-        escorts = frozenset(group) - {n.id for n, _ in prot}
-        for n, ad in prot if escorts else []:          # Delta: grubun ötekileri yaşarken Insta-Shield'lı (forum 127543)
-            n.invulnerable = lambda ids=escorts: any(j in self.w.npcs for j in ids)
-            self.korunan[n.id] = escorts
-            w.send(self.shield(n, True) + self.say('koruma', ad=ad))
-        if not guarded:
-            return
-        # kalkanlı patron (Zeta Devourer): refakat grubu patronun çevresinde doğar (de.fandom Zeta Gate: Devourer "sendet"), grup
-        # yaşarken patronun Insta-Shield'ı açık (kullanıcı bildirimi 2026-10-25: gruplar oyuncunun çevresinde doğuyor, kalkan görünmüyordu)
+            self.keep.add(n.id)
+            n.invulnerable = lambda: self.guarding
+            self.boss = wave['uzaylilar'][i]['ad']
         boss = self.boss_npc()
         cx, cy = boss.mover.pos(time.time()) if boss else w.hero_pos()
         for i, x, y in ring(cx, cy, escort, w.map_w, w.map_h, radius=K['kalkan_dogma']):

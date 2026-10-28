@@ -24,6 +24,7 @@ public class Eklenti : BasePlugin
         Uygula("müzayede sayacı", () => Muzayede.Uygula(h));
         Uygula("rütbe penceresi", () => RutbePenceresi.Uygula(h));
         Uygula("mağaza tutarı", () => MagazaTutari.Uygula(h));
+        Uygula("otomatik pilot kaçışı", () => OtopilotKacisi.Uygula(h));
     }
 
     void Uygula(string ad, Action yama)
@@ -181,5 +182,38 @@ static class MagazaTutari
     {
         if (fiyatta)
             cost = Il2CppSystem.Decimal.Round(cost, 2, Il2CppSystem.MidpointRounding.AwayFromZero);
+    }
+}
+
+// Otomatik pilot kaçışı (Omega AutoTactic; kullanıcı bildirimi 2026-10-28: uzaylıdan hızlı gemi ateş edemeden sonsuza kaçıyordu):
+//   HangUpAI.ExecuteAttackAction hedef attackRange içindeyken ateş eder ve ardından UpdateCloseRangeEscapeMovement'ı çağırır. O, en
+//   yakın tehdit attackRange - 5'ten (birden çok tehditte + 45) yakınsa gemiyi tehditten (aralık - uzaklık) + 120 (çok tehditte 250)
+//   birim, en az o kadar en çok 650 uzağa kaçırır: kaçış her seferinde menzil + 115 / + 290'da biter, hedef menzil dışına düşer, kovalanır,
+//   yine yaklaşınca kaçılır. O1: kaçış hesaplanırken attackRange KACIS_PAYI düşük: kaçış ancak tehdit gerçekten yakınken başlar ve gemiyi
+//   menzil içinde (çok tehditte menzil - 10) bırakır; ateş ve kovalama kendi menzille (finalizer geri koyar).
+static class OtopilotKacisi
+{
+    const float KACIS_PAYI = 300f;      // 250 kaçış + 45 grup aralığı + 5 pay
+    static float menzil = -1f;
+
+    internal static void Uygula(Harmony h)
+    {
+        MethodBase hedef = AccessTools.Method(typeof(HangUpAI), nameof(HangUpAI.UpdateCloseRangeEscapeMovement));
+        Eklenti.Bul(hedef);
+        h.Patch(hedef, prefix: new HarmonyMethod(typeof(OtopilotKacisi), nameof(Once)),
+            finalizer: new HarmonyMethod(typeof(OtopilotKacisi), nameof(Son)));
+    }
+
+    static void Once(HangUpAI __instance)
+    {
+        menzil = __instance.attackRange;
+        __instance.attackRange = Math.Max(0f, menzil - KACIS_PAYI);
+    }
+
+    static void Son(HangUpAI __instance)
+    {
+        if (menzil >= 0f)
+            __instance.attackRange = menzil;
+        menzil = -1f;
     }
 }
