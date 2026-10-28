@@ -441,7 +441,8 @@ def warnings():
                                'kurar, eskisini siler.', sup, c['surum']))
         if STATE.get('istemci_eski') and dl['durum'] == 'hata':
             metin += ' ' + dl['hata']
-        out.append({'tur': 'hata', 'metin': metin, 'ilerleme': _dl_pct(dl) if run else None, 'sayfa': 'istemci',
+        out.append({'tur': 'hata', 'metin': metin, 'ilerleme': _dl_pct(dl) if run else None, 'indirme': dl if run else None,
+                    'sayfa': 'istemci',
                     'eylem': {'metin': _('Güncelle'), 'api': '/api/istemci/guncelle', 'calisiyor': run,
                               'calisiyor_metin': _('Güncelleniyor…')}})
     elif not c['uyumlu']:

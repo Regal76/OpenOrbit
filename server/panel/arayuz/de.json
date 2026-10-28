@@ -1287,6 +1287,7 @@
 "Panelin Wine'ı": "Wine des Panels",
 "Oyunu açacak Wine (macOS)": "Das Wine, das das Spiel öffnet (macOS)",
 "BepInEx kuruluyor": "BepInEx wird installiert",
+"İndirme sunucusu erişimi geçici olarak engelledi (HTTP %d). Birkaç dakika sonra sürdür: inen dosyalar korunur.": "Der Download-Server hat den Zugriff vorübergehend gesperrt (HTTP %d). Setze in ein paar Minuten fort: Heruntergeladene Dateien bleiben erhalten.",
 "Oyun %s sürümüne güncelleniyor: %%%d. Bitince eski sürüm silinir ve BepInEx yeniden kurulur.": "Spiel wird auf Version %s aktualisiert: %d%%. Danach wird die alte Version gelöscht und BepInEx neu installiert.",
 "DarkOrbit %s sürümü çıktı, istemcin %s: güncellemezsen oyun düzgün çalışmaz. Güncelle yenisini indirip kurar, eskisini siler.": "DarkOrbit-Version %s ist erschienen, dein Client ist %s: ohne Aktualisierung läuft das Spiel nicht richtig. Aktualisieren lädt die neue Version herunter, installiert sie und löscht die alte.",
 "Güncelle": "Aktualisieren",

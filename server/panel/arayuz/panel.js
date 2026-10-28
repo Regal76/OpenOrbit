@@ -361,7 +361,8 @@ function renderOynaBody() {
   // ---- uyarılar
   const warns = d.uyarilar.map(u => h('div', { class: 'alert ' + (u.tur === 'hata' ? 'hata' : 'uyari') }, icon('alert'),
     h('div', { style: u.ilerleme != null ? { flex: '1' } : null }, u.metin,
-      u.ilerleme != null ? h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: u.ilerleme + '%' } }))) : null),
+      u.ilerleme != null ? h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: u.ilerleme + '%' } }))) : null,
+      u.indirme && u.indirme.toplam ? h('div', { class: 'small dl-info' }, dlInfo(u.indirme)) : null),
     u.eylem ? btn(u.eylem.calisiyor ? u.eylem.calisiyor_metin || T('Kuruluyor…') : u.eylem.metin, () => act(() => api(u.eylem.api, {})), 'primary sm', null, { disabled: !!u.eylem.calisiyor }) : null,
     u.sayfa ? btn(T('Git'), () => go(u.sayfa), 'sm') : null));
 
@@ -1369,14 +1370,12 @@ function dlBox(st, refresh, { haveClient = false } = {}) {      // haveClient: g
   const head = { hazirlaniyor: T('İndirme hazırlanıyor…'), indiriliyor: T('Oyun indiriliyor: %{0}', pct), dogrulaniyor: T('Dosyalar doğrulanıyor…'),
     bitti: T('Oyun indirildi ve kuruldu.'), hata: T('İndirme durdu.'), durdu: T('İndirme durduruldu (%{0}).', pct) }[st.durum]
     || (st.yarim ? T('Önceki indirme yarım kaldı.') : T('Oyunu indir'));
-  const info = st.durum === 'indiriliyor'
-    ? [`${fmtBytes(st.alinan)} / ${fmtBytes(st.toplam)}`, st.hiz ? `${fmtBytes(st.hiz)}/${T('sn')}` : null,
-      st.kalan_sn != null && st.hiz ? T('kalan {0}', fmtDur(st.kalan_sn)) : null, T('dosya {0}/{1}', st.biten_dosya, st.dosya_sayisi)].filter(Boolean).join(' · ')
+  const info = st.durum === 'indiriliyor' ? dlInfo(st)
     : st.durum === 'bitti' ? st.hedef
     : st.durum === 'hata' ? st.hata
     : haveClient && st.yarim ? T('Seçili istemci kullanılıyor; yarım kalan dosyaları silebilirsin.')
     : st.durum === 'durdu' || st.yarim ? T('Sürdürünce yalnız eksik dosyalar iner.')
-    : st.durum === 'bos' ? T('DarkOrbit {0} istemcisi oyunun resmî indirme sunucusundan alınıp proje klasörüne kurulur: yaklaşık 3,5 GB indirme, diskte 4,3 GB. İstemci dosyaları değiştirilmez.', '1.1.115')
+    : st.durum === 'bos' ? T('DarkOrbit {0} istemcisi oyunun resmî indirme sunucusundan alınıp proje klasörüne kurulur: yaklaşık 3,5 GB indirme, diskte 4,3 GB. İstemci dosyaları değiştirilmez.', (/(\d+\.\d+\.\d+)\.zip/.exec(st.url || '') || [])[1] || '')
     : '';
   const btns = run ? [btn(T('Durdur'), () => call('/api/istemci/indir_durdur', T('İndirme durduruluyor…')), 'ghost sm', 'stop')]
     : st.durum === 'bitti' ? []
@@ -1387,6 +1386,11 @@ function dlBox(st, refresh, { haveClient = false } = {}) {      // haveClient: g
     run || st.durum === 'durdu' ? h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } }))) : null,
     info ? h('div', { class: 'small muted dl-info', title: st.dosya || '' }, info) : null,
     btns.some(Boolean) ? h('div', { class: 'row wrap' }, btns) : null);
+}
+// indirmenin satırı: inen / toplam, hız, kalan süre, dosya
+function dlInfo(st) {
+  return [`${fmtBytes(st.alinan)} / ${fmtBytes(st.toplam)}`, st.hiz ? `${fmtBytes(st.hiz)}/${T('sn')}` : null,
+    st.kalan_sn != null && st.hiz ? T('kalan {0}', fmtDur(st.kalan_sn)) : null, T('dosya {0}/{1}', st.biten_dosya, st.dosya_sayisi)].filter(Boolean).join(' · ');
 }
 // kutuyu saniyede bir yeniler; iş bitince (bitti) onDone. -> setInterval kimliği
 function dlWatch(wrap, st, onDone, opts) {

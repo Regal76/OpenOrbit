@@ -6,8 +6,14 @@ kendisi için ayrıca yer gerekmez (açılmış hâli kadar, ≈4,4 GB). Bağlan
 iş durdurulur ya da panel kapanırsa açılmış dosyalar kalır, yeniden başlatınca yalnız eksikler iner. Her dosya önce .part'a yazılır,
 zip'in CRC'siyle doğrulanınca adını alır. Dosyalar geçici klasörde (GECICI) toplanır; hepsi bitip istemci doğrulanınca klasör
 arşivdeki adı (DarkOrbit_Version1.1.116) alır: yarım indirme geçerli istemci gibi görünmez. Aynı anda tek iş.
+
+Sunucu bağlantı başına ≈5 MB/sn veriyor: arşivdeki ardışık dosyalar GRUP baytlık öbeklere bölünür, BAGLANTI bağlantı birer öbeği
+tek istekle okuyup açar. İstek sayısı az tutulur: kısa ve sık aralık istekleri CDN'in korumasına takılıyor (2026-10-28, 8 MB'lık
+parçalarla dakikada IP engellendi: HTTP 403 "denied by custom_acl"); engel gelince yeniden denenmez, kullanıcıya söylenir.
 """
 import http.client, json, os, shutil, threading, time, zipfile
+from concurrent.futures import ThreadPoolExecutor
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from dil import t as _
@@ -15,6 +21,9 @@ from dil import t as _
 URL = 'https://alicdn-oss-prod.darkorbit.com/release/archive/DarkOrbit_Version1.1.116.zip'
 GECICI = 'istemci_indiriliyor'      # proje kökünde; .gitignore'da
 PARCA = 1 << 20
+GRUP = 64 << 20                     # bir bağlantının tek istekle okuduğu ardışık dosyalar (büyük dosya tek başına)
+BAGLANTI = 6                        # aynı anda açık bağlantı (tek bağlantıyla ≈5 MB/sn)
+ATLA = 1 << 20                      # bu kadarlık ileri atlama yeni istek açmadan okunup geçilir
 DENEME = 8                          # kopan bağlantıda üst üste yeniden bağlanma
 ZAMAN_ASIMI = 30
 PAY = 200 << 20                     # disk denetiminde fazladan yer
@@ -34,17 +43,28 @@ class Iptal(Exception):
     pass
 
 
+def engel(e):
+    """CDN'in erişim engeli (403/429): yeniden denemek engeli uzatır."""
+    if isinstance(e, HTTPError) and e.code in (403, 429):
+        return IndirmeHatasi(_('İndirme sunucusu erişimi geçici olarak engelledi (HTTP %d). Birkaç dakika sonra sürdür: inen '
+                               'dosyalar korunur.', e.code))
+    return None
+
+
 class HttpFile:
     """HTTP aralık istekleriyle okunan, konumlanabilir salt-okunur dosya (zipfile için). Sıralı okumada tek bağlantı sürer;
     bağlantı koparsa aynı yerden yeniden açılır. Arşiv sunucuda değişirse (ETag) durur."""
 
-    def __init__(self, url, stop, on_bytes=None, opener=urlopen):
+    def __init__(self, url, stop, on_bytes=None, opener=urlopen, size=None, etag=None):
         self.url, self.stop, self.on_bytes, self.opener = url, stop, on_bytes, opener
-        self.pos, self.resp, self.rpos, self.etag = 0, None, None, None
+        self.pos, self.resp, self.rpos, self.etag = 0, None, None, etag
+        if size is not None:                # aynı arşivin ikinci bağlantısı: boyut ve ETag ilkinden
+            self.size = size
+            return
         try:
             r = self._request(0, 0)
         except (OSError, http.client.HTTPException) as e:
-            raise IndirmeHatasi(_('İndirme sunucusuna bağlanılamadı (internet bağlantını denetle): %s', e))
+            raise engel(e) or IndirmeHatasi(_('İndirme sunucusuna bağlanılamadı (internet bağlantını denetle): %s', e))
         cr = r.headers.get('Content-Range') or ''
         r.close()
         try:
@@ -94,6 +114,12 @@ class HttpFile:
             if self.stop.is_set():
                 raise Iptal()
             try:
+                if self.resp is not None and self.rpos < self.pos <= self.rpos + ATLA:     # kısa ileri atlama: okuyup geç
+                    while self.rpos < self.pos:
+                        b = self.resp.read(self.pos - self.rpos)
+                        if not b:
+                            raise ConnectionError('bağlantı kapandı')
+                        self.rpos += len(b)
                 if self.resp is None or self.rpos != self.pos:
                     self._close()
                     self.resp, self.rpos = self._request(self.pos), self.pos
@@ -102,6 +128,8 @@ class HttpFile:
                     raise ConnectionError('bağlantı kapandı')
             except (OSError, http.client.HTTPException) as e:          # URLError, zaman aşımı, kopan bağlantı
                 self._close()
+                if engel(e):
+                    raise engel(e)
                 tries += 1
                 if tries > DENEME:
                     raise IndirmeHatasi(_('Bağlantı koptu: %s', e))
@@ -209,6 +237,23 @@ class Indirici:
             p, k = os.path.join(self.root, '%s (%d)' % (name, k)), k + 1
         return p
 
+    def _ac(self, h, i, p):
+        """Arşivdeki dosyayı (yerel başlığından) .part'a aç; zipfile'ın okuyucusu açar ve CRC'yi denetler."""
+        h.seek(i.header_offset)
+        fh = h.read(30)
+        if fh[:4] != b'PK':
+            raise zipfile.BadZipFile('yerel başlık yok: %s' % i.filename)
+        h.read(int.from_bytes(fh[26:28], 'little') + int.from_bytes(fh[28:30], 'little'))   # ad ve ek alan
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        part = p + '.part'
+        with zipfile.ZipExtFile(h, 'rb', i) as src, open(part, 'wb') as out:     # sonda CRC'yi denetler (BadZipFile)
+            while True:
+                b = src.read(PARCA)
+                if not b:
+                    break
+                out.write(b)
+        os.replace(part, p)
+
     def _run(self):
         f = None
         try:
@@ -229,27 +274,43 @@ class Indirici:
                 raise IndirmeHatasi(_('Diskte yer yetmiyor: %.1f GB gerekli, %.1f GB boş.', (need + PAY) / GB, free / GB))
             self._set(durum='indiriliyor', toplam=sum(i.compress_size for i, p in items), acik_boyut=sum(i.file_size for i, p in items),
                       alinan=sum(i.compress_size for i, p in items if p in done), dosya_sayisi=len(items), biten_dosya=len(done))
-            self.log('istemci indiriliyor: %s (%d dosya, %d zaten var)' % (self.url, len(items), len(done)))
+            self.log('istemci indiriliyor: %s (%d dosya, %d zaten var, %d bağlantı)' % (self.url, len(items), len(done), BAGLANTI))
             for i, p in files:
-                if self.stop.is_set():
-                    raise Iptal()
                 if i.is_dir():
                     os.makedirs(p, exist_ok=True)
-                    continue
+            gruplar, g, boy = [], [], 0
+            for i, p in items:
                 if p in done:
                     continue
-                self._set(dosya=os.path.relpath(p, self.stage))
-                os.makedirs(os.path.dirname(p), exist_ok=True)
-                part = p + '.part'
-                with z.open(i) as src, open(part, 'wb') as out:      # zipfile sonda CRC'yi denetler (BadZipFile)
-                    while True:
-                        b = src.read(PARCA)
-                        if not b:
-                            break
-                        out.write(b)
-                os.replace(part, p)
-                with self.lock:
-                    self.d['biten_dosya'] += 1
+                g.append((i, p))
+                boy += i.compress_size
+                if boy >= GRUP:
+                    gruplar.append(g)
+                    g, boy = [], 0
+            if g:
+                gruplar.append(g)
+            f.close()                               # dizini okuyan bağlantı; dosyaları gruplar açar
+            hatalar = []
+
+            def grup_ac(g):
+                h = HttpFile(self.url, self.stop, self._count, self.opener, size=f.size, etag=f.etag)
+                try:
+                    for i, p in g:
+                        if self.stop.is_set():
+                            raise Iptal()
+                        self._set(dosya=os.path.relpath(p, self.stage))
+                        self._ac(h, i, p)
+                        with self.lock:
+                            self.d['biten_dosya'] += 1
+                except BaseException as e:
+                    hatalar.append(e)
+                    self.stop.set()                 # öteki bağlantılar da dursun
+                finally:
+                    h.close()
+            with ThreadPoolExecutor(BAGLANTI) as havuz:
+                list(havuz.map(grup_ac, gruplar))
+            if hatalar:
+                raise next((e for e in hatalar if not isinstance(e, Iptal)), hatalar[0])
             self._set(durum='dogrulaniyor', dosya='')
             c = self.check(self.stage)
             if not c['gecerli']:
