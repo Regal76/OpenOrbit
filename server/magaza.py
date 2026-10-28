@@ -481,8 +481,9 @@ class Magaza:
         return msgs + (self.quest('loot', loot=ORES.get(t), amount=n) if self.quest else [])
 
     def upgrade(self, f):
-        """LabUpdateItemRequest {itemToUpdate, updateWith {oreType, count}}: cevher parçaya yüklenir, her cevher LAB['birim'] tur/adet/
-        dakika (en çok LAB['azami']; artan cevher kargoda kalır). Aynı cevher eklenir, başka cevher öncekini siler (istemci: lab_alert).
+        """LabUpdateItemRequest {itemToUpdate, updateWith {oreType, count}}: cevher parçaya yüklenir, her cevher LAB['birim']: lazer/
+        roket 10 tur/adet, motor/kalkan 1 dakika (en çok LAB['azami']; artan cevher kargoda kalır). Aynı cevher eklenir, başka cevher
+        öncekini siler (istemci: lab_alert).
         Hız ve kalkan hemen değişir."""
         item = (f.get('itemToUpdate') or {}).get('itemValue')
         m = f.get('updateWith') or {}
@@ -492,14 +493,14 @@ class Magaza:
             return [self.lab_cmd()]
         old = self.p.d.get('yukseltmeler', {}).get(str(item))
         have = old[1] if old and old[0] == t else 0
-        n = min(n, max(0, LAB['azami'] - have) // LAB['birim'])
+        n = min(n, max(0, LAB['azami'] - have) // LAB['birim'][str(item)])
         if n <= 0:
             self.log('   yükseltme olmadı: parça %s dolu (%d)' % (item, have))
             return [self.lab_cmd()]
         totals = self.p.remove_ores({t: n})
         with self.p.lock:
             ups = self.p.d.setdefault('yukseltmeler', {})
-            ups[str(item)] = [t, have + n * LAB['birim']]
+            ups[str(item)] = [t, have + n * LAB['birim'][str(item)]]
             self.p.dirty = True
         key = ('lab_upgrade_laser', 'lab_upgrade_rocket', 'lab_upgrade_speed', 'lab_upgrade_shield')[item]
         self.log('   yükseltme: parça %d <- %s x%d (toplam %d)' % (item, ORES.get(t), n, ups[str(item)][1]))
