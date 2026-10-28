@@ -40,6 +40,7 @@ P.E.T. (pet.py): mağazada pet_pet10 (bir tane), dişliler (petgear) ve protokol
 Katalog ve fiyatlar kayıttaki ShopItemListCommand'lerden (data/yanitlar.json); ekipman değerleri data/esyalar.json.
 """
 import json, math, os, time
+import veri as VERI
 import booster as BOOSTER   # noqa: E402
 import pet as PETM
 import ekstra as EK
@@ -62,6 +63,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
 _F = json.load(open(os.path.join(HERE, 'data', 'fiyatlar.json'), encoding='utf8'))
 FIYAT, KUR = _F['fiyatlar'], _F['kur']        # market dengesi (tools/market_dengesi.py); KUR: 1 U kaç kredi
+DUNYA_MAGAZA = VERI.yukle('magaza')['urunler']    # Dünya Editörü: lootId -> {fiyat, para ('C' | 'U'), satista}; oyun açıkken yenile()
+
+
+def yenile():
+    """Dünyanın mağazası değişti (game.dunya_izle): sözlük yerinde güncellenir, sonraki liste ve alım yeni fiyatla."""
+    DUNYA_MAGAZA.clear()
+    DUNYA_MAGAZA.update(VERI.yukle('magaza')['urunler'])
 CONFIG_COOLDOWN_SN = 5          # config geçişleri arası (kayıtta 2,4 sn sonraki reddedildi; süre uyarlama)
 PREMIUM_KARGO = 500             # Premium: "500 extra units of cargo space" (istemci breakingNewsContent_permPremiumAdvantages)
 
@@ -294,6 +302,27 @@ def copy(x):
     return json.loads(json.dumps(x))
 
 
+def katalog(yanitlar):
+    """Standart mağaza kataloğu (panelin Dünya Editörü; profilsiz, dünyasız): kategori -> [{lootId, fiyat, para ('C' | 'U'),
+    sabit (fiyatı kendi kuralıyla: dronlar, seviyeli P.E.T. ürünleri, G-HP1, yakıt)}]."""
+    m = Magaza.__new__(Magaza)
+    m.lists, m.catalog, m.payment, m.extra_entry, m.credit = {}, {}, {}, {}, {}
+    m.build_catalog(copy(yanitlar))
+    out = {}
+    for cat, lst in m.lists.items():
+        for it in lst['itemList']:
+            loot = it['lootId']
+            if loot in m.payment:
+                para, u = 'U', m.payment[loot]
+            elif loot in m.credit:
+                para, u = 'C', m.credit[loot]
+            else:
+                para, u = 'U' if it.get('currency') == 'real' else 'C', (it.get('price') or [0])[0]
+            sabit = loot in DRONES or loot in (PETM.HULL, PET_FUEL) or bool(PETM.level_prices(loot))
+            out.setdefault(cat, []).append({'lootId': loot, 'fiyat': u, 'para': para, 'sabit': sabit})
+    return out
+
+
 class Magaza:
     def __init__(self, profil, yanitlar, log=print):
         self.p, self.log = profil, log
@@ -311,6 +340,28 @@ class Magaza:
         self.credit = {}         # market dengesi: kredili "Payment" ürünü -> kredi fiyatı (data/fiyatlar.json)
         self.shop_gate = None    # (satır, lootId) -> şimdi satılır mı (dukkanlar.py: etkinlik, kampanya, bir kez, seviye)
         self.on_bought = []      # alımdan sonra (lootId, adet) -> mesajlar (dukkanlar.py: VIP, Pre-BF, Mileage sayaçları)
+        self.build_catalog(yanitlar)
+        first = lambda req, name: next((m for e in yanitlar.get(req, []) for m in e['yanit'] if m['_m'] == name), None)
+        self.equip_tpl = first('HangarShipEquipmentRequest', 'HangarShipEquipmentCommand')
+        self.ships_tpl = first('HangarListRequest', 'HangarShipsCommand')
+        self.detail_tpl = first('HangarShipDetailRequest', 'HangarShipDetailCommand')
+        self.item_tpl, self.tpl_ids = None, {}
+        for pack in (self.ships_tpl or {}).get('items', []):
+            for it in pack.get('items', []):
+                self.item_tpl = self.item_tpl or it
+                self.tpl_ids.setdefault(it['lootId'], it['itemid'])
+        self.sent_lists = set()          # bu oturumda istemciye gönderilen mağaza kategorileri
+        self.featured = None             # (kategori, lootId, bitiş): ödeme düğmesinin ürünü listenin başında (odeme.py)
+        self.pet = PETM.Pet(profil, log)  # oturum kendi P.E.T.'ini bağlar (uzaydaki davranış dünyayla)
+        self.pet.on_stats = self.apply_stats       # HEAT bonusu değişince gemi değerleri
+        for loot, n in list(profil.d.get('diger_esyalar', {}).items()):
+            if loot.startswith('pet_designs_'):       # Aşama 6 öncesi depoda saklanan P.E.T. tasarımları -> envanter
+                for _ in range(n):
+                    profil.new_item(loot)
+                profil.add_resource(loot, -n)
+
+    def build_catalog(self, yanitlar):
+        """Katalog: kayıttaki ShopItemListCommand'ler + ek mağaza + P.E.T. yakıtı; fiyatlar (market dengesi, sonra dünyanın mağazası)."""
         fiyat = ESYA['odeme_fiyatlari']
         for e in yanitlar.get('ShopItemListRequest', []):
             for m in e['yanit']:
@@ -341,24 +392,6 @@ class Magaza:
             lst['itemList'].append(it)
             self.catalog[PET_FUEL] = it
         self.apply_prices()
-        first = lambda req, name: next((m for e in yanitlar.get(req, []) for m in e['yanit'] if m['_m'] == name), None)
-        self.equip_tpl = first('HangarShipEquipmentRequest', 'HangarShipEquipmentCommand')
-        self.ships_tpl = first('HangarListRequest', 'HangarShipsCommand')
-        self.detail_tpl = first('HangarShipDetailRequest', 'HangarShipDetailCommand')
-        self.item_tpl, self.tpl_ids = None, {}
-        for pack in (self.ships_tpl or {}).get('items', []):
-            for it in pack.get('items', []):
-                self.item_tpl = self.item_tpl or it
-                self.tpl_ids.setdefault(it['lootId'], it['itemid'])
-        self.sent_lists = set()          # bu oturumda istemciye gönderilen mağaza kategorileri
-        self.featured = None             # (kategori, lootId, bitiş): ödeme düğmesinin ürünü listenin başında (odeme.py)
-        self.pet = PETM.Pet(profil, log)  # oturum kendi P.E.T.'ini bağlar (uzaydaki davranış dünyayla)
-        self.pet.on_stats = self.apply_stats       # HEAT bonusu değişince gemi değerleri
-        for loot, n in list(profil.d.get('diger_esyalar', {}).items()):
-            if loot.startswith('pet_designs_'):       # Aşama 6 öncesi depoda saklanan P.E.T. tasarımları -> envanter
-                for _ in range(n):
-                    profil.new_item(loot)
-                profil.add_resource(loot, -n)
 
     def apply_prices(self):
         """Market dengesinin fiyatları (data/fiyatlar.json <- tools/market_dengesi.py): Payment ürünlerinin ve ek mağazanın
@@ -675,9 +708,20 @@ class Magaza:
         n = sum(1 for x in self.p.d['dronlar'] if x['lootId'] == loot)
         return info['para'], info['fiyatlar'][min(n, len(info['fiyatlar']) - 1)]
 
+    def world_price(self, loot):
+        """Dünya Editörü'nün fiyatı -> (para birimi alanı, fiyat) ya da None; kendi kuralıyla fiyatlananlar (dronlar, G-HP1, yakıt,
+        seviyeli P.E.T. ürünleri) hariç."""
+        w = DUNYA_MAGAZA.get(loot)
+        if not w or w.get('fiyat') is None or loot not in self.catalog or loot in DRONES or loot in (PETM.HULL, PET_FUEL) or PETM.level_prices(loot):
+            return None
+        return ('credits' if w.get('para') == 'C' else 'uridium'), w['fiyat']
+
     def price(self, loot, level=1):
         """-> (para birimi alanı, birim fiyat) ya da None (kayıtta olmayan eşya). "Payment" eşyalar uridyumla.
-        P.E.T. dişli/protokolleri seviyeye göre (wiki fiyatları, uridyum)."""
+        P.E.T. dişli/protokolleri seviyeye göre (wiki fiyatları, uridyum). Dünyanın fiyatı önce."""
+        wp = self.world_price(loot)
+        if wp:
+            return wp
         if loot in DRONES:
             return self.drone_price(loot)
         if loot == PETM.HULL:                        # G-HP1: kaçıncı yükseltme olduğuna göre (P.E.T. seviyesi kadar)
@@ -709,6 +753,8 @@ class Magaza:
         return round((m['premium_oran'] if self.p.premium else 0.0) + (m['oran'] if self.p.d.get('magaza_indirimi', 0) > time.time() else 0.0), 4)
 
     def gate_ok(self, loot):
+        if DUNYA_MAGAZA.get(loot, {}).get('satista') is False:      # Dünya Editörü: satıştan kaldırılan ürün
+            return False
         if not EG.in_shop(loot):          # panelin ayarı kapalıyken etkinlik görünümleri yalnız etkinliklerinden
             return False
         entry = self.extra_entry.get(loot) or FORM_RULES.get(loot)      # Bat yalnız Halloween'de satılır (formasyon_kurallari.takvim; wiki)
@@ -750,6 +796,12 @@ class Magaza:
             elif it['lootId'] in self.credit:
                 c = self.credit[it['lootId']]
                 it.update(price=[float(c)], currency='virtual', cost='{:,} C.'.format(c), isPaymentItem=0, elite=1)
+        for it in t['itemList']:            # Dünya Editörü'nün fiyatı (oyun açıkken değişebilir: her listede)
+            wp = self.world_price(it['lootId'])
+            if wp:
+                kr = wp[0] == 'credits'
+                it.update(price=[float(wp[1])], currency='virtual' if kr else 'real', cost='{:,} {}'.format(int(wp[1]), 'C.' if kr else 'U.'),
+                          isPaymentItem=0)
         for it in t['itemList']:
             if it['lootId'] in DRONES:
                 cur, u = self.drone_price(it['lootId'])

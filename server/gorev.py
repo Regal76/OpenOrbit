@@ -32,6 +32,7 @@ Profilde: gorevler.aktif {görev: {koşul: değer}}, gorevler.tamam [görev], go
 gorevler.skor {meydan okuma: en iyi süre (puan görevinde puan)}.
 """
 import copy, datetime, json, math, os, random, time
+import veri as VERI
 import rutbe as RT
 import booster as BOOSTER
 import ayar as AY
@@ -41,10 +42,10 @@ import harita as H
 import kapi as KAPI
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA = json.load(open(os.path.join(HERE, 'data', 'gorevler.json'), encoding='utf8'))
+DATA = VERI.yukle('gorevler.json')
 QUESTS = {int(k): v for k, v in DATA['gorevler'].items()}
 MAX_QUESTS = DATA.get('en_cok_gorev', 5)      # oyunun sınırı (kayıttaki en büyük maxQuests); oyunda panel ayarı geçerli
-EK = json.load(open(os.path.join(HERE, 'data', 'gorev_ekleri.json'), encoding='utf8'))       # E6 (tools/gorev_ekleri.py)
+EK = VERI.yukle('gorev_ekleri.json')       # E6 (tools/gorev_ekleri.py)
 QUESTS.update({int(k): v for k, v in EK['gorevler'].items()})
 MAX_EVENT_QUESTS = EK['en_cok_etkinlik_gorevi']
 POOLS = {}                                    # ('gunluk' | 'haftalik', zorluk) -> görevler
@@ -229,6 +230,8 @@ class Gorevler:
         """Listede mi: günlük/haftalık yalnız dönemin görevi (ya da sürüyorsa), kendi firmasının "Steal … resources"ı yok, firmaya
         özgü meydan okuma ("firma": 17 / 186 / 187 …) yalnız o firmanın pilotuna."""
         q = QUESTS[qid]
+        if q.get('kapali') and str(qid) not in self.st['aktif']:
+            return False                                    # Dünya Editörü'nde kapatılan görev (sürüyorsa bitirilebilir)
         if q.get('havuz') and qid not in offer and str(qid) not in self.st['aktif']:
             return False
         if str(qid) not in self.st['aktif'] and ((q.get('etkinlik') and not event_open(q))

@@ -290,6 +290,21 @@ def tail(path, lines=200, max_bytes=512 * 1024):
     return text[-lines:]
 
 
+def dunya_imzasi(dunya):
+    """Dünyanın (yol, içerik özeti): oyun açıldıktan sonra değişen dünya sunucuyu yeniden başlatır; oyun açıkken uygulanan
+    değişiklikler (veri.CANLI: mağaza, açık artırma) sayılmaz. Standart: None."""
+    if not dunya:
+        return None
+    import hashlib
+    import veri as VERI
+    try:
+        with open(dunya, encoding='utf8') as fh:
+            y = {k: v for k, v in (json.load(fh).get('yamalar') or {}).items() if k not in VERI.CANLI}
+        return os.path.normcase(dunya), hashlib.sha1(json.dumps(y, sort_keys=True).encode()).hexdigest()
+    except (OSError, ValueError, AttributeError):
+        return os.path.normcase(dunya), None
+
+
 class Surec:
     """Panelin açtığı bir sunucu süreci."""
 
@@ -362,6 +377,7 @@ class Yonetici:
         self.arkadas = False                # oyun sunucusu arkadaş sunucusu olarak açık (Host)
         self.coklu = False                  # oyun sunucusu çoklu istemci için çok oturumlu açık (yalnız bu bilgisayar; coklu.py)
         self.misafir = False                # yalnız misafirin web sunucusu açık (Join)
+        self.dunya = None                   # açık sunucuların dünyası (dunya_imzasi; standart: None)
         self.istemci = None                 # Popen
         self.istemci_basla = None
         self.istemci_son = None             # {'sure_sn', 'erken', 'kod'}
@@ -394,20 +410,23 @@ class Yonetici:
                         'bizim': is_our_server(info)})
         return out
 
-    def needs_restart(self, profil, arkadas=None, coklu=None):
-        """Açık sunucular bu kayıt ve kiple yeniden başlamalı mı (başka kayıt, Host ya da çoklu istemci kipi değişti)."""
+    def needs_restart(self, profil, arkadas=None, coklu=None, dunya=None):
+        """Açık sunucular bu kayıt ve kiple yeniden başlamalı mı (başka kayıt, Host ya da çoklu istemci kipi, başka dünya ya da
+        dünya açıldıktan sonra değişti)."""
         return self.running() and ((self.profil and os.path.normcase(self.profil) != os.path.normcase(profil))
-                                   or self.arkadas != bool(arkadas) or (not arkadas and self.coklu != bool(coklu)))
+                                   or self.arkadas != bool(arkadas) or (not arkadas and self.coklu != bool(coklu))
+                                   or self.dunya != dunya_imzasi(dunya))
 
-    def start_servers(self, profil, ayarlar, kontrol=False, slot=None, arkadas=None, coklu=None):
+    def start_servers(self, profil, ayarlar, kontrol=False, slot=None, arkadas=None, coklu=None, dunya=None):
         """Web ve oyun sunucusu (açık değilse) -> başlatılanların adları. Port doluysa ya da sunucu açılmazsa RuntimeError.
         arkadas: arkadaş sunucusunun ayarları (DO_COK_OYUNCULU; verilmezse tek oyunculu); coklu: çoklu istemcinin ayarları
-        (DO_COK_OYUNCULU, misafirsiz; arkadaş sunucusu zaten çok oturumlu)."""
+        (DO_COK_OYUNCULU, misafirsiz; arkadaş sunucusu zaten çok oturumlu); dunya: Dünya Editörü'nün dünya dosyası (DO_DUNYA;
+        verilmezse standart dünya)."""
         ortam_json = arkadas or coklu
         with self.lock:
             if self.misafir:
                 raise RuntimeError(_('Arkadaşının sunucusundasın: önce oradan ayrıl.'))
-            if self.needs_restart(profil, arkadas, coklu):
+            if self.needs_restart(profil, arkadas, coklu, dunya):
                 self.stop_servers()                               # başka kayıt ya da kip: yeniden başlat
             started = []
             py = python_exe()
@@ -423,7 +442,7 @@ class Yonetici:
                                          '/'.join(map(str, busy)), _(PORT_ADLARI[busy[0]])))
                 cmd = [py, '-I', os.path.join(SERVER, SCRIPTS[ad]), self.logs, '--profil=%s' % profil]
                 durdur = None
-                ortam = None
+                ortam = {'DO_DUNYA': dunya} if dunya else None
                 if ad == 'web' and ortam_json:       # sunucunun kendi oyuncusunun oturumu (cok_oyunculu AYAR['yerel'])
                     cmd.append('--oturum=%s' % json.loads(ortam_json)['yerel'])
                 if ad == 'oyun':
@@ -431,10 +450,11 @@ class Yonetici:
                     cmd += ['--ayarlar=%s' % ayarlar, '--durdur=%s' % durdur] + (['--kontrol'] if kontrol else [])
                     if ortam_json:
                         cmd.append('--cok-oyunculu')
-                        ortam = {'DO_COK_OYUNCULU': ortam_json}
+                        ortam = dict(ortam or {}, DO_COK_OYUNCULU=ortam_json)
                 self.sunucular[ad] = Surec(ad, cmd, os.path.join(self.logs, '%s_konsol.log' % ad), durdur, ortam).start()
                 started.append(ad)
             self.profil, self.slot, self.arkadas, self.coklu = profil, slot, bool(arkadas), bool(coklu and not arkadas)
+            self.dunya = dunya_imzasi(dunya)
             deadline = time.time() + 20
             while time.time() < deadline:
                 if all(listening(PORTS[ad][0]) for ad in ('web', 'oyun')):
@@ -481,7 +501,7 @@ class Yonetici:
                 if s:
                     s.stop()
             self.log('sunucular durduruldu')
-            self.profil = self.slot = None
+            self.profil = self.slot = self.dunya = None
             self.arkadas = self.coklu = self.misafir = False
 
     # ------------------------------------------------------------ istemci

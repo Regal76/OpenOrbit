@@ -222,6 +222,7 @@ const PAGES = [
   { id: 'arkadas', ad: N('Arkadaşlarınla Oyna'), ic: 'users', sub: N('Sunucu kur (Host) ya da arkadaşının sunucusuna katıl (Join). Herkes kendi kaydıyla oynar.') },
   { id: 'kayitlar', ad: N('Kayıtlar'), ic: 'save', sub: N('Kayıt yuvaları, yedekler, kopyalama, içe ve dışa aktarma.') },
   { id: 'ayarlar', ad: N('Oyun Ayarları'), ic: 'sliders', sub: N('Çarpanlar ve kurallar. Kendiliğinden kaydedilir; çoğu oyun açıkken anında uygulanır.') },
+  { id: 'dunya', ad: N('Dünya Editörü'), ic: 'globe', sub: N('Haritaları, uzaylıları, görevleri, mağazayı ve açık artırmayı değiştir; kendi dünyalarını oluştur.') },
   { id: 'etkinlikler', ad: N('Etkinlikler'), ic: 'calendar', sub: N('Her etkinlik takvime göre ya da elle açık / kapalı.') },
   { id: 'takvim', ad: N('Etkinlik Takvimi'), ic: 'agenda', sub: N('Etkinlikler ve seansları saatlik, günlük, haftalık ve aylık görünümde (yerel saat).') },
   { id: 'istemci', ad: N('İstemci'), ic: 'monitor', sub: N('Oyun klasörü, sürüm denetimi ve görüntü seçenekleri.') },
@@ -352,6 +353,7 @@ function renderOynaBody() {
       h('div', { class: 'meta' },
         [[T('Seviye'), a.seviye], [T('Gemi'), a.gemi], [T('Harita'), a.harita], [T('Oynama'), fmtDur(a.oynama_sn)],
           [T('Son oynama'), fmtWhen(a.son_oynama || a.son_kayit)]].map(([k, v]) => h('span', null, k + ' ', h('b', null, v)))),
+      a.dunya_bilgi ? oynaDunyaCipi(a) : null,                    // kaydın varsayılan dünyası (dunya.js)
       h('div', { class: 'stats' },
         [[T('Kredi'), a.kredi, 'cr'], [T('Uridyum'), a.uridyum, 'ur'], [T('Onur'), a.onur, 'hn'], [T('Deneyim'), a.ep, 'ep']].map(([k, v, c]) =>
           h('div', { class: 'stat' }, h('div', { class: 'k' }, k), h('div', { class: 'v ' + c }, fmtN(v))))));
@@ -603,7 +605,8 @@ function hostView(v) {
       hs.acik ? badge(T('{0} / {1} misafir', hs.misafirler.length, hs.en_cok), 'ok') : null, hs.sifre ? badge(T('Şifreli'), 'info') : null),
     h('div', { class: 'muted' }, hs.acik ? T('Arkadaşların aşağıdaki adreslerden biriyle katılır. Sen kendi kaydınla oynarsın.')
       : T('Sunucu kurunca kendi kaydınla oyuna girersin; arkadaşların kendi kayıtlarıyla katılır.')),
-    d?.aktif ? h('div', { class: 'meta' }, h('span', null, T('Kayıt:') + ' ', h('b', null, d.aktif.ad)), h('span', null, T('Pilot') + ' ', h('b', null, d.aktif.pilot))) : null);
+    d?.aktif ? h('div', { class: 'meta' }, h('span', null, T('Kayıt:') + ' ', h('b', null, d.aktif.ad)), h('span', null, T('Pilot') + ' ', h('b', null, d.aktif.pilot))) : null,
+    v.dunya ? hostDunyaCipi(v) : null);                                // sunucunun dünyası (dunya.js)
   let main; const sub = [];
   if (busy) main = h('button', { class: 'play-btn busy', disabled: true }, h('span', { class: 'spin', style: { borderTopColor: '#021120' } }), T('BAŞLATILIYOR'));
   else if (hs.acik && running) main = h('button', { class: 'play-btn running', disabled: true }, icon('check'), T('OYUN AÇIK'));
@@ -627,8 +630,14 @@ function hostView(v) {
   const save = () => act(() => api('/api/arkadas/ayarlar', { sifre: pw.value, en_cok: +max.value }), T('Kaydedildi.'))
     .then(r => { if (r) { ARK.veri = r; } });
   pw.addEventListener('change', save); max.addEventListener('change', save);
+  const dunya = v.dunya ? h('select', { class: 'input', onchange: e => act(() => api('/api/arkadas/ayarlar', { dunya: e.target.value }), T('Kaydedildi.'))
+    .then(r => { if (r) { ARK.veri = r; drawArkadas(); } }) },
+    h('option', { value: '', selected: !v.dunya.secim }, T('Kaydının dünyası ({0})', v.dunya.kaydin.ad)),
+    v.dunya.liste.map(w => h('option', { value: w.id, selected: v.dunya.secim === w.id }, w.ad))) : null;
   const setCard = h('div', { class: 'card' }, h('h2', null, icon('sliders'), T('Sunucu ayarları')),
     h('div', { class: 'grid g2' }, field(T('Katılma şifresi'), pw), field(T('En çok misafir'), max)),
+    dunya ? h('div', { style: { marginTop: '12px' } }, field(T('Sunucunun dünyası'), dunya),
+      h('p', { class: 'small muted', style: { margin: '6px 0 0' } }, T('Misafirler de bu dünyada oynar (haritalar, uzaylılar, görevler, mağaza). Dünyaları Dünya Editörü\'nde hazırlarsın.'))) : null,
     h('p', { class: 'desc', style: { marginTop: '10px' } }, hs.acik ? T('Değişiklikler sunucu yeniden başlayınca geçerli olur.')
       : T('Şifre, adresini bilen herkesin katılmasını engeller. Misafirler bu şifreyi Arkadaşına katıl bölümünde yazar.')));
 
@@ -2649,7 +2658,7 @@ async function muzayedeOlayTick() {
 }
 
 const RENDER = { oyna: renderOyna, arkadas: renderArkadas, kayitlar: renderKayitlar, ayarlar: renderAyarlar, etkinlikler: () => renderEtkinlikler(), istemci: () => renderIstemci(),
-  takvim: enterTakvim, sunucu: renderSunucu, panel: renderPanel, magaza: renderMagaza, hangar: renderHangar, skylab: renderSkylab, muzayede: renderMuzayede };
+  takvim: enterTakvim, sunucu: renderSunucu, panel: renderPanel, dunya: () => renderDunya(), magaza: renderMagaza, hangar: renderHangar, skylab: renderSkylab, muzayede: renderMuzayede };
 
 // ------------------------------------------------------------------ başlangıç
 async function boot() {
@@ -2665,4 +2674,4 @@ async function boot() {
   poll();
   if (cfg && (!cfg.dil || !cfg.kurulum_tamam)) openWizard(cfg.dil ? 1 : 0);
 }
-boot();
+document.addEventListener('DOMContentLoaded', boot);      // sonraki betikler (dunya.js) yüklendikten sonra

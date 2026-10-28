@@ -55,6 +55,9 @@ images). A management panel starts the game and handles your saves, game setting
 - **Game Settings:** multipliers and rules (damage, rewards, drop chances, alien and box counts, prices, cooldowns …),
   presets such as Relaxed, Fast progress and Hard, and your own templates. Most settings apply while you play. Many of them
   can be fine-tuned per source, e.g. uridium from aliens, boxes, quests, gates and modes, or shop prices in credits and uridium.
+- **World Editor:** make your own worlds on top of the standard game: aliens (stats, rewards, new variants), maps (spawn lists,
+  spawn zones, lairs, safe zones and portals on a drag-and-drop map), quests (targets, rewards, prerequisites, new quests in a few
+  clicks), shop prices and the auction's lots. Each save picks its default world and PLAY opens it; the standard world stays read-only.
 - **Events:** each event by calendar, or on / off by hand.
 - **Client:** game folder, game download, version check, window mode, resolution and display.
 - **Server:** processes, ports, behavior and live logs.
@@ -262,6 +265,10 @@ paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikleri yöne
   Rahat, Hızlı ilerleme, Zorlu gibi hazır ayarlar ve kendi şablonların. Çoğu ayar oynarken uygulanır. Birçoğu kaynağa göre
   ayrıntılı ayarlanır: ör. uzaylılardan, kutulardan, görevlerden, kapılardan ve modlardan gelen uridyum, kredi ve uridyumla
   satılanların mağaza fiyatı.
+- **Dünya Editörü:** standart oyunun üstüne kendi dünyalarını kur: uzaylılar (değerler, ödüller, yeni türevler), haritalar (doğma
+  listeleri, doğma bölgeleri, inler, güvenli bölgeler ve portallar; sürükle-bırak harita), görevler (hedefler, ödüller, önkoşullar,
+  birkaç tıkla yeni görev), mağaza fiyatları ve açık artırmanın lotları. Her kayıt kendi varsayılan dünyasını seçer, OYNA onu açar;
+  standart dünya salt okunur kalır.
 - **Etkinlikler:** her etkinlik takvime göre ya da elle açık / kapalı.
 - **İstemci:** oyun klasörü, oyunu indirme, sürüm denetimi, pencere kipi, çözünürlük ve ekran.
 - **Sunucu:** süreçler, portlar, davranış ve canlı günlükler.

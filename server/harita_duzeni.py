@@ -9,9 +9,10 @@ yeri ve hedef haritadaki varış yeri; Palladium alanı (ShieldDamage POI'si); m
 üssü).
 """
 import heapq, json, math, os, random
+import veri as VERI
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-_D = json.load(open(os.path.join(HERE, 'data', 'harita_duzeni.json'), encoding='utf8'))
+_D = VERI.yukle('harita_duzeni.json')
 MAPS = {int(k): v for k, v in _D['haritalar'].items()}
 _WALLS = {m: [tuple(e[1:5]) for e in d.get('engeller', [])] for m, d in MAPS.items()}
 MINE = _D['mayin']

@@ -41,11 +41,12 @@ Kapıya özgü kurallar:
   Hades: istemcide yarım boy harita (maps-config.xml scaleFactor 0.5); grup kapısıydı, burada tek oyunculu (botlar gelince grup).
 """
 import json, math, os, random, time
+import veri as VERI
 import rutbe as RT
 import ayar as AY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-K = json.load(open(os.path.join(HERE, 'data', 'kapilar.json'), encoding='utf8'))
+K = VERI.yukle('kapilar.json')
 KAPI = K['kapilar']
 BY_ID = {v['kimlik']: k for k, v in KAPI.items()}
 BY_MAP = {m: k for k, v in KAPI.items() for m in v['haritalar']}

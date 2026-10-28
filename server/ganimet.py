@@ -12,11 +12,12 @@ Haritalar: X-2..X-8 (1-2 … 3-8), X-1..X-8 (Perseus, Laurel), 4-X, 5-X (5-1..5-
 haftada bir cuma (wiki).
 """
 import json, os, random, re, time
+import veri as VERI
 
 import etkinlik_gorunumleri as EG
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-K = json.load(open(os.path.join(HERE, 'data', 'kutular.json'), encoding='utf8'))
+K = VERI.yukle('kutular.json')
 BOXES = K['kutular']
 for _k, _b in BOXES.items():                 # etkinlik görünümleri: kutunun yerel tasarım satırları (wiki tablosunun dışında; pick_all)
     _b['yerel'] = EG.box_rows(_k)

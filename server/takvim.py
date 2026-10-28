@@ -24,12 +24,13 @@ yıllık ve haftalık etkinliklerin hepsi; oyuna girişte bildirilir) önce geli
 bağımsız açar (haftalıkları da); --etkinlik hepsi bütün yıllık etkinlikleri, --etkinlik yok hiçbir yıllık etkinliği açmaz (haftalıklar sürer).
 """
 import datetime, json, os, sys, time
+import veri as VERI
 
 import ayar as AY
 import etkinlik_gorunumleri as EG
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-D = json.load(open(os.path.join(HERE, 'data', 'etkinlikler.json'), encoding='utf8'))
+D = VERI.yukle('etkinlikler.json')       # Dünya Editörü: dönemler, harita bölümü, dünyadaki durum (dunya_durum)
 EVENTS = D['etkinlikler']
 EG.apply(EVENTS)                        # etkinlik görünümleri: GG hafta sonu kapılarının ve harita kutularının tasarımları
 ALWAYS = D['surekli']['turler']
@@ -335,6 +336,8 @@ def _on(key, now=None):
     st = AY.event_state(key)
     if st:
         return st == 'acik'
+    if e.get('dunya_durum') in ('acik', 'kapali'):     # dünyanın ayarı (kaydın Etkinlikler ayarından sonra)
+        return e['dunya_durum'] == 'acik'
     yearly = 'donemler' in e
     if key in FORCED or (yearly and MODE == 'hepsi'):
         return True
@@ -347,7 +350,9 @@ def _on(key, now=None):
 
 def forced(key):
     """Etkinlik tarihten bağımsız açık mı (panelde 'acik', --etkinlik ad ya da hepsi): harita bölümlerinin pencereleri sayılmaz."""
-    return AY.event_state(key) == 'acik' or key in FORCED or (MODE == 'hepsi' and 'donemler' in EVENTS[key])
+    st = AY.event_state(key)
+    return st == 'acik' or key in FORCED or (MODE == 'hepsi' and 'donemler' in EVENTS[key]) or (
+        not st and EVENTS[key].get('dunya_durum') == 'acik')
 
 
 def active(now=None):

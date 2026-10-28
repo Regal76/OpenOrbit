@@ -33,6 +33,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import protocol as P       # noqa: E402
 import yollar as YOL       # noqa: E402
+import veri as VERI         # noqa: E402
 from profil import Profil  # noqa: E402
 from dunya import World    # noqa: E402
 from magaza import Magaza  # noqa: E402
@@ -1438,6 +1439,24 @@ def sunucu_bilgisi():
             'sifre': bool(CO.AYAR['sifre']), 'yer': len(ms) < CO.AYAR['en_cok']}
 
 
+def dunya_izle():
+    """Dünya Editörü: oyun açıkken dünya dosyası değişince mağazanın fiyatları ve açık artırmanın lotları yenilenir (veri.CANLI);
+    öteki değişiklikler sunucu yeniden başlayınca (panel bildirir)."""
+    import muzayede as MZ
+    while True:
+        time.sleep(2)
+        try:
+            degisen = VERI.tazele()
+            if 'magaza' in degisen:
+                MG.yenile()
+            if 'sosyal.json' in degisen:
+                MZ.yenile()
+            if degisen:
+                log('dünya canlı güncellendi: %s' % ', '.join({'magaza': 'mağaza', 'sosyal.json': 'açık artırma'}[d] for d in degisen))
+        except Exception:
+            log('dünya izlenemedi: %s' % traceback.format_exc())
+
+
 def autosave():
     """Profil 10 sn'de bir diske (değiştiyse). Oturum yalnız istemciden paket gelince kaydediyordu: boşta yapılan son değişiklik
     (pencere kapatma, kontrol kanalı, NPC ödülü) sunucu penceresi kapatılırsa kayboluyordu (canlı test H57).
@@ -1486,6 +1505,7 @@ def main():
     P.uyari = log
     AY.configure()              # oyun ayarları (panel): --ayarlar=<yol> ya da save/ayarlar.json; değişince kendiliğinden okunur
     log('ayarlar: %s | %s' % (AY._state['yol'], ', '.join('%s %s' % x for x in AY.summary()) or 'varsayılan'))
+    log(VERI.ozet())             # Dünya Editörü'nün dünyası (DO_DUNYA; veri.py)
     adres = '127.0.0.1'
     if '--cok-oyunculu' in sys.argv:  # arkadaş sunucusu: oyun ve sohbet bütün ağlardan (cok_oyunculu.py); ayarlar ortam değişkeninde
         CO.configure(os.environ.get('DO_COK_OYUNCULU'), log)
@@ -1494,6 +1514,8 @@ def main():
     SOHBET = SH.Sohbet(log, adres=adres)
     SOHBET.start()                # yerel sohbet (7771); istemci girişteki ChatParamCommand ile buraya bağlanır
     threading.Thread(target=autosave, daemon=True).start()
+    if os.environ.get('DO_DUNYA'):
+        threading.Thread(target=dunya_izle, daemon=True).start()
     CD.start(sys.modules[__name__], LOG_DIR, log)     # panelin canlı durum sayfası (<günlükler>/canli_durum.json)
     PK.start(sys.modules[__name__], LOG_DIR, log)     # panelin oyun menüleri (Mağaza, Hangar, Skylab, Açık Artırma): yerel kanal
     if KONTROL:

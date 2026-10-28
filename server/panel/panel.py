@@ -50,6 +50,7 @@ from indirme import Indirici, IndirmeHatasi  # noqa: E402
 from guncelleme import Guncelleyici, GuncellemeHatasi  # noqa: E402
 from arkadas import Arkadas, ArkadasHatasi  # noqa: E402
 from coklu import Coklu, CokluHatasi  # noqa: E402
+import dunyalar as DW          # noqa: E402
 
 SURUM = '1.0'
 DISCORD = 'https://discord.gg/BUb9rNTKNt'         # topluluk sunucusu (Panel sayfası, README); süresiz davet
@@ -173,6 +174,37 @@ def write_json(path, d):
     with open(tmp, 'w', encoding='utf8', newline='\n') as fh:
         json.dump(d, fh, ensure_ascii=False, indent=1)
     os.replace(tmp, path)
+
+
+def world_id(slot, arkadas=False):
+    """Sunucunun dünyası: arkadaş sunucusunda Host'un seçtiği (panel ayarı arkadas_dunya), yoksa kaydın varsayılan dünyası."""
+    secim = CFG.get('arkadas_dunya') if arkadas else None
+    if secim and DW.var(secim):
+        return secim
+    return KAY.meta(slot).get('dunya') if slot else None
+
+
+def world_file(slot, arkadas=False):
+    """Sunucunun dünya dosyası (Dünya Editörü; DO_DUNYA) ya da None (standart dünya, silinmiş dünya)."""
+    return DW.dosya_yolu(world_id(slot, arkadas))
+
+
+def world_info(wid):
+    """Oyna sayfasının dünya çipi: {id, ad, kapak, degisiklik}; silinmiş dünya standart sayılır."""
+    try:
+        w = DW.ozet(wid if wid and DW.var(wid) else DW.STANDART)
+    except DW.DunyaHatasi:
+        w = DW.ozet(DW.STANDART)
+    return {'id': w['id'], 'ad': w['ad'], 'kapak': w['kapak'], 'degisiklik': 0 if w['standart'] else w['degisiklik'], 'standart': w['standart']}
+
+
+def world_users():
+    """Dünya -> onu varsayılan yapan kayıtlar [{id, ad, pilot}]."""
+    out = {}
+    for k in KAY.list():
+        w = k.get('dunya') if k.get('dunya') and DW.var(k.get('dunya')) else DW.STANDART
+        out.setdefault(w, []).append({'id': k['id'], 'ad': k.get('ad'), 'pilot': k.get('pilot')})
+    return out
 
 
 def settings_file(slot=None):
@@ -533,6 +565,8 @@ def status():
         aktif = KAY.summary(slot) if slot else None
     except (OSError, KayitHatasi):
         aktif = None
+    if aktif:
+        aktif['dunya_bilgi'] = world_info(aktif.get('dunya'))
     vals = game_settings()
     ev = [e['ad'] for e in event_list() if e['etkin'] and e['tur'] == 'yillik']
     slots = KAY.slots()
@@ -595,7 +629,7 @@ def open_extra(b):
             raise Hata(_('Sunucu tek oyunculu açıldı: ek istemci için oyunu kapatıp yeniden OYNA\'ya bas.'))
         log('çoklu istemci: sunucu çok oturumlu yeniden başlatılıyor')
         YON.start_servers(KAY.profile(YON.slot), settings_file(YON.slot), kontrol=bool(AY.read(settings_file(YON.slot)).get('kontrol')), slot=YON.slot,
-                          coklu=coklu_ortam())
+                          coklu=coklu_ortam(), dunya=world_file(YON.slot))
     return COK.ac(slot, client_folder(), YON.slot)
 
 
@@ -670,7 +704,7 @@ def launch(sadece_sunucu=False, arkadas=False):
         arkadas = arkadas or (YON.running() and YON.arkadas)    # açık arkadaş sunucusu Oyna ile kapanmaz (misafirler düşmesin)
         ark_env = ARK.host_ortam() if arkadas else None
         coklu = None if arkadas else (coklu_ortam() if coklu_istenir(slot) else None)
-        restart = YON.needs_restart(prof, ark_env, coklu)
+        restart = YON.needs_restart(prof, ark_env, coklu, world_file(slot, arkadas))
         if restart and COK.canli():
             raise Hata(_('Ek istemciler açıkken sunucu yeniden başlatılamaz: önce onları kapatın.'))
         if CFG.get('yedek_acilista') and not same:
@@ -684,9 +718,13 @@ def launch(sadece_sunucu=False, arkadas=False):
         _step((_('Arkadaş sunucusu başlatılıyor') if arkadas else _('Sunucular başlatılıyor'))
               if not YON.running() or restart else _('Sunucular açık'))
         YON.start_servers(prof, settings_file(slot), kontrol=bool(AY.read(settings_file(slot)).get('kontrol')), slot=slot, arkadas=ark_env,
-                          coklu=coklu)
+                          coklu=coklu, dunya=world_file(slot, arkadas))
         if not sadece_sunucu:
             _step(_('Oyun açılıyor'))
+            try:                                      # dünyanın görev başlıkları (eklentinin GorevMetinleri yaması okur)
+                DW.metinleri_yaz(folder, world_id(slot, arkadas))
+            except OSError as e:
+                log('görev metinleri yazılamadı: %s' % e)
             YON.start_client(folder, cmd, env)
             if YON.coklu or YON.arkadas:              # birden çok istemci olabilir: pencereler pilotun adıyla ayırt edilsin
                 SR.pencere_basligi(YON.istemci.pid, 'DarkOrbit — %s' % KAY.summary(slot).get('pilot', slot))
@@ -1101,7 +1139,135 @@ def profile_values(sid):
             'kullanimda': KAY.in_use(sid)}
 
 
+def dunyalar_durumu():
+    users = world_users()
+    return {'liste': DW.liste(users), 'kapaklar': DW.KAPAKLAR, 'sunucu_acik': YON.running(),
+            'sunucu_dunyasi': YON.dunya[0] if YON.running() and YON.dunya else None, 'kayitlar': [
+                {'id': k['id'], 'ad': k.get('ad'), 'pilot': k.get('pilot'), 'firma': k.get('firma'), 'seviye': k.get('seviye'),
+                 'dunya': k.get('dunya') if k.get('dunya') and DW.var(k.get('dunya')) else DW.STANDART, 'aktif': k.get('aktif')}
+                for k in KAY.list()]}
+
+
+def dunya_arg(q):
+    did = q.get('dunya') or DW.STANDART
+    if not DW.var(did):
+        raise Hata(_('Dünya bulunamadı.'))
+    return did
+
+
+def dunya_get(path, q):
+    if path == '/api/dunyalar':
+        return dunyalar_durumu()
+    if path == '/api/dunya':
+        did = dunya_arg(q)
+        acik = bool(YON.running() and YON.dunya and DW.dosya_yolu(did) and YON.dunya[0] == os.path.normcase(DW.dosya_yolu(did)))
+        # yeniden_gerekli: sunucu açıldıktan sonra oyun açıkken uygulanamayan bir değişiklik yapıldı (mağaza ve açık artırma canlı)
+        return dict(DW.ozet(did, world_users()), sunucu_bu_dunyada=acik,
+                    yeniden_gerekli=acik and SR.dunya_imzasi(DW.dosya_yolu(did)) != YON.dunya)
+    if path == '/api/dunya/bolum':
+        did, bol = dunya_arg(q), q.get('bolum')
+        if bol == 'uzaylilar':
+            return {'uzaylilar': DW.uzaylilar(did)}
+        if bol == 'haritalar':
+            return {'haritalar': DW.haritalar(did)}
+        if bol == 'gorevler':
+            return {'gorevler': DW.gorevler(did)}
+        if bol == 'magaza':
+            return {'kategoriler': DW.magaza(did), 'gorsel': bool(oyun_gorsel('dizin.json'))}
+        if bol == 'muzayede':
+            return DW.muzayede(did)
+        if bol == 'kutular':
+            return DW.kutular(did)
+        if bol == 'kapilar':
+            return {'kapilar': DW.kapilar(did)}
+        if bol == 'ekonomi':
+            return DW.ekonomi(did)
+        if bol == 'etkinlikler':
+            return {'etkinlikler': DW.etkinlikler(did), 'siniflar': DW.SINIFLAR}
+        raise Hata(_('Bilinmeyen bölüm.'))
+    if path == '/api/dunya/harita':
+        return DW.harita(dunya_arg(q), q.get('id'))
+    if path == '/api/dunya/gorev':
+        return DW.gorev(dunya_arg(q), q.get('id'))
+    if path == '/api/dunya/esyalar':
+        return {'esyalar': DW.esya_listesi()}
+    raise Hata(_('Bilinmeyen istek.'))
+
+
+def dunya_post(path, b):
+    if path == '/api/kayitlar/dunya':               # kaydın varsayılan dünyası (OYNA bununla açar)
+        sid, did = b.get('id'), b.get('dunya') or DW.STANDART
+        if not sid or not KAY.exists(sid):
+            raise Hata(_('Kayıt bulunamadı.'))
+        if not DW.var(did):
+            raise Hata(_('Dünya bulunamadı.'))
+        KAY.set_meta(sid, dunya=None if did == DW.STANDART else did)
+        return dunyalar_durumu()
+    if path == '/api/dunya/olustur':
+        did = DW.olustur(b.get('ad'), b.get('aciklama', ''), b.get('kapak', 'nebula'), kaynak=b.get('kaynak'), taslaktan=bool(b.get('taslaktan')))
+        if b.get('kayit') and KAY.exists(b['kayit']):  # oluşturunca bu kaydın varsayılanı yap
+            KAY.set_meta(b['kayit'], dunya=did)
+        return dict(dunyalar_durumu(), yeni=did)
+    if path == '/api/dunya/guncelle':
+        DW.guncelle(b.get('id'), ad=b.get('ad'), aciklama=b.get('aciklama'), kapak=b.get('kapak'))
+        return dunyalar_durumu()
+    if path == '/api/dunya/sil':
+        did = b.get('id')
+        DW.sil(did)
+        for k in KAY.list():                        # varsayılanı bu dünya olan kayıtlar standarda döner
+            if k.get('dunya') == did:
+                KAY.set_meta(k['id'], dunya=None)
+        return dunyalar_durumu()
+    if path == '/api/dunya/kopyala':
+        return dict(dunyalar_durumu(), yeni=DW.kopyala(b.get('id'), b.get('ad')))
+    if path == '/api/dunya/taslak_at':
+        DW.taslak_at()
+        return dunyalar_durumu()
+    if path == '/api/dunya/disari':
+        did = dunya_arg(b)
+        ad = re.sub(r'[^\w.-]+', '_', DW.oku(did).get('ad') or did)[:40]
+        dest = dialog('kaydet', title=_('Dünyayı dışa aktar'), initialfile='%s.oodunya.json' % ad, defaultextension='.json',
+                      filetypes=[(_('OpenOrbit dünyası'), '*.json')])
+        if not dest:
+            return {'iptal': True}
+        write_json(dest, DW.disari(did))
+        return {'yol': dest}
+    if path == '/api/dunya/kod':                    # paylaşım kodu (Discord'a yapıştırılır)
+        return {'kod': DW.kod(dunya_arg(b))}
+    if path == '/api/dunya/iceri':                  # paylaşım kodundan ya da dosyadan
+        if b.get('kod'):
+            veri = DW.koddan(b['kod'])
+        else:
+            src = dialog('ac', title=_('Dünya içe aktar'), filetypes=[(_('OpenOrbit dünyası'), '*.json'), (_('Tümü'), '*.*')])
+            if not src:
+                return {'iptal': True}
+            veri = read_json(src, None)
+        did, rapor = DW.iceri(veri)
+        return dict(dunyalar_durumu(), yeni=did, rapor=rapor)
+    if path == '/api/dunya/yama':                   # editörün değişikliği: dosya + yol -> tam değer (standartta taslağa)
+        did = dunya_arg(b)
+        DW.yama(did, b.get('dosya'), b.get('yol'), b.get('deger'))
+        return dunya_get('/api/dunya', {'dunya': did})
+    if path == '/api/dunya/geri_al':
+        did = dunya_arg(b)
+        DW.geri_al(did, b.get('dosya'), b.get('yol'), b.get('bolum'))
+        return dunya_get('/api/dunya', {'dunya': did})
+    if path == '/api/dunya/gorev':
+        did = dunya_arg(b)
+        DW.gorev_kaydet(did, b.get('id'), b.get('degisiklik') or {})
+        return DW.gorev(did, b.get('id'))
+    if path == '/api/dunya/gorev_yeni':
+        did = dunya_arg(b)
+        qid = DW.gorev_yeni(did, b.get('ad'), b.get('seviye'), b.get('hedefler') or [], b.get('oduller') or [])
+        return DW.gorev(did, qid)
+    if path == '/api/dunya/sunucu_yeniden':         # editörden: dünyanın değişiklikleri için sunucuyu yeniden başlat
+        return h_post('/api/sunucu/yeniden', {})
+    raise Hata(_('Bilinmeyen istek.'))
+
+
 def h_get(path, q):
+    if path.startswith('/api/dunya'):               # Dünya Editörü (dunyalar.py)
+        return dunya_get(path, q)
     if path == '/api/durum':
         return status()
     if path == '/api/ayarlar':
@@ -1169,8 +1335,13 @@ def h_get(path, q):
         return {'var': True, 'sunucu_acik': True, 'yas': max(0, time.time() - d.get('zaman', 0)), 'durum': d}
     if path == '/api/arkadas':                      # Arkadaşlarınla Oyna: Host (sunucu, adresler, misafirler) ve Join (oturum)
         canli = read_json(os.path.join(YOL.LOGS, 'canli_durum.json'), None) if YON.running() else None
-        return {'host': ARK.host_durumu(canli), 'misafir': ARK.durum(), 'kayitlar': KAY.list(), 'aktif': KAY.active(),
-                'istemci_surumu': IST.check(client_folder()).get('surum') or IST.supported()}
+        aktif = KAY.active()
+        return {'host': ARK.host_durumu(canli), 'misafir': ARK.durum(), 'kayitlar': KAY.list(), 'aktif': aktif,
+                'istemci_surumu': IST.check(client_folder()).get('surum') or IST.supported(),
+                # Host'un dünyası (Dünya Editörü): seçim ('' kaydının dünyası), seçilebilenler ve sunucunun açılacağı dünya
+                'dunya': {'secim': CFG.get('arkadas_dunya') if DW.var(CFG.get('arkadas_dunya') or '') else '',
+                          'kaydin': world_info(KAY.meta(aktif).get('dunya') if aktif else None), 'gecerli': world_info(world_id(aktif, True)),
+                          'liste': [{'id': w['id'], 'ad': w['ad'], 'kapak': w['kapak'], 'standart': w['standart']} for w in DW.liste()]}}
     if path == '/api/hakkinda':
         return {'surum': SURUM, 'python': sys.version.split()[0], 'kok': ROOT, 'sunucu': SERVER, 'kayitlar': YOL.KAYITLAR,
                 'gunlukler': YOL.LOGS, 'ayarlar': settings_file(), 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current(), 'discord': DISCORD,
@@ -1179,6 +1350,8 @@ def h_get(path, q):
 
 
 def h_post(path, b):
+    if path.startswith('/api/dunya') or path == '/api/kayitlar/dunya':      # Dünya Editörü (dunyalar.py)
+        return dunya_post(path, b)
     if path == '/api/oyun/al':                      # oyun menüleri: mağazadan satın alma (istemcinin isteğiyle aynı yoldan)
         return oyun_kanali('/magaza/al', {k: b.get(k) for k in ('lootId', 'category', 'amount', 'level')})
     if path == '/api/oyun/magaza/abone':            # oyun menüleri: booster aboneliği
@@ -1202,7 +1375,11 @@ def h_post(path, b):
     if path == '/api/oyna':
         return start_launch(b.get('sadece_sunucu'))
     if path == '/api/arkadas/ayarlar':
-        CFG.update({'arkadas_sifre': str(b.get('sifre') or '')[:64], 'arkadas_en_cok': b.get('en_cok', CFG.get('arkadas_en_cok'))})
+        dunya = b.get('dunya', CFG.get('arkadas_dunya')) or ''
+        if dunya and not DW.var(dunya):
+            raise Hata(_('Dünya bulunamadı.'))
+        CFG.update({'arkadas_sifre': str(b.get('sifre') if 'sifre' in b else CFG.get('arkadas_sifre') or '')[:64],
+                    'arkadas_en_cok': b.get('en_cok', CFG.get('arkadas_en_cok')), 'arkadas_dunya': dunya})
         return h_get('/api/arkadas', {})
     if path == '/api/arkadas/host':                 # arkadaş sunucusu: Oyna gibi, oyun sunucusu --cok-oyunculu
         return start_launch(b.get('sadece_sunucu'), arkadas=True)
@@ -1235,7 +1412,7 @@ def h_post(path, b):
         coklu = None if ark_env else (coklu_ortam() if (YON.running() and YON.coklu) or coklu_istenir(slot) else None)
         YON.stop_servers()
         YON.start_servers(KAY.profile(slot), settings_file(slot), kontrol=bool(AY.read(settings_file(slot)).get('kontrol')), slot=slot, arkadas=ark_env,
-                          coklu=coklu)
+                          coklu=coklu, dunya=world_file(slot, bool(ark_env)))
         return YON.status()
     if path == '/api/istemci/kapat':
         YON.stop_client()

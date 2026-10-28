@@ -24,9 +24,10 @@ istemci ve arkadaş sunucusunda bütün bağlı oyuncular: her istemci aynı lis
 puanı üyelerin rütbe puanlarının toplamı).
 """
 import json, math, os, time
+import veri as VERI
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-R = json.load(open(os.path.join(HERE, 'data', 'rutbe.json'), encoding='utf8'))
+R = VERI.yukle('rutbe.json')            # Dünya Editörü: formül ve eşikler
 F = R['formul']
 KAYIT_SINIRI = 500
 DEFTER_SAYFA = 12                  # istemcinin sayfa boyu

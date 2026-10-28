@@ -16,6 +16,7 @@ dunya.menu_action'dan, roket AttackRocketRequest'ten gelir.
 Beklemeler MenuItemCooldownGroupTimerCommand ile (grup: istemcinin CooldownType'ı); bitişler profilde (harita değişince de sürer).
 """
 import itertools, json, math, os, random, time
+import veri as VERI
 
 import ekstra as EK
 import harita as H
@@ -27,7 +28,7 @@ from eski_protokol import legacy
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _E = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
-_N = json.load(open(os.path.join(HERE, 'data', 'npc.json'), encoding='utf8'))
+_N = VERI.yukle('npc.json')
 S = _E['savas_esyalari']
 O6 = json.load(open(os.path.join(HERE, 'data', 'esyalar_o6.json'), encoding='utf8'))       # Ö6: ifadeler (tools/esyalar_o6.py)
 EMOTE_PREFIX = 'ammunition_specialammo_emote_'

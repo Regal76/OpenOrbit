@@ -245,9 +245,9 @@ def chance_class(p):
 
 def gate_rewards_xml():
     from xml.sax.saxutils import quoteattr
-    src = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'kapilar.json')
+    import veri as VERI          # seçili dünyanın kapıları (DO_DUNYA)
     try:
-        gates = json.load(open(src, encoding='utf8'))['kapilar']
+        gates = VERI.yukle('kapilar.json')['kapilar']
     except (OSError, ValueError, KeyError):
         gates = {}
     out = []

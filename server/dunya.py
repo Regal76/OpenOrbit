@@ -20,6 +20,7 @@ Mesaj akışları gerçek sunucu kaydından (belgeler/istemci/kayit_analizi.md, 
 Sayısal değerler data/npc.json'dan, tamir fiyatları data/esyalar.json'dan (olum_ekrani).
 """
 import json, math, os, random, re, string, threading, time, traceback, weakref
+import veri as VERI
 
 import harita as H
 import harita_duzeni as HD
@@ -45,8 +46,8 @@ import yetenek as YT
 import oyuncu_savas as PVP
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CFG = json.load(open(os.path.join(HERE, 'data', 'npc.json'), encoding='utf8'))
-ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
+CFG = VERI.yukle('npc.json')
+ESYA = VERI.yukle('esyalar.json')        # dünyanın cevherleri (Dünya Editörü: cevherler.haritalar, yeniden_dogma_sn)
 SAVAS = CFG['savas']
 MAP_W, MAP_H = CFG['harita_boyutu']
 CREDITS_ITEM, URIDIUM_ITEM = -1908845164, -707736347      # kayıttaki InventoryItemModule.itemId değerleri
@@ -904,9 +905,22 @@ class World:
                                           for n in self.npcs.values())]
         return tuple(random.choice(free or pts))
 
+    def zone_spot(self, tip):
+        """Türün doğma bölgesinden (npc.json haritalar.npc[].bolge [x, y, yarıçap]; Dünya Editörü) engelsiz bir nokta ya da None."""
+        z = next((g['bolge'] for g in (CFG['haritalar'].get(self.map_id) or {}).get('npc', []) if g['tip'] == tip and g.get('bolge')), None)
+        if not z:
+            return None
+        for _ in range(30):
+            a, r = random.uniform(0, 2 * math.pi), z[2] * math.sqrt(random.random())
+            x = min(max(z[0] + math.cos(a) * r, 300), self.map_w - 300)
+            y = min(max(z[1] + math.sin(a) * r, 300), self.map_h - 300)
+            if not HD.blocked(self.map_id, x, y, 200):
+                return int(x), int(y)
+        return int(z[0]), int(z[1])
+
     def spawn_npc(self, tip, announce=True):
         self.next_uid += 1
-        x, y = self.fixed_spot(tip) or self.random_spot()
+        x, y = self.fixed_spot(tip) or self.zone_spot(tip) or self.random_spot()
         n = NPC(self.next_uid, tip, x, y)
         self.npcs[n.id] = n
         now = time.time()
@@ -1235,8 +1249,9 @@ class World:
 
     # ------------------------------------------------------------ cevherler
     def spawn_ores(self):
-        """Haritanın cevherleri (esyalar.json cevherler.haritalar, harita sınıfına göre) kümeler hâlinde; güvenli bölgelerin dışında."""
-        counts = ORE['haritalar'].get(H.map_class(self.map_id))
+        """Haritanın cevherleri (esyalar.json cevherler.haritalar: haritanın adıyla (Dünya Editörü) yoksa harita sınıfına göre) kümeler
+        hâlinde; güvenli bölgelerin dışında."""
+        counts = ORE['haritalar'].get(H.name(self.map_id)) or ORE['haritalar'].get(H.map_class(self.map_id))
         if not counts:
             return
         total = sum(counts.values())

@@ -27,6 +27,7 @@ DEFAULTS = {
     'hizli_indirme': True,          # istemci indirmesi BAGLANTI bağlantıyla (indirme.py); kapalıyken tek bağlantı
     'arkadas_sifre': '',            # Arkadaşlarınla Oyna > Host: katılma şifresi (boş: şifresiz)
     'arkadas_en_cok': 4,            # Host: en çok misafir
+    'arkadas_dunya': '',            # Host: sunucunun dünyası (Dünya Editörü; boş: etkin kaydın varsayılan dünyası)
     'arkadas_son_adres': '',        # Join: son katılınan adres
     'coklu_istemci': True,          # çoklu istemci: en az iki kayıt varsa OYNA sunucuyu çok oturumlu açar (coklu.py)
     'coklu_en_cok': 3,              # en çok ek istemci (her istemci ~600 MB bellek)

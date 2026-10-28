@@ -255,7 +255,7 @@ class Kayitlar:
         out.update(id=slot, ad=m.get('ad') or slot, not_=m.get('not', ''), kayit_olusturma=m.get('olusturma'),
                    son_oynama=m.get('son_oynama'), son_kayit=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(st.st_mtime)),
                    boyut=st.st_size, yedek_sayisi=len(self.backup_files(slot)), aktif=(slot == self.active()),
-                   kullanimda=self.in_use(slot))
+                   kullanimda=self.in_use(slot), dunya=m.get('dunya') or 'standart')
         return out
 
     def list(self):
@@ -343,8 +343,10 @@ class Kayitlar:
             _copy_atomic(os.path.join(src, 'profil.json'), os.path.join(dst, 'profil.json'))
             if os.path.isfile(os.path.join(src, 'web_ayarlari.json')):
                 shutil.copy2(os.path.join(src, 'web_ayarlari.json'), os.path.join(dst, 'web_ayarlari.json'))
-            _write_json(os.path.join(dst, 'kayit.json'), {'ad': ad, 'olusturma': time.strftime('%Y-%m-%d %H:%M:%S'),
-                                                          'not': _('Kopyalandı: %s', self.meta(slot).get('ad') or slot)})
+            meta = {'ad': ad, 'olusturma': time.strftime('%Y-%m-%d %H:%M:%S'), 'not': _('Kopyalandı: %s', self.meta(slot).get('ad') or slot)}
+            if self.meta(slot).get('dunya'):              # varsayılan dünya (Dünya Editörü) kopyaya geçer
+                meta['dunya'] = self.meta(slot)['dunya']
+            _write_json(os.path.join(dst, 'kayit.json'), meta)
             return sid
 
     def delete(self, slot):

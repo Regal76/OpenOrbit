@@ -175,8 +175,8 @@ def formation_loot(fid):
 def level_for(ep):
     global _LEVELS
     if _LEVELS is None:
-        p = os.path.join(HERE, 'data', 'seviyeler.json')
-        _LEVELS = json.load(open(p, encoding='utf8'))['seviyeler'] if os.path.exists(p) else [[1, 0]]
+        import veri as VERI           # Dünya Editörü: seviye eşikleri
+        _LEVELS = VERI.yukle('seviyeler.json')['seviyeler'] if os.path.exists(os.path.join(HERE, 'data', 'seviyeler.json')) else [[1, 0]]
     lv = 1
     for level, need in _LEVELS:
         if ep >= need:

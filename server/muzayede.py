@@ -29,12 +29,22 @@ işler (Sosyal.tick -> settle + oto):
 kazananı ilk hesaplayan oturumda bir kez belirlenir (SONUC): önce her oyuncu kendi teklifiyle aynı lotu kazanabiliyordu.
 """
 import json, os, random, threading, time
+import veri as VERI
 
 import ayar as AY
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-D = json.load(open(os.path.join(HERE, 'data', 'sosyal.json'), encoding='utf8'))['muzayede']
+D = VERI.yukle('sosyal.json')['muzayede']
 LOTS = {(l[2], l[0]): {'loot': l[0], 'grup': l[1], 'tur': l[2], 'adet': l[3], 'anlik': l[4], 'fiyat': l[5]} for l in D['lotlar']}
+
+
+def yenile():
+    """Dünyanın açık artırması değişti (game.dunya_izle): lotlar yerinde yenilenir. Kaldırılan lottaki teklif dönem sonunda iade
+    edilir (settle: lot yoksa kredi geri)."""
+    yeni = VERI.yukle('sosyal.json')['muzayede']['lotlar']
+    with LOCK:
+        LOTS.clear()
+        LOTS.update({(l[2], l[0]): {'loot': l[0], 'grup': l[1], 'tur': l[2], 'adet': l[3], 'anlik': l[4], 'fiyat': l[5]} for l in yeni})
 REQUESTS = {'AuctionListRequest', 'AuctionBidRequest', 'AuctionQuickBuyRequest', 'GetNamFIagRequest', 'UpdateNamFIagRequest',
             'AuctionTestRequest'}
 B = D['bitis']

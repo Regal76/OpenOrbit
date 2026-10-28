@@ -28,6 +28,7 @@ Mağazada G-HP1 (pet_upgrade-g-hp1): P.E.T. seviyesi kadar +10.000 can.
 Değerler data/esyalar.json "pet" (wiki, kayıt ve uyarlamalar; kaynak notu orada).
 """
 import json, math, os, random, time
+import veri as VERI
 import rutbe as RT
 import ayar as AY
 import lazer as LAZER
@@ -36,7 +37,7 @@ import yukseltme as YK
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ESYA = json.load(open(os.path.join(HERE, 'data', 'esyalar.json'), encoding='utf8'))
-SAVAS = json.load(open(os.path.join(HERE, 'data', 'npc.json'), encoding='utf8'))['savas']
+SAVAS = VERI.yukle('npc.json')['savas']
 PET = ESYA['pet']
 GEARS = PET['disliler']
 PROTOCOLS = PET['protokoller']
