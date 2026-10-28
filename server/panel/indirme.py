@@ -168,6 +168,7 @@ class Indirici:
         self.stop = threading.Event()
         self.d = self._blank('bos')
         self.samples = []
+        self.baglanti = BAGLANTI
 
     @staticmethod
     def _blank(durum):
@@ -187,10 +188,11 @@ class Indirici:
         with self.lock:
             return self.d['calisiyor']
 
-    def start(self):
+    def start(self, hizli=True):
         with self.lock:
             busy = self.d['calisiyor']
             if not busy:
+                self.baglanti = BAGLANTI if hizli else 1
                 self.stop.clear()
                 self.d = dict(self._blank('hazirlaniyor'), calisiyor=True, baslangic=time.time())
                 self.samples = []
@@ -274,7 +276,7 @@ class Indirici:
                 raise IndirmeHatasi(_('Diskte yer yetmiyor: %.1f GB gerekli, %.1f GB boş.', (need + PAY) / GB, free / GB))
             self._set(durum='indiriliyor', toplam=sum(i.compress_size for i, p in items), acik_boyut=sum(i.file_size for i, p in items),
                       alinan=sum(i.compress_size for i, p in items if p in done), dosya_sayisi=len(items), biten_dosya=len(done))
-            self.log('istemci indiriliyor: %s (%d dosya, %d zaten var, %d bağlantı)' % (self.url, len(items), len(done), BAGLANTI))
+            self.log('istemci indiriliyor: %s (%d dosya, %d zaten var, %d bağlantı)' % (self.url, len(items), len(done), self.baglanti))
             for i, p in files:
                 if i.is_dir():
                     os.makedirs(p, exist_ok=True)
@@ -307,7 +309,7 @@ class Indirici:
                     self.stop.set()                 # öteki bağlantılar da dursun
                 finally:
                     h.close()
-            with ThreadPoolExecutor(BAGLANTI) as havuz:
+            with ThreadPoolExecutor(self.baglanti) as havuz:
                 list(havuz.map(grup_ac, gruplar))
             if hatalar:
                 raise next((e for e in hatalar if not isinstance(e, Iptal)), hatalar[0])

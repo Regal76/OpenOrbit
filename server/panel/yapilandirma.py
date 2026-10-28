@@ -24,6 +24,7 @@ DEFAULTS = {
     'gunluk_dondur': True,          # büyük günlükler başlatmada .1, .2 … olarak kayar
     'pencere_kapaninca': 'bekle',   # panel penceresi kapanınca: bekle (oyun sürüyorsa bitince kapanır) | kapat (her şeyi kapatır)
     'guncelleme': 'otomatik',       # GitHub'daki yeni sürüm (guncelleme.py): otomatik kur | bildir (yalnız haber ver) | kapali
+    'hizli_indirme': True,          # istemci indirmesi BAGLANTI bağlantıyla (indirme.py); kapalıyken tek bağlantı
     'arkadas_sifre': '',            # Arkadaşlarınla Oyna > Host: katılma şifresi (boş: şifresiz)
     'arkadas_en_cok': 4,            # Host: en çok misafir
     'arkadas_son_adres': '',        # Join: son katılınan adres

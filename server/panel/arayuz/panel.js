@@ -1555,7 +1555,11 @@ async function renderIstemci(data) {
       checkRow(c.exe, 'DarkOrbit.exe'), checkRow(c.veri, T('DarkOrbit_Data klasörü')),
       c.gecerli ? checkRow(c.uyumlu, versionText(c, r.desteklenen), !c.uyumlu) : null),
     c.sorunlar.length && !c.gecerli && !r.indirme.calisiyor ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, c.sorunlar.join(' '))) : null,
-    dlWrap ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('Oyunu indir')), dlWrap] : null,
+    h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('Oyunu indir')),
+    h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, T('Hızlı indirme')),
+      h('div', { class: 'help' }, T('Açıkken oyun aynı anda 3 bağlantıyla iner; kapalıyken tek bağlantıyla (daha yavaş). Bir sonraki indirmede geçerli olur.'))),
+      h('div', { class: 'ctl' }, h('label', { class: 'switch' }, h('input', { type: 'checkbox', checked: cfg.hizli_indirme, onchange: e => saveCfg({ hizli_indirme: e.target.checked }) }), h('span')))),
+    dlWrap,
     yWrap ? [h('hr', { class: 'sep' }), h('div', { class: 'lbl' }, T('İstemci düzeltmeleri (BepInEx)')), yWrap] : null,
     h('div', { id: 'proto-box' }),
     h('div', { class: 'row wrap', style: { marginTop: '12px' } },
@@ -1766,7 +1770,6 @@ async function loadLog(quiet) {
 
 // ================================================================== PANEL
 // ---- güncellemeler (guncelleme.py, /api/guncelleme): GitHub'daki son sürüm, otomatik kurulum
-const UPD_MODES = [['otomatik', N('Otomatik kur')], ['bildir', N('Yalnız haber ver')], ['kapali', N('Kapalı')]];
 const UPD_TEXT = { guncel: N('Panel güncel.'), var: N('Yeni sürüm var.'), indiriliyor: N('Yeni sürüm indiriliyor…'), kuruluyor: N('Yeni sürüm kuruluyor…'),
   kuruldu: N('Yeni sürüm kuruldu: oyun ve sunucular kapalıysa panel şimdi yeniden başlar.'), bilinmiyor: N('Henüz denetlenmedi.'),
   yerel_degisiklik: N("GitHub'da yeni sürüm var, ama bu kopyada yerel değişiklikler var: güncellemeyi git ile al."),
@@ -1785,6 +1788,11 @@ function updCard() {
     const text = r.durum === 'hata' ? r.hata : r.calisiyor && r.durum !== 'indiriliyor' && r.durum !== 'kuruluyor' ? T('Denetleniyor…') : T(UPD_TEXT[r.durum] || r.durum);
     const pct = r.toplam ? Math.floor(100 * r.alinan / r.toplam) : null;
     const save = k => act(() => api('/api/panel_ayarlari', { degerler: { guncelleme: k } }), T('Kaydedildi.')).then(x => x && load());
+    const toggle = on => {                               // kapalıyken yeni sürüm yalnız haber verilir (bildir)
+      save(on ? 'otomatik' : 'bildir');
+      if (!on) { const m = modal({ title: T('Otomatik güncelleme kapatıldı'), body: T('Gün içinde çok sık güncelleme çıkabiliyor; sık sık kontrol etmeniz önerilir.'),
+        foot: [btn(T('Tamam'), () => m.close(), 'primary')] }); }
+    };
     body.replaceChildren(h('div', null,                  // h() boşları atlar (replaceChildren null'ı metin yapar)
       h('div', { class: 'kv', style: { maxWidth: '620px' } },
         h('div', null, T('Kurulu sürüm'), h('b', null, fmtSurum(r.kurulu))),
@@ -1797,7 +1805,9 @@ function updCard() {
           r.durum === 'var' && !r.bosta ? h('div', { class: 'small' }, T('Oyun, sunucular ya da başka bir iş açık: kapanınca kurulabilir.')) : null)),
       r.durum === 'indiriliyor' && pct != null ? h('div', { class: 'meter', style: { marginTop: '8px' } }, h('div', { class: 'meter-bar' }, h('span', { style: { width: pct + '%' } }))) : null,
       h('div', { class: 'stack', style: { gap: '12px', marginTop: '14px' } },
-        field(T('Yeni sürüm çıkınca'), h('div', { class: 'seg' }, UPD_MODES.map(([k, t]) => h('button', { class: r.ayar === k ? 'on info' : '', onclick: () => r.ayar !== k && save(k) }, T(t))))),
+        h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, T('Otomatik güncelleme')),
+          h('div', { class: 'help' }, T('Açıkken yeni sürüm oyun ve sunucular kapanınca kendiliğinden kurulur; kapalıyken yalnız haber verilir.'))),
+          h('div', { class: 'ctl' }, h('label', { class: 'switch' }, h('input', { type: 'checkbox', checked: r.ayar === 'otomatik', onchange: e => toggle(e.target.checked) }), h('span')))),
         h('div', { class: 'row wrap' },
           btn(T('Şimdi denetle'), () => act(() => api('/api/guncelleme/denetle', {})).then(x => x && draw(x)), '', 'refresh', { disabled: run }),
           r.durum === 'var' ? btn(T('Güncellemeyi kur'), () => act(() => api('/api/guncelleme/kur', {})).then(x => x && draw(x)), 'primary', 'download', { disabled: !r.bosta }) : null,

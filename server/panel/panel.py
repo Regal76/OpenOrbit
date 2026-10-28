@@ -1412,7 +1412,7 @@ def h_post(path, b):
     if path == '/api/istemci/indir':                # oyunu indir ve proje köküne aç (sürer, kaldığı yerden)
         if CAL.bul(CFG)['tur'] == 'motor':          # macOS: oyunu açacak Wine da birlikte iner
             MOT.start()
-        return DL.start()
+        return DL.start(CFG.get('hizli_indirme'))
     if path == '/api/istemci/guncelle':             # eski istemci: yeni sürümü indir, eskisini sil; BepInEx yeni klasöre yeniden kurulur
         if YON.client_alive() or IST.running_clients():
             raise Hata(_('Önce oyunu kapatın'))
@@ -1426,7 +1426,7 @@ def h_post(path, b):
             YAM.start(yeni)
             return DL.state()
         STATE['istemci_eski'] = eski
-        return DL.start()
+        return DL.start(CFG.get('hizli_indirme'))
     if path == '/api/motor/kur':
         return MOT.start()
     if path == '/api/yama/kur':
