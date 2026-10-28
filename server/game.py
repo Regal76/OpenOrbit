@@ -1431,6 +1431,7 @@ def sunucu_bilgisi():
         client = open(os.path.join(DATA, 'protokol', 'surum.txt'), encoding='utf8').read().strip() or '1.1.116'
     except OSError:
         client = '1.1.116'
+    client = max(client, '1.1.116', key=lambda v: tuple(int(x) for x in v.split('.')))     # surum.txt güncellemede eskide kalabilir
     return {'sunucu': 'darkorbit', 'protokol': CO.PROTOKOL, 'kod': CO.AYAR['kod'], 'istemci': client,
             'pilot': PROFIL.d['pilot'].get('userName', ''), 'oyuncular': names, 'misafir': len(ms), 'en_cok': CO.AYAR['en_cok'],
             'sifre': bool(CO.AYAR['sifre']), 'yer': len(ms) < CO.AYAR['en_cok']}
