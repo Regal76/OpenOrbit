@@ -11508,6 +11508,19 @@
       ]
      },
      "_kaynak": "resmî Türk forumu 130098: Plagued Gygerthrall'lar Plagued Kristallin öldürülünce doğar (X-6)"
+    },
+    {
+     "haritalar": [
+      "X-4",
+      "X-5"
+     ],
+     "uzaylilar": [
+      {
+       "tur": "etk_plagued_kristallin",
+       "adet": 2
+      }
+     ],
+     "_kaynak": "resmî Türk forumu 154610 (Veba Mutasyonu): etkinlik süresince X-4 ve X-5'te Plagued Kristallin; Plagued Gygerthrall doğurmaz (adet uyarlama)"
     }
    ],
    "_kaynak": "resmî Türk forumu 130098 (Epidemi Alarmı: 40 görev 506248-506267 / 512248-512267) ve 154610 (Veba Mutasyonu, Haziran 2020: 22 hedefli Savaş Bileti, biletli ödüller istemcinin bpReward'ı). Blighted Kristallon, Karantina Bölgesi ve Immunizer CPU kalıcı (pve_modlari / etkinlik_kapilari). Dönem uyarlama (iki hafta); geçmiş tek dönem: panelden başlatılabilir"

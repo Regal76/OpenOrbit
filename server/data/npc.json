@@ -8122,6 +8122,26 @@
    "kargo": {},
    "_kaynak": "resmî Türk forumu 130098: Plagued Gygerthrall (X-6) DP 90.000, kalkan 75.000, ödül 16 U / 12.800 kredi / 6.400 TP / 32 şeref; Plagued Kristallin öldürülünce doğar; hasar ve hız uyarlama; model game.xml (246, npcId 154)"
   },
+  "etk_plagued_kristallin": {
+   "ad": "-=[ Plagued Kristallin ]=-",
+   "hp": 75000,
+   "kalkan": 60000,
+   "hasar": 1700,
+   "hiz": 373,
+   "genisleme": 3,
+   "saldirgan": false,
+   "odul": {
+    "ep": 6400,
+    "onur": 32,
+    "kredi": 12800,
+    "uridyum": 16
+   },
+   "kargo": {},
+   "_kaynak": "Plagued Kristallin'in (252) etkinlik sürümü: Veba Mutasyonu'nda X-4 ve X-5'te doğar (resmî Türk forumu 154610), etkinlik bitince doğmaz",
+   "npc_kimlik": 161,
+   "model": "252",
+   "etkinlik": true
+  },
   "saturn_aegis": {
    "ad": "-={ Saturn Aegis }=-",
    "hp": 275000,
@@ -8468,10 +8488,6 @@
      "adet": 1
     },
     {
-     "tip": "252",
-     "adet": 2
-    },
-    {
      "tip": "saturn_aegis",
      "adet": 1
     }
@@ -8540,10 +8556,6 @@
     {
      "tip": "46",
      "adet": 1
-    },
-    {
-     "tip": "252",
-     "adet": 2
     }
    ],
    "bonus_kutu": 15,
@@ -8660,10 +8672,6 @@
     {
      "tip": "46",
      "adet": 1
-    },
-    {
-     "tip": "252",
-     "adet": 2
     }
    ],
    "bonus_kutu": 15,
@@ -8747,10 +8755,6 @@
     {
      "tip": "28",
      "adet": 1
-    },
-    {
-     "tip": "252",
-     "adet": 2
     }
    ],
    "bonus_kutu": 12,
@@ -8929,10 +8933,6 @@
     {
      "tip": "28",
      "adet": 1
-    },
-    {
-     "tip": "252",
-     "adet": 2
     },
     {
      "tip": "saturn_diminisher",
@@ -9127,10 +9127,6 @@
     {
      "tip": "28",
      "adet": 1
-    },
-    {
-     "tip": "252",
-     "adet": 2
     },
     {
      "tip": "saturn_goliath",
@@ -10066,5 +10062,5 @@
  "_etkinlik_turleri": "etk_* türleri tools/etkinlik_uzaylilari.py ile (harita etkinlikleri, Aşama 7).",
  "_etkinlik_kutulari": "etk_santa_*, etk_hitac_* tools/etkinlik_kutulari.py ile.",
  "_forum_tr": "Resmî Türk forumu (2026-10-26): Darksilver hızları ve Stinger/Pike (160525), Impulse II/Attend IX hızları (141806), LF-4 geliştirme Bifenon tablosu (129125: Interceptor %20, Deadly Battleray 2, Uber Kristallon %30, Uber Kristallin %25), Boss'larda 1 ve Uber Kristallon'da 2 günlük dosyası (127585; oran %5 uyarlama), Protegit hızı 420 (127543)",
- "_forum_tr_plagued": "Plagued Kristallin X-4, X-5 ve X-6'da sık doğar (resmî Türk forumu 154610 Veba Mutasyonu, Haziran 2020): X-4 ve X-5'e 2'şer (adet uyarlama)"
+ "_forum_tr_plagued": "Plagued Kristallin kalıcı olarak yalnız X-6'da (istemcinin spacemap-config.xml'i, darkorbitwiki X-6); X-4 ve X-5'te yalnız Veba Mutasyonu etkinliğinde (resmî Türk forumu 154610: etkinlik süresince X-4, X-5, X-6'da doğma oranı artar): etkinlikler.json plague_mutation harita_ek, etk_plagued_kristallin 2'şer (adet uyarlama)"
 }
