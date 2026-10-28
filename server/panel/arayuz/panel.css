@@ -253,12 +253,32 @@ input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rg
 .play-btn:disabled { cursor: default; filter: saturate(.4) brightness(.8); }
 .play-btn.running { background: linear-gradient(180deg, #4ce3a6, #20b07a); color: #00170d; box-shadow: 0 10px 30px rgba(61, 220, 151, .3); }
 .play-btn.busy { background: linear-gradient(180deg, #4cc8ff, #1a8fd0); color: #021120; }
+.play-btn.busy.prep { background: linear-gradient(90deg, transparent var(--p), rgba(2, 17, 32, .55) var(--p)), linear-gradient(180deg, #4cc8ff, #1a8fd0);
+  transition: background .4s; }   /* BepInEx hazırlığı: düğme soldan dolar */
 .play-sub { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 .steps { display: grid; gap: 6px; margin-top: 4px; }
 .step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
 .step .ic { width: 18px; height: 18px; display: grid; place-items: center; }
 .step.tamam { color: var(--text); } .step.tamam .ic { color: var(--ok); }
 .step.hata { color: var(--err); } .step.calisiyor { color: var(--accent); }
+/* BepInEx'in ilk açılış hazırlığı (OYNA adımının altında) */
+.prep { display: grid; gap: 10px; margin: 4px 0 6px 28px; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(56, 196, 255, .3);
+  background: var(--accent-soft); }
+.prep-head { display: flex; align-items: center; gap: 8px; color: var(--text); font-weight: 650; font-size: 13.5px; }
+.prep-head svg { width: 17px; height: 17px; flex: none; color: var(--accent); }
+.prep-head b { margin-left: auto; color: var(--accent); font-variant-numeric: tabular-nums; }
+.prep .meter-bar { height: 9px; margin-top: 0; }
+.prep .meter-bar span { background: linear-gradient(90deg, var(--accent), #8fe0ff, var(--accent)); background-size: 200% 100%;
+  animation: prep-akis 1.6s linear infinite; }
+@keyframes prep-akis { from { background-position: 200% 0; } to { background-position: 0 0; } }
+.prep-stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 12px; }
+.prep-stage { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--dim); }
+.prep-stage .ic { width: 16px; height: 16px; display: grid; place-items: center; flex: none; }
+.prep-stage .ic svg { width: 14px; height: 14px; }
+.prep-stage.tamam { color: var(--muted); } .prep-stage.tamam .ic { color: var(--ok); }
+.prep-stage.calisiyor { color: var(--accent); }
+.prep-stage .dot-sm { width: 6px; height: 6px; border-radius: 50%; background: var(--line-2); }
+@media (prefers-reduced-motion: reduce) { .prep .meter-bar span { animation: none; } }
 .spin { width: 14px; height: 14px; border: 2px solid rgba(56, 196, 255, .25); border-top-color: var(--accent); border-radius: 50%;
   animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }

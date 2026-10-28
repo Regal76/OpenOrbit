@@ -264,7 +264,7 @@ null,
 "fields": [
 [
 "state",
-"<Nodes>d__18.BargainState",
+"System.Xml.Linq.XDeclaration.BargainState",
 8
 ],
 [
@@ -302,7 +302,7 @@ null,
 "fields": [
 [
 "activationTypeValue",
-"UnityEngine.XR.XRNode.ActivationType",
+"UnityEngine.XR.XRNodeState.ActivationType",
 8
 ]
 ],
@@ -319,7 +319,7 @@ null,
 "fields": [
 [
 "activationType",
-"UnityEngine.XR.XRNodeState.ActivationType",
+"UnityEngine.XR.ConnectionChangeType.ActivationType",
 8
 ],
 [
@@ -748,7 +748,7 @@ null,
 "fields": [
 [
 "alignmentValue",
-"UnityEngine.Video.VideoTimeReference.Alignment",
+"UnityEngine.Video.VideoTimeUpdateMode.Alignment",
 8
 ]
 ],
@@ -765,7 +765,7 @@ null,
 "fields": [
 [
 "transactionStatus",
-"UnityEngine.TouchType.TransactionStatus",
+"UnityEngine.PenStatus.TransactionStatus",
 8
 ],
 [
@@ -824,7 +824,7 @@ null,
 "fields": [
 [
 "ammunitionType",
-"UnityEngine.PenEventType.AmmunitionType",
+"UnityEngine.Gyroscope.AmmunitionType",
 8
 ],
 [
@@ -846,7 +846,7 @@ null,
 "fields": [
 [
 "ammunitionType",
-"UnityEngine.PenData.AmmunitionType",
+"UnityEngine.CameraRaycastHelper.AmmunitionType",
 8
 ],
 [
@@ -900,7 +900,7 @@ null,
 ],
 [
 "currencyType",
-"UnityEngine.CameraRaycastHelper.CurrencyType",
+"HitInfo.CurrencyType",
 12
 ],
 [
@@ -932,7 +932,7 @@ null,
 "fields": [
 [
 "typeValue",
-"UnityEngine.Input.AmmunitionType",
+"UnityEngine.SendMouseEvents.AmmunitionType",
 8
 ]
 ],
@@ -36329,7 +36329,7 @@ null,
 ],
 [
 "key",
-"System.Configuration.ConfigurationElementCollectionType.ArgKey",
+"System.Configuration.ConfigurationSectionGroup.ArgKey",
 20
 ]
 ],
@@ -46538,7 +46538,7 @@ null,
 ],
 [
 "phase",
-"UnityEngine.Analytics.ContinuousEvent.Phase",
+"UnityEngine.Terrain.SessionStateChanged.Phase",
 28
 ],
 [

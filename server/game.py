@@ -1428,9 +1428,9 @@ def sunucu_bilgisi():
     ms = CO.liste()
     names = sorted({s.profil.d['pilot'].get('userName', '?') for s in list(OTURUMLAR) if s.profil is not None})
     try:
-        client = open(os.path.join(DATA, 'protokol', 'surum.txt'), encoding='utf8').read().strip() or '1.1.115'
+        client = open(os.path.join(DATA, 'protokol', 'surum.txt'), encoding='utf8').read().strip() or '1.1.116'
     except OSError:
-        client = '1.1.115'
+        client = '1.1.116'
     return {'sunucu': 'darkorbit', 'protokol': CO.PROTOKOL, 'kod': CO.AYAR['kod'], 'istemci': client,
             'pilot': PROFIL.d['pilot'].get('userName', ''), 'oyuncular': names, 'misafir': len(ms), 'en_cok': CO.AYAR['en_cok'],
             'sifre': bool(CO.AYAR['sifre']), 'yer': len(ms) < CO.AYAR['en_cok']}

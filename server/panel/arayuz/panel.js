@@ -327,7 +327,9 @@ function renderOynaBody() {
   }
   let main, sub = [];
   if (o.calisiyor) {
-    main = h('button', { class: 'play-btn busy', disabled: true }, h('span', { class: 'spin', style: { borderTopColor: '#021120' } }), T('BAŞLATILIYOR'));
+    const prep = o.adimlar.length && o.adimlar[o.adimlar.length - 1].ilerleme;      // BepInEx'in ilk açılış hazırlığı (istemci_yama.isit)
+    main = h('button', { class: 'play-btn busy' + (prep ? ' prep' : ''), disabled: true, style: prep ? { '--p': prep.yuzde + '%' } : null },
+      prep ? null : h('span', { class: 'spin', style: { borderTopColor: '#021120' } }), prep ? T('HAZIRLANIYOR') : T('BAŞLATILIYOR'));
   } else if (running) {
     main = h('button', { class: 'play-btn running', disabled: true }, icon('check'), T('OYUN AÇIK'));
     sub.push(btn(T('Oyunu kapat'), async () => {
@@ -349,9 +351,7 @@ function renderOynaBody() {
   const recent = o.bitti && (Date.now() / 1000 - o.bitti < 45);
   if (o.adimlar.length && (o.calisiyor || o.hata || recent)) {
     steps = h('div', { class: 'card' }, h('h2', null, icon('zap'), o.sadece_sunucu ? T('Sunucu başlatma') : T('Oyun başlatma')),
-      h('div', { class: 'steps' }, o.adimlar.map(s => h('div', { class: 'step ' + s.durum },
-        h('span', { class: 'ic' }, s.durum === 'calisiyor' ? h('span', { class: 'spin' }) : icon(s.durum === 'hata' ? 'x' : 'check')),
-        h('span', null, s.metin), h('span', { class: 'dim small', style: { marginLeft: 'auto' } }, s.zaman)))));
+      stepList(o.adimlar));
   }
   const last = d.surecler.istemci.son;
   const early = last && last.erken && !running ? h('div', { class: 'alert uyari' }, icon('alert'),
@@ -359,8 +359,10 @@ function renderOynaBody() {
     btn(T('Günlük'), () => { go('sunucu'); setTimeout(() => showLog(d.panel.platform === 'win32' ? 'client.log' : 'wine.log'), 100); }, 'sm')) : null;
 
   // ---- uyarılar
-  const warns = d.uyarilar.map(u => h('div', { class: 'alert ' + (u.tur === 'hata' ? 'hata' : 'uyari') }, icon('alert'), h('div', null, u.metin),
-    u.eylem ? btn(u.eylem.calisiyor ? T('Kuruluyor…') : u.eylem.metin, () => act(() => api(u.eylem.api, {})), 'primary sm', null, { disabled: !!u.eylem.calisiyor }) : null,
+  const warns = d.uyarilar.map(u => h('div', { class: 'alert ' + (u.tur === 'hata' ? 'hata' : 'uyari') }, icon('alert'),
+    h('div', { style: u.ilerleme != null ? { flex: '1' } : null }, u.metin,
+      u.ilerleme != null ? h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: u.ilerleme + '%' } }))) : null),
+    u.eylem ? btn(u.eylem.calisiyor ? u.eylem.calisiyor_metin || T('Kuruluyor…') : u.eylem.metin, () => act(() => api(u.eylem.api, {})), 'primary sm', null, { disabled: !!u.eylem.calisiyor }) : null,
     u.sayfa ? btn(T('Git'), () => go(u.sayfa), 'sm') : null));
 
   // ---- özet kartları
@@ -540,9 +542,25 @@ function launchSteps(o) {
   if (!o.adimlar.length || !(o.calisiyor || o.hata || recent)) return null;
   return stepList(o.adimlar);
 }
-const stepList = list => h('div', { class: 'steps' }, list.map(s => h('div', { class: 'step ' + s.durum },
+const stepList = list => h('div', { class: 'steps' }, list.map(s => [h('div', { class: 'step ' + s.durum },
   h('span', { class: 'ic' }, s.durum === 'calisiyor' ? h('span', { class: 'spin' }) : icon(s.durum === 'hata' ? 'x' : 'check')),
-  h('span', null, s.metin), h('span', { class: 'dim small', style: { marginLeft: 'auto' } }, s.zaman))));
+  h('span', null, s.metin), h('span', { class: 'dim small', style: { marginLeft: 'auto' } }, s.zaman)),
+  s.ilerleme && s.durum === 'calisiyor' ? prepBox(s.ilerleme) : null]));
+
+// BepInEx'in ilk açılış hazırlığı (istemci_yama.isit/ilerleme): oyun penceresi henüz görünmez, oyuncu oyunun açılmadığını sanmasın
+const PREP_ASAMA = [N('İstemci başlatılıyor'), N('Köprü derlemeleri üretiliyor'), N('Dosyalar yazılıyor')];
+function prepBox(p) {
+  return h('div', { class: 'prep' },
+    h('div', { class: 'prep-head' }, icon('zap'), h('span', null, T('Düzeltmeler ilk açılışa hazırlanıyor')), h('b', null, '%' + p.yuzde)),
+    h('div', { class: 'meter' }, h('div', { class: 'meter-bar' }, h('span', { style: { width: p.yuzde + '%' } }))),
+    h('div', { class: 'prep-stages' }, PREP_ASAMA.map((a, i) => {
+      const st = i < p.asama ? 'tamam' : i === p.asama ? 'calisiyor' : 'bekliyor';
+      return h('div', { class: 'prep-stage ' + st }, h('span', { class: 'ic' }, st === 'tamam' ? icon('check') : st === 'calisiyor'
+        ? h('span', { class: 'spin' }) : h('span', { class: 'dot-sm' })), h('span', null, T(a)));
+    })),
+    h('div', { class: 'small muted' }, T('Yalnız ilk açılışta bir kez yapılır; bu sırada oyun penceresi görünmez. Bitince oyun kendiliğinden açılır, bir şeye basman gerekmez.'),
+      ' ', h('span', { class: 'dim' }, T('Geçen süre: {0}', fmtDur(p.gecen_sn)))));
+}
 
 // ---- Host
 function hostView(v) {
@@ -1426,7 +1444,7 @@ function motorWatch(wrap, m, opts) {
   return id;
 }
 
-// ---- Windows: istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py, /api/yama): İstemci sayfası ve sihirbazın oyun klasörü adımı
+// ---- istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py, /api/yama): İstemci sayfası ve sihirbazın oyun klasörü adımı
 function yamaBox(y, refresh) {
   const call = path => act(() => api(path, {})).then(x => { if (x) refresh(x); });
   const pct = y.toplam ? Math.floor(100 * y.alinan / y.toplam) : 0, run = y.calisiyor;
@@ -1536,7 +1554,7 @@ async function renderIstemci(data) {
       field(T('Ek Unity argümanları (gelişmiş)'), extra),
       field(T('Başlatma komutu'), h('div', { class: 'cmd' }, r.komut.join(' ')))));
   const warn = h('div', { class: 'alert uyari' }, icon('alert'), h('div', null,
-    T("Klasördeki DarkorbitLauncher.exe'yi çalıştırma: istemciyi resmî sunucudan güncelleyip yerel sunucuyla uyumu bozabilir. Panel istemcinin kendi dosyalarını değiştirmez; yerel giriş adresiyle başlatır, Windows'ta yanına kurduğu BepInEx'le küçük düzeltmeleri yükler.")));
+    T("Klasördeki DarkorbitLauncher.exe'yi çalıştırma: istemciyi resmî sunucudan güncelleyip yerel sunucuyla uyumu bozabilir. Panel istemcinin kendi dosyalarını değiştirmez; yerel giriş adresiyle başlatır, yanına kurduğu BepInEx'le küçük düzeltmeleri yükler.")));
   const multiCfg = h('div', { class: 'card compact' }, h('h2', null, icon('users'), T('Çoklu istemci')),
     h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, T('Öteki kayıtlarla ek istemciler')),
       h('div', { class: 'help' }, T("Açıksa ve en az iki kaydın varsa OYNA sunucuyu çok oturumlu açar; Oyna sayfasından öteki kayıtlarınla aynı sunucuya ek istemciler açarsın. Ek istemciler pencere kipinde açılır; görüntü ayarları ortaktır."))),
@@ -1916,7 +1934,7 @@ const WZ_PAGES = {
     let m = r.calistirici?.tur === 'motor' ? r.calistirici.motor : null;   // macOS: oyunu açacak Wine da kendiliğinden iner
     if (m && m.durum === 'yok' && !WZ.motorAuto) { WZ.motorAuto = true; m = await act(() => api('/api/motor/kur', {})) || m; }
     const mWrap = m ? h('div', { class: 'dl-wrap' }) : null;
-    let y = c.gecerli && r.yama.gerekli ? r.yama : null;  // Windows: istemcinin düzeltmeleri için BepInEx de kendiliğinden kurulur
+    let y = c.gecerli && r.yama.gerekli ? r.yama : null;  // istemcinin düzeltmeleri için BepInEx de kendiliğinden kurulur
     if (y && y.durum === 'yok' && !WZ.yamaAuto) { WZ.yamaAuto = true; y = await act(() => api('/api/yama/kur', {})) || y; }
     const yWrap = y ? h('div', { class: 'dl-wrap' }) : null;
     const chosen = x => { if (x) drawWizard(); };
@@ -1926,7 +1944,7 @@ const WZ_PAGES = {
       h('span', { class: 'wz-radio' }), h('span', { class: 'mono' }, a.yol), badge(a.surum || '?', a.uyumlu ? 'ok' : 'warn')));
     return {
       title: T('DarkOrbit oyun klasörü'),
-      sub: T("Orijinal DarkOrbit istemcisinin klasörü: içinde DarkOrbit.exe ve DarkOrbit_Data olmalı. Panel istemcinin kendi dosyalarını değiştirmez; Windows'ta yanına küçük düzeltmeler için BepInEx kurar."),
+      sub: T("Orijinal DarkOrbit istemcisinin klasörü: içinde DarkOrbit.exe ve DarkOrbit_Data olmalı. Panel istemcinin kendi dosyalarını değiştirmez; yanına küçük düzeltmeler için BepInEx kurar."),
       content: [
         rows.length ? field(T('Bulunan klasörler'), h('div', { class: 'wz-opts' }, rows))
           : c.gecerli ? null : h('div', { class: 'alert bilgi' }, icon('info'), h('div', null, T('Bilgisayarında DarkOrbit bulunamadı, bu yüzden oyun indirilip proje klasörüne kuruluyor. Kurulu bir oyunun varsa klasörünü seç.'))),

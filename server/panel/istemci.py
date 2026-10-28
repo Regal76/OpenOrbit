@@ -1,10 +1,10 @@
 """Oyun istemcisi (orijinal Unity istemcisi): klasör doğrulama, kendiliğinden bulma, sürüm, başlatma argümanları.
 
-Klasör: içinde DarkOrbit.exe ve DarkOrbit_Data/ olan klasör (DarkOrbit_Version1.1.115 gibi). Panel ayarı boşsa proje kökündeki
+Klasör: içinde DarkOrbit.exe ve DarkOrbit_Data/ olan klasör (DarkOrbit_Version1.1.116 gibi). Panel ayarı boşsa proje kökündeki
 en yeni sürüm klasörü kullanılır; güncelleme gelirse ya da klasör taşınırsa panelden seçilir. Bilgisayarda yoksa panel indirir
-(indirme.py; yarım indirmenin geçici klasörü aday sayılmaz). Sunucu 1.1.115'in protokolüyle
+(indirme.py; yarım indirmenin geçici klasörü aday sayılmaz). Sunucu 1.1.116'nın protokolüyle
 yazıldı (data/protocol*.json istemcinin kodundan): başka sürümde panel uyarır.
-İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090). Windows'ta istemcinin yanına
+İstemci dosyaları değiştirilmez; yalnız başlatma argümanı verilir (yerel web girişi 127.0.0.1:8090). İstemcinin yanına
 kurulan BepInEx (istemci_yama.py) istemcinin düzeltmelerini yükler, kuruluysa argümanla açılır. Linux ve macOS'ta istemci Wine ya da
 Proton ile açılır (calistirici.py).
 """
@@ -20,7 +20,7 @@ SERVER = os.path.dirname(PANEL_DIR)
 ROOT = os.path.dirname(SERVER)
 EXE = 'DarkOrbit.exe'
 DATA_DIR = 'DarkOrbit_Data'
-DESTEKLENEN = '1.1.115'          # etkin protokolün sürümü yoksa (server/data/protokol/surum.txt; protokol_guncelle.py yazar)
+DESTEKLENEN = '1.1.116'          # etkin protokolün sürümü yoksa (server/data/protokol/surum.txt; protokol_guncelle.py yazar)
 SURUM_DOSYASI = os.path.join(SERVER, 'data', 'protokol', 'surum.txt')
 
 
@@ -30,6 +30,10 @@ def supported():
         return open(SURUM_DOSYASI, encoding='utf8').read().strip() or DESTEKLENEN
     except OSError:
         return DESTEKLENEN
+
+
+def vkey(v):
+    return tuple(int(x) for x in (v or '0.0.0').split('.'))
 GIRIS_URL = 'http://127.0.0.1:8090/#darkorbit://'
 COZUNURLUKLER = [(1280, 720), (1366, 768), (1440, 900), (1600, 900), (1680, 1050), (1920, 1080), (2560, 1440), (3840, 2160)]
 
@@ -50,7 +54,7 @@ def bundle_version(folder):
 
 
 def version_of(folder):
-    """Sürüm: klasör adından (DarkOrbit_Version1.1.115), yoksa oyunun verisinden (bundle_version; resmî kurulum "DarkOrbit Unity"
+    """Sürüm: klasör adından (DarkOrbit_Version1.1.116), yoksa oyunun verisinden (bundle_version; resmî kurulum "DarkOrbit Unity"
     klasöründe), yoksa exe'nin dosya sürümünden (Unity motorunun sürümüyse, ör. 2022.3.58, sayılmaz); bilinmiyorsa None."""
     m = re.search(r'(\d+\.\d+\.\d+)', os.path.basename(os.path.normpath(folder)))
     if m:
@@ -79,8 +83,10 @@ def version_of(folder):
 
 
 def check(folder):
-    """Klasörü doğrula -> {'gecerli', 'yol', 'exe', 'veri', 'surum', 'uyumlu', 'sorunlar' [...], 'boyut_mb'}."""
-    out = {'yol': folder or '', 'gecerli': False, 'exe': False, 'veri': False, 'surum': None, 'uyumlu': False, 'sorunlar': []}
+    """Klasörü doğrula -> {'gecerli', 'yol', 'exe', 'veri', 'surum', 'uyumlu', 'eski' (desteklenenden eski: panel günceller),
+    'sorunlar' [...], 'boyut_mb'}."""
+    out = {'yol': folder or '', 'gecerli': False, 'exe': False, 'veri': False, 'surum': None, 'uyumlu': False, 'eski': False,
+           'sorunlar': []}
     if not folder:
         out['sorunlar'].append(_('İstemci klasörü seçilmedi.'))
         return out
@@ -97,6 +103,7 @@ def check(folder):
     if out['gecerli']:
         out['surum'] = version_of(folder)
         out['uyumlu'] = out['surum'] == supported()
+        out['eski'] = bool(out['surum']) and vkey(out['surum']) < vkey(supported())
         if out['surum'] and not out['uyumlu']:
             out['sorunlar'].append(_('Sunucu %s sürümü için yazıldı; %s sürümünde protokol farklıysa giriş ya da bazı pencereler '
                                      'çalışmayabilir.', supported(), out['surum']))
@@ -125,8 +132,7 @@ def candidates():
             c = check(d)
             if c['gecerli']:
                 out.append(c)
-    vkey = lambda c: tuple(int(x) for x in (c['surum'] or '0.0.0').split('.'))
-    out.sort(key=lambda c: (c['uyumlu'], vkey(c)), reverse=True)
+    out.sort(key=lambda c: (c['uyumlu'], vkey(c['surum'])), reverse=True)
     return out
 
 

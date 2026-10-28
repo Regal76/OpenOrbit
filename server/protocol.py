@@ -15,7 +15,7 @@ import json, os, struct, zlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SPEC_PATH = os.path.join(HERE, 'data', 'protocol_read.json')
-CLIENT_HASH = '0b64b1b04d103c9ec4b4f121acb7de36'   # protocol_read.json'ın çıkarıldığı istemci (1.1.115) VersionRequest değeri
+CLIENT_HASH = '0b64b1b04d103c9ec4b4f121acb7de36'   # protocol_read.json'ın çıkarıldığı istemci (1.1.115; 1.1.116'da aynı) VersionRequest değeri
 SECRET_FIELDS = ('sessionid', 'password', 'token', 'secret')
 
 # read_spec.py'nin dönüşümünü bulamadığı alanlar (istemcinin read() sökümünden elle: ham değer a bit sağa döndürülür)

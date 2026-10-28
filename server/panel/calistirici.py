@@ -244,6 +244,19 @@ def bul(cfg):
     return r
 
 
+def dll_override(env, *ek):
+    """WINEDLLOVERRIDES'a eksik girdileri ekle: Wine ve Proton yerleşik winhttp yerine önce oyun klasöründeki BepInEx Doorstop
+    winhttp.dll'ini yüklesin (o da gerçek winhttp çağrılarını yerleşik system32/winhttp.dll'e yönlendirir)."""
+    parcalar = [p for p in env.get('WINEDLLOVERRIDES', '').split(';') if p]
+    adlar = {ad.strip() for p in parcalar for ad in p.split('=', 1)[0].split(',')}
+    for girdi in ek:
+        yeni = [ad.strip() for ad in girdi.split('=', 1)[0].split(',')]
+        if not adlar & set(yeni):
+            parcalar.append(girdi)
+            adlar.update(yeni)
+    env['WINEDLLOVERRIDES'] = ';'.join(parcalar)
+
+
 def komut(cfg, exe, args, hazirla=True):
     """İstemcinin başlatma komutu ve ortamı -> (komut, ortam); ortam None: panelinki. Çalıştırıcı yoksa (motor kurulmadıysa da)
     RuntimeError. hazirla: önekte S: sürücüsünü kur (gösterilecek komutta False)."""
@@ -256,16 +269,18 @@ def komut(cfg, exe, args, hazirla=True):
     if r['tur'] == 'ozel':
         if r['onek']:
             env['WINEPREFIX'] = r['onek']
+        dll_override(env, 'winhttp=n,b')
         return shlex.split(r['yol']) + [exe] + args, env
     if r['tur'] in ('wine', 'motor'):
         if not r['yol']:
             raise RuntimeError(_("Panelin Wine'ı henüz kurulmadı: OYNA'ya bas ya da İstemci sayfasından kur."))
         env['WINEPREFIX'] = r['onek']
-        env.setdefault('WINEDLLOVERRIDES', 'mscoree,mshtml=')     # yeni önekte Mono/Gecko kurulum pencereleri çıkmasın (istemci kullanmaz)
+        dll_override(env, 'mscoree,mshtml=', 'winhttp=n,b')      # yeni önekte Mono/Gecko kurulum pencereleri çıkmasın; Doorstop winhttp.dll yüklensin
         env.setdefault('WINEDEBUG', 'fixme-all')                 # wine.log yalnız hatalar
         return [r['yol'], oyun_surucusu(r['onek'], exe, hazirla)] + args, env
     oyun = os.path.dirname(os.path.abspath(exe))     # Proton S:'yi bunlardan kurar (umu da geçirir); Steam'siz panel verir
     env.update(PROTON_SET_GAME_DRIVE='1', STEAM_COMPAT_INSTALL_PATH=oyun, STEAM_COMPAT_LIBRARY_PATHS=os.path.dirname(oyun))
+    dll_override(env, 'winhttp=n,b')
     if not vulkan32():
         env.setdefault('PROTON_USE_WOW64', '1')
     if r['umu']:

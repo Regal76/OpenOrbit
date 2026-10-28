@@ -9,7 +9,7 @@ göndermesini engeller. Yalnız 127.0.0.1'e bağlanır.
 Yollar: yollar.py (save/kayitlar, save/panel.json, save/ayarlar.json, logs/).
 Dil: dil.py'deki diller (metinler Türkçe yazılır, öbür dillerdekiler arayuz/<kod>.json). İlk açılışta arayüz kurulum sihirbazını
 açar: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun bilgisayarda bulunamazsa sihirbazın oyun
-klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). Windows'ta istemcinin düzeltmelerini yükleyen BepInEx de
+klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). İstemcinin düzeltmelerini yükleyen BepInEx de
 istemci klasörüne kurulur (istemci_yama.py: sihirbazın oyun klasörü adımında, istemci inince, İstemci sayfasından ya da ilk OYNA'da).
 Çoklu istemci (coklu.py): OYNA'dan sonra öteki kayıtlarla ek istemciler aynı sunucuda (en az iki kayıt ve ayar açıksa sunucu çok
 oturumlu açılır); ek istemci açıkken sunucuyu yeniden başlatan işler reddedilir, sunucular son istemci kapanınca kapanır.
@@ -145,7 +145,7 @@ UYAR = Uyarlayici(ROOT, SR.python_exe(), log, SR.NO_WINDOW)    # yeni istemciye 
 UPD = Guncelleyici(ROOT, YOL.SAVE, log)                          # GitHub'dan güncelleme (guncelleme.py)
 MOT = CAL.motor()                                                # macOS: panelin kurduğu Wine + DXMT (wine_motoru.py)
 MOT.log = log
-YAM = YAMA.Yamaci(log)                                           # Windows: istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py)
+YAM = YAMA.Yamaci(log)                                           # istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py)
 TOKEN = secrets.token_hex(16)
 STATE = {'oyna': {'calisiyor': False, 'adimlar': [], 'hata': None, 'bitti': None, 'sadece_sunucu': False},
          'nabiz': time.monotonic(), 'pencere_kapandi': False, 'pencere_izleniyor': False, 'son_yedek': 0.0, 'kapaniyor': False,
@@ -188,12 +188,30 @@ def client_folder():
 
 
 def _downloaded(path):
-    """İndirme bitti: kullanılan istemci geçersizse yeni klasör kullanılsın (kendiliğinden bulunuyorsa ayar boş kalır)."""
-    if not IST.check(client_folder())['gecerli']:
+    """İndirme bitti: kullanılan istemci geçersizse ya da güncelleniyorsa yeni klasör kullanılsın (kendiliğinden bulunuyorsa ayar boş
+    kalır); güncellemede eski klasör silinir."""
+    eski = STATE.pop('istemci_eski', None)
+    if eski or not IST.check(client_folder())['gecerli']:
         auto = IST.resolve(None)
         same = auto and os.path.normcase(os.path.normpath(auto)) == os.path.normcase(os.path.normpath(path))
         CFG.update({'istemci_klasoru': None if same else path})
-    YAM.start(path)                                   # Windows: istemcinin düzeltmeleri için BepInEx (istemci_yama.py)
+    if eski:
+        eski_istemciyi_sil(eski, path)
+    YAM.start(path)                                   # istemcinin düzeltmeleri için BepInEx (istemci_yama.py)
+
+
+def eski_istemciyi_sil(eski, yeni):
+    """İstemci güncellemesi: eski sürümün klasörünü sil. Yalnız arşivden açılmış DarkOrbit_Version… klasörü: resmî kurulumu kendi
+    başlatıcısı günceller, ona dokunulmaz."""
+    if (os.path.normcase(os.path.normpath(eski)) == os.path.normcase(os.path.normpath(yeni))
+            or not re.match(r'DarkOrbit_Version\d', os.path.basename(os.path.normpath(eski))) or not IST.check(eski)['gecerli']):
+        log('eski istemci silinmedi: %s' % eski)
+        return
+    try:
+        shutil.rmtree(eski)
+        log('eski istemci silindi: %s' % eski)
+    except OSError as e:
+        log('eski istemci silinemedi: %s: %r' % (eski, e))
 
 
 DL = Indirici(ROOT, IST.check, log, on_done=_downloaded)       # oyun istemcisini indirme (indirme.py)
@@ -415,6 +433,17 @@ def warnings():
     elif not c['gecerli']:
         out.append({'tur': 'hata', 'metin': _('Oyun istemcisi bulunamadı: %s İstemci sayfasından klasörü seçin ya da oyunu indirin.',
                                               ' '.join(c['sorunlar'])), 'sayfa': 'istemci'})
+    elif c['eski']:                                                  # yeni sürüm çıktı: tek tıkla güncellenir (/api/istemci/guncelle)
+        dl, sup = DL.state(), IST.supported()
+        run = bool(STATE.get('istemci_eski')) and dl['calisiyor']
+        metin = (_('Oyun %s sürümüne güncelleniyor: %%%d. Bitince eski sürüm silinir ve BepInEx yeniden kurulur.', sup, _dl_pct(dl))
+                 if run else _('DarkOrbit %s sürümü çıktı, istemcin %s: güncellemezsen oyun düzgün çalışmaz. Güncelle yenisini indirip '
+                               'kurar, eskisini siler.', sup, c['surum']))
+        if STATE.get('istemci_eski') and dl['durum'] == 'hata':
+            metin += ' ' + dl['hata']
+        out.append({'tur': 'hata', 'metin': metin, 'ilerleme': _dl_pct(dl) if run else None, 'sayfa': 'istemci',
+                    'eylem': {'metin': _('Güncelle'), 'api': '/api/istemci/guncelle', 'calisiyor': run,
+                              'calisiyor_metin': _('Güncelleniyor…')}})
     elif not c['uyumlu']:
         out.append({'tur': 'uyari', 'metin': c['sorunlar'][-1], 'sayfa': 'istemci'})
     hata = CAL.bul(CFG)['hata']                                      # Linux ve macOS: Wine ya da Proton (Apple Silicon'da Rosetta)
@@ -580,6 +609,8 @@ def launch(sadece_sunucu=False, arkadas=False):
         folder = client_folder()
         if not sadece_sunucu:
             c = IST.check(folder)
+            if STATE.get('istemci_eski') and DL.running():
+                raise Hata(_('Oyun %s sürümüne güncelleniyor (%%%d). Bitince oynayabilirsin.', IST.supported(), _dl_pct(DL.state())))
             if not c['gecerli'] and DL.running():
                 raise Hata(_('Oyun istemcisi henüz iniyor (%%%d). Bitince oynayabilirsin.', _dl_pct(DL.state())))
             if not c['gecerli']:
@@ -593,12 +624,16 @@ def launch(sadece_sunucu=False, arkadas=False):
             if r['tur'] == 'motor' and not r['hata'] and not r['yol']:      # macOS: panelin Wine'ı ilk OYNA'da iner (wine_motoru.py)
                 _step(_('Wine ve DXMT indiriliyor'))
                 MOT.bekle(lambda pct: STATE['oyna']['adimlar'][-1].update(metin=_('Wine ve DXMT indiriliyor: %%%d', pct)))
-            if YAMA.WINDOWS and not YAMA.kurulu(folder):  # istemcinin düzeltmeleri: BepInEx sihirbazda kurulmadıysa ilk OYNA'da
+            if not YAMA.kurulu(folder):                   # istemcinin düzeltmeleri: BepInEx sihirbazda kurulmadıysa ilk OYNA'da
                 _step(_('BepInEx kuruluyor'))
                 if not YAM.bekle(folder, lambda pct: o['adimlar'][-1].update(metin=_('BepInEx kuruluyor: %%%d', pct))):
                     o['adimlar'][-1].update(metin=_('BepInEx kurulamadı, oyun düzeltmeler olmadan açılır: %s',
                                                     YAM.state(folder)['hata']), durum='hata')
             cmd, env = IST.komut(CFG, folder, os.path.join(YOL.LOGS, 'client.log'))     # Wine / Proton yoksa sunucular açılmadan hata
+            if YAMA.kurulu(folder) and not YAMA.hazir(folder):  # BepInEx'in interop derlemeleri oyundan önce (istemci_yama.isit)
+                _step(_('BepInEx ilk açılışa hazırlanıyor (yarım dakika kadar)'))
+                if not YAMA.isit(folder, cmd, env, YOL.LOGS, lambda d: o['adimlar'][-1].update(ilerleme=d)):
+                    o['adimlar'][-1].update(metin=_('BepInEx hazırlanamadı, oyun yine de açılıyor'), durum='hata')
         prof = KAY.profile(slot)
         same = YON.running() and YON.slot == slot
         arkadas = arkadas or (YON.running() and YON.arkadas)    # açık arkadaş sunucusu Oyna ile kapanmaz (misafirler düşmesin)
@@ -1082,7 +1117,7 @@ def h_get(path, q):
         return DL.state()
     if path == '/api/motor':                        # macOS: panelin Wine'ı ve Rosetta (wine_motoru.py)
         return MOT.state()
-    if path == '/api/yama':                         # Windows: istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py)
+    if path == '/api/yama':                         # istemcinin düzeltmelerini yükleyen BepInEx (istemci_yama.py)
         return YAM.state(client_folder())
     if path == '/api/guncelleme':                   # GitHub'dan güncelleme (guncelleme.py)
         return dict(UPD.state(), ayar=CFG.get('guncelleme'), bosta=idle())
@@ -1324,6 +1359,20 @@ def h_post(path, b):
     if path == '/api/istemci/indir':                # oyunu indir ve proje köküne aç (sürer, kaldığı yerden)
         if CAL.bul(CFG)['tur'] == 'motor':          # macOS: oyunu açacak Wine da birlikte iner
             MOT.start()
+        return DL.start()
+    if path == '/api/istemci/guncelle':             # eski istemci: yeni sürümü indir, eskisini sil; BepInEx yeni klasöre yeniden kurulur
+        if YON.client_alive() or IST.running_clients():
+            raise Hata(_('Önce oyunu kapatın'))
+        eski = client_folder()
+        if not IST.check(eski)['eski']:
+            raise Hata(_('İstemci zaten güncel.'))
+        yeni = next((c['yol'] for c in IST.candidates() if c['uyumlu']), None)
+        if yeni:                                    # bilgisayarda zaten var
+            CFG.update({'istemci_klasoru': yeni})
+            eski_istemciyi_sil(eski, yeni)
+            YAM.start(yeni)
+            return DL.state()
+        STATE['istemci_eski'] = eski
         return DL.start()
     if path == '/api/motor/kur':
         return MOT.start()

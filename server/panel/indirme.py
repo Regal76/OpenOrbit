@@ -1,18 +1,18 @@
 """Oyun istemcisini indirme (bilgisayarda istemci bulunamazsa; kurulum sihirbazı ve İstemci sayfası): Bigpoint'in arşivi (URL,
-1.1.115 zip) proje köküne açılır, istemci dosyaları değiştirilmez.
+1.1.116 zip) proje köküne açılır, istemci dosyaları değiştirilmez.
 
 Arşiv diske kaydedilmez: HTTP aralık istekleriyle okunur (HttpFile), zipfile dosyaları sırayla doğrudan açar. Böylece arşivin
 kendisi için ayrıca yer gerekmez (açılmış hâli kadar, ≈4,4 GB). Bağlantı koparsa aynı bayttan yeniden bağlanır (DENEME kez);
 iş durdurulur ya da panel kapanırsa açılmış dosyalar kalır, yeniden başlatınca yalnız eksikler iner. Her dosya önce .part'a yazılır,
 zip'in CRC'siyle doğrulanınca adını alır. Dosyalar geçici klasörde (GECICI) toplanır; hepsi bitip istemci doğrulanınca klasör
-arşivdeki adı (DarkOrbit_Version1.1.115) alır: yarım indirme geçerli istemci gibi görünmez. Aynı anda tek iş.
+arşivdeki adı (DarkOrbit_Version1.1.116) alır: yarım indirme geçerli istemci gibi görünmez. Aynı anda tek iş.
 """
 import http.client, json, os, shutil, threading, time, zipfile
 from urllib.request import Request, urlopen
 
 from dil import t as _
 
-URL = 'https://alicdn-oss-prod.darkorbit.com/release/archive/DarkOrbit_Version1.1.115.zip'
+URL = 'https://alicdn-oss-prod.darkorbit.com/release/archive/DarkOrbit_Version1.1.116.zip'
 GECICI = 'istemci_indiriliyor'      # proje kökünde; .gitignore'da
 PARCA = 1 << 20
 DENEME = 8                          # kopan bağlantıda üst üste yeniden bağlanma
