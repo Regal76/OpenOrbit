@@ -7,7 +7,7 @@ kapatıp çıkar. Panel zaten açıksa ikinci başlatma yalnız pencereyi yenide
 API: /api/... (JSON). İstekler sayfadaki belirteci (X-Panel-Belirteci) taşımalı: başka sitelerin tarayıcıdan panele istek
 göndermesini engeller. Yalnız 127.0.0.1'e bağlanır.
 Yollar: yollar.py (save/kayitlar, save/panel.json, save/ayarlar.json, logs/).
-Dil: Türkçe ya da İngilizce (dil.py; metinler Türkçe yazılır, İngilizceleri arayuz/en.json). İlk açılışta arayüz kurulum sihirbazını
+Dil: dil.py'deki diller (metinler Türkçe yazılır, öbür dillerdekiler arayuz/<kod>.json). İlk açılışta arayüz kurulum sihirbazını
 açar: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun bilgisayarda bulunamazsa sihirbazın oyun
 klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). Windows'ta istemcinin düzeltmelerini yükleyen BepInEx de
 istemci klasörüne kurulur (istemci_yama.py: sihirbazın oyun klasörü adımında, istemci inince, İstemci sayfasından ya da ilk OYNA'da).
@@ -107,9 +107,18 @@ ETKINLIK_ACIKLAMA = {
     'astral_ascension': 'Battle Pass (2022 koşusu) ve anahtar değişimi.',
     'spacecup': 'Battle Pass (2022 koşusu; Spaceball ve PvP yok) ve anahtar değişimi.',
 }
-GUNLER = {'tr': ('Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'), 'en': ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')}
+GUNLER = {'tr': ('Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'), 'en': ('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'),
+          'de': ('Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'), 'es': ('lun', 'mar', 'mié', 'jue', 'vie', 'sáb', 'dom'),
+          'fr': ('lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'), 'pl': ('pon', 'wt', 'śr', 'czw', 'pt', 'sob', 'niedz'),
+          'pt': ('seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'), 'ru': ('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс')}
 AYLAR = {'tr': ('Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'),
-         'en': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')}
+         'en': ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'),
+         'de': ('Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.'),
+         'es': ('ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sept', 'oct', 'nov', 'dic'),
+         'fr': ('janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'),
+         'pl': ('sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru'),
+         'pt': ('jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'),
+         'ru': ('янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек')}
 
 os.makedirs(YOL.LOGS, exist_ok=True)
 _log_lock = threading.Lock()
@@ -246,7 +255,7 @@ def _period_text(a, b, lang):
     months = AYLAR[lang]
     if lang == 'en':
         return '%s %d – %s %d' % (months[ma - 1], da, months[mb - 1], db)
-    return '%d %s – %d %s' % (da, months[ma - 1], db, months[mb - 1])
+    return '%d%s %s – %d%s %s' % (da, '.' * (lang == 'de'), months[ma - 1], db, '.' * (lang == 'de'), months[mb - 1])
 
 
 def event_list():
@@ -787,7 +796,7 @@ def open_window(url):
     os.makedirs(TARAYICI_PROFILI, exist_ok=True)
     return subprocess.Popen([b, '--app=%s' % url, '--user-data-dir=%s' % TARAYICI_PROFILI, '--window-size=1360,880',
                              '--no-first-run', '--no-default-browser-check', '--disable-features=Translate,msEdgeSidebarV2',
-                             '--disable-background-mode', '--disable-sync', '--lang=%s' % D.current()])
+                             '--disable-background-mode', '--disable-sync', '--lang=%s' % D.DILLER[D.current()][1]])
 
 
 def watch_window(proc):
@@ -1051,6 +1060,8 @@ def h_get(path, q):
         return api_client()
     if path == '/api/panel_ayarlari':
         return CFG.all()
+    if path == '/api/diller':
+        return {'diller': D.liste()}
     if path == '/api/takvim':                       # etkinlik takvimi: ?bas=&bit= (zaman damgası, en çok 62 gün)
         return api_calendar(q)
     if path == '/api/portlar':

@@ -45,7 +45,8 @@ images). A management panel starts the game and handles your saves, game setting
 
 ### The management panel
 
-- **First-run setup wizard:** language (English or Turkish), game folder (downloaded for you if it isn't on your
+- **First-run setup wizard:** language (English, Turkish, German, Spanish, French, Polish, Brazilian Portuguese or
+  Russian), game folder (downloaded for you if it isn't on your
   computer), your first pilot and game settings.
 - **Play:** your active save, the PLAY button, launch steps, warnings and live status while you play.
 - **Play with Friends:** host a server or join a friend's; everyone plays with their own save (see below).
@@ -202,6 +203,11 @@ Join the [Discord server](https://discord.gg/BUb9rNTKNt) for announcements, help
 Turkish and English channels, and channels for screenshots and finding people to play with. You can also join from the
 panel's **Panel** page.
 
+To translate the panel into another language or fix a translation: the texts live in `server/panel/arayuz/<code>.json`
+(the key is the Turkish text). Add the language to `DILLER` in `server/panel/dil.py`; `python server/panel/dil.py <code>`
+lists the texts that are still missing, with their English. Missing texts fall back to English, so a partial
+translation already works.
+
 ### Legal
 
 This is a fan project for personal, offline use. It is not affiliated with or endorsed by Bigpoint GmbH. DarkOrbit, the
@@ -244,7 +250,8 @@ paneli oyunu başlatır; kayıtlarını, oyun ayarlarını ve etkinlikleri yöne
 
 ### Yönetim paneli
 
-- **İlk açılışta kurulum sihirbazı:** dil (Türkçe ya da İngilizce), oyun klasörü (bilgisayarında yoksa indirilir), ilk
+- **İlk açılışta kurulum sihirbazı:** dil (Türkçe, İngilizce, Almanca, İspanyolca, Fransızca, Lehçe, Brezilya Portekizcesi
+  ya da Rusça), oyun klasörü (bilgisayarında yoksa indirilir), ilk
   pilotun ve oyun ayarları.
 - **Oyna:** etkin kaydın, OYNA düğmesi, başlatma adımları, uyarılar ve oynarken canlı durum.
 - **Arkadaşlarınla Oyna:** sunucu kur ya da arkadaşının sunucusuna katıl; herkes kendi kaydıyla oynar (aşağıda).
@@ -397,6 +404,10 @@ Hepsi ilk açılışta oluşur ve bilgisayarında kalır.
 Duyurular, yardım, hata bildirimi ve öneriler için [Discord sunucusuna](https://discord.gg/BUb9rNTKNt) katıl. Türkçe ve
 İngilizce kanalların yanında ekran görüntüleri ve birlikte oynayacak arkadaş bulmak için kanallar var. Panelin **Panel**
 sayfasından da katılabilirsin.
+
+Paneli başka bir dile çevirmek ya da bir çeviriyi düzeltmek için: metinler `server/panel/arayuz/<kod>.json`'da (anahtar
+Türkçe metnin kendisi). Dili `server/panel/dil.py`'deki `DILLER`'e ekle; `python server/panel/dil.py <kod>` eksik kalan
+metinleri İngilizceleriyle listeler. Eksik metin İngilizceye düşer, yani yarım bir çeviri de çalışır.
 
 ### Yasal not
 

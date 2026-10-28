@@ -1,5 +1,5 @@
 /* OpenOrbit yerel sunucu paneli — arayüz (panel.py'nin /api/... uçları). Dış kitaplık yok.
-   Dil: metinler Türkçe yazılır, T() seçili dildeki hâlini verir (İngilizcesi en.json; Python tarafıyla ortak, dil.py).
+   Dil: metinler Türkçe yazılır, T() seçili dildeki hâlini verir (<kod>.json, yoksa en.json; Python tarafıyla ortak, dil.py).
    İlk açılışta kurulum sihirbazı: dil, oyun klasörü, ilk pilot, oyun ayarları (panel.json 'dil', 'kurulum_tamam'). Oyun
    bilgisayarda bulunamazsa oyun klasörü adımı onu indirmeye başlar (indirme.py; İstemci sayfasından da). Panel GitHub'daki yeni
    sürümü kurup yeniden başlayınca (guncelleme.py) belirteç değişir: sayfa kendini yeniler. */
@@ -8,20 +8,24 @@ const TOKEN = document.querySelector('meta[name="panel-token"]').content;
 const $ = (s, r = document) => r.querySelector(s);
 
 // ------------------------------------------------------------------ dil
-const I18N = { lang: 'tr', en: null };
+// diller: /api/diller (dil.py DILLER); sözlükte olmayan metin İngilizceye, o da yoksa Türkçeye düşer
+const I18N = { lang: 'tr', dict: {}, en: {}, list: [{ kod: 'tr', ad: 'Türkçe', yerel: 'tr-TR', kapsam: 100 }, { kod: 'en', ad: 'English', yerel: 'en-US', kapsam: 100 }] };
 function T(s, ...a) {
-  let r = I18N.lang === 'en' && I18N.en && I18N.en[s] != null ? I18N.en[s] : s;
+  let r = I18N.dict[s] ?? I18N.en[s] ?? s;
   if (a.length) r = r.replace(/\{(\d+)\}/g, (m, i) => a[+i] == null ? '' : String(a[+i]));
   return r;
 }
-const LOC = () => I18N.lang === 'en' ? 'en-US' : 'tr-TR';
+const langOf = k => I18N.list.find(x => x.kod === k);
+const LOC = () => langOf(I18N.lang)?.yerel || 'tr-TR';
+const loadDict = async k => { try { return await (await fetch(k + '.json', { cache: 'no-store' })).json(); } catch (e) { return {}; } };
 async function setLang(lang) {
-  I18N.lang = lang === 'en' ? 'en' : 'tr';
-  if (I18N.lang === 'en' && !I18N.en) {
-    try { I18N.en = await (await fetch('en.json', { cache: 'no-store' })).json(); } catch (e) { I18N.en = {}; }
-  }
-  document.documentElement.lang = I18N.lang;
+  I18N.lang = langOf(lang) ? lang : 'tr';
+  I18N.en = I18N.lang === 'tr' ? {} : await loadDict('en');
+  I18N.dict = ['tr', 'en'].includes(I18N.lang) ? {} : await loadDict(I18N.lang);
+  document.documentElement.lang = LOC();
 }
+// tarayıcının dillerinden panelde olan ilki (pt-BR -> pt); yoksa İngilizce
+const guessLang = () => (navigator.languages || [navigator.language || '']).map(x => x.toLowerCase().split('-')[0]).find(langOf) || 'en';
 function applyStatic() {
   const sub = $('#brand-sub'); if (sub) sub.textContent = T('Yerel Sunucu Paneli');
 }
@@ -1706,7 +1710,6 @@ async function loadLog(quiet) {
 }
 
 // ================================================================== PANEL
-const DIL_ADLARI = { tr: 'Türkçe', en: 'English' };
 // ---- güncellemeler (guncelleme.py, /api/guncelleme): GitHub'daki son sürüm, otomatik kurulum
 const UPD_MODES = [['otomatik', N('Otomatik kur')], ['bildir', N('Yalnız haber ver')], ['kapali', N('Kapalı')]];
 const UPD_TEXT = { guncel: N('Panel güncel.'), var: N('Yeni sürüm var.'), indiriliyor: N('Yeni sürüm indiriliyor…'), kuruluyor: N('Yeni sürüm kuruluyor…'),
@@ -1755,7 +1758,7 @@ async function renderPanel() {
   const r = await act(() => api('/api/hakkinda')); if (!r || S.page !== 'panel') return;
   const pathRow = (label, p, ne) => h('div', { class: 'set-row' }, h('div', null, h('div', { class: 'name' }, label), h('div', { class: 'help mono' }, p)),
     h('div', { class: 'ctl' }, ne ? btn(T('Aç'), () => act(() => api('/api/klasor_ac', { ne })), 'sm', 'folder') : null));
-  const langSeg = h('div', { class: 'seg' }, Object.entries(DIL_ADLARI).map(([k, t]) => h('button', { class: I18N.lang === k ? 'on info' : '', onclick: async () => {
+  const langSeg = h('div', { class: 'seg' }, I18N.list.map(({ kod: k, ad: t }) => h('button', { class: I18N.lang === k ? 'on info' : '', onclick: async () => {
     if (k === I18N.lang) return;
     const x = await act(() => api('/api/panel_ayarlari', { degerler: { dil: k } })); if (x) location.reload();
   } }, t)));
@@ -1874,13 +1877,13 @@ function currentPreset(r) {
 const pick = (el, cls = 'on') => { el.parentNode.querySelectorAll(':scope > *').forEach(x => x.classList.remove(cls)); el.classList.add(cls); };
 
 const WZ_PAGES = {
-  // ---- 1. dil (iki dilde)
+  // ---- 1. dil (her dil kendi adıyla; tarayıcının dili öne çıkar)
   dil: async () => {
-    const cur = S.panelCfg?.dil;
-    const card = (code, name, sub) => h('button', { class: 'wz-lang' + (cur === code ? ' on' : ''), type: 'button', onclick: () => chooseLang(code) },
-      h('span', { class: 'code' }, code.toUpperCase()), h('b', null, name), h('span', null, sub));
+    const cur = S.panelCfg?.dil, hint = cur || guessLang();
+    const card = ({ kod, ad, kapsam }) => h('button', { class: 'wz-lang' + (cur === kod ? ' on' : hint === kod ? ' hint' : ''), type: 'button', onclick: () => chooseLang(kod) },
+      h('span', { class: 'code' }, kod.toUpperCase()), h('b', null, ad), kapsam < 100 ? h('span', null, kapsam + '%') : null);
     return { title: 'Dil seçin · Choose your language', sub: 'Panel bu dilde açılır; sonra Panel sayfasından değişir. · You can change it later on the Panel page.',
-      content: h('div', { class: 'wz-langs' }, card('tr', 'Türkçe', 'Paneli Türkçe kullan'), card('en', 'English', 'Use the panel in English')),
+      content: h('div', { class: 'wz-langs' }, I18N.list.map(card)),
       next: cur ? { label: T('İleri') } : null };
   },
   // ---- 2. hoş geldin
@@ -2010,7 +2013,7 @@ const WZ_PAGES = {
     const canPlay = !!d.aktif && k.gecerli;
     const dlRun = !k.gecerli && c.indirme.calisiyor;
     const mode = (WINDOW_MODES.find(([x]) => x === cfg.pencere_modu) || [, cfg.pencere_modu])[1];
-    const rows = [[true, T('Dil'), DIL_ADLARI[I18N.lang]],
+    const rows = [[true, T('Dil'), langOf(I18N.lang).ad],
       [k.gecerli, T('Oyun klasörü'), k.gecerli ? k.yol + (k.surum ? ' · ' + k.surum : '') : dlRun ? T('İndiriliyor: %{0} (İstemci sayfasında izleyebilirsin)', dlPct(c.indirme)) : T('Seçilmedi: İstemci sayfasından seç.')],
       [!!d.aktif, T('Pilot'), d.aktif ? `${d.aktif.pilot} · ${d.aktif.firma}` : T('Oluşturulmadı: Kayıtlar sayfasından oluştur.')],
       [true, T('Oyun ayarları'), pre ? a.hazir[pre].ad : T('Özel')],
@@ -2035,8 +2038,8 @@ async function boot() {
   let cfg = null;
   try { cfg = await api('/api/panel_ayarlari'); } catch (e) { /* panel kapalı: poll bildirir */ }
   S.panelCfg = cfg;
-  const guess = (navigator.language || '').toLowerCase().startsWith('tr') ? 'tr' : 'en';
-  await setLang((cfg && cfg.dil) || guess);
+  try { I18N.list = (await api('/api/diller')).diller; } catch (e) { /* eski liste: Türkçe, İngilizce */ }
+  await setLang((cfg && cfg.dil) || guessLang());
   applyStatic();
   buildNav();
   go(location.hash.slice(1) || 'oyna', false);

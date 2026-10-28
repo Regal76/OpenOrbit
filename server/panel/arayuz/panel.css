@@ -452,10 +452,11 @@ button.chip:hover { border-color: var(--accent); color: #fff; }
 .wz-body h2 { margin: 0; font-size: 22px; font-weight: 750; }
 .wz-sub { color: var(--muted); margin-top: -8px; }
 .wz-foot { display: flex; align-items: center; gap: 8px; padding: 14px 26px; border-top: 1px solid var(--line); flex-wrap: wrap; }
-.wz-langs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
-.wz-lang { border: 1px solid var(--line-2); border-radius: 16px; padding: 22px 22px 20px; background: #0a1222; cursor: pointer; text-align: left;
+.wz-langs { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-top: 6px; }
+.wz-lang { border: 1px solid var(--line-2); border-radius: 16px; padding: 18px 20px 16px; background: #0a1222; cursor: pointer; text-align: left;
   display: grid; gap: 4px; transition: .15s; position: relative; }
 .wz-lang:hover { border-color: var(--accent); background: #0e1a31; transform: translateY(-1px); }
+.wz-lang.hint { border-color: rgba(56, 196, 255, .5); }
 .wz-lang.on { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56, 196, 255, .18); background: #0e1a31; }
 .wz-lang b { font-size: 21px; }
 .wz-lang span { color: var(--muted); font-size: 13px; }

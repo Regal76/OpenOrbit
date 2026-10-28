@@ -5,8 +5,10 @@ Bilinmeyen anahtarlar korunur (eski/yeni sürümler aynı dosyayı paylaşabilir
 """
 import json, os, threading
 
+import dil as D
+
 DEFAULTS = {
-    'dil': None,                    # tr | en; None: henüz seçilmedi (kurulum sihirbazı dil seçimiyle açılır)
+    'dil': None,                    # dil.DILLER'den bir kod; None: henüz seçilmedi (kurulum sihirbazı dil seçimiyle açılır)
     'kurulum_tamam': False,         # ilk açılış sihirbazı bitti (ya da atlandı)
     'aktif_kayit': None,            # save/kayitlar/<kimlik>
     'istemci_klasoru': None,        # None: kendiliğinden (proje kökündeki en yeni DarkOrbit_Version* klasörü)
@@ -44,7 +46,7 @@ def clean(key, v):
         raise ValueError('bilinmeyen ayar: %s' % key)
     d = DEFAULTS[key]
     if key == 'dil':
-        return v if v in ('tr', 'en') else None
+        return v if v in D.DILLER else None
     if key in CHOICES:
         if v not in CHOICES[key]:
             raise ValueError('%s: geçersiz seçim' % key)
