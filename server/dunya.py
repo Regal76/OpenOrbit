@@ -190,6 +190,7 @@ class NPC:
         self.hunt = False                   # dalga uzaylısı (kapılar, modlar): oyuncunun peşini bırakmaz, kaçıp dolaşmaya gitmez
         self.flee = False                   # oyuncu güvenli bölgeye kaçtı: uzaklaş
         self.park = None                    # (x, y) bölge merkezi: bölgenin kenarında bekledi; bekleyince bölgeden uzağa kısa dolaşır
+        self.pend_dmg = 0                   # isabet eden atışların toplanan hasarı: saniyelik tikte tek AttackHitCommand (npc_hit_tick)
         self.firing = False                 # oyuncuya lazer açtı, bitişi (AttackAbortLaserCommand) istemciye henüz gitmedi (alien_ceasefire)
         self.blocked = 0.0                  # kovalama yolu bir yapının/bölgenin yüzünden kapandı: bu ana dek yeniden saldırmaz (dur/ara döngüsü olmasın)
         self.invulnerable = None            # işlev: True dönerken hasar almaz (Zeta Devourer: diğer uzaylılar yaşarken; kapi.py)
@@ -3292,7 +3293,7 @@ class World:
         if roll < aim * (1 - m.get('kacinma', 0)):
             raw = n.d['hasar'] * random.uniform(0.8, 1.0) * self.alien.laser_factor(n, now)      # kayıt: x0,8-1,0; öfke, DMG kapsülü
             dmg = int(raw * max(0.0, 1 + m.get('alinan_lazer', 0)))                              # Spectrum
-            self.hurt_hero(dmg, n, msgs=msgs, now=now)
+            self.npc_hit_tick(n, dmg, now)
             if raw - dmg >= 1 and n.alive and GY.effect(self.p, 'lazer_yansit', now):
                 self.hit_npc(n.id, int(raw - dmg), 1)  # Spectrum Plus Prismatic Reflecting: azaltılan hasar saldırana
             self.alien.after_shot(n, now, True)        # yavaşlatan atış (uzayli.py)
@@ -3300,9 +3301,21 @@ class World:
             self.last_combat = now
             self.stop_repair()
             evaded = roll < aim * (1 - (m.get('kacinma', 0) - YT.mods(self.p).get('kacinma', 0)))     # yeteneksiz vururdu
-            msgs.append(('AttackMissedCommand', dict(attackType=attack_type(1), targetUserId=self.hid,
+            msgs.append(('AttackMissedCommand', dict(attackType=attack_type(1), targetUserId=self.hid,      # resmî SSS: ıska mor, kaçınma yeteneğiyle mavi
                                                      skillColorId=EVADE_COLOR if evaded else 0)))
         self.send(msgs)
+
+    def npc_hit_tick(self, n, dmg, now):
+        """İsabet eden atışın hasarı birikir; saniyelik tikte (resmî kayıt: AttackHitCommand'lar hep aynı saniye fazında, uzaylı başına
+        saniyede en çok bir, hasarı 1-5 atışın toplamı: Recruit Streuner 31-38, 65-76, 99-115, 129-153, 169-184) tek vuruş olarak gider."""
+        n.pend_dmg += dmg
+        if n.pend_dmg == dmg:
+            self.later(1.0 - now % 1.0, lambda: self.npc_hit_flush(n))
+
+    def npc_hit_flush(self, n):
+        dmg, n.pend_dmg = n.pend_dmg, 0
+        if dmg > 0 and not self.hero_dead:
+            self.send(self.hurt_hero(dmg, n, now=time.time()))
 
     def hurt_hero(self, dmg, killer=None, atype=1, msgs=None, now=None, cause=None, source_player=None, shield_only=False, source_asset=False):
         """Oyuncuya hasar (uzaylının lazeri, roketi, bombası, tekilliği, patlaması): Fortify, Insta-Shield; kalkan jeneratörlerin
@@ -3933,7 +3946,9 @@ class World:
             n.next_think = now + ms / 1000 + random.uniform(0.2, 1.0)
         elif now >= n.next_think:
             park, n.park = n.park, None             # waited at a zone edge: a normal short wander, away from the zone
-            r = random.uniform(300, 1200)
+            # resmî sunucu kaydı (2026-10-27, Lordakia/Saimon/Curcubitor… binlerce adım): gezinti hızı nominalin ~%90'ı, adım ~1,5 sn
+            # süren hareket (0-3 sn düzgün; Lordakia ort 323 birim), adımlar arası ~0,5 sn bekleme
+            r = max(30, n.speed() * 0.9 * random.uniform(0.1, 2.9))
             a = math.atan2(ny - park[1], nx - park[0]) + random.uniform(-1.2, 1.2) if park else random.uniform(0, 2 * math.pi)
             tx = min(max(nx + math.cos(a) * r, 300), self.map_w - 300)
             ty = min(max(ny + math.sin(a) * r, 300), self.map_h - 300)
@@ -3952,9 +3967,9 @@ class World:
                 if HD.navigates(self.map_id):
                     tx, ty = HD.waypoint(self.map_id, self.map_w, self.map_h, nx, ny, tx, ty)
             n.flee = False
-            ms = n.mover.go(tx, ty, n.speed() * (1.0 if leaving else 0.6) * n.etki.speed_factor(now), now)
+            ms = n.mover.go(tx, ty, n.speed() * (1.0 if leaving else 0.9) * n.etki.speed_factor(now), now)
             self.send([('MoveCommand', dict(userId=n.id, x=int(tx), y=int(ty), timeToTarget=ms))])
-            n.next_think = now + ms / 1000 + random.uniform(2, 6)
+            n.next_think = now + ms / 1000 + random.uniform(0, 1.0)
 
     def loop(self):
         self._loop_ident = threading.get_ident()

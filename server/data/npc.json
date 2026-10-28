@@ -9768,7 +9768,7 @@
   "_roket_isabet": "roketin kendi isabeti yoksa taban (esyalar.json roketler.<id>.isabet: R-310 %70, PLT-2026 %80, PLT-2021 %90, PLT-3030 %65, BDR-1211 %100; özel cephane bu taban, uyarlama); Heat-Seeking Missiles yeteneği (roket_isabet) ve DMG-H01 boosterı (isabet) artırır, PLD-8 gibi etkiler düşürür",
   "npc_kalkan_emme": 0.7,
   "_npc_kalkan_emme": "Varsayılan kalkan emme oranı; türün kalkan_emme değeri varsa o (fandom: Aider Streuner, Kristallon, Uber Kristallon %90, Cubikon %80, Uber Annihilator %85, Uber Interceptor %60)",
-  "npc_isabet": 0.6,
+  "npc_isabet": 0.7,
   "npc_menzil": 450,
   "_npc_menzil": "Uzaylıların ateş menzili (türün menzil alanı yoksa): özel sunucu kodu (Ow, Attackable.AttackRange: uzaylı 450, oyuncu lazeri 700); DarkBot uzaylıları 550-610 birimden döner (çevirme). Önceden 600: dönerken çok uzaktan vuruluyordu (kullanıcı bildirimi 2026-10-25, Boss Sibelon). Kristallon ailesi 550 (fandom: \"en uzun menzil\")",
   "npc_saldiri_aralik_sn": 1.1,

@@ -131,6 +131,11 @@ def mine_based(loot):
     return loot in MINES or loot in (S['akilli_bomba']['menu'], S['aninda_kalkan']['menu'])
 
 
+FIRCATICI_BEKLEME = 3.0           # roket fırlatıcısı atış beklemesi (sn)
+FIRCATICI_ILK = (0.75, 1.9)       # salvodan ilk roketin hasarına (sn)
+FIRCATICI_ARALIK = 2.2            # ardışık roketlerin hasarı arası (sn)
+
+
 def timer_msg(group, ms, cooling=True):
     return ('MenuItemCooldownGroupTimerCommand', dict(timerState=mod('TimerStateModule', timerStateValue=2 if cooling else 0),
                                                       cooldownType=mod('CooldownTypeModule', typeValue=group), maxTime=ms,
@@ -433,6 +438,7 @@ class Esyalar:
         self.jump = None           # CPU atlaması: {hedef, zaman, cpu, basla}
         self.ajp_target = None     # gelişmiş atlamada seçilen harita
         self.next_load = 0.0       # fırlatıcının bir sonraki dolumu
+        self.launcher_cd = 0.0     # fırlatıcının ateş beklemesi (resmî kayıt: her atıştan sonra 3 sn, MenuItemTimerCommand)
         self.next_lure = 0.0
         self.waiting = {}          # grup -> bitiş: bitince READY bildirimi
         self.ghost_end = 0.0       # Ghostifier görünümünün bitişi
@@ -1057,6 +1063,10 @@ class Esyalar:
     # ------------------------------------------------------------ roket fırlatıcısı
     def launcher_tick(self, now):
         w, p = self.w, self.p
+        if self.launcher_cd and now >= self.launcher_cd:        # bekleme bitti: sayaç hazır
+            self.launcher_cd = 0.0
+            self.send([('MenuItemTimerCommand', dict(activatable=True, timerState=mod('TimerStateModule', timerStateValue=0), maxTime=0,
+                                                     time=0, menuItemId=S['fircatici']['menu']))])
         cap = capacity(p)
         if not cap or w.hero_dead:
             return
@@ -1094,6 +1104,8 @@ class Esyalar:
 
     def launcher_fire(self, now, n=None):
         w, p = self.w, self.p
+        if now < self.launcher_cd:
+            return
         if n is None and not capacity(p):              # kısayoldan, fırlatıcı takılı değil
             return self.send([stm('hellstorm_launcher_not_equipped')])
         uid = getattr(n, 'id', n) if n is not None else w.target
@@ -1125,6 +1137,10 @@ class Esyalar:
         self.next_load = now + (S['fircatici']['dolum_sn'] * max(0.1, 1 + p.mods().get('fircatici_bekleme', 0))   # Star +%33 …
                                 * AY.carpan('roket_bekleme'))                                               # panel
         p.ach('shot', silah='ROCKET_LAUNCHER')
+        self.launcher_cd = now + FIRCATICI_BEKLEME            # kayıt (2026-10-27, 117 atış): atıştan sonra tam 3,0 sn sayaç
+        menu = S['fircatici']['menu']
+        self.send([('MenuItemTimerCommand', dict(activatable=False, timerState=mod('TimerStateModule', timerStateValue=2),
+                                                 maxTime=int(FIRCATICI_BEKLEME * 1000), time=int(FIRCATICI_BEKLEME * 1000), menuItemId=menu))])
         first = salvo(w.hid, uid, hit, cnt, cfg['tur'])
         self.send([first, legacy('0|RL|S|%d|%d|0' % (launcher_type(p), cfg['kimlik']))] + self.status(S['fircatici']['menu']))
         self.log('   fırlatıcı: %d x %s%s' % (cnt, ammo, '' if hit else ' (ıska)'))
@@ -1139,17 +1155,22 @@ class Esyalar:
         impact = w.hit_asset if asset else w.hit_npc
         kw = {} if asset else {'ammo': ammo}            # Referee-Bot yalnız CBR'den hasar alır (dunya.hit_npc)
 
-        def land():
-            if drain:                          # SAR/CBR/PIR: uzaylının kalkanından çekilen oyuncuya
+        def land(part, share):
+            if part:                           # SAR/CBR/PIR: uzaylının kalkanından çekilen oyuncuya
                 w.last_shield_hit = 0
-                impact(uid, drain, cfg.get('saldiri', 0), shield_only=True, **kw)
+                impact(uid, part, cfg.get('saldiri', 0), shield_only=True, **kw)
                 if w.last_shield_hit:
                     g = p.d['gemi']
                     p.set_hull(shield=g.get('shield', 0) + w.last_shield_hit)
                     self.send([('AttributeShieldUpdateCommand', {'shieldNow': int(g['shield']), 'shieldMax': g.get('shieldMax', 0)})])
-            if dmg:
-                impact(uid, dmg, 0, **kw)
-        w.later(salvo_time(math.hypot(nx - hx, ny - hy), cnt), land)       # son roket varınca
+            if share:
+                impact(uid, share, 0, **kw)
+        # kayıt (2026-10-27, ~100 salvo): hasar roket başına ayrı AttackHitCommand, ardışık roketler 2,18 sn arayla (2,1-2,24);
+        # ilk hasar salvodan 0,73-1,9 sn sonra. Toplam hasar aynı: roketlere bölünür, kalan sonuncuya.
+        first = random.uniform(FIRCATICI_ILK[0], FIRCATICI_ILK[1])
+        for i in range(cnt):
+            w.later(first + i * FIRCATICI_ARALIK, lambda b=dmg // cnt + (dmg % cnt if i == cnt - 1 else 0),
+                    c=drain - drain // cnt * (cnt - 1) if i == cnt - 1 else drain // cnt: land(c, b))
 
     # ------------------------------------------------------------ özel roketler
     def fire_special(self, rocket, n, now):
