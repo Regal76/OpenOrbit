@@ -47,6 +47,32 @@ CNY = {2020: (1, 25), 2021: (2, 12), 2022: (2, 1), 2023: (1, 22), 2024: (2, 10),
        2028: (1, 26), 2029: (2, 13), 2030: (2, 3), 2031: (1, 23), 2032: (2, 11), 2033: (1, 31), 2034: (2, 19), 2035: (2, 8),
        2036: (1, 28), 2037: (2, 15), 2038: (2, 4), 2039: (1, 24), 2040: (2, 12)}
 EVENT_IDS = {}                        # EventModule.id: tür adı başına sabit
+# Battle Pass'in sürdürdüğü etkinlikler {etkinlik: (pass'in başı, bitişi)} (savas_bileti.ensure): kaydın pass'i 1. günden başlayıp panelin
+# süresince sürer; görevleri etkinliğin içeriğine bağlı olduğundan etkinlik de o süre boyunca açık sayılır (panelde 'kapali' değilse)
+PASS_RUNS = {}
+
+
+def _pass_run(key, t):
+    r = PASS_RUNS.get(key)
+    return bool(r) and r[0] <= t < r[1]
+
+
+def _tags(e):
+    """Etkinliğin tek başına olabilen özellikleri: Battle Pass (kaydın tek pass'i), harita süsü (EventActivationState türü başına
+    bir süs), uzaylı kargo kutusunun görünümü (CandyCargo / kargo_tur: kutu tek görünümde)."""
+    out = {'pass'} if 'BattlePass' in e.get('turler', []) else set()
+    if 'sus' in e:
+        out.add('sus:%s' % e['sus']['tur'])
+    secs = ([e['harita']] if isinstance(e.get('harita'), dict) else []) + e.get('harita_ek', [])
+    if 'CandyCargo' in e.get('turler', []) or any(s.get('kargo_tur') for s in secs):
+        out.add('kargo')
+    return out
+
+
+# Çakışan etkinlikler (geliştirici notu 2026-10-28, N1): aynı anda açık olamazlar; ikisi de açık olacaksa öncelikli olan kalır
+# (resolve: panelde elle açılan, sonra kaydın Battle Pass'inin sürdürdüğü, sonra önce başlayan). Panel birini elle açınca
+# çakıştığı elle açılmışlar takvime döner (panel.set_events).
+CONFLICTS = {k: {j for j, f in EVENTS.items() if j != k and _tags(e) & _tags(f)} for k, e in EVENTS.items()}
 
 
 def configure(argv=None):
@@ -150,7 +176,7 @@ def _week_day(e, d):
 def period(key, now=None):
     """Etkinliğin şu anki (ya da yoksa None) dönemi: (başlangıç, bitiş) zaman damgası; bitiş hariç."""
     e, t = EVENTS[key], _dt(now)
-    if e.get('birlikte') and not any(is_active(k, now) for k in e['birlikte']):       # yalnız bu etkinliklerden biri sürerken (Fever)
+    if e.get('birlikte') and not any(_on(k, now) for k in e['birlikte']):       # yalnız bu etkinliklerden biri sürerken (Fever)
         return None
     if 'donemler' in e:
         p = _span_at(e['donemler'], t)
@@ -264,7 +290,45 @@ def section_intervals(s, a, b, hep_acik=False):
     return iv
 
 
+def _rank(key, now):
+    """Çakışmada öncelik (küçük kazanır): elle açılan, Battle Pass'in sürdürdüğü, sonra dönemi önce başlayan."""
+    t = time.time() if now is None else now
+    if AY.event_state(key) == 'acik' or key in FORCED:
+        top = 0
+    elif _pass_run(key, t):
+        top = 1
+    else:
+        top = 2
+    p = period(key, now)
+    return top, p[0] if p else 0, key
+
+
+def resolve(on, rank):
+    """Açık etkinliklerden çakışmayanlar: öncelik sırasıyla, kalanın çakıştıkları düşer."""
+    keep = set(on)
+    for k in sorted(on, key=rank):
+        if k in keep:
+            keep -= CONFLICTS.get(k, set())
+    return keep
+
+
 def is_active(key, now=None):
+    """Etkinlik açık mı: kendi kuralı (_on) ve çakışma (aynı anda açık çakışanlarından öncelikli olan; bağlı bileşen içinde).
+    --etkinlik ile adı verilenler (geliştirici seçeneği) çakışmaya bakmaz."""
+    if not _on(key, now):
+        return False
+    if key in FORCED:
+        return True
+    comp, todo = {key}, [key]
+    while todo:
+        for j in CONFLICTS.get(todo.pop(), ()):
+            if j not in comp and _on(j, now):
+                comp.add(j)
+                todo.append(j)
+    return len(comp) == 1 or key in resolve(comp, lambda k: _rank(k, now))
+
+
+def _on(key, now=None):
     e = EVENTS.get(key)
     if not e:
         return False
@@ -276,6 +340,8 @@ def is_active(key, now=None):
         return True
     if yearly and MODE == 'yok':
         return False
+    if _pass_run(key, time.time() if now is None else now):
+        return True
     return period(key, now) is not None
 
 
@@ -285,7 +351,8 @@ def forced(key):
 
 
 def active(now=None):
-    return {k for k in EVENTS if is_active(k, now)}
+    on = {k for k in EVENTS if _on(k, now)}
+    return resolve(on, lambda k: _rank(k, now)) | (on & FORCED)
 
 
 def has_type(t, now=None):
@@ -297,6 +364,8 @@ def time_left(key, now=None):
     """Kalan saniye (zorla açılmış etkinlikte 30 gün)."""
     p = period(key, now)
     now = time.time() if now is None else now
+    if _pass_run(key, now):                             # Battle Pass'in sürdürdüğü etkinlik: pass bitene dek
+        return max(int(PASS_RUNS[key][1] - now), int(p[1] - now) if p else 0)
     return max(0, int(p[1] - now)) if p else 30 * 86400
 
 

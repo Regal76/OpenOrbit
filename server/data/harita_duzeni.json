@@ -17,6 +17,38 @@
   "portal_uzak": 1500
  },
  "haritalar": {
+  "476": {
+   "_ad": "DSE 3 (resmî istemcide Battlefield III)",
+   "_kaynak": "Oyuncu bildirimi 2026-10-28, resmî oyunun mini harita görüntüsü (Battlefield III 143/76): ortada taralı engel (7.000-13.000 x 4.000-8.000), engelin altında solda ve sağda bekleyen uzaylı kümeleri",
+   "_uyarlama": "İniş yeri (merkez) ve küme yarıçapı/fark mesafesi görüntüden kestirim; pusu yalnız 'yok et' seviyelerinde (koru/eşlikte uzaylılar dost gemiye gelir)",
+   "engeller": [
+    [
+     "DSE3",
+     7000,
+     4000,
+     13000,
+     8000,
+     4
+    ]
+   ],
+   "merkez": [
+    10500,
+    10500
+   ],
+   "pusu": {
+    "noktalar": [
+     [
+      6200,
+      8900
+     ],
+     [
+      13500,
+      8500
+     ]
+    ],
+    "yaricap": 1500
+   }
+  },
   "1": {
    "_ad": "1-1",
    "tasarim_yeri": {

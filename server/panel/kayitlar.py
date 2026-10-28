@@ -133,6 +133,23 @@ class Kayitlar:
     def profile(self, slot):
         return os.path.join(self.dir(slot), 'profil.json')
 
+    def settings(self, slot):
+        """Kaydın oyun ayarları (ayar.py; kayda özgü: etkin kayıt değişince ayarlar da). Yoksa eski ortak dosyadan
+        (save/ayarlar.json) kopyalanır, o da yoksa boş (varsayılanlar)."""
+        p = os.path.join(self.dir(slot), 'ayarlar.json')
+        if not os.path.isfile(p) and os.path.isdir(self.dir(slot)):
+            with self.lock:
+                if not os.path.isfile(p):
+                    shutil.copyfile(YOL.AYARLAR, p) if os.path.isfile(YOL.AYARLAR) else _write_json(p, {})
+        return p
+
+    def copy_settings(self, src, dst):
+        """src kaydının oyun ayarları (etkinlik seçimleri dahil) dst kaydına."""
+        if not self.exists(src) or not self.exists(dst):
+            raise KayitHatasi(_('Kayıt bulunamadı.'))
+        if src != dst:
+            shutil.copyfile(self.settings(src), os.path.join(self.dir(dst), 'ayarlar.json'))
+
     def backup_dir(self, slot):
         return os.path.join(self.dir(slot), 'yedek')
 
@@ -268,9 +285,10 @@ class Kayitlar:
             raise KayitHatasi(out.get('hata') or _('Profil aracı başarısız.'))
         return out
 
-    def create(self, ad, pilot, firma, kredi=None, uridyum=None, seviye=None, onur=None, lazer=None, roket=None):
+    def create(self, ad, pilot, firma, kredi=None, uridyum=None, seviye=None, onur=None, lazer=None, roket=None, ilerlemeli=False,
+               ayar_kaynagi=None):
         """Yeni kayıt (profil_araci.py yeni). Başlangıç değerleri isteğe bağlı (boş: tohumdaki): kredi, uridyum, seviye (1-50),
-        onur, LCB-10 lazer cephanesi ve R-310 roketi adedi; sınırlara kırpılır."""
+        onur, LCB-10 lazer cephanesi ve R-310 roketi adedi; sınırlara kırpılır. ilerlemeli: Season Pass ilk sezondan sırayla."""
         ad, pilot = (ad or '').strip(), (pilot or '').strip()
         if not re.fullmatch(r'[\w\-\.\[\]\(\) ]{3,20}', pilot, re.UNICODE):
             raise KayitHatasi(_('Pilot adı 3-20 karakter olmalı (harf, rakam, boşluk, - _ . [ ] ( ) ).'))
@@ -293,12 +311,16 @@ class Kayitlar:
                                    ('onur', onur, 0, 10 ** 12), ('lazer', lazer, 0, 10 ** 9), ('roket', roket, 0, 10 ** 9)):
                 if v not in (None, ''):
                     args += ['--%s=%d' % (key, min(hi, max(lo, v)))]
+            if ilerlemeli:
+                args += ['--ilerlemeli=1']
             try:
                 self.run_tool(*args)
             except Exception:
                 shutil.rmtree(d, ignore_errors=True)
                 raise
             _write_json(os.path.join(d, 'kayit.json'), {'ad': ad, 'olusturma': time.strftime('%Y-%m-%d %H:%M:%S'), 'not': ''})
+            if ayar_kaynagi and self.exists(ayar_kaynagi):        # ayarlar başka bir kayıttan (yoksa eski ortak dosyadan)
+                self.copy_settings(ayar_kaynagi, sid)
             return sid
 
     def rename(self, slot, ad):

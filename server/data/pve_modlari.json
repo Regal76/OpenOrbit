@@ -10840,6 +10840,8 @@
    {
     "seviye": 45,
     "tur": "patron",
+    "can": 9.375,
+    "_can": "Oyuncu bildirimi 2026-10-28 (Emperor Sibelon zayıf): tek Emperor'un canı/kalkanı 6,4 M ile 40. ve 50. seviyelerin Gygerim Overlord'unun (60 M) onda biriydi, önceki seviyelerin dalgalarından da zayıftı. Can ve kalkan Overlord'unkine (60 M) çıkar, hasar aynı kalır",
     "dalgalar": [
      {
       "ad": "boss",

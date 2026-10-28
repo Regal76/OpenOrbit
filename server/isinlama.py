@@ -53,7 +53,8 @@ class Isinlama:
         for sid in sids:
             s = self.p.ship(sid)
             ships.append(mod('ShipWarpModule', shipId=int(sid), typeId=s['lootId'], shipDesignName=s.get('tasarim') or '',
-                             uridiumPrice=pay, voucherPrice=0 if near else 1, hangarId=int(sid), hangarName='', mapId=home))
+                             uridiumPrice=pay, voucherPrice=0 if near else 1, hangarId=int(sid), hangarName='',
+                             mapId=(s.get('konum') or {}).get('mapId', home)))      # geminin bırakıldığı harita (magaza.activate)
         return [('ShipWarpWindowCommand', {'jumpVoucherCount': self.p.resource(KUPON), 'uridium': int(self.p.d['pilot'].get('uridium', 0)),
                                            'isNearSpacestation': near, 'ships': ships})]
 

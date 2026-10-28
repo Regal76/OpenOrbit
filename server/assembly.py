@@ -113,7 +113,7 @@ def recorded_end(key, now=None):
         return None
     if g == 'sezon':
         import sezon
-        g = sezon.season_end(now)
+        g = sezon.current_end(now)
     return g if isinstance(g, (int, float)) and g > (now or time.time()) else None
 
 

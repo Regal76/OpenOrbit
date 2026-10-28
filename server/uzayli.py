@@ -253,6 +253,14 @@ class Yetenekler:
             f *= n.davranis['ofke'].get('hasar_carpani', 1)
         return f
 
+    def laser_color(self, n, now):
+        """Uzaylının lazer görseli (AttackLaserRunCommand.laserColor): öfkeli Battleray RSB-75 atar (wiki: "uses RSB-75 instead of
+        UCB-100"; ofke.lazer_renk, RSB-75 = 6 gibi). Görsel yokken öfke yalnız hasarda kalıyor, oyunda fark edilmiyordu (bildirim
+        2026-10-28)"""
+        if self.enraged(n, now):
+            return n.davranis['ofke'].get('lazer_renk', 0)
+        return 0
+
     def after_shot(self, n, now, hit):
         """Uzaylının lazeri oyuncuya isabet etti: ters atış (Streuner Turret), yavaşlatan atış."""
         t = n.davranis.get('ters_atis')

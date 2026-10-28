@@ -17,10 +17,15 @@ Battle Pass etkinliğin (takvim.py: 'BattlePass' türü olan, pass'i olan etkinl
 (resource_battle-pass 200.000 U): alınınca o ana dek toplanan görevlerin anahtarları da verilir (uyarlama). Anahtarsız pass ('anahtarsiz':
 Veba Mutasyonu 2020, resmî Türk forumu 154610): Battle Pass'in ödülü hedefin biletli ödülü ('bilet_odul', XML'in bpReward'ı); anahtar
 değişimi yok.
-Profilde: savas_bileti {donem, satin, deger, tamam, toplanacak, toplandi, degisim, suzgec}.
+Kayda özgü süre (geliştirici notu 2026-10-28): pass'li etkinlik açılınca kaydın pass'i 1. günden başlar ('bas') ve panelin
+savas_bileti_suresi günü sürer; bu sürede etkinlik de açık sayılır (takvim.PASS_RUNS: görevler etkinliğin içeriğine bağlı), takvimdeki
+dönemi önce bitse de. Aynı anda tek pass: süren pass bitmeden başka pass'li etkinlik açılsa da değişmez; biten pass aynı dönemde
+yeniden başlamaz.
+Profilde: savas_bileti {donem, bas, satin, deger, tamam, toplanacak, toplandi, degisim, suzgec}.
 """
 import json, os, time
 
+import ayar as AY
 import envanter as INV
 import etkinlik_gorunumleri as EG
 import gorev_takip as GT
@@ -64,6 +69,10 @@ def measure(c, kind, kw, map_id=None):
     return GT.measure(c, kind, kw, map_id)
 
 
+def duration():
+    return max(1, int(AY.get('savas_bileti_suresi'))) * 86400
+
+
 def event_key(now=None):
     """Battle Pass'i açan etkinlik ve dönemi ('halloween-2026') ya da None."""
     for k in sorted(TK.active(now)):
@@ -97,18 +106,36 @@ class SavasBileti:
         """Dönemin pass'i (ensure'dan sonra)."""
         return PASSES[self.st['donem'].rsplit('-', 1)[0]]
 
+    def end(self):
+        return self.st.get('bas', 0) + duration()
+
     def ensure(self, now=None):
-        ek = event_key(now)
+        """Kaydın süren pass'i (dönem adı) ya da None: süren pass sürer (etkinliği de açık tutar); yoksa açık pass'li etkinliğin
+        pass'i 1. günden başlar (aynı dönemin biten pass'i yeniden başlamaz)."""
+        now = time.time() if now is None else now
         st = self.st
-        if ek and st.get('donem') != ek:
+        ev = st.get('donem', '').rsplit('-', 1)[0]
+        if st.get('donem') and not st.get('bas'):                    # süresiz eski kayıt: etkinliği sürüyorsa pass bugünden
             with self.p.lock:
-                st.clear()
-                st.update(donem=ek, satin=False, deger={}, tamam=[], toplanacak=[], toplandi=[], degisim={},
-                          suzgec=B['ayarlar'].get('battlePassItemFilters', []))
+                st['bas'] = now if event_key(now) == st['donem'] else 1
                 self.p.dirty = True
-            if self.p.resource(PASS_ITEM) > 0:                       # önceden alınmış Battle Pass bu döneme
-                self.p.add_resource(PASS_ITEM, -1)
-                st['satin'] = True
+        if st.get('donem') and now < self.end() and AY.event_state(ev) != 'kapali':      # panelde kapatılan etkinliğin pass'i durur
+            TK.PASS_RUNS[ev] = (st['bas'], self.end())
+            return st['donem']
+        TK.PASS_RUNS.pop(ev, None)
+        ek = event_key(now)
+        if not ek or ek == st.get('donem'):
+            return None
+        with self.p.lock:
+            st.clear()
+            st.update(donem=ek, bas=now, satin=False, deger={}, tamam=[], toplanacak=[], toplandi=[], degisim={},
+                      suzgec=B['ayarlar'].get('battlePassItemFilters', []))
+            self.p.dirty = True
+        if self.p.resource(PASS_ITEM) > 0:                       # önceden alınmış Battle Pass bu döneme
+            self.p.add_resource(PASS_ITEM, -1)
+            st['satin'] = True
+        TK.PASS_RUNS[ek.rsplit('-', 1)[0]] = (now, self.end())
+        self.log('   Battle Pass başladı: %s (%d gün)' % (ek, duration() // 86400))
         return ek
 
     # ------------------------------------------------------------ mesajlar

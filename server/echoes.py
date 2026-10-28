@@ -32,6 +32,12 @@ UI_TICKET, UI_RESET, UI_LEAVE = 1, 2, 5
 # yalnız istek gönderiyor, pencereyi sunucunun bu komutu kapatıyor; önce gönderilmiyordu, iki pencere seviyede de açık kalıyordu
 # (1280x720'de kadro penceresinin X'i ekran dışında; canlı test H74)
 UI_CLOSE_ROSTER, UI_CLOSE_START = 3, 4
+# Command Hall düzeni (oyuncu bildirimi 2026-10-28, resmî istemcinin ekran görüntüsü ve mini haritası): portallar salonun ortasında,
+# aynı ekranda; sol başlatır, ortadaki bina (sol alt) gemi seçimi, sağdaki halka çıkış/sıfırlama. Varış oyuncunun durduğu yer.
+# Gemi seçimi bir portal değil, istasyon hangarı (AssetType 48; sarı oklu kollar ekran görüntüsündekiyle aynı, canlı denendi):
+# hangar çizilir, yerindeki tasarımsız giriş J ile pencereyi açar (istemci portal yokken de JumpRequest gönderir).
+HALL_START, HALL_SHIPS, HALL_EXIT, HALL_ARRIVAL = (9270, 6480), (9910, 6840), (10650, 6220), (10000, 6300)
+HANGAR_ASSET, HANGAR_ID = 48, PORTAL + 9
 
 
 def mod(_cls, **f):
@@ -76,16 +82,23 @@ class Echoes:
             w, h = H.map_size(map_id)
             # resmî sunucu kaydı: 2-1'de bu tasarımın (300) portalı (11210, 6310), haritanın ortasında
             out.append(dict(gateId=PORTAL, x=w // 2 + 710, y=h // 2 - 240, hedef=D['salon'], designId=D['portal'], kapi='echoes',
-                            pencere='echoes_giris', varis=(10500, 6550)))
+                            pencere='echoes_giris', varis=HALL_ARRIVAL))
         elif int(map_id) == D['salon']:
             home = KAPI.HOME_MAP.get(self.p.d['pilot'].get('factionId'), 5)
-            out += [dict(gateId=PORTAL + 1, x=7000, y=6550, hedef=0, designId=301, kapi='echoes', pencere='echoes_basla',
-                         ipucu='window_dse_title'),
-                    dict(gateId=PORTAL + 2, x=10500, y=4300, hedef=0, designId=302, kapi='echoes', pencere='echoes_gemi',
-                         ipucu='window_dse_choose_ship_info'),
-                    dict(gateId=PORTAL + 3, x=14000, y=6550, hedef=0, designId=1, kapi='echoes', pencere='echoes_cikis',
-                         ipucu='ttip_jumpgate', ipucu_hedef=home)]
+            out += [dict(gateId=PORTAL + 1, x=HALL_START[0], y=HALL_START[1], hedef=0, designId=301, kapi='echoes', pencere='echoes_basla',
+                         ipucu='window_dse_title', yerinde=True),
+                    dict(gateId=PORTAL + 2, x=HALL_SHIPS[0], y=HALL_SHIPS[1], hedef=0, kapi='echoes', pencere='echoes_gemi',
+                         ipucu='window_dse_choose_ship_info', yerinde=True),
+                    dict(gateId=PORTAL + 3, x=HALL_EXIT[0], y=HALL_EXIT[1], hedef=0, designId=1, kapi='echoes', pencere='echoes_cikis',
+                         ipucu='ttip_jumpgate', ipucu_hedef=home, yerinde=True)]
         return out
+
+    def hangar_cmd(self):
+        """Command Hall'ün gemi seçimi binası: istasyon hangarı (EIC görünümü, ekran görüntüsündeki sarı)."""
+        return ('AssetCreateCommand', dict(
+            assetId=HANGAR_ID, type=mod('AssetTypeModule', typeValue=HANGAR_ASSET), userName='Hangar', factionId=2, clanTag='',
+            posX=HALL_SHIPS[0], posY=HALL_SHIPS[1], designId=0, expansionStage=0, invisible=False, visibleOnWarnRadar=False,
+            detectedByWarnRadar=True, showBubble=True, clanId=0, clanRelation=mod('ClanRelationModule', type=0), modifier=[]))
 
     def enter_hall(self):
         """X-1 portalı: seviye şartı -> (hedef, mesajlar)."""
@@ -183,12 +196,13 @@ class Echoes:
     def scale(self, n, i, wave):
         lvl = LEVELS[self.level['harita']]
         f = (1 + D['olcek_seviye'] * (self.level['no'] - 1)) * lvl.get('guc', 1.0)
-        return PO.scale_npc(n, f, f, 1.0)
+        return PO.scale_npc(n, f * lvl.get('can', 1.0), f, 1.0)        # can: yalnız can/kalkan çarpanı (45. seviyenin patronu)
 
     def attach(self, world):
         self.world = world
         world.ally = None
         if int(world.map_id) == D['salon']:
+            world.send([self.hangar_cmd()])
             return None
         if not self.level:
             world.add_gate(self.hall_portal(world))
@@ -208,14 +222,16 @@ class Echoes:
     def spawn_ally(self, w):
         kind = self.level['tur']
         tip = 'pm_dost_' + kind
-        x, y = (w.map_w // 2, w.map_h // 2) if kind == 'koru' else (2500, w.map_h // 2)
+        import harita as H
+        cx, cy = H.center(w.map_id)
+        x, y = (cx, cy) if kind == 'koru' else (2500, cy)
         n = w.spawn_npc_at(tip, x, y)
         n.gate = True
         self.toughen_ally(n)
         self.ally_npc = n
         w.ally = self
         if kind == 'eslik':
-            self.level['hedef'] = (w.map_w - 2500, w.map_h // 2)
+            self.level['hedef'] = (w.map_w - 2500, cy)
 
     ALLY_SURVIVE_SN = 180           # uyarlama (kaynakta yok): dost gemi seviyenin en güçlü dalgasının ateşine bu kadar dayanır
 
@@ -355,9 +371,21 @@ class Echoes:
             self.world.alien.expire(a)
         self.ally_npc = None
 
+    def lair(self, j):
+        """Pusu (harita_duzeni 'pusu'; oyuncu bildirimi 2026-10-28): yok et seviyesinde dalganın j. grubu haritanın sabit noktasında
+        bekler, oyuncu yaklaşınca saldırır -> (x, y, fark yarıçapı) ya da None."""
+        import harita_duzeni as HD
+        p = HD.of(self.world.map_id).get('pusu') if self.world and self.level and self.level['tur'] == 'yok_et' else None
+        if not p:
+            return None
+        x, y = p['noktalar'][j % len(p['noktalar'])]
+        return x, y, p['yaricap']
+
     def hall_portal(self, w):
-        return dict(gateId=PORTAL + 4, x=w.map_w // 2, y=w.map_h // 2 + 1500, hedef=D['salon'], designId=301, kapi='echoes',
-                    varis=(10500, 6550))
+        import harita as H
+        cx, cy = H.center(w.map_id)
+        return dict(gateId=PORTAL + 4, x=cx, y=cy + 1500, hedef=D['salon'], designId=301, kapi='echoes',
+                    varis=HALL_ARRIVAL)
 
     def on_death(self):
         """Gemi yok oldu: bu koşuda kullanılamaz, seviye kaybedilir."""

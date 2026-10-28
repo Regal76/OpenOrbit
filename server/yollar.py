@@ -58,3 +58,10 @@ def profile_path(slot=None):
     """Yuvanın (verilmezse etkin yuvanın) profil dosyası; yuva yoksa eski save/profil.json."""
     slot = slot or active_slot()
     return os.path.join(slot_dir(slot), 'profil.json') if slot else ESKI_PROFIL
+
+
+def settings_path(slot=None):
+    """Yuvanın (verilmezse etkin yuvanın) oyun ayarları (kayda özgü; panel ilk açılışta oluşturur); yoksa eski save/ayarlar.json."""
+    slot = slot or active_slot()
+    p = os.path.join(slot_dir(slot), 'ayarlar.json') if slot else None
+    return p if p and os.path.isfile(p) else AYARLAR

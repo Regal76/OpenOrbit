@@ -238,11 +238,14 @@ class Dispatch:
         now = now or time.time()
         out = []
         for key in self.gate_keys():
-            g, G = KAPI.KAPI[key], self.k.gate(key)
+            g = KAPI.KAPI[key]
             if key in self.st['kapilar']:
                 left = self.st['kapilar'][key] - now
                 out.append(mod('DispatchGateModule', gateId=g['kimlik'], status=IN_PROGRESS if left > 0 else READY, timeLeft=max(0, int(left))))
-            elif self.k.built(key) and G['dalga'] == 0 and G.get('tamam', 0):     # en az bir kez tamamlanmış kapı (forum 160334)
+            else:
+                # Her kapı listede; kurulmamış ya da hiç tamamlanmamış kapıyı gönderim reddeder (istemcinin metinleri
+                # dispatch_error-no-gate "Please prepare a Gate manually …", dispatch_error-incomplete-gate "… complete the Gate manually
+                # at least once …"). Yalnız uygun kapıları listelemek sekmeyi boş bırakıyordu (oyuncu bildirimi 2026-10-28, img3)
                 out.append(mod('DispatchGateModule', gateId=g['kimlik'], status=AVAILABLE,
                                timeLeft=AY.sure(D['kapi']['sure_sn'], 'dispatch')))      # gönderilebilirken "Time required" sütunu (canlı test H35)
         return [('DispatchGetGateListCommand', {'gateList': out})]
@@ -251,7 +254,9 @@ class Dispatch:
         key = KAPI.BY_ID.get(f.get('gateId'))
         if not key or key not in self.gate_keys() or key in self.st['kapilar']:
             return [('DispatchMessageCommand', {'messageType': ERROR_NO_GATE})]
-        if not self.k.built(key) or self.k.gate(key)['dalga'] != 0 or not self.k.gate(key).get('tamam', 0):
+        if not self.k.built(key) or self.k.gate(key)['dalga'] != 0:          # kurulu ve 1. dalgada (forum 160334)
+            return [('DispatchMessageCommand', {'messageType': ERROR_NO_GATE})]
+        if not self.k.gate(key).get('tamam', 0):                                 # en az bir kez elle tamamlanmış
             return [('DispatchMessageCommand', {'messageType': ERROR_INCOMPLETE_GATE})]
         cost = {D['kapi']['ggeu']: 1}
         miss = INV.missing(self.p, cost)

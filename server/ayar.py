@@ -125,6 +125,12 @@ SCHEMA = [
        'seviye atlama hızı.', hi=50.0),
     _c('sezon_puani', 'Season Pass puanı', 'ilerleme', 'Season Pass görevlerinden kazanılan puan: sezon seviyesi atlama hızı.',
        hi=50.0),
+    _n('sezon_suresi', 'Season Pass süresi', 'ilerleme', 'Bir sezonun süresi. Sezon kaydın ilk girişinde 1. günden başlar, bitince '
+       'alınmamış ödüller verilir ve sıradaki sezon başlar (gerçek oyunda ~3 ay). Değişiklik süren sezona da uygulanır.',
+       lo=1, hi=180, varsayilan=90, birim='gün', sinir=3650),
+    _n('savas_bileti_suresi', 'Battle Pass süresi', 'ilerleme', "Battle Pass'in süresi. Pass'li bir etkinlik açılınca kaydın pass'i "
+       "1. günden başlar ve bu süre boyunca etkinlikle birlikte sürer (takvimdeki dönemi daha önce bitse de); aynı anda tek "
+       "pass (gerçek oyunda ~2 hafta).", lo=1, hi=60, varsayilan=14, birim='gün', sinir=365),
     _c('booster_guc', 'Booster etkisi', 'ilerleme', 'Boosterların bonusu (hasar, can, kalkan, EP, onur …) ve türlerin üst '
        'sınırı. x2: %10 hasar boosterı %20 verir.', hi=10.0, sinir=100.0),
     # ---------------------------------------------------------------- dünya

@@ -50,7 +50,7 @@ def level_ep(level):
     return lv, next(need for l, need in table if l == lv)
 
 
-def yeni(path, pilot, firma, kredi=None, uridyum=None, seviye=None, onur=None, lazer=None, roket=None):
+def yeni(path, pilot, firma, kredi=None, uridyum=None, seviye=None, onur=None, lazer=None, roket=None, ilerlemeli=False):
     if os.path.exists(path):
         raise ValueError('Bu yolda zaten bir profil var.')
     from profil import Profil
@@ -75,6 +75,8 @@ def yeni(path, pilot, firma, kredi=None, uridyum=None, seviye=None, onur=None, l
     if pos:
         pr.d['konum'] = {'mapId': mid, 'x': pos[0], 'y': pos[1]}
     pr.d['olusturma'] = time.strftime('%Y-%m-%d %H:%M:%S')
+    if ilerlemeli:                                          # Season Pass ilk sezondan sırayla (sezon.py)
+        pr.d['ilerlemeli'] = True
     pr.save(force=True)
     return {'harita': mid, 'konum': pos, 'sablon': bool(_load('giris.json'))}
 
@@ -167,7 +169,7 @@ def main(argv):
     args = [a for a in argv if not a.startswith('--')]
     if args[:1] == ['yeni'] and len(args) == 4:
         num = {k: int(opts[k]) for k in ('kredi', 'uridyum', 'seviye', 'onur', 'lazer', 'roket') if k in opts}
-        return yeni(args[1], args[2], args[3], **num)
+        return yeni(args[1], args[2], args[3], ilerlemeli=opts.get('ilerlemeli') == '1', **num)
     if args[:1] == ['ana_us'] and len(args) == 2:
         return ana_us(args[1])
     if args[:1] == ['ver'] and len(args) == 3:

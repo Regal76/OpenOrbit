@@ -39,6 +39,14 @@ EVENT_MINES = frozenset({'curcubitor_mayini'})
 PLAYER_MINES = frozenset(MINES) - EVENT_MINES
 LAUNCHERS = S['fircatici']['turler']
 LAUNCHER_AMMO = S['fircatici_cephane']
+# Fırlatıcı öğesinin nokta rengi (istemcinin CounterStyle'ı: 0 DEFAULT, 1 RED, 2 GREEN, 3 YELLOW, 4 BLUE, 5 CYAN, 6 ORANGE). Gerçek
+# kayıt (20261027_235305): ECO-10 4, HSTRM-01 3, UBR-100 1, BDR1212 5, SAR-02 5. Kayıtta olmayanlar istemcinin simge rengiyle
+# (atlas_assets_all): SAR-01 ve PIR-100 camgöbeği, CBR mavi-gri, OBR-100 mor-beyaz (enum'da mor yok: DEFAULT)
+LAUNCHER_COLOR = {'ammunition_rocketlauncher_eco-10': 4, 'ammunition_rocketlauncher_hstrm-01': 3,
+                  'ammunition_rocketlauncher_ubr-100': 1, 'ammunition_rocketlauncher_bdr1212': 5,
+                  'ammunition_rocketlauncher_sar-01': 5, 'ammunition_rocketlauncher_sar-02': 5,
+                  'ammunition_rocketlauncher_pir-100': 5, 'ammunition_rocketlauncher_cbr': 4,
+                  'ammunition_rocketlauncher_obr-100': 0}
 TOGGLES = S['acik_kapa']                      # menü öğesi -> ekstra özelliği (nisan, oto_roket, oto_fircatici)
 ALIEN_CPUS = S['uzayli_cpu']                  # Chaos Alien CPU'ları, Cubi Portal -> harita sınıfları, doğan türler
 ALIEN_CPUS.update(json.load(open(os.path.join(HERE, 'data', 'etkinlik_kapilari.json'), encoding='utf8')).get('cpu', {}))   # Bountiful (Gauntlet of Plutus; tools/etkinlik_kapilari.py)
@@ -373,12 +381,14 @@ def menu_status(p, menu_id, st):
         # boş fırlatıcıda da yüklü roket sayısı (0): ttip_rocketlauncher_unloaded "Attention: No launcher installed" fırlatıcısız
         # hesabın metni (kayıt); takılı ama boş fırlatıcıda da gidiyordu (kullanıcı bildirimi 2026-10-25: "Hellstorm takılı ama
         # kurulmamış diyor")
-        lines = [_line('ttip_rocketlauncher', [('%TYPE%', lns[0], 1)])]
-        if n or sel:
-            lines.append(_line('ttip_rocketlauncher_loadcount', [('%COUNT%', n, 0), ('%TYPE%', ammo if n else sel, 1)]))
+        lines = [_line('ttip_rocketlauncher', [('%TYPE%', menu_id, 5)])]          # kayıt: öğenin adı (tür 5), fırlatıcınınki değil
+        rocket = ammo if n else sel
+        if rocket:
+            lines.append(_line('ttip_rocketlauncher_loadcount', [('%COUNT%', n, 0), ('%TYPE%', rocket, 1)]))
         _tips(st, lines)
-        st.update(visible=True, available=n > 0, activatable=n > 0, counterValue=n, maxCounterValue=cap, iconLootId=lns[0],
-                  selected=False)
+        # kayıt: simge ve nokta rengi yüklü (yoksa seçili) cephanenin; fırlatıcının adı ve varsayılan stil her roketi kırmızı gösteriyordu
+        st.update(visible=True, available=n > 0, activatable=n > 0, counterValue=n, maxCounterValue=cap,
+                  iconLootId=rocket or lns[0], counterStyle=LAUNCHER_COLOR.get(rocket, 1), selected=False)
         if sel is None:
             st['available'] = st['activatable'] = False
         return st
@@ -400,6 +410,13 @@ def ajp_locked(p, m):
     fac = p.d['pilot'].get('factionId')
     homes = S['atlama_cpu']['ana_harita']
     return (m in homes.values() and m != homes.get(str(fac))) or p.d['pilot'].get('level', 1) < H.level_required(m, fac)
+
+
+def random_maps(p, here):
+    """Rastgele atlama hedefleri (4-5'in solucan deliği): AJP-01 listesinin seçilebilir haritaları, seviye ve düşman X-1 kilidi
+    dışında."""
+    return [m for m in sorted(H.NAMES) if m != here and m not in H.SPECIAL and not ajp_locked(p, m)
+            and not any(H.name(m).startswith(s) for s in ('5-', 'BL-'))]
 
 
 def jcpu_list(p):
@@ -931,15 +948,20 @@ class Esyalar:
         loot = c['menu']
         if w.hero_dead or w.jumping or p.ammo(loot) <= 0 or not self.ready(c['bekleme_grubu'], now):
             return
-        p.use_ammo(loot, 1)
         hx, hy = w.hero_pos(now)
+        if w.in_pvp_peace(hx, hy):          # istasyon ve portal çevresinde kullanılmaz, mayın gibi (oyuncu bildirimi 2026-10-28, gerçek oyun)
+            self.log('   EMP kullanılmadı: güvenli bölge')
+            return
+        p.use_ammo(loot, 1)
         msgs = [legacy('0|n|EMP|%d' % w.hid)]
         reset = 0
         for n in w.npcs.values():
-            nx, ny = n.mover.pos(now)
-            if n.alive and n.engaged and math.hypot(nx - hx, ny - hy) <= c['yaricap']:
+            # oyuncuyu hedeflemiş her uzaylı kilidini kaybeder, mesafeden bağımsız (oyuncu bildirimi 2026-10-28: uzaktan ateş edenler
+            # etkilenmiyordu); yarıçap öteki oyuncuların P.E.T.'leri için (aşağıda)
+            if n.alive and n.engaged and w.bizim(n):
                 n.engaged = False                                   # hedefi sıfırlanır
                 n.next_shot = max(getattr(n, 'next_shot', 0), now + c['saskinlik_sn'])
+                n.blocked = max(getattr(n, 'blocked', 0), now + c['saskinlik_sn'])     # saldırgan tür hemen yeniden kilitlenmesin
                 reset += 1
         if w.hero_etki.get('yavas') or w.hero_etki.get('hiz_siniri'):
             w.hero_etki.remove('yavas')                             # EMP yavaşlatmaları kaldırır (aliens.md: Slowdown Orb)

@@ -149,10 +149,10 @@ class PveModlari:
             dest, msgs = self.echoes.enter_hall()
             w.send(msgs)
             if dest:
-                go(dest, (10500, 6550))
+                go(dest, EC.HALL_ARRIVAL)
         elif kind == 'echoes_basla':
             if not self.echoes.st['kadro']:
-                w.send([KAPI.screen('Choose your ships first (middle gate).'), self.echoes.ship_list()])
+                w.send([KAPI.screen('Choose your ships first (hangar).'), self.echoes.ship_list()])
             else:
                 w.send([self.echoes.roster_cmd()])
         elif kind == 'echoes_gemi':

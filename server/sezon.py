@@ -27,7 +27,14 @@ Günlük görevler (3 + 2 Gold) her gün, haftalıklar (5 + 3 Gold) pazartesi ha
 satın alınanlar 1-4. 500 U, 5-7. 1.000 U, 8-10. 2.000 U, 11+. 4.000 U (wiki; günlük ve haftalık ayrı sayılır, gün ve hafta başında
 sıfırlanır; kayıttaki refreshInfo sıradaki fiyatı bildirir). Seviye azami olunca satın alınan fazla puan 1 puan = 10 Onur. Gold Pass
 mağazada (resource_gold-pass 400.000 U) ya da paketten; Extra Gold Pass Gold Pass'ten sonra.
-Profilde: sezon {donem, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, deger, tamam, yenileme, bekleyen [[kaptan, adet]]}.
+Kayda özgü sezon (geliştirici notu 2026-10-28; oyuncu bildirimi: gerçek takvimin sezonu 25.10'da bitince bilet "kapanıyordu"):
+sezon kaydın ilk girişinde 1. günden başlar ve panelin sezon_suresi günü sürer (takvimden bağımsız; süre değişince süren sezona da
+uygulanır); aynı anda tek sezon. Biten sezonun yerine sıradaki: kayıt "ilerlemeli" oluşturulduysa (profil 'ilerlemeli', panelin yeni
+kayıt penceresi) ilk sezondan (2023-05 Mobius) başlayıp her sezon bitince bir sonrakine, en yeniye dek; sonradan eklenen sezonlar
+sırası gelince açılır, hepsi oynandıysa en yenisi yinelenir. Değilse hep en yeni sezon. Sezonun kimliği tasarımlarının sezonu
+(etkinlik_gorunumleri.SEASONS); başarım grubu ve süreli tariflerin bitişi bu sezondan (ACTIVE). Takvim işlevleri (season_id …)
+gerçek oyunun sezonlarını bilmek için kalır.
+Profilde: sezon {donem, bas, oynanan, puan, gold, ext, alinan, gun, gunluk, hafta, haftalik, deger, tamam, yenileme, bekleyen [[kaptan, adet]]}.
 """
 import datetime, json, os, random, threading, time
 
@@ -123,13 +130,21 @@ def season_end(now=None):
     return season_span(now)[1]
 
 
+ACTIVE = {}                 # oynanan sezon {sid, bitis} (Sezon.ensure yazar): başarım grubu ve süreli tarifler (assembly) buna bakar
+
+
+def current_end(now=None):
+    """Oynanan sezonun bitişi (kayda özgü); bilinmiyorsa takvimin sezonununki."""
+    return ACTIVE.get('bitis') or season_end(now)
+
+
 def achievement_group(now=None):
     """Bu sezonun Season Pass başarım grubu (SEASONPASS_Qn; istemcinin LevelAbsolute başarımları: "Gold Season Pass'in 50 / 80
     seviyesi"). Gerçek oyunun sezonları başlangıç ayıyla adlı (achievement_seasonpass_202608 = Q14); istemcide bu sezonunki yoksa
-    ondan önce başlamış en yeni sezonunki (uyarlama)."""
+    ondan önce başlamış en yeni sezonunki (uyarlama). Oynanan sezon (ACTIVE) varsa onunki."""
     import re
     import basarim as BS
-    start = season_start(now)
+    start = tuple(int(x) for x in ACTIVE['sid'].split('-')) if ACTIVE.get('sid') else season_start(now)
     best = None
     for aid, a in BS.ACH.items():
         m = re.match(r'achievement_seasonpass_(\d{4})(\d{2})$', aid)
@@ -182,6 +197,24 @@ def refresh_price(n):
             return cost
 
 
+def seasons(now=None):
+    """Sezonların kimlikleri, eskiden yeniye (etkinlik_gorunumleri.SEASONS: tasarımları bilinenler); gerçek takvimde başlamış
+    daha yeni sezon da (tasarımları tablodan örneklenir: EG.season_track)."""
+    ids = [s['sezon'] for s in EG.SEASONS]
+    cur = season_id(now)
+    return ids + [cur] if cur > ids[-1] else ids
+
+
+def next_season(played, progressive, now=None):
+    """Sıradaki sezon: ilerlemelide oynanmamış ilk sezon (yoksa en yeni), değilse en yeni."""
+    ids = seasons(now)
+    return next((i for i in ids if i not in played), ids[-1]) if progressive else ids[-1]
+
+
+def duration():
+    return max(1, int(AY.get('sezon_suresi'))) * 86400
+
+
 def points_of(qid):
     return sum(r['amount'] for r in MISSIONS[qid]['tanim']['rewards'] if r['lootId'] == POINT_ITEM)
 
@@ -203,28 +236,43 @@ class Sezon:
 
     def track(self, key):
         """Sezonun ödül sırası: kayıttakinin sezon tasarımları sezonun sırasındakilerle (etkinlik_gorunumleri.season_track)."""
-        return EG.season_track(key, S['odul'][key], self.st.get('donem') or season_id())
+        return EG.season_track(key, S['odul'][key], self.st.get('donem') or seasons()[-1])
+
+    def end(self):
+        """Oynanan sezonun bitişi: başlangıcı + panelin süresi."""
+        return self.st.get('bas', time.time()) + duration()
+
+    def ended(self, now):
+        return bool(self.st.get('donem')) and (not self.st.get('bas') or now >= self.end())
 
     def ensure(self, now=None):
         """Sezon, gün ve hafta değiştiyse yenile -> bildirilecek mesajlar."""
         now = time.time() if now is None else now
         st, msgs = self.st, []
-        sid = season_id(now)
         if '-Q' in st.get('donem', ''):             # eski biçim (takvim çeyreği): çeyreğin ilk gününün sezonu (ilerleme silinmesin)
             y, q = st['donem'].split('-Q')
             with self.p.lock:
                 st['donem'] = season_id(datetime.datetime(int(y), int(q) * 3 - 2, 1).timestamp())
-        if st.get('donem') != sid:
-            wait = []
+        if st.get('donem') and not st.get('bas'):    # takvime bağlı eski kayıt: ilerlemesi kalır, sezonu bugünden sürer
+            with self.p.lock:
+                st['bas'] = now
+                st.setdefault('oynanan', [st['donem']])
+                self.p.dirty = True
+        if not st.get('donem') or self.ended(now):
+            wait, played = [], list(st.get('oynanan', []))
             if st.get('donem'):
                 ended, wait = self.close_season()
                 msgs += ended
+            sid = next_season(played, bool(self.p.d.get('ilerlemeli')), now)
             with self.p.lock:
                 st.clear()
-                st.update(donem=sid, puan=0, gold=False, ext=False, alinan={k: [] for k, g, e in TRACKS}, deger={}, tamam=[],
-                          sezonluk=pool(SEASON, False) + pool(SEASON, True), yenileme={'gun': 0, 'hafta': 0}, bekleyen=wait)
+                st.update(donem=sid, bas=now, oynanan=played + [sid], puan=0, gold=False, ext=False,
+                          alinan={k: [] for k, g, e in TRACKS}, deger={}, tamam=[], sezonluk=pool(SEASON, False) + pool(SEASON, True),
+                          yenileme={'gun': 0, 'hafta': 0}, bekleyen=wait)
                 self.p.dirty = True
+            self.log('   Season Pass sezonu başladı: %s (%s, %d gün)' % (sid, EG.season(sid)['ad'], duration() // 86400))
             msgs += self.activate_items()
+        ACTIVE.update(sid=st['donem'], bitis=self.end())
         # havuzdan kalkmış görev kimlikleri (havuz wiki'ye göre yenilendi): liste yeniden çekilir, eski ilerleme silinir
         if any(q not in MISSIONS for q in st.get('gunluk', [])):
             st['gun'] = None
@@ -269,7 +317,7 @@ class Sezon:
         return ('SeasonPassStatusCommand', dict(pointsCost=list(COST), uridiumCost=list(UCOST), goldPass=bool(st.get('gold')),
                                                 showTips=tips, marketingImage=S['gorsel'], seasonName=S['ad'],
                                                 extGoldPass=bool(st.get('ext')),
-                                                timeToEventEnd=max(0, int(season_end(now) - (time.time() if now is None else now)))))
+                                                timeToEventEnd=max(0, int(self.end() - (time.time() if now is None else now)))))
 
     def reward_cmd(self):
         al = self.st['alinan']
@@ -566,8 +614,8 @@ class Sezon:
         return fn(f) if fn else None
 
     def tick(self, now):
-        if self.p.d.get('sezon') and (self.st.get('gun') != day_id(now) or self.st.get('donem') != season_id(now)):
-            ended = self.st.get('donem') != season_id(now)
+        if self.p.d.get('sezon') and (self.st.get('gun') != day_id(now) or self.ended(now)):
+            ended = self.ended(now)
             msgs = self.ensure(now) + [self.status_cmd(now), self.mission_cmd(), self.points_cmd(), self.reward_cmd()]
             msgs += self.unclaimed_msgs() if ended else []
             if self.send:

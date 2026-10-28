@@ -768,6 +768,7 @@ function pilotForm({ start = true } = {}) {
   // başlangıç değerleri (isteğe bağlı; boş: şablondaki): kredi, uridyum, seviye (EP'si seviyenin eşiği), onur, cephane
   const num = (min, max) => h('input', { class: 'input', type: 'number', min, max, step: 1, placeholder: T('şablondaki') });
   const kredi = num(0), uri = num(0), seviye = num(1, 50), onur = num(0), lazer = num(0), roket = num(0);
+  const ilerlemeli = h('input', { type: 'checkbox' });
   const cards = FIRMS.map(([id, k, n, c, m]) => {
     const el = h('div', { class: 'radio-card' + (id === st.firma ? ' on' : ''), style: { '--c': c }, onclick: () => {
       st.firma = id; el.parentNode.querySelectorAll('.radio-card').forEach(x => x.classList.remove('on')); el.classList.add('on');
@@ -778,10 +779,12 @@ function pilotForm({ start = true } = {}) {
     field(T('Kayıt adı (isteğe bağlı)'), ad),
     start ? h('div', { class: 'grid g2' }, field(T('Başlangıç kredisi (isteğe bağlı)'), kredi), field(T('Başlangıç uridyumu (isteğe bağlı)'), uri),
       field(T('Başlangıç seviyesi (1-50, isteğe bağlı)'), seviye), field(T('Başlangıç onuru (isteğe bağlı)'), onur),
-      field(T('LCB-10 lazer cephanesi (isteğe bağlı)'), lazer), field(T('R-310 roketi (isteğe bağlı)'), roket)) : null];
+      field(T('LCB-10 lazer cephanesi (isteğe bağlı)'), lazer), field(T('R-310 roketi (isteğe bağlı)'), roket)) : null,
+    h('label', { class: 'row small', title: T('Season Pass ilk sezondan (Mobius) başlar; her sezon bitince bir sonraki açılır, en yeniye dek. Sonradan eklenen sezonlar da sırası gelince açılır. Kapalıysa hep en yeni sezon.') },
+      h('span', { class: 'switch' }, ilerlemeli, h('span')), T('Sezonları ilk sezondan sırayla aç'))];
   const v = x => start ? x.value : '';
   return { el, pilot, values: () => ({ ad: ad.value.trim() || pilot.value.trim(), pilot: pilot.value.trim(), firma: st.firma,
-    kredi: v(kredi), uridyum: v(uri), seviye: v(seviye), onur: v(onur), lazer: v(lazer), roket: v(roket) }) };
+    kredi: v(kredi), uridyum: v(uri), seviye: v(seviye), onur: v(onur), lazer: v(lazer), roket: v(roket), ilerlemeli: ilerlemeli.checked }) };
 }
 
 function newSaveModal() {
@@ -938,6 +941,15 @@ async function renderAyarlar() {
       act(() => api('/api/ayarlar/hazir', { ad: key }), T('"{0}" uygulandı.', p.ad)).then(renderAyarlar);
   } }, h('b', null, '★ ', p.ad), h('span', null, T('{0} değişiklik', Object.keys(p.degerler).length)),
     btn('', async () => { if (await confirmBox(T('Şablon silinsin mi?'), T('"{0}" şablonu silinir.', p.ad), { ok: T('Sil'), danger: true })) act(() => api('/api/ayarlar/sablon_sil', { ad: key })).then(renderAyarlar); }, 'ghost sm icon x', 'x', { title: T('Sil') })));
+  const copySel = h('select', { class: 'input', style: { maxWidth: '240px' } }, (r.kayitlar || []).map(k => h('option', { value: k.id }, k.ad)));
+  const saveCard = r.kayit ? h('div', { class: 'card' }, h('h2', null, icon('save'), T('Bu kaydın ayarları: {0}', r.kayit_adi)),
+    h('p', { class: 'desc' }, T('Oyun ayarları ve etkinlik seçimleri her kayda özgüdür; etkin kayıt değişince ayarlar da değişir.')),
+    (r.kayitlar || []).length ? h('div', { class: 'row' }, copySel,
+      btn(T('Bu kayıttan kopyala'), async () => {
+        const src = r.kayitlar.find(k => k.id === copySel.value);
+        if (src && await confirmBox(T('Ayarlar kopyalansın mı?'), T('"{0}" kaydının bütün oyun ayarları ve etkinlik seçimleri bu kayda kopyalanır.', src.ad), { ok: T('Kopyala') }))
+          act(() => api('/api/ayarlar/kopyala', { kaynak: src.id }), T('Ayarlar kopyalandı.')).then(renderAyarlar);
+      }, 'sm', 'copy')) : null) : null;
   const presetCard = h('div', { class: 'card' }, h('h2', null, icon('star'), T('Hazır ayarlar')),
     h('p', { class: 'desc' }, T('Bir ayar kümesini tek tıkla uygula ya da şimdiki ayarlarını şablon olarak sakla.')),
     h('div', { class: 'preset-bar' }, presets, user),
@@ -997,7 +1009,7 @@ async function renderAyarlar() {
     h('div', { class: 'row wrap' }, h('span', { class: 'search-box' }, icon('search'), q),
       h('label', { class: 'row', style: { gap: '8px' } }, h('span', { class: 'switch' }, only, h('span')), T('Yalnız değişenler'))),
     h('div', { style: { marginTop: '10px' } }, jump));
-  $('#content').replaceChildren(h('div', { class: 'stack' }, presetCard, info, tools, none, ...groups));
+  $('#content').replaceChildren(h('div', { class: 'stack' }, saveCard, presetCard, info, tools, none, ...groups));
   apply();
   markChanged();
 }
@@ -1084,12 +1096,14 @@ async function renderEtkinlikler(list) {
   const row = e => {
     const state = e.durum || 'takvim';
     const status = e.etkin ? badge(e.durum === 'acik' && !e.takvimde ? T('Açık (elle)') : T('Açık'), 'ok')
+      : e.bastiran ? badge(T('Kapalı (çakışma: {0})', e.bastiran), 'err')
       : badge(e.durum === 'kapali' && e.takvimde ? T('Kapalı (elle)') : T('Kapalı'), e.durum === 'kapali' ? 'err' : '');
     const cal = e.takvimde ? (e.kalan_sn != null ? T('takvimde açık · {0} kaldı', fmtDur(e.kalan_sn)) : T('takvimde açık'))
       : (e.sonraki_gun != null ? T('takvimde {0} gün sonra', e.sonraki_gun) : T('takvimde şu an kapalı'));
     return h('div', { class: 'ev-row' },
       h('div', null, h('div', { class: 'name' }, e.ad, status), h('div', { class: 'help muted small' }, e.aciklama),
-        h('div', { class: 'when' }, '📅 ', e.zaman, ' · ', cal)),
+        h('div', { class: 'when' }, '📅 ', e.zaman, ' · ', cal),
+        e.cakisan && e.cakisan.length ? h('div', { class: 'help muted small' }, T('Birlikte açık olamaz: {0}', e.cakisan.join(', '))) : null),
       h('div', { class: 'seg' }, [['takvim', T('Takvime göre'), 'info'], ['acik', T('Açık'), 'ok'], ['kapali', T('Kapalı'), 'err']].map(([k, t, c]) =>
         h('button', { class: (state === k ? 'on ' : '') + c, onclick: () => set(e.anahtar, k === 'takvim' ? null : k) }, t))));
   };
@@ -1099,7 +1113,7 @@ async function renderEtkinlikler(list) {
       btn(T('Takvimde gör'), () => go('takvim'), 'sm', 'agenda'), btn(T('Tüm etkinlikleri kapat'), () => bulk('kapali'), 'sm', 'power')),
     h('div', { class: 'card' }, h('div', { class: 'row between wrap' }, h('h2', null, icon('calendar'), T('Yıllık etkinlikler')),
       h('div', { class: 'row wrap' }, btn(T('Hepsi takvime göre'), () => bulk('takvim', 'yillik'), 'sm'), btn(T('Hepsini aç'), () => bulk('acik', 'yillik'), 'sm'), btn(T('Hepsini kapat'), () => bulk('kapali', 'yillik'), 'sm'))),
-      h('p', { class: 'desc' }, T('Gerçek tarihe göre açılırlar; istediğin etkinliği istediğin zaman açabilir ya da kapatabilirsin. Birden çok etkinlik aynı anda açık olabilir.')),
+      h('p', { class: 'desc' }, T('Gerçek tarihe göre açılırlar; istediğin etkinliği istediğin zaman açabilir ya da kapatabilirsin. Birden çok etkinlik aynı anda açık olabilir; birbiriyle çakışanlardan (Battle Pass, harita süsü, kargo kutusu) yalnız biri: elle açtığın, yoksa önce başlayan.')),
       yearly.map(row)),
     h('div', { class: 'card' }, h('div', { class: 'row between wrap' }, h('h2', null, icon('clock'), T('Haftalık etkinlikler')),
       h('div', { class: 'row wrap' }, btn(T('Hepsi takvime göre'), () => bulk('takvim', 'haftalik'), 'sm'), btn(T('Hepsini aç'), () => bulk('acik', 'haftalik'), 'sm'), btn(T('Hepsini kapat'), () => bulk('kapali', 'haftalik'), 'sm'))),

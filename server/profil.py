@@ -434,7 +434,7 @@ class Profil:
             f['dailyRank'] = GMK.ADMIN_RANK  # GM konsolu (Ö2): istemci yöneticiyi dailyRank 6000 ile tanıyor (UnitFactory.InitMyUnit)
         return f
 
-    def beacon(self, station=None, near_gate=False, pos=None, repairing=False, gate_peace=False, radiation=False):
+    def beacon(self, station=None, near_gate=False, pos=None, repairing=False, gate_peace=False, radiation=False, void=False):
         b = dict(self.tohum.get('BeaconCommand') or {})
         rep = next((e for e in EK.equipped(self) if e.startswith('equipment_extra_repbot_')), None)      # dronda takılı robot da sayılır
         b['repairRobotActive'] = repairing
@@ -448,7 +448,7 @@ class Profil:
         if station:
             r = station.get('peaceRadius', 0)
             inside = (x - station['posX']) ** 2 + (y - station['posY']) ** 2 <= r * r
-        b.update(inPeaceArea=bool((inside and station.get('pvpPeace', True)) or gate_peace), inStation=inside)     # portal çevresi de güvenli (kayıt), istasyon değil
+        b.update(inPeaceArea=bool((inside and station.get('pvpPeace', True)) or gate_peace) and not void, inStation=inside)     # portal çevresi de güvenli (kayıt), istasyon değil
         return b
 
     def generate(self, marker, station=None):

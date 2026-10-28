@@ -36,6 +36,7 @@ class PetCbsCombat(unittest.TestCase):
         self.w.pet = self.pet
         self.pet.attach(self.w)
         self.pet.launch()
+        self.pet.d['disli'] = pet.GUARD           # launches passive; these cases cover Guard mode
         self.pet.mover = dunya.Mover(*self.xy)
         self.now = time.time()
         self.pet.tick_t = self.now

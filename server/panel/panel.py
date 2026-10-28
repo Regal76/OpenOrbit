@@ -164,8 +164,14 @@ def write_json(path, d):
     os.replace(tmp, path)
 
 
+def settings_file(slot=None):
+    """Oyun ayarlarının dosyası: kaydın kendi ayarları (etkin kayıt; kayıt yoksa eski ortak dosya)."""
+    slot = slot or KAY.active()
+    return KAY.settings(slot) if slot else YOL.AYARLAR
+
+
 def game_settings():
-    return AY.read(YOL.AYARLAR)
+    return AY.read(settings_file())
 
 
 def client_folder():
@@ -275,7 +281,15 @@ def event_list():
         out.append({'anahtar': key, 'ad': _(e.get('ad', key)), 'tur': 'yillik' if yearly else 'haftalik', 'zaman': when,
                     'takvimde': per is not None, 'kalan_sn': int(per[1] - now) if per else None, 'sonraki_gun': nxt,
                     'durum': st, 'etkin': (st == 'acik') if st else per is not None,
-                    'aciklama': _(ETKINLIK_ACIKLAMA.get(key, ''))})
+                    'aciklama': _(ETKINLIK_ACIKLAMA.get(key, '')),
+                    'cakisan': sorted(_(TK.EVENTS[j].get('ad', j)) for j in TK.CONFLICTS[key])})
+    # çakışma (takvim.resolve): aynı anda açık çakışanlardan elle açılan, yoksa önce başlayan kalır
+    rows = {x['anahtar']: x for x in out}
+    on = {k for k, x in rows.items() if x['etkin']}
+    keep = TK.resolve(on, lambda k: (rows[k]['durum'] != 'acik', (TK.period(k, now) or (0,))[0], k))
+    for k in on - keep:
+        rows[k]['etkin'] = False
+        rows[k]['bastiran'] = next(rows[j]['ad'] for j in sorted(keep, key=lambda j: rows[j]['ad']) if j in TK.CONFLICTS[k])
     out.sort(key=lambda x: (x['tur'] != 'yillik', not x['etkin'], x['ad'].lower()))
     return out
 
@@ -347,8 +361,12 @@ def set_events(body):
             ev[k] = v
         else:
             ev.pop(k, None)
+        if v == 'acik':                             # çakışan elle açıklar takvime döner (takvim.CONFLICTS)
+            for j in TK.CONFLICTS[k]:
+                if ev.get(j) == 'acik':
+                    ev.pop(j)
     vals['etkinlikler'] = ev
-    AY.write(YOL.AYARLAR, vals)
+    AY.write(settings_file(), vals)
     return event_list()
 
 
@@ -507,7 +525,7 @@ def open_extra(b):
         if YON.client_alive() or COK.canli():
             raise Hata(_('Sunucu tek oyunculu açıldı: ek istemci için oyunu kapatıp yeniden OYNA\'ya bas.'))
         log('çoklu istemci: sunucu çok oturumlu yeniden başlatılıyor')
-        YON.start_servers(KAY.profile(YON.slot), YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=YON.slot,
+        YON.start_servers(KAY.profile(YON.slot), settings_file(YON.slot), kontrol=bool(AY.read(settings_file(YON.slot)).get('kontrol')), slot=YON.slot,
                           coklu=coklu_ortam())
     return COK.ac(slot, client_folder(), YON.slot)
 
@@ -590,7 +608,8 @@ def launch(sadece_sunucu=False, arkadas=False):
                                                 'panel.log'))
         _step((_('Arkadaş sunucusu başlatılıyor') if arkadas else _('Sunucular başlatılıyor'))
               if not YON.running() or restart else _('Sunucular açık'))
-        YON.start_servers(prof, YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot, arkadas=ark_env, coklu=coklu)
+        YON.start_servers(prof, settings_file(slot), kontrol=bool(AY.read(settings_file(slot)).get('kontrol')), slot=slot, arkadas=ark_env,
+                          coklu=coklu)
         if not sadece_sunucu:
             _step(_('Oyun açılıyor'))
             YON.start_client(folder, cmd, env)
@@ -962,9 +981,11 @@ def _schema_row(s):
 
 def api_settings():
     hazir = {k: dict(p, ad=_(p['ad']), aciklama=_(p['aciklama'])) for k, p in AY.HAZIR.items()}
+    slot = KAY.active()
     return {'sema': [_schema_row(s) for s in AY.SCHEMA], 'gruplar': [{'anahtar': k, 'ad': _(a)} for k, a in AY.GRUPLAR],
             'degerler': game_settings(), 'varsayilan': AY.DEFAULTS, 'hazir': hazir, 'sablonlar': read_json(SABLONLAR, {}),
-            'sunucu_acik': YON.running()}
+            'sunucu_acik': YON.running(), 'kayit': slot, 'kayit_adi': KAY.meta(slot).get('ad', slot) if slot else None,
+            'kayitlar': [{'id': s, 'ad': KAY.meta(s).get('ad', s)} for s in KAY.slots() if s != slot]}
 
 
 def launch_command():
@@ -1072,7 +1093,7 @@ def h_get(path, q):
                 'istemci_surumu': IST.check(client_folder()).get('surum') or IST.supported()}
     if path == '/api/hakkinda':
         return {'surum': SURUM, 'python': sys.version.split()[0], 'kok': ROOT, 'sunucu': SERVER, 'kayitlar': YOL.KAYITLAR,
-                'gunlukler': YOL.LOGS, 'ayarlar': YOL.AYARLAR, 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current(), 'discord': DISCORD,
+                'gunlukler': YOL.LOGS, 'ayarlar': settings_file(), 'panel': YOL.PANEL, 'port': PORT, 'dil': D.current(), 'discord': DISCORD,
                 'eski_kisayol': bool(old_shortcut())}
     raise Hata(_('Bilinmeyen istek: %s', path))
 
@@ -1114,7 +1135,7 @@ def h_post(path, b):
         ark_env = ARK.host_ortam() if YON.running() and YON.arkadas else None       # kip korunur (Host, çoklu istemci)
         coklu = None if ark_env else (coklu_ortam() if (YON.running() and YON.coklu) or coklu_istenir(slot) else None)
         YON.stop_servers()
-        YON.start_servers(KAY.profile(slot), YOL.AYARLAR, kontrol=bool(game_settings().get('kontrol')), slot=slot, arkadas=ark_env,
+        YON.start_servers(KAY.profile(slot), settings_file(slot), kontrol=bool(AY.read(settings_file(slot)).get('kontrol')), slot=slot, arkadas=ark_env,
                           coklu=coklu)
         return YON.status()
     if path == '/api/istemci/kapat':
@@ -1153,14 +1174,21 @@ def h_post(path, b):
         for k, v in (b.get('degerler') or {}).items():
             if k in AY.BY_KEY:
                 vals[k] = v
-        AY.write(YOL.AYARLAR, vals)
+        AY.write(settings_file(), vals)
+        return api_settings()
+    if path == '/api/ayarlar/kopyala':             # başka bir kaydın ayarları (etkinlik seçimleri dahil) etkin kayda
+        slot = KAY.active()
+        if not slot:
+            raise Hata(_('Kayıt yok.'))
+        KAY.copy_settings(str(b.get('kaynak') or ''), slot)
+        log('ayarlar kopyalandı: %s -> %s' % (b.get('kaynak'), slot))
         return api_settings()
     if path == '/api/ayarlar/sifirla':
         vals = game_settings()
         keys = b.get('anahtarlar') or list(AY.BY_KEY)
         for k in keys:
             vals.pop(k, None)
-        AY.write(YOL.AYARLAR, vals)
+        AY.write(settings_file(), vals)
         return api_settings()
     if path == '/api/ayarlar/hazir':
         name = b.get('ad')
@@ -1170,7 +1198,7 @@ def h_post(path, b):
             raise Hata(_('Hazır ayar bulunamadı.'))
         vals = {k: v for k, v in game_settings().items() if k not in AY.BY_KEY}     # etkinlik seçimleri kalır
         vals.update(preset)
-        AY.write(YOL.AYARLAR, vals)
+        AY.write(settings_file(), vals)
         return api_settings()
     if path == '/api/ayarlar/sablon_kaydet':
         name = (b.get('ad') or '').strip()[:40]
@@ -1191,7 +1219,7 @@ def h_post(path, b):
     # ---- kayıtlar
     if path == '/api/kayitlar/yeni':
         sid = KAY.create(b.get('ad'), b.get('pilot'), b.get('firma'), b.get('kredi'), b.get('uridyum'), b.get('seviye'), b.get('onur'),
-                         b.get('lazer'), b.get('roket'))
+                         b.get('lazer'), b.get('roket'), bool(b.get('ilerlemeli')), b.get('ayar_kaynagi') or KAY.active())
         if b.get('aktif_yap', True):
             KAY.set_active(sid)
         log('yeni kayıt: %s' % sid)

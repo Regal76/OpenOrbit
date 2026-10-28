@@ -73,6 +73,15 @@ class GalaxyTrek:
         self.p, self.m, self.log = profil, magaza, log
         self.titles = None                        # ödül unvanı (oturum bağlar: başarımın unvan listesine)
         self.on = None                            # etkinlik sürüyor mu (tick'te saniyede bir)
+        if magaza is not None:
+            magaza.on_bought.append(self.bought)
+
+    def bought(self, loot, amount):
+        """Mağazadan FTL Key paketi: açık pencerenin sayacı (UISpaceSearch.Quantity) yalnız UpdateSpaceSearchKeyCommand'la değişir;
+        pencerenin Shop düğmesinden (GoShop) alınca eski sayı kalıyordu (oyuncu bildirimi 2026-10-28: 150'lik paket 50 gibi görünüyordu)."""
+        if any(g == KEY for g, n in self.m.contents(loot, amount) or []):
+            return [self.key_cmd()]
+        return []
 
     @property
     def st(self):

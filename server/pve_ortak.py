@@ -122,7 +122,7 @@ class Kosu:
     def spawn(self, now):
         w = self.w
         hx, hy = w.hero_pos(now)
-        for row in self.wave()['gruplar'][self.sub]:
+        for j, row in enumerate(self.wave()['gruplar'][self.sub]):
             tip, count = row[0], row[1]
             keep = len(row) > 2 and row[2]
             if tip not in w.CFG_TYPES:
@@ -131,11 +131,17 @@ class Kosu:
             ang, dist = random.uniform(0, 2 * math.pi), random.uniform(1100, 1500)
             cx = min(max(hx + math.cos(ang) * dist, 500), w.map_w - 500)
             cy = min(max(hy + math.sin(ang) * dist, 500), w.map_h - 500)
+            lair = self.m.lair(j) if hasattr(self.m, 'lair') else None      # pusu: sabit noktada bekler (echoes.lair)
+            if lair:
+                cx, cy = lair[:2]
+                lair = {'r': lair[2], 'on': False}                   # grubun ortak pusu durumu: biri saldırınca hepsi
             if not keep:
                 count = AY.adet('dalga_npc', count)            # panel: dalgalardaki uzaylı sayısı (koruyucu bir tane)
             for x, y in KAPI.spread(cx, cy, count, w.map_w, w.map_h):
                 n = w.spawn_npc_at(tip, x, y, prep=lambda n: self.m.scale(n, self.i, self.wave()), dalga=True)   # güçlendirilip bildirilir
                 n.gate, n.engaged, n.hunt = True, True, True
+                if lair:
+                    n.engaged, n.hunt, n.pusu = False, False, lair
                 n.next_think = now
                 self.npcs.add(n.id)
                 if keep:

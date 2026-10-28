@@ -120,7 +120,7 @@ AUTO_REFINE = (4, 5, 6)       # otomatik arıtmanın ürünleri (laboratuvar tar
 
 
 def attack_type(v):
-    return mod('AttackTypeModule', attackTypeValue=v)   # 0 roket, 1 lazer (istemcinin AttackType enum'u)
+    return mod('AttackTypeModule', attackTypeValue=v)   # 0 roket, 1 lazer, 3 radyasyon (istemcinin AttackType enum'u)
 
 
 from eski_protokol import legacy, stm  # noqa: E402,F401  (eski metin protokolü: eski_protokol.py)
@@ -387,6 +387,7 @@ class World:
         self.gate_lives = None         # kapıda ölünce kalan can (ölüm ekranının metni)
         self.near_gate = None
         self.gate_peace = False        # portal çevresindeki güvenli bölgede mi (BeaconCommand.inPeaceArea)
+        self.peace_void = False        # güvenli bölgede oyuncunun saldırdığı uzaylı onunla savaşıyor: bölge onun için geçersiz
         self.entered = time.time()     # haritaya giriş (4-5'te portal DMZ'si bir süre)
         self.station_inside = None     # istasyon bölgesinde mi (BeaconCommand.inStation); None: ilk adımda gönderilir
         self.jumping = False
@@ -684,12 +685,12 @@ class World:
         return (not self.hero_dead and not self.jumping and now - self.last_combat >= ESYA['savas_disi_sn']
                 and (here or bool(self.low and self.low.docking_station(x, y))))
 
-    def reload_ship(self):
+    def reload_ship(self, pos=None):
         """Hangarda gemi değişti: yeni gemiyle ShipInitializationCommand; istemci haritayı yeniden yükler,
-        ReadyRequest gelince NPC'ler ve kutular yeniden bildirilir (yeniden doğmadaki akış)."""
+        ReadyRequest gelince NPC'ler ve kutular yeniden bildirilir (yeniden doğmadaki akış). pos: yeni geminin bu haritadaki yeri."""
         with self.lock:
             self.stop_repair()
-            x, y = self.hero_pos()
+            x, y = pos or self.hero_pos()
             self.p.d['konum'].update(x=int(x), y=int(y))
             self.hero = Mover(int(x), int(y))
             self.target, self.attacking = None, False
@@ -782,7 +783,11 @@ class World:
         return ('AddBoxCommand', dict(hash=h, boxType=b['tip'], x=b['x'], y=b['y']))
 
     def in_view(self, n, now, hx=None, hy=None):
-        """NPC görüş mesafesinde mi (gösterilmişse bırakma uzaklığına dek görünür kalır)."""
+        """NPC görüş mesafesinde mi (gösterilmişse bırakma uzaklığına dek görünür kalır). Seçili hedef uzaklaşsa da görünür kalır:
+        gerçek oyunda kilit yalnız başka seçimle, hedefin EMP'siyle, harita değişince ya da hedef ölünce düşer; gemi hedefe dönük, hedef
+        mini haritada (oyuncu bildirimi 2026-10-28: uzaklaşınca seçim bırakılıyordu)."""
+        if n.id == self.target and n.id in self.visible:
+            return True
         if hx is None:
             hx, hy = self.hero_pos(now)
         nx, ny = n.mover.pos(now)
@@ -931,12 +936,12 @@ class World:
         """Portal harita sınırları içinde ve başka portalın üstünde değil. Üssün yanına yay üzerinde dizilen portallar (etkinlik
         kapıları, labirent, Voyagers/Trinity/arena) üs köşedeyse harita dışına (radyasyon bölgesine) düşüyordu (canlı test H46:
         2-1'de Plutus x=21.681, Voyagers y=-1.806). Kaydı olan haritada kapı ve mod portalı tasarımına göre resmî sunucudaki yerinde
-        (harita_duzeni.json tasarim_yeri: 2-1, 2-8)."""
+        (harita_duzeni.json tasarim_yeri: 2-1, 2-8). yerinde: bilerek yan yana dizilenler kaydırılmaz (Echoes Command Hall)."""
         m = self.PORTAL_MARGIN
         x, y = HD.design_pos(self.map_id, g.get('designId')) or (g['x'], g['y'])
         x = min(max(int(x), m), self.map_w - m)
         y = min(max(int(y), m), self.map_h - m)
-        for _ in range(12):
+        for _ in range(0 if g.get('yerinde') else 12):
             hit = next((o for o in self.gates if o['gateId'] != g['gateId'] and math.hypot(o['x'] - x, o['y'] - y) < self.PORTAL_GAP), None)
             if not hit:
                 break
@@ -957,7 +962,8 @@ class World:
             return
         g = self.fit_gate(g)
         self.gates.append(g)
-        self.send([H.jumpgate_create(g)])
+        if 'designId' in g:                      # tasarımsız: istemcide portal yok, J ile çalışır (Echoes hangarı)
+            self.send([H.jumpgate_create(g)])
 
     def remove_gate(self, gid):
         if not any(x['gateId'] == gid for x in self.gates):
@@ -1141,15 +1147,24 @@ class World:
             self.move_wormhole(time.time())
 
     def move_wormhole(self, now):
-        """4-5'teki gizli portal: mini haritada görünmez, belli aralıkla yer değiştirir (wiki)."""
+        """4-5'teki gizli portal: mini haritada görünmez, güvenli bölgesi yok. konum verilmişse orada durur (beyaz deliğin merkezi),
+        yoksa tasinma_sn'de bir yer değiştirir."""
         s = self.rules['solucan_deligi']
         if self.wormhole:
             self.remove_gate(WORMHOLE_ID)
-        x, y = self.random_spot()
-        g = dict(gateId=WORMHOLE_ID, x=x, y=y, hedef=s['hedef'], designId=1, gizli=True)
-        self.wormhole = (g, now + s.get('tasinma_sn', 600))
+        x, y = s.get('konum') or self.random_spot()
+        g = dict(gateId=WORMHOLE_ID, x=x, y=y, hedef=s['hedef'], designId=1, gizli=True, solucan=True, varis='rastgele')
+        self.wormhole = (g, now + s['tasinma_sn'] if s.get('tasinma_sn') else float('inf'))
         self.add_gate(g)
-        self.log('   solucan deliği (%d,%d) -> %s' % (x, y, H.name(s['hedef'])))
+        self.log('   solucan deliği (%d,%d)' % (x, y))
+
+    def wormhole_dest(self):
+        """Solucan deliğinden geçiş: şansla Cubikon Mezarlığı, yoksa rastgele bir harita (fandom Wormhole; forum 127347)."""
+        s = self.rules['solucan_deligi']
+        maps = SE.random_maps(self.p, int(self.map_id))
+        if not maps or random.random() < s.get('mezarlik_sansi', 1.0):
+            return s['hedef']
+        return random.choice(maps)
 
     def rules_tick(self, now):
         """Saniyede bir: mezarlıkta gizlenme kullanılamaz; solucan deliği yer değiştirir; zaman çizelgeli başıboşlar."""
@@ -1503,20 +1518,24 @@ class World:
     def check_gates(self, now):
         """Portala yaklaşma/uzaklaşma: BeaconCommand(nearJumpGate) + MapAssetActionAvailableCommand (kayıttaki gibi)."""
         hx, hy = self.hero_pos(now)
-        g = next((g for g in self.gates if math.hypot(g['x'] - hx, g['y'] - hy) <= H.JUMP_RADIUS), None)
+        g = min((g for g in self.gates if math.hypot(g['x'] - hx, g['y'] - hy) <= H.JUMP_RADIUS),
+                key=lambda g: math.hypot(g['x'] - hx, g['y'] - hy), default=None)      # yakın portallar (Echoes salonu): en yakını
         gid = g['gateId'] if g else None
         peace = self.near_gate_peace(hx, hy) or self.near_giver_peace(hx, hy) or HD.in_safe(self.map_id, hx, hy)
         s = self.station_at(hx, hy)
         inside = bool(s)
         ready = self.in_station(now)
-        if (gid == self.near_gate and peace == self.gate_peace and inside == self.station_inside
+        # oyuncunun saldırdığı uzaylı onu güvenli bölgede de vuruyorsa bölge onun için geçerli değil: "Demilitarized zone" yazısı
+        # görünmez (oyuncu bildirimi 2026-10-28, gerçek oyun)
+        void = any(n.alive and self.npc_retaliating(n) for n in self.npcs.values())
+        if (gid == self.near_gate and peace == self.gate_peace and inside == self.station_inside and void == self.peace_void
                 and ready == getattr(self, 'equip_ready', None)):
             return
         was = getattr(self, 'equip_ready', None)
         self.equip_ready = ready
-        self.gate_peace, self.station_inside = peace, inside    # istasyona giriş/çıkışta da (inStation, inPeaceArea; kayıt)
+        self.gate_peace, self.station_inside, self.peace_void = peace, inside, void    # istasyona giriş/çıkışta da (inStation, inPeaceArea; kayıt)
         msgs = [('BeaconCommand', self.p.beacon(s, near_gate=bool(g), pos=(hx, hy), gate_peace=peace,
-                                                radiation=self.radiation_since is not None))]
+                                                radiation=self.radiation_since is not None, void=void))]
         if ready != was:          # donanım değiştirilebilir mi (in_station; kayıt: varınca ve ayrılınca, çiftler hâlinde)
             msgs += [('EquipReadyCommand', {'ready': ready}),
                      legacy('0|n|MSG|3|2|%s|' % ('msg_equip_ready' if ready else 'msg_equip_not_ready'))]
@@ -1540,6 +1559,8 @@ class World:
                 if not (g or self.jumping or self.hero_dead):
                     self.send([stm('jumpgate_failed_no_gate')])     # "Jump not possible! You're not located close enough to a jump gate."
                 return False
+            if g.get('solucan'):
+                g = dict(g, hedef=self.wormhole_dest())         # her geçişte yeniden: mezarlık ya da rastgele harita
             if H.map_class(self.map_id).startswith('4-') and time.time() - self.last_pvp < ESYA['savas_esyalari']['atlama_cpu']['savas_sn']:
                 self.send([stm('jumpgate_failed_pvp_map')])         # savaş haritasında (4-X) PvP sürerken portal kullanılamaz (fandom Portal)
                 self.log('   portal %d: PvP sürüyor (4-X)' % g['gateId'])
@@ -1648,6 +1669,8 @@ class World:
             if n and n.alive:
                 if self.target not in (None, n.id) and self.p.ship()['lootId'] == 'ship_cyborg' and                         GY.is_active(self.p, 'ability_venom'):           # forum 160373: Cyborg Tekillik II başka hedefe tıklanınca biter
                     self.abilities.end_now('ability_venom', time.time())
+                if self.attacking and self.target != n.id:
+                    self.laser_stop()            # başka hedef seçilince saldırı biter (gerçek oyun; istemcide ShipInfo.set_Target IsAtk'ı düşürür)
                 self.target = n.id
                 self.send([self.selection(n)] + ([] if n.d.get('dost') else self.p.hint(IP.ATTACK)))
             elif self.own_pet(f.get('targetId')):           # kendi P.E.T.'i: vurulabilir (Kamikaze'nin can eşiği için; pet_laser)
@@ -2145,6 +2168,8 @@ class World:
                 if getattr(n, 'station_retaliation', None) is None:
                     n.station_retaliation = {}
                 n.station_retaliation[self.hid] = now    # keep each player's permission on a shared NPC
+            if attacker and self.gizli(now):
+                engage = False                   # gizli oyuncunun P.E.T.'i (kamikaze, lazer) uzaylıyı oyuncuya kilitlemez (bildirim 2026-10-28)
             if engage and not n.engaged:
                 n.engaged = True
                 n.next_think = min(n.next_think, time.time())   # saldırıya uğrayan NPC hemen tepki verir
@@ -2980,7 +3005,8 @@ class World:
         self.repairing = True
         self.next_repair = now + 1.0
         self.send([('BeaconCommand', self.p.beacon(self.station_at(*self.hero_pos(now)), near_gate=bool(self.near_gate), pos=self.hero_pos(now), repairing=True,
-                                                    gate_peace=self.gate_peace, radiation=self.radiation_since is not None)),
+                                                    gate_peace=self.gate_peace, radiation=self.radiation_since is not None,
+                                                    void=self.peace_void)),
                    ('UIItemAddHighlightCommand', dict(self.repbot_highlight(), soundModule=mod('SoundTriggerModule', playSound=False, soundId=0)))])
         self.log('   onarım robotu çalıştı (%.0f HP/sn)' % self.repair_rate())
 
@@ -2989,7 +3015,8 @@ class World:
             return
         self.repairing = False
         self.send([('BeaconCommand', self.p.beacon(self.station_at(*self.hero_pos()), near_gate=bool(self.near_gate), pos=self.hero_pos(), repairing=False,
-                                                    gate_peace=self.gate_peace, radiation=self.radiation_since is not None)),
+                                                    gate_peace=self.gate_peace, radiation=self.radiation_since is not None,
+                                                    void=self.peace_void)),
                    ('UIItemRemoveHighlightCommand', self.repbot_highlight())])
 
     # ------------------------------------------------------------ durum etkileri (durum.py)
@@ -3285,7 +3312,7 @@ class World:
         ddol = n.etki.get('atis_bozuk', now)          # Disruptor DDoL: lazer beklemesi 3-5 sn
         n.next_shot = now + (random.uniform(*ddol[0]['aralik']) if ddol else n.d.get('atis_aralik_sn', SAVAS['npc_saldiri_aralik_sn']))
         m = self.p.mods()
-        msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.hid, laserColor=0,
+        msgs = [('AttackLaserRunCommand', dict(attackerId=n.id, targetId=self.hid, laserColor=self.alien.laser_color(n, now),
                                                isDiminishedBySkillShield=m.get('alinan_lazer', 0) < 0 or self.skill_shield(),  # Spectrum
                                                skilledLaser=False, visualType=0))]
         aim = AY.chance('npc_isabet', n.d.get('isabet', SAVAS['npc_isabet'])) * (1 - n.etki.accuracy_loss(now))
@@ -3439,10 +3466,13 @@ class World:
         pct = min(hi, lo * (1 + int((now - self.radiation_since) / SAVAS['radyasyon_artis_sn']))) * AY.carpan('radyasyon')   # panel
         g = self.p.d['gemi']
         self.stop_repair()
+        dmg = int(g.get('hitMax', 0) * pct)
         if not self.invulnerable:
-            self.p.set_hull(hp=g.get('hitPoints', 0) - int(g.get('hitMax', 0) * pct))
-        msgs = [('HitpointInfoCommand', dict(hitpoints=int(g['hitPoints']), hitpointsMax=g.get('hitMax', 0),
-                                             nanoHull=int(g.get('nanoHull', 0)), nanoHullMax=g.get('maxNanoHull', 0)))]
+            self.p.set_hull(hp=g.get('hitPoints', 0) - dmg)
+        msgs = [('AttackHitCommand', dict(attackType=attack_type(3), attackerId=0, victimId=self.hid,     # resmî kayıt: 3 = RADIATION, saldıran 0
+                                          victimHitpoints=int(g['hitPoints']), victimShield=int(g.get('shield', 0)),
+                                          victimNanoHull=int(g.get('nanoHull', 0)), damage=dmg, skilled=False, strike=False,
+                                          cannonType=0))]
         if g['hitPoints'] <= 0:
             self.hero_death(msgs, cause=DESTRUCTION_RADIATION)
             self.radiation_since = None
@@ -3451,7 +3481,7 @@ class World:
     def beacon_msg(self, now):
         return ('BeaconCommand', self.p.beacon(self.station_at(*self.hero_pos(now)), near_gate=bool(self.near_gate), pos=self.hero_pos(now),
                                                repairing=self.repairing, gate_peace=self.gate_peace,
-                                               radiation=self.radiation_since is not None))
+                                               radiation=self.radiation_since is not None, void=self.peace_void))
 
     # ------------------------------------------------------------ ölüm ve ölüm ekranı
     def ach_tick(self, now):
@@ -3824,7 +3854,8 @@ class World:
 
     def leashed(self, n, post, hx, hy, now):
         """Koruyucunun tasması (koru.tasma; yoksa çevrenin dışı + ateş menzili): oyuncu çağırandan bu kadar uzaksa peşini bırakır,
-        çağıranın çevresinde dolaşır (kullanıcı bildirimi 2026-10-25: Protegit'ler oyuncuyu Cubikon'dan çok uzağa kovalıyordu)."""
+        çağıranın çevresinde dolaşır (kullanıcı bildirimi 2026-10-25: Protegit'ler oyuncuyu Cubikon'dan çok uzağa kovalıyordu).
+        Saldırı bırakılınca dönmez: Cubikon ölene dek savaşır (oyuncu bildirimi 2026-10-28)."""
         px, py = post.mover.pos(now)
         return math.hypot(hx - px, hy - py) > n.guard[1].get('tasma', n.guard[1]['yaricap'][1] + self.npc_range(n))
 
@@ -3858,6 +3889,12 @@ class World:
         hidden = self.hero_dead or self.jumping
         hero_safe = zoned or hidden                 # peşini bırakma nedenleri; gizlenme yok: saldıran uzaylı EMP-01'e dek vazgeçmez (oyuncu bildirimi)
         spared = hero_safe or cloaked               # yeni saldırı başlatma nedenleri
+        if getattr(n, 'pusu', None):                # pusudaki dalga grubu (echoes.lair): oyuncu yaklaşana ya da birini vurana dek yerinde
+            if not (n.engaged or n.pusu['on'] or (not spared and dist <= n.pusu['r'])):
+                return
+            n.pusu['on'] = True
+            n.pusu, n.engaged, n.hunt = None, True, True
+            n.next_think = now
         phase = self.alien.low_health(n, now)
         if phase:                               # düşük can (uzayli.low_health): kaçış; varınca park (ateş etmez). Kaçarken menzildeyse ateş eder
             if (phase == 'kac' and n.engaged and not hero_safe and not n.etki.frozen(now) and dist <= self.alien.flee_range(n)
@@ -3950,6 +3987,11 @@ class World:
             # süren hareket (0-3 sn düzgün; Lordakia ort 323 birim), adımlar arası ~0,5 sn bekleme
             r = max(30, n.speed() * 0.9 * random.uniform(0.1, 2.9))
             a = math.atan2(ny - park[1], nx - park[0]) + random.uniform(-1.2, 1.2) if park else random.uniform(0, 2 * math.pi)
+            tk = SAVAS.get('pasif_takip')
+            if (tk and not park and not spared and tk['yakin'] < dist <= tk['mesafe'] and not self.aggressive(n)
+                    and not any(n.tip == h or n.tip.startswith(h) for h in tk.get('haric', ()))):
+                a = math.atan2(hy - ny, hx - nx) + random.uniform(-tk['sapma'], tk['sapma'])    # pasif uzaylı oyuncuyu izler
+                r = min(r, dist - tk['yakin'])
             tx = min(max(nx + math.cos(a) * r, 300), self.map_w - 300)
             ty = min(max(ny + math.sin(a) * r, 300), self.map_h - 300)
             leaving = n.flee or (self.near_zone(nx, ny, 500) and not park)

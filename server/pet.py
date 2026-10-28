@@ -157,7 +157,7 @@ def locator_id(n):
 def new_pet(profil):
     """Satın alınan P.E.T. (seviye 0, 10.000 yakıt). Donanımı her geminin kendi iki config'inde (profil.pet_config)."""
     return {'kimlik': 7001, 'ad': PET['ad'], 'seviye': 0, 'ep': 0, 'can': PET['can'], 'kalkan': 0, 'yakit': PET['baslangic_yakit'],
-            'yikik': False, 'disli': GUARD, 'yuva': dict(PET['baslangic_yuva']), 'isi': 0.0, 'can_yukseltme': 0}
+            'yikik': False, 'disli': PASSIVE, 'yuva': dict(PET['baslangic_yuva']), 'isi': 0.0, 'can_yukseltme': 0}
 
 
 class Pet:
@@ -643,8 +643,9 @@ class Pet:
         lock = self.w.lock if self.w else _NoLock()
         with lock:
             if kind == LAUNCH or (kind == TOGGLE and not self.active):
-                if kind == TOGGLE:
-                    self.d['disli'] = PASSIVE        # oyuncu bildirimi 2026-10-27: gerçek oyunda E ile hep pasif kipte çıkar
+                # gerçek oyunda oyuncunun başlattığı P.E.T. hep pasif kipte çıkar: E (bildirim 2026-10-27) ve penceredeki Launch
+                # düğmesi (bildirim 2026-10-28: koruma kipinde çıkıyordu). Harita değişiminde yeniden çıkış (launch) dişliyi korur
+                self.d['disli'] = PASSIVE
                 self.launch()
                 if self.active:
                     self.send([legacy('0|A|STM|msg_pet_activated')])     # oyuncunun isteğiyle (harita değişiminde değil)
@@ -726,7 +727,7 @@ class Pet:
             self.d['kalkan'] = min(self.d['kalkan'], self.shield_max())
             self.p.dirty = True
         if self.d.get('disli') not in {t for t, lv, ok in self.gear_list() if ok} or self.d.get('disli') in (TRADE_POD, HEAT_RELEASE, HP_LINK):
-            self.d['disli'] = GUARD
+            self.d['disli'] = PASSIVE
         self.trading = False
         self.fuel_sent = int(self.d['yakit'])
         self.heat_sent = int(self.d.get('isi', 0))

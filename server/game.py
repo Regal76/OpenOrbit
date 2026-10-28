@@ -1089,11 +1089,16 @@ class Session:
             # portal için ardından JumpRequest gelir
         elif name == 'HangarShipActivateShipRequest':
             # oyundaki gibi yalnız istasyonda; gemi değişince istemci yeni gemiyle haritayı yeniden yükler (yeniden doğma gibi)
-            msgs, changed = self.magaza.activate(f, in_station=w.in_station() if w else True)
+            k = self.profil.d['konum']
+            here = (k.get('mapId'), k.get('x'), k.get('y'))
+            msgs, changed = self.magaza.activate(f, in_station=w.in_station() if w else True, travel=True)
             self.send(msgs, 'hangar: gemi etkinleştirme')
             if changed and w:
                 w.items.reveal()      # üste gemi değiştirmek gizlenme CPU'sunu bitirir (fandom Cloak; Ship Warp hariç: isinlama.py)
-                w.reload_ship()
+                if k['mapId'] != here[0]:                    # yeni gemi başka haritada bekliyor: oraya geçilir
+                    self.change_map(k['mapId'], None, pos=(k['x'], k['y']))
+                else:
+                    w.reload_ship(pos=(k['x'], k['y']) if (k['x'], k['y']) != here[1:] else None)
         elif name == 'HangarShipChangeShipModelRequest':
             msgs, reload = self.magaza.change_model(f)
             self.send(msgs, 'hangar: tasarım')

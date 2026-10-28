@@ -302,7 +302,7 @@ def arrival(src_map, dst_map, faction=None):
     if back:
         return back['x'], back['y']
     w, h = map_size(dst_map)          # tek yönlü giriş (5-1, 5-3, 4-4): haritanın gerçek ortası (büyük haritalar)
-    return w // 2, h // 2
+    return center(dst_map) if HD.of(dst_map).get('merkez') else (w // 2, h // 2)
 
 
 def random_arrival(map_id):
@@ -438,3 +438,14 @@ def gate_available(g, near):
          'baseKeyType': {'_': 'ReplacementTypeModule', 'typeValue': 5}, 'textStyle': 0}]}
     return ('MapAssetActionAvailableCommand', dict(mapAssetId=g['gateId'], state=0 if near else 1, activatable=near, toolTip=tip,
                                                    additionalInformation={'_': 'AssetInformationModule'}))
+
+
+def parked(map_id):
+    """Gemi bu haritada bırakılabilir mi (hangarda değişince orada bekler): bilinen, özel (mezarlık, LoW) olmayan harita."""
+    return map_id in NAMES and map_id not in SPECIAL
+
+
+def center(map_id):
+    """Haritanın ortası; ortası engelliyse düzenin 'merkez'i (DSE 3: iniş, dost gemi, salona dönüş portalı)."""
+    w, h = map_size(map_id)
+    return tuple(HD.of(map_id).get('merkez') or (w // 2, h // 2))

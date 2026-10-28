@@ -25,6 +25,7 @@
       750
      ],
      "tasma": 1600,
+     "_donus": "Oyuncu bildirimi 2026-10-28: gerçek oyunda Protegit'ler saldırı bırakılınca dönmez, Cubikon ölene dek oyuncuyla savaşır (bırakma süresi yok); yalnız tasma (oyuncu Cubikon'dan çok uzak) peşini bıraktırır",
      "vurkac": {
       "yakin": [
        150,
@@ -106,7 +107,8 @@
     "sure_sn": 10,
     "hasar_carpani": 1.5,
     "ek_cagri": 2,
-    "onarim_can_sn": 30000
+    "onarim_can_sn": 30000,
+    "lazer_renk": 6
    },
    "_kaynak": "aliens.md: Interceptor çağırır; çağırdıkları yaşarken anında kalkan (ISH) ve saniyede 600 onarım; iki ya da daha çok saldıran (P.E.T. 10 sayılır) öfkelendirir: UCB-100 yerine RSB-75, daha çok Interceptor, 30.000 onarım",
    "_uyarlama": "çağrıda 7 Interceptor (resmî Türk forumu 1885: oyuncu başına 7) (fandom: Deadly Battleray en çok 2 ile \"daha az\" çağırır), 15 sn bekleme; öfke son 10 sn'deki saldıranlarla; RSB-75/UCB-100 = x1,5 hasar"
@@ -128,7 +130,8 @@
     "sure_sn": 10,
     "hasar_carpani": 1.5,
     "ek_cagri": 2,
-    "onarim_can_sn": 30000
+    "onarim_can_sn": 30000,
+    "lazer_renk": 6
    },
    "_uyarlama": "wiki yetenek yazmıyor: Battleray'inkiler",
    "_kaynak": "fandom: Uber Interceptor çağırır (saldırgan)"
@@ -141,8 +144,13 @@
     "en_cok": 2,
     "bekleme_sn": 20
    },
+   "ofke": {
+    "saldiran": 3,
+    "sure_sn": 10,
+    "ek_cagri": 5
+   },
    "_kaynak": "aliens.md: Interceptor'larla savunur, ikiden fazla oyuncu saldırmadıkça en çok iki",
-   "_uyarlama": "20 sn bekleme"
+   "_uyarlama": "20 sn bekleme; öfke: üç saldıranla (oyuncu, P.E.T. ve bir oyuncu daha; burada saldiran 2 yapılırsa oyuncu ve P.E.T. yeter) en çok 7 Interceptor (Battleray'inki kadar)"
   },
   "177": {
    "_ad": "Invoke XVI",

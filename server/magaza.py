@@ -52,6 +52,7 @@ import qfc as QF
 import parcacik as PC
 import rezonator as RZ
 import ayar as AY
+import harita as H
 import etkinlik_gorunumleri as EG
 import ipucu as IP
 import sezon as SZ
@@ -2305,9 +2306,11 @@ class Magaza:
         return msgs
 
     # ------------------------------------------------------------ gemi değiştirme ve config geçişi
-    def activate(self, f, in_station=True):
+    def activate(self, f, in_station=True, travel=False):
         """HangarShipActivateShipRequest {shipId} -> HangarShipActivateShipCommand (istemci: result 1 başarı, mesaj penceresi).
-        Oyundaki gibi yalnız istasyonda. Başarılıysa (mesajlar, True): oturum gemiyi yeniden yükletir (ShipInitializationCommand)."""
+        Oyundaki gibi yalnız istasyonda. Başarılıysa (mesajlar, True): oturum gemiyi yeniden yükletir (ShipInitializationCommand).
+        Her gemi bırakıldığı yerde kalır (forum 127436: hangardan değiştirince "aktüel gemin aktif haritada bulunduğun yerde kalır");
+        travel (hangar) pilotu yeni geminin kayıtlı konumuna götürür, ışınlamada (isinlama.py) gemi pilota gelir."""
         sid = str(f.get('shipId'))
         reply = lambda res, err=None, ok=None: ('HangarShipActivateShipCommand', {
             'errorMessage': err, 'successMessage': ok, 'currentShipLootId': self.p.ship()['lootId'], 'result': res})
@@ -2321,9 +2324,15 @@ class Magaza:
         with self.p.lock:
             g = self.p.d['gemi']
             self.p.ship()['govde'] = {'hitPoints': int(g.get('hitPoints', 0)), 'nanoHull': int(g.get('nanoHull', 0))}
+            k = self.p.d['konum']
+            if H.parked(k.get('mapId')):
+                self.p.ship()['konum'] = {'mapId': k['mapId'], 'x': int(k['x']), 'y': int(k['y'])}
             old = self.p.ship()['lootId']
             self.p.d['aktif_gemi'] = sid
             new = self.p.ship()
+            dest = new.get('konum')
+            if travel and dest and H.parked(dest.get('mapId')):
+                k.update(dest)
             row = self.p.ship_row(sid)
             hp = row.get('hp', g.get('hitMax', 0))
             gv = new.get('govde') or {'hitPoints': hp, 'nanoHull': 0}

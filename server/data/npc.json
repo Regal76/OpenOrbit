@@ -9415,8 +9415,13 @@
    ],
    "solucan_deligi": {
     "hedef": 42,
-    "tasinma_sn": 600,
-    "_kaynak": "wiki: 4-5'te yeri değişen gizli portal; 10 dk uyarlama"
+    "konum": [
+     15600,
+     14100
+    ],
+    "mezarlik_sansi": 0.2,
+    "_kaynak": "fandom 4-5 ve Wormhole: haritanın ortasındaki beyaz delikte gizli portal; J ile ya Cubikon Mezarlığı'na ya rastgele bir haritaya (resmî Türk forumu 127347: solucan deliği de atlama CPU'ları gibi şansla mezarlığa). Konum istemcinin mini haritasındaki (minimap-29) beyaz deliğin merkezi; oyuncu bildirimi 2026-10-28",
+    "_uyarlama": "mezarlık şansı %20 (tek oyunculu; atlama CPU'sununki %2); rastgele harita AJP-01 listesinden (seviyenin açtığı, 5-X/BL ve düşman X-1 dışı)"
    }
   },
   "91": {
@@ -9780,6 +9785,17 @@
   "kutu_omur_sn": 120,
   "toplama_mesafe": 250,
   "npc_fark_mesafe": 1000,
+  "pasif_takip": {
+   "mesafe": 1500,
+   "yakin": 300,
+   "sapma": 1.0,
+   "haric": [
+    "84",
+    "153",
+    "saturn_"
+   ]
+  },
+  "_pasif_takip": "Saldırgan olmayan uzaylı oyuncuyu izler: mesafe içindeyse gezinme adımı oyuncuya doğru (± sapma radyan), yakin'dan öteye gelmez, ateş etmez. Resmî sunucu kaydı (2026-10-25/27, oyuncuya ateş etmemiş uzaylıların 1.500 birim içindeki adımları): Kristallon %81 yaklaşan adım (yön kosinüsü 0,68), Lordakium 0,70, Boss Lordakium 0,86, Cubikon 0,49, Blighted Kristallon 0,39, Plagued Kristallin 0,32, Purpose XXI 0,28; Streuner -0,02, Aider Streuner 0,16 ve Saturn gemileri (eksi) izlemez: haric (tür ya da önek). Oyuncu bildirimi 2026-10-28",
   "_npc_fark_mesafe": "uyarlama: saldırgan NPC oyuncuyu bu mesafede fark edip kovalar (önceden 500; güvenli bölgede fark etmez)",
   "gorus_mesafesi": 1800,
   "gorus_birakma": 1800,

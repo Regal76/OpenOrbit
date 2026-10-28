@@ -2,7 +2,7 @@
 profil yedeği, günlük döndürme, web ve oyun sunucuları, orijinal istemci.
 
 - Profil: panelin etkin kayıt yuvası (yollar.py; save/kayitlar/<yuva>/profil.json), yoksa eski save/profil.json. İki sunucuya da
-  --profil, oyun sunucusuna --ayarlar (panelin oyun ayarları) verilir.
+  --profil, oyun sunucusuna --ayarlar (kaydın oyun ayarları; yoksa eski save/ayarlar.json) verilir.
 - Profil yedeği: <yuva>/yedek/oto_YYYYmmdd_HHMMSS.json (eski düzende save/yedek/profil_…); en yeni YEDEK_SAYISI kalır.
 - Günlük döndürme: logs/gs.log, http.log, client.log büyükse .1, .2, .3'e kayar (açık bir sunucu dosyayı tutuyorsa atlanır).
 - Sunucular: 8081 (oyun) ve 8090 (web) zaten dinleniyorsa yeniden başlatılmaz, onlar kullanılır ve sonda kapatılmaz.
@@ -78,7 +78,7 @@ def start_servers(extra, profil=None):
     if not listening(8090):
         procs.append(subprocess.Popen([sys.executable, '-I', os.path.join(HERE, 'web.py'), LOGS] + p, **kw))
     if not listening(8081):
-        procs.append(subprocess.Popen([sys.executable, '-I', os.path.join(HERE, 'game.py'), LOGS] + p + ['--ayarlar=%s' % YOL.AYARLAR]
+        procs.append(subprocess.Popen([sys.executable, '-I', os.path.join(HERE, 'game.py'), LOGS] + p + ['--ayarlar=%s' % YOL.settings_path()]
                                       + extra, **kw))
     for _ in range(50):                               # sunucular dinlemeye başlayana dek (en çok ~5 sn)
         if listening(8081) and listening(8090):
