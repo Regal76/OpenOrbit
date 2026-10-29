@@ -53,7 +53,7 @@ from coklu import Coklu, CokluHatasi  # noqa: E402
 import dunyalar as DW          # noqa: E402
 
 SURUM = '1.0'
-DISCORD = 'https://discord.gg/BUb9rNTKNt'         # topluluk sunucusu (Panel sayfası, README); süresiz davet
+DISCORD = 'https://discord.com/invite/openorbit'   # topluluk sunucusu (Panel sayfası, README); kalıcı davet
 BAGIS = 'https://buymeacoffee.com/kaanumay'       # destek bağlantısı (kenar çubuğunun en altı)
 PORT = 8077
 ARAYUZ = os.path.join(PANEL_DIR, 'arayuz')
