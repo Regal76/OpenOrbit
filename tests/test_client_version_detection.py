@@ -46,6 +46,17 @@ class ClientVersionDetectionTest(unittest.TestCase):
         self.assertIsNone(istemci.bundle_version(self.folder))
         self.assertIsNone(istemci.version_of(self.folder))      # no DarkOrbit.exe either: nothing to report
 
+    def test_supported_ignores_engine_version(self):
+        temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        path = os.path.join(temp_dir.name, 'surum.txt')
+        with open(path, 'w', encoding='utf8') as fh:
+            fh.write('2022.3.58\n')
+        orig = istemci.SURUM_DOSYASI
+        istemci.SURUM_DOSYASI = path
+        self.addCleanup(setattr, istemci, 'SURUM_DOSYASI', orig)
+        self.assertEqual(istemci.supported(), istemci.DESTEKLENEN)
+
 
 if __name__ == '__main__':
     unittest.main()

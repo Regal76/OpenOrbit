@@ -27,10 +27,12 @@ SURUM_DOSYASI = os.path.join(SERVER, 'data', 'protokol', 'surum.txt')
 def supported():
     """Sunucunun etkin protokolünün istemci sürümü: surum.txt ile DESTEKLENEN'in yenisi. surum.txt (protokol aracı yazar) panel
     güncellemesinde korunur; güncelleme yeni sürümün protokolünü getirdiyse eskide kalır (2026-10-28: 1.1.115 yazan kopyada
-    1.1.116 güncelleme uyarısı çıkmıyordu)."""
+    1.1.116 güncelleme uyarısı çıkmıyordu). Unity motor sürümü (2022.3.58 gibi) sayılmaz."""
     try:
         v = open(SURUM_DOSYASI, encoding='utf8').read().strip()
     except OSError:
+        v = ''
+    if v and (vkey(v)[0] >= 2000 or not re.match(r'^\d+\.\d+\.\d+$', v)):
         v = ''
     return max(v or DESTEKLENEN, DESTEKLENEN, key=vkey)
 
