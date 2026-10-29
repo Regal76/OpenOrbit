@@ -100,6 +100,15 @@ SCHEMA = [
        'uzaylıların atışları gemini yavaşlatır. Kapatılırsa yalnız hasar verirler.', varsayilan=True),
     _c('radyasyon', 'Radyasyon hasarı', 'savas', 'Harita sınırının dışındaki radyasyonun gövdeye verdiği hasar. 0: radyasyon '
        'zarar vermez.', lo=0.0, hi=5.0, sinir=100.0),
+    _b('bot_oyuncular', 'Haritalarda rakip oyuncular', 'savas',
+       'Haritalarda dolaşan, rakip firmalardan yapay zekâlı oyuncu gemileri (PvP).',
+       uygulama='harita', varsayilan=False),
+    _n('bot_oyuncu_sayisi', 'Harita başına bot oyuncu sayısı', 'savas',
+       'Her haritada aynı anda dolaşabilecek en çok bot oyuncu sayısı.',
+       uygulama='harita', lo=1, hi=10, varsayilan=3, birim='oyuncu', sinir=20),
+    _c('bot_zorluk', 'Rakip oyuncu zorluğu (hasar ve can)', 'savas',
+       'Haritalardaki rakip oyuncu gemilerinin can, kalkan ve hasar çarpanı.',
+       lo=0.5, hi=5.0, varsayilan=1.0, sinir=20.0),
     # ---------------------------------------------------------------- ödüller
     _c('kredi', 'Kredi kazancı', 'odul', 'Uzaylı, kutu, görev, kapı ve etkinliklerden kazanılan kredi (satış ve iadeler '
        'hariç).', hi=50.0, sinir=100000.0),

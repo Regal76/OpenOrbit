@@ -44,6 +44,7 @@ import ipucu as IP
 import ortak_harita as OH
 import yetenek as YT
 import oyuncu_savas as PVP
+import bot_oyuncu as BOT_P
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CFG = VERI.yukle('npc.json')
@@ -311,6 +312,8 @@ class World:
         self.station = station
         self.lock = threading.RLock()
         self.npcs = {}
+        self.bots = {}             # bot oyuncular (PvP rakipleri)
+        self.bot_uid_seq = 0
         self.boxes = {}            # hash -> dict(tip, x, y, icerik, bitis)
         self.ores = {}             # hash -> dict(tip, x, y): haritadaki cevherler
         self.ore_fields = []       # cevher kümelerinin merkezleri
@@ -475,8 +478,9 @@ class World:
 
     def teslim(self, msgs):
         """Bu dünyanın istemcisine (görüş süzgeçlerinden geçerek; döngü adımındaysa adım sonunda)."""
-        if self.npcs:       # görüş dışındaki NPC'nin hareketi istemciye gitmez (onu tanımıyor)
-            msgs = [m for m in msgs if not (m[0] == 'MoveCommand' and m[1]['userId'] in self.npcs and m[1]['userId'] not in self.visible)]
+        known = set(self.npcs) | set(self.bots)
+        if known:       # görüş dışındaki NPC ve botların hareketi istemciye gitmez (onu tanımıyor)
+            msgs = [m for m in msgs if not (m[0] == 'MoveCommand' and m[1]['userId'] in known and m[1]['userId'] not in self.visible)]
         msgs = [m for m in msgs if self.item_filter(m)]
         if not msgs:
             return
@@ -588,6 +592,8 @@ class World:
                     self.spawn_npc(value)
                     if value == 'npc121' and self.p.gameplay('showBattlerayNotifications'):   # forum 127431: Deadly Battleray bildirimi
                         self.send([legacy('0|A|STM|strikeandexit_message_boss_spawn')])
+            elif kind == 'bot':
+                self.spawn_bot()
             elif kind == 'bonus':
                 self.spawn_bonus_box()
             elif kind == 'booty':
@@ -605,7 +611,10 @@ class World:
             npcs = [n for n in self.npcs.values() if n.alive and not n.gate]
             for n in npcs:
                 n.engaged, n.flee, n.children, n.foe, n.park, n.firing = False, False, set(), None, None, False
-            WORLD_CACHE[self.cache_key] = dict(an=time.time(), npcs=npcs, boxes=dict(self.boxes), ores=dict(self.ores),
+            bots = [b for b in self.bots.values() if b.alive]
+            for b in bots:
+                b.engaged, b.target = False, None
+            WORLD_CACHE[self.cache_key] = dict(an=time.time(), npcs=npcs, bots=bots, boxes=dict(self.boxes), ores=dict(self.ores),
                                             pending=list(self.pending), ore_fields=list(self.ore_fields), next_uid=self.next_uid)
         while len(WORLD_CACHE) > WORLD_CACHE_MAX:
             del WORLD_CACHE[min(WORLD_CACHE, key=lambda k: WORLD_CACHE[k]['an'])]
@@ -621,6 +630,11 @@ class World:
             n.mover = Mover(int(x), int(y))
             n.next_think, n.next_shot = now + random.uniform(1, 6), 0.0
             self.npcs[n.id] = n
+        for b in c.get('bots', []):
+            x, y = b.mover.pos(now)
+            b.mover = Mover(int(x), int(y))
+            b.next_think, b.next_shot, b.next_rocket = now + random.uniform(1, 5), 0.0, 0.0
+            self.bots[b.id] = b
         # kapsayıcılar yerinde doldurulur: ortak haritada öteki dünyalar da aynılarını tutuyor (ortak_harita.py)
         self.boxes.update({h: b for h, b in c['boxes'].items() if not b.get('bitis') or b['bitis'] > now})
         self.ores.update({h: o for h, o in c['ores'].items() if not o.get('busy')})
@@ -808,17 +822,71 @@ class World:
     def info_request(self, uid):
         """Eski metin protokolü "i|<kimlik>": istemci bilmediği bir varlığı soruyor; kayıttaki gibi yeniden gönderilir."""
         with self.lock:
+            b = self.bots.get(uid)
+            if b and b.alive and b.id in self.visible:
+                self.send(self.show_bot(b, time.time()))
+                return
             n = self.npcs.get(uid)
             if n and n.alive and n.id not in self.visible and self.in_view(n, time.time()):
                 self.send(self.show(n, time.time()))
             elif n and n.alive and n.id in self.visible:
                 self.send([self.ship_create(n)])
 
+    def in_view_bot(self, b, now, hx=None, hy=None):
+        """Rakip oyuncu görüş mesafesinde mi."""
+        if hx is None:
+            hx, hy = self.hero_pos(now)
+        bx, by = b.mover.pos(now)
+        lim = SAVAS['gorus_birakma' if b.id in self.visible else 'gorus_mesafesi'] * self.abilities.view_factor(now)
+        return math.hypot(bx - hx, by - hy) <= lim
+
+    def show_bot(self, b, now):
+        """Rakip oyuncuyu istemciye bildir."""
+        self.visible.add(b.id)
+        return b.create_msgs(now)
+
+    def can_have_bots(self):
+        if not AY.get('bot_oyuncular'):
+            return False
+        if self.kapi or self.low or self.labirent:
+            return False
+        mname = H.name(self.map_id)
+        if mname.endswith('-1') and not mname.endswith('-11'):
+            return False
+        return True
+
+    def bot_count(self):
+        mname = H.name(self.map_id)
+        base = int(AY.get('bot_oyuncu_sayisi'))
+        if mname.startswith('4-'):
+            return max(1, base + 1)
+        return max(1, base)
+
+    def spawn_bot(self, announce=True):
+        if not self.can_have_bots():
+            return None
+        self.bot_uid_seq += 1
+        fac = self.p.d['pilot'].get('factionId', 1)
+        b = BOT_P.create_bot(self, fac, uid=BOT_P.BOT_UID_BASE + self.bot_uid_seq)
+        self.bots[b.id] = b
+        now = time.time()
+        if announce and self.in_view_bot(b, now):
+            self.send(self.show_bot(b, now))
+        self.log('   rakip oyuncu dogdu: %s [%s] (%s, firma %d)' % (b.name, b.clan_tag, b.ship_type, b.faction_id))
+        return b
+
+    def spawn_initial_bots(self):
+        target = self.bot_count()
+        for _ in range(target):
+            self.spawn_bot(announce=False)
+
     def visible_msgs(self, now):
-        """Görüş mesafesindeki bütün NPC'ler (girişte ve harita yeniden yüklenince)."""
+        """Görüş mesafesindeki bütün NPC'ler ve rakip oyuncular (girişte ve harita yeniden yüklenince)."""
         self.visible.clear()
         hx, hy = self.hero_pos(now)
-        return [m for n in self.npcs.values() if self.in_view(n, now, hx, hy) for m in self.show(n, now)]
+        msgs = [m for n in self.npcs.values() if self.in_view(n, now, hx, hy) for m in self.show(n, now)]
+        msgs += [m for b in self.bots.values() if self.in_view_bot(b, now, hx, hy) for m in self.show_bot(b, now)]
+        return msgs
 
     def omega_maps(self):
         """Omega AutoTactic'in seçim listeleri için (otopilot.py): bulunulan harita ve harita -> orada çıkan uzaylıların adları
@@ -846,6 +914,17 @@ class World:
                     self.target, self.attacking = None, False
                     msgs.append(('ShipDeselectionCommand', {}))
                 msgs.append(('ShipRemoveCommand', {'userId': n.id}))
+        for b in list(self.bots.values()):
+            seen = b.id in self.visible
+            if self.in_view_bot(b, now, hx, hy):
+                if not seen:
+                    msgs += self.show_bot(b, now)
+            elif seen:
+                self.visible.discard(b.id)
+                if self.target == b.id:
+                    self.target, self.attacking = None, False
+                    msgs.append(('ShipDeselectionCommand', {}))
+                msgs.append(('ShipRemoveCommand', {'userId': b.id}))
         for h in list(self.boxes) + list(self.ores):          # kutular ve cevherler (~1.000 birim)
             seen = h in self.seen_items
             if self.item_in_view(h, hx, hy):
@@ -862,7 +941,7 @@ class World:
         """Ortak harita: başka oyuncunun öldürdüğü ya da çektiği uzaylı, topladığı kutu ve cevher bu istemciden de kalkar; öteki
         oyuncuların gemileri görüşe göre gösterilir (ortak_harita.Harita.gorunurluk)."""
         msgs = []
-        for uid in [u for u in self.visible if u not in self.npcs]:
+        for uid in [u for u in self.visible if u not in self.npcs and u not in self.bots]:
             self.visible.discard(uid)
             if self.target == uid:
                 self.target, self.attacking = None, False
@@ -1055,6 +1134,8 @@ class World:
             for g in ([] if restored else m['npc']):
                 for _ in range(AY.adet('npc_sayi', g['adet'], 'harita')):
                     self.spawn_npc(g['tip'], announce=False)
+            if self.can_have_bots() and not restored:
+                self.spawn_initial_bots()
             if self.test_near and not joined:
                 hx, hy = self.hero_pos()
                 picks, seen = [], set()
@@ -1142,7 +1223,7 @@ class World:
             players = list(self.oyuncular) + [p[0] for p in self.petler.values()]     # öteki oyuncuların gemileri ve P.E.T.'leri (ortak harita)
             self.oyuncular, self.petler = {}, {}
             return cam + ([('ShipRemoveCommand', {'userId': uid}) for uid in players] +
-                    [('ShipRemoveCommand', {'userId': uid}) for uid in self.npcs if uid in self.visible] +
+                    [('ShipRemoveCommand', {'userId': uid}) for uid in (set(self.npcs) | set(self.bots)) if uid in self.visible] +
                     [('RemoveCollectableCommand', {'collected': False, 'hash': h}) for h in list(self.boxes) + list(self.ores)
                      if h in self.seen_items] +
                     [UZ.asset_remove(aid, UZ.BUFF_CAPSULE) for aid in self.alien.capsules] +
@@ -1680,7 +1761,15 @@ class World:
 
     def select(self, f):
         with self.lock:
-            n = self.npcs.get(f.get('targetId'))
+            tid = f.get('targetId')
+            b = self.bots.get(tid)
+            if b and b.alive:
+                if self.attacking and self.target != b.id:
+                    self.laser_stop()
+                self.target = b.id
+                self.send([b.selection_msg()] + self.p.hint(IP.ATTACK))
+                return
+            n = self.npcs.get(tid)
             if n and n.alive:
                 if self.target not in (None, n.id) and self.p.ship()['lootId'] == 'ship_cyborg' and                         GY.is_active(self.p, 'ability_venom'):           # forum 160373: Cyborg Tekillik II başka hedefe tıklanınca biter
                     self.abilities.end_now('ability_venom', time.time())
@@ -1701,6 +1790,19 @@ class World:
 
     def laser_start(self, f):
         with self.lock:
+            tid = f.get('targetId') or self.target
+            b = self.bots.get(tid)
+            if b and b.alive:
+                self.end_invuln(force=True)
+                self.abilities.reveal()
+                self.items.reveal()
+                self.target, self.attacking = b.id, True
+                self.next_laser = max(self.next_laser, time.time())
+                self.send([('UIItemAddHighlightCommand', dict(
+                    soundModule=mod('SoundTriggerModule', playSound=False, soundId=0), itemSource=mod('UiItemSourceModule', itemSource=0),
+                    highlightType=mod('HighlightTypeModule', type=6), itemId=LASER_AMMO)),
+                    legacy('0|n|LSH|%d|%d' % (b.id, self.hid))])
+                return
             n = self.npcs.get(f.get('targetId'))
             pet = self.own_pet(f.get('targetId'))          # kendi P.E.T.'i (pet_laser)
             asset = None if n or pet else self.asset_at(f.get('targetId'))
@@ -1744,7 +1846,7 @@ class World:
         with self.lock:
             now = time.time()
             uid = f.get('targetId')
-            n = self.npcs.get(uid)
+            n = self.npcs.get(uid) or self.bots.get(uid)
             asset = self.asset_at(uid) if not n else None
             rocket = self.p.d['secili']['roket']
             player = self.oyuncu(uid) if not n and not asset else None
@@ -2117,6 +2219,104 @@ class World:
         return ('InventoryItemUpdatedCommand', {'item': mod('InventoryItemModule', upgradeLevel=0, lootId=loot, amount=amount, itemId=item_id,
                                                             star=0, isNew=False, hangarId=0, extAttributes=[], inventoryItemAttributes=[])})
 
+    def hit_bot(self, uid, dmg, atype, shield_only=False, attacker=None, hull_only=False, split=None, strike=False, cannon=0):
+        b = self.bots.get(uid)
+        if not b or not b.alive:
+            return
+        now = time.time()
+        if now < getattr(b, 'invuln_until', 0):
+            dmg = 0
+        k = AY.carpan('oyuncu_hasar')
+        if k != 1.0:
+            dmg = int(dmg * k)
+        b.last_hit = now
+        absorb = getattr(b, 'shield_absorb', 0.85)
+        if not attacker:
+            absorb *= max(0.0, 1 - self.p.mods().get('kalkan_delme', 0))
+        to_shield = min(int(b.shield), int(dmg * absorb)) if not hull_only else 0
+        if shield_only:
+            to_shield = min(int(b.shield), dmg)
+            hull_dmg = 0
+        else:
+            hull_dmg = dmg - to_shield
+        b.shield = max(0, b.shield - to_shield)
+        b.hp = max(0, b.hp - hull_dmg)
+        self.last_shield_hit = to_shield
+
+        if not b.engaged:
+            b.engaged = True
+            b.target = self.hid
+            b.next_think = min(b.next_think, now)
+
+        msgs = [('AttackHitCommand', dict(
+            attackType=attack_type(atype), attackerId=attacker or self.hid, victimId=b.id,
+            victimHitpoints=int(b.hp), victimShield=int(b.shield), victimNanoHull=0,
+            damage=dmg, skilled=atype == 1, strike=strike, cannonType=cannon))]
+
+        # Solace yeteneği: Can %50 altına inince anında %35 onarım
+        if getattr(b, 'has_heal', False) and not getattr(b, 'used_heal', False) and b.hp < b.max_hp * 0.50 and b.hp > 0:
+            b.used_heal = True
+            heal_amount = int(b.max_hp * 0.35)
+            b.hp = min(b.max_hp, b.hp + heal_amount)
+            msgs.append(legacy(f'0|n|fx|start|HEALING|{b.id}'))
+
+        # Insta-Shield (ISH-01): Can %28 altına inince 3 sn tam dokunulmazlık
+        if not getattr(b, 'used_ish', False) and b.hp < b.max_hp * 0.28 and b.hp > 0:
+            b.used_ish = True
+            b.invuln_until = now + 3.0
+            msgs.append(legacy(f'0|n|ISH|{b.id}'))
+
+        if b.hp <= 0:
+            msgs += self.kill_bot(b)
+        elif self.target == b.id:
+            msgs.append(b.selection_msg())
+
+        if dmg > 0 and not attacker:
+            self.p.ach('damage', adet=dmg)
+            msgs += self.quest('damage_player', adet=dmg, ship=b.ship_type, faction=b.faction_id)
+
+        self.send(msgs)
+
+    def kill_bot(self, b):
+        b.alive = False
+        self.bots.pop(b.id, None)
+        x, y = b.mover.pos(time.time())
+        msgs = []
+        if self.pet:
+            msgs += self.pet.npc_gone(b.id)
+        self.visible.discard(b.id)
+        msgs.append(('ShipDestroyedCommand', dict(destroyedUserId=b.id, explosionTypeId=0)))
+        if self.target == b.id:
+            self.target, self.attacking = None, False
+            msgs.append(('ShipDeselectionCommand', {}))
+        msgs.append(('ShipRemoveCommand', {'userId': b.id}))
+
+        # Kargo kutusu bırak
+        self.drop_box('FROM_SHIP', x, y, b.cargo, 180)
+
+        # PvP Ödülleri
+        form = self.p.mods()
+        ep = int(b.reward['ep'] * AY.carpan('ep') * (1 + form.get('ep', 0)))
+        onur = int(b.reward['onur'] * AY.carpan('onur') * (1 + form.get('onur', 0)))
+        kredi = int(b.reward['kredi'] * AY.carpan('kredi') * (1 + form.get('kredi', 0)))
+        uridyum = int(b.reward['uridyum'] * AY.carpan('uridyum'))
+
+        tot = self.p.gain(ep=ep, onur=onur, kredi=kredi, uridyum=uridyum, neden='bonus_abschussPlayer')
+        msgs += self.reward_msgs(tot, ep=ep, onur=onur, kredi=kredi, uridyum=uridyum)
+        if self.pet:
+            msgs += self.pet.gain_xp(ep)
+
+        # Görev ve başarım
+        msgs += (self.quest('kill_player', faction=b.faction_id, ship=b.ship_type) +
+                 self.quest('kill', avatar='PLAYER', faction=b.faction_id, ship=b.ship_type))
+        self.p.ach('destroy_player', faction=b.faction_id)
+        self.log('   rakip oyuncu yok edildi: %s [%s] -> +%d EP, +%d Onur, +%d Kredi, +%d Uridyum' % (
+            b.name, b.clan_tag, ep, onur, kredi, uridyum))
+
+        # Yeniden doğuş planla (25-45 sn)
+        self.schedule(random.uniform(25.0, 45.0), 'bot')
+        return msgs
+
     def hit_npc(self, uid, dmg, atype, shield_only=False, attacker=None, hull_only=False, split=None, strike=False, cannon=0,
                 engage=True, source_asset=False, ammo=None):
         """Kahramanın (ya da P.E.T.'in) vuruşu: kalkan hasarın %70'ini emer (kayıttan), kalan HP'ye. SAB-50 gibi cephane yalnız
@@ -2124,6 +2324,8 @@ class World:
         (Clan Battle Station'ın uyduları): uzaylı oyuncuya dönmez. ammo: lazerin ya da roketin cephanesi; türün 'sadece_cephane'si
         varsa yalnız o cephaneler hasar verir (Referee-Bot: CBO-100 ve CBR; P.E.T., mayın, yetenek de vuramaz)."""
         with self.lock:
+            if uid in self.bots:
+                return self.hit_bot(uid, dmg, atype, shield_only=shield_only, attacker=attacker, hull_only=hull_only, split=split, strike=strike, cannon=cannon)
             n = self.npcs.get(uid)
             if not n or not n.alive or n.d.get('dost'):         # dost gemi (Deep Space Echoes: korunan/eşlik edilen) vurulmaz
                 return
@@ -2831,9 +3033,9 @@ class World:
             return PVP.laser(self, player, now)
         if self.pet is not None and self.pet.owned and self.target == self.pet.pid:
             return self.pet_laser(now)
-        if self.target not in self.npcs and self.asset_at(self.target):
+        if self.target not in self.npcs and self.target not in self.bots and self.asset_at(self.target):
             return self.asset_laser(now)
-        n = self.npcs.get(self.target)
+        n = self.npcs.get(self.target) or self.bots.get(self.target)
         if not n or not n.alive:
             self.attacking = False
             return
@@ -2880,7 +3082,7 @@ class World:
         self.p.ach('laser_types', items=recent)
         m_ = self.p.mods()
         if random.random() < self.items.aim(AY.chance('oyuncu_isabet', SAVAS['lazer_isabet'] * (1 + m_.get('isabet', 0) + m_.get('lazer_isabet', 0)))):   # + AIM CPU'su, P.E.T. HEAT; panel
-            dmg, shield_dmg = self.laser_damage(ammo, n)
+            dmg, shield_dmg = self.laser_damage(ammo, n, pvp=bool(getattr(n, 'is_bot', False)))
             if shield_dmg:
                 self.last_shield_hit = 0
                 self.hit_npc(n.id, shield_dmg, 1, shield_only=True, ammo=ammo)
@@ -3582,14 +3784,15 @@ class World:
                 n.engaged = False
         msgs.append(('ShipDestroyedCommand', dict(destroyedUserId=self.hid, explosionTypeId=0)))
         killer_name = source_player.p.d['pilot'].get('userName', '') if source_player else killer.d['ad'] if killer else ''
-        death_cause = 0 if source_player else (cause if cause is not None else DESTRUCTION_NPC if killer else DESTRUCTION_MISC)
+        is_bot = getattr(killer, 'is_bot', False)
+        death_cause = 0 if (source_player or is_bot) else (cause if cause is not None else DESTRUCTION_NPC if killer else DESTRUCTION_MISC)
         msgs.append(('KillScreenPostCommand', dict(
             killerName=killer_name, killerEpppLink='', playerShipAlias=self.p.ship_look(),
             cause=mod('DestructionTypeModule', cause=death_cause),
             options=self.repair_options())))
         self.log('   oyuncu yok edildi (%s): ölüm ekranı' % (killer_name or '?'))
         self.p.ach('death', npc=killer.d.get('npc_kimlik') if killer else None,
-                   neden='PLAYER' if source_player else {DESTRUCTION_RADIATION: 'RADIATION'}.get(cause, 'NPC' if killer else 'MISC'))
+                   neden='PLAYER' if (source_player or is_bot) else {DESTRUCTION_RADIATION: 'RADIATION'}.get(cause, 'NPC' if killer else 'MISC'))
         key = note or ('killed_by_radiation' if cause == DESTRUCTION_RADIATION
                        else 'killed_by_npc_%s' % killer.d.get('npc_kimlik', 0) if killer else None)
         if key:
@@ -4122,6 +4325,8 @@ class World:
         for n in list(self.npcs.values()):
             if self.sahibi(n, now):            # ortak haritada uzaylının sahibi olan dünya (savaştığı ya da en yakın oyuncu)
                 self.think(n, now)
+        for b in list(self.bots.values()):
+            b.think(self, now)
         for h, b in list(self.boxes.items()) if lider else ():
             if b['bitis'] and now > b['bitis']:
                 del self.boxes[h]
