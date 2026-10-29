@@ -754,72 +754,7 @@ const joinInfo = () => h('div', { class: 'card' }, h('h2', null, icon('info'), T
     N('Arkadaşının sunucusu: TCP 8081 (oyun) ve 7771 (sohbet) portları ona açık olmalı.')].map(t => h('div', null, icon('check'), h('span', null, T(t))))));
 
 // ================================================================== KAYITLAR
-async function renderKayitlar() {
-  const r = await act(() => api('/api/kayitlar')); if (!r || S.page !== 'kayitlar') return;
-  const tools = h('div', { class: 'row wrap' },
-    btn(T('Yeni kayıt'), () => newSaveModal(), 'primary', 'plus'),
-    btn(T('İçe aktar…'), () => act(() => api('/api/kayitlar/iceri', {}), x => x.iptal ? T('İptal edildi.') : T('Kayıt içe aktarıldı.')).then(() => renderKayitlar()), '', 'upload'),
-    h('span', { class: 'spacer' }),
-    btn(T('Kayıt klasörü'), () => act(() => api('/api/klasor_ac', { ne: 'kayitlar' })), 'ghost', 'folder'));
-  const cards = r.liste.map(k => saveCard(k));
-  const trash = r.silinenler.length ? [h('div', { class: 'section-title' }, T('Silinenler ({0})', r.silinenler.length)),
-    h('div', { class: 'card' }, h('p', { class: 'desc' }, T('Silinen kayıtlar burada bekler; geri alabilir ya da kalıcı olarak silebilirsin.')),
-      h('table', { class: 'table' }, h('thead', null, h('tr', null, h('th', null, T('Kayıt')), h('th', null, T('Pilot')), h('th', null, T('Silinme')), h('th'))),
-        h('tbody', null, r.silinenler.map(x => h('tr', null, h('td', null, x.ad), h('td', null, `${x.pilot} · ${lvl(x.seviye)}`),
-          h('td', { class: 'muted' }, fmtWhen(x.silinme)),
-          h('td', { class: 'num' }, h('div', { class: 'actions', style: { justifyContent: 'flex-end' } },
-            btn(T('Geri al'), () => act(() => api('/api/kayitlar/geri_al', { dosya: x.dosya }), T('Kayıt geri alındı.')).then(renderKayitlar), 'sm', 'undo'),
-            btn(T('Kalıcı sil'), async () => {
-              if (await confirmBox(T('Kalıcı olarak silinsin mi?'), T('"{0}" kaydı ve yedekleri diskten silinir. Bu geri alınamaz.', x.ad), { ok: T('Kalıcı sil'), danger: true }))
-                act(() => api('/api/kayitlar/cop_bosalt', { dosya: x.dosya }), T('Kalıcı olarak silindi.')).then(renderKayitlar);
-            }, 'danger sm', 'trash'))))))),
-      r.silinenler.length > 1 ? h('div', { class: 'row', style: { marginTop: '12px', justifyContent: 'flex-end' } },
-        btn(T('Çöp kutusunu boşalt'), async () => {
-          if (await confirmBox(T('Çöp kutusu boşaltılsın mı?'), T('{0} kayıt kalıcı olarak silinir.', r.silinenler.length), { ok: T('Boşalt'), danger: true }))
-            act(() => api('/api/kayitlar/cop_bosalt', {}), T('Çöp kutusu boşaltıldı.')).then(renderKayitlar);
-        }, 'danger sm', 'trash')) : null)] : [];
-  $('#content').replaceChildren(h('div', { class: 'stack' }, tools,
-    cards.length ? h('div', { class: 'grid gauto saves' }, cards) :
-      h('div', { class: 'card empty' }, art('bos_kayit'), h('h3', null, T('Henüz kayıt yok')), h('div', null, T('Yeni bir kayıt oluştur ya da bir yedeği içe aktar.'))),
-    ...trash));
-}
-
-function saveCard(k) {
-  const more = ev => { const c = S.durum?.coklu, extra = c && c.ayar && c.kayit_sayisi > 1 && (c.kayitlar || []).find(x => x.id === k.id);
-    const extraWhy = extra ? (extra.ek || k.id === c.ana ? T('Kayıt kullanımda') : extraBlock(S.durum, extra)) : null;
-    popMenu(ev.currentTarget, [
-    extra ? { label: extraWhy ? T('Ek istemcide aç ({0})', extraWhy) : T('Ek istemcide aç'), ic: 'play', disabled: !!extraWhy,
-      fn: () => openExtra(k.id, k.pilot).then(() => S.page === 'kayitlar' && renderKayitlar()) } : null,
-    extra ? '-' : null,
-    { label: T('Yeniden adlandır'), ic: 'edit', fn: async () => { const v = await promptBox(T('Kaydı yeniden adlandır'), T('Kayıt adı'), k.ad); if (v != null) act(() => api('/api/kayitlar/adlandir', { id: k.id, ad: v }), T('Ad değişti.')).then(renderKayitlar); } },
-    { label: T('Not ekle / düzenle'), ic: 'note', fn: async () => { const v = await promptBox(T('Kayıt notu'), T('Not'), k.not_, { multiline: true }); if (v != null) act(() => api('/api/kayitlar/not', { id: k.id, not: v })).then(renderKayitlar); } },
-    { label: T('Kopyala'), ic: 'copy', fn: async () => { const v = await promptBox(T('Kaydı kopyala'), T('Yeni kaydın adı'), T('{0} (kopya)', k.ad)); if (v != null) act(() => api('/api/kayitlar/kopyala', { id: k.id, ad: v }), T('Kopyalandı.')).then(renderKayitlar); } },
-    { label: T('Dışa aktar (.zip)…'), ic: 'download', fn: () => act(() => api('/api/kayitlar/disari', { id: k.id, yedeklerle: true }), x => x.iptal ? T('İptal edildi.') : T('Dışa aktarıldı: {0}', x.yol)) },
-    { label: T('Klasörü aç'), ic: 'folder', fn: () => act(() => api('/api/klasor_ac', { ne: 'kayit', id: k.id })) },
-    '-',
-    { label: T('Sil'), ic: 'trash', danger: true, disabled: k.kullanimda, fn: async () => {
-      if (await confirmBox(T('Kayıt silinsin mi?'), T('"{0}" ({1}) çöp kutusuna taşınır; Kayıtlar sayfasının altından geri alabilirsin.', k.ad, k.pilot), { ok: T('Sil'), danger: true }))
-        act(() => api('/api/kayitlar/sil', { id: k.id }), T('Çöp kutusuna taşındı.')).then(renderKayitlar);
-    } },
-  ].filter(Boolean)); };
-  return h('div', { class: 'card save-card' + (k.aktif ? ' active' : '') },
-    h('div', { class: 'head' }, h('div', { style: { minWidth: 0, flex: 1 } },
-      h('div', { class: 'row', style: { gap: '8px' } }, h('span', { class: 'title' }, k.ad), k.aktif ? badge(T('ETKİN'), 'info') : null,
-        k.kullanimda ? badge(T('OYUNDA'), 'ok') : null, k.bozuk ? badge(T('BOZUK'), 'err') : null),
-      h('div', { class: 'sub' }, k.pilot, ' · ', badge(k.firma || '?', firmaCls(k.firma)), ' · ' + T('Seviye') + ' ', k.seviye ?? '?')),
-      btn('', more, 'ghost icon', 'more', { title: T('Diğer') })),
-    h('div', { class: 'kv' },
-      h('div', null, T('Kredi'), h('b', null, fmtN(k.kredi))), h('div', null, T('Uridyum'), h('b', null, fmtN(k.uridyum))),
-      h('div', null, T('Gemi'), h('b', null, k.gemi)), h('div', null, T('Harita'), h('b', null, k.harita)),
-      h('div', null, T('Oynama'), h('b', null, fmtDur(k.oynama_sn))), h('div', null, T('Son oynama'), h('b', null, fmtWhen(k.son_oynama || k.son_kayit))),
-      h('div', null, T('Yedek'), h('b', null, k.yedek_sayisi)), h('div', null, T('Boyut'), h('b', null, fmtBytes(k.boyut)))),
-    k.not_ ? h('div', { class: 'note' }, k.not_) : null,
-    h('div', { class: 'actions' },
-      k.aktif ? btn(T('Oyna'), () => { go('oyna'); act(() => api('/api/oyna', {})); }, 'orange sm', 'play')
-        : btn(T('Etkin yap'), () => act(() => api('/api/kayitlar/aktif', { id: k.id }), T('Etkin kayıt: {0}', k.ad)).then(renderKayitlar), 'primary sm', 'check'),
-      btn(T('Yedekler'), () => backupsModal(k.id), 'sm', 'clock'),
-      btn(T('Düzenle'), () => editModal(k.id), 'sm', 'edit', { disabled: k.kullanimda, title: k.kullanimda ? T('Oyun açıkken düzenlenemez') : '' })));
-}
+// Kayıtlar sayfası ve karakter editörü: kayit.js. Burada yeni pilot formu ve yedekler penceresi (kurulum sihirbazı da kullanır).
 
 // ---- yeni pilot formu (Yeni kayıt penceresi ve kurulum sihirbazı)
 const FIRMS = [[1, 'MMO', 'Mars Mining Operations', 'var(--mmo)', '1-1'], [2, 'EIC', 'Earth Industries Corp.', 'var(--eic)', '2-1'],
@@ -862,49 +797,6 @@ function newSaveModal() {
       b.disabled = false;
       if (r) { m.close(); if (S.page === 'kayitlar') renderKayitlar(); poll(); }
     }, 'primary', 'plus')],
-  });
-}
-
-async function editModal(id) {
-  const v = await act(() => api('/api/kayit_profili?id=' + encodeURIComponent(id))); if (!v) return;
-  const f = {};
-  const num = (key, label) => { f[key] = h('input', { class: 'input', type: 'number', value: v[key] }); return field(label, f[key]); };
-  f.pilot = h('input', { class: 'input', value: v.pilot, maxlength: 20 });
-  const onar = h('input', { type: 'checkbox' }), us = h('input', { type: 'checkbox' }), tus = h('input', { type: 'checkbox' });
-  // ---- eşya / gemi ver (oyunun ödül yolu; profil_araci.py ver) ve durum sıfırlama
-  const give = [], giveList = h('div', { class: 'chips' });
-  const lootInp = h('input', { class: 'input', placeholder: T('lootId — ör. ship_goliath, equipment_weapon_laser_lf-4'), list: 'loot-ids' });
-  const lootN = h('input', { class: 'input', type: 'number', min: 1, value: 1, style: { width: '90px' } });
-  const lootDl = h('datalist', { id: 'loot-ids' });
-  api('/api/esya_listesi').then(r => lootDl.replaceChildren(...r.esyalar.map(([k, t]) => h('option', { value: k }, t)))).catch(() => {});
-  const drawGive = () => giveList.replaceChildren(...give.map((g, i) => h('span', { class: 'chip' }, g[0], h('b', null, '×' + fmtN(g[1])),
-    h('button', { class: 'btn ghost sm icon', type: 'button', onclick: () => { give.splice(i, 1); drawGive(); } }, icon('x')))));
-  const addGive = () => { const l = lootInp.value.trim(); if (!l) return; give.push([l, Math.max(1, +lootN.value || 1)]); lootInp.value = ''; lootN.value = 1; drawGive(); lootInp.focus(); };
-  lootInp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addGive(); } });
-  const RESETS = [['ipuclari', T('İpuçlarını yeniden göster (kapattıkların ve gösterilenler, etkinlik bildirimleri)')],
-    ['arayuz', T('Menü çubuklarının ve pencerelerin yerini varsayılana döndür')], ['oyun_ayarlari', T('Oyunun Ayarlar penceresini (grafik, ses, oynanış) varsayılana döndür')],
-    ['aktif_gorevler', T('Alınmış görevleri bırak (bitirilenler kalır)')], ['gecmis', T('Seyir defterini ve hesap geçmişini boşalt')]];
-  const resetBox = Object.fromEntries(RESETS.map(([k]) => [k, h('input', { type: 'checkbox' })]));
-  const m = modal({
-    title: T('Kaydı düzenle'), wide: true, sub: T('{0} · {1} · Seviye {2}. Değiştirmeden önce kendiliğinden güvenlik yedeği alınır.', v.pilot, v.firma, v.seviye),
-    body: [v.kullanimda ? h('div', { class: 'alert hata' }, icon('alert'), h('div', null, T('Bu kayıt şu an oyunda. Düzenlemek için oyunu ve sunucuyu kapatın.'))) : null,
-      field(T('Pilot adı'), f.pilot),
-      h('div', { class: 'grid g2' }, num('kredi', T('Kredi')), num('uridyum', T('Uridyum')), num('onur', T('Onur')), num('ep', T('Deneyim (EP) — seviye buna göre'))),
-      h('div', { class: 'stack', style: { gap: '10px' } },
-        h('label', { class: 'row small' }, h('span', { class: 'switch' }, onar, h('span')), T('Gemiyi onar (can {0} / {1}, kalkan dolar)', fmtN(v.can), fmtN(v.can_azami))),
-        h('label', { class: 'row small' }, h('span', { class: 'switch' }, us, h('span')), T('Gemiyi firmanın ana istasyonuna taşı (bir haritada takılı kaldıysan)')),
-        h('label', { class: 'row small' }, h('span', { class: 'switch' }, tus, h('span')), T('Tuş atamalarını varsayılana döndür (oyundaki Ayarlar > Reset sunucuya ulaşmıyor)'))),
-      field(T('Eşya, gemi, dron, cephane ver (görev ödülü gibi: ekipman boş yuvaya takılır)'),
-        h('div', { class: 'row' }, lootInp, lootN, btn(T('Ekle'), addGive, 'sm', 'plus')), lootDl, giveList),
-      field(T('Durum sıfırlama'),
-        h('div', { class: 'stack', style: { gap: '8px' } }, RESETS.map(([k, t]) => h('label', { class: 'row small' }, h('span', { class: 'switch' }, resetBox[k], h('span')), t))))],
-    foot: [btn(T('Vazgeç'), () => m.close(), 'ghost'), btn(T('Kaydet'), async () => {
-      if (lootInp.value.trim()) addGive();
-      const deg = { pilot: f.pilot.value, kredi: f.kredi.value, uridyum: f.uridyum.value, onur: f.onur.value, ep: f.ep.value, onar: onar.checked, ana_us: us.checked, tuslar: tus.checked,
-        ver: give, sifirla: RESETS.map(([k]) => k).filter(k => resetBox[k].checked) };
-      const r = await act(() => api('/api/kayitlar/duzenle', { id, degerler: deg }), x => x.degisen.length ? T('Değişti: {0}', x.degisen.join(', ')) : T('Değişiklik yok.'));
-      if (r) { m.close(); if (S.page === 'kayitlar') renderKayitlar(); }
-    }, 'primary', 'check', { disabled: v.kullanimda })],
   });
 }
 
@@ -2133,7 +2025,112 @@ function esyaSprite(lid, firma) {
   return null;
 }
 const esyaAdi = lid => OG.adlar[lid] || lid.slice(lid.indexOf('_') + 1).replace(/[_-]/g, ' ').toUpperCase();
-const oyunIkon = (lid, boy, firma, ic = 'hangar') => { const sp = lid && esyaSprite(lid, firma); return sp ? sprite(sp, boy) : h('span', { class: 'sprite bos', style: { width: boy + 'px', height: boy + 'px' } }, icon(ic)); };
+const oyunIkon = (lid, boy, firma, ic = 'hangar') => {
+  const sp = lid && esyaSprite(lid, firma), el = sp ? sprite(sp, boy) : h('span', { class: 'sprite bos', style: { width: boy + 'px', height: boy + 'px' } }, icon(ic));
+  if (lid) el.dataset.loot = lid;                // eşya ipucu (esyaIpucu)
+  return el;
+};
+
+// ---- eşya ipucu: simgenin üstünde durunca oyunun metinleri (eklentinin dökümü metinler_<dil>.json: ad, tür, ipucu açıklaması,
+// açıklama, not, kaynak; nitelik adları; dilde yoksa İngilizce) ve sunucunun değerleri (/api/esya_bilgi: hasar, kalkan, bonuslar,
+// gemiler, yükseltme, satış). Örneğe özgü bilgi (yükseltme seviyesi, rastgele nitelikler, hak) simgenin bir üst öğesinin _esya'sında.
+const IP = { metin: null, en: null, dil: null, bilgi: null, el: null, zaman: 0, kutu: null, yukleniyor: null };
+const IP_ETIKET = { hasar: N('Hasar'), pvp_hasar: N('Oyunculara hasar'), kalkan: N('Kalkan'), emme: N('Hasar emme'), hiz: N('Hız'), can: N('Can'), kargo: N('Kargo'),
+  lazer_carpan: N('Lazer hasarı'), isabet: N('İsabet'), tam_onarim: N('Tam onarım'), dakikada_can: N('Dakikada onarım'), hak: N('Dolum başına hak'), ek_yuva: N('Ek ekstra yuvası'),
+  bekleme: N('Bekleme'), kargo_carpan: N('Kargo'), dron_kalkan: N('Dron kalkanı'), dron_lazer: N('Dron lazer hasarı'), sure: N('Süre'), en_az: N('En az bonus'),
+  deger_araligi: N('Değer aralığı'), yeniden_cekme: N('Yeniden çekme hakkı'), taban_hasar: N('Temel hasar'), element: N('Element'), ek_nitelik: N('Ek nitelik'),
+  savunma: N('Savunma'), atis: N('Atış'), kalite: N('Kalite'), azami_seviye: N('En yüksek seviye'), menzil: N('Menzil'), sure_sn: N('Süre (sn)'),
+  seviye_bonus: N('Seviyelere göre'), booster_shield_regeneration: N('Kalkan yenilenmesi'), booster_repair: N('Onarım'), booster_collect_resources: N('Kaynak toplama'),
+  booster_collect_resources_newbie: N('Kaynak toplama'), booster_ability_cooldown_time: N('Yetenek beklemesi') };
+const IP_ELEMENT = { thermal: N('Termal'), corrosive: N('Korozif'), electro: N('Elektro') };
+const IP_YUKSELTME = { LASER_DAMAGE_UPGRADE: N('hasar'), ROCKETLAUNCHER_DAMAGE_UPGRADE: N('hasar'), GENERATOR_SHIELD_UPGRADE: N('kalkan'), DRONE_SHIELD_UPGRADE: N('dron kalkanı'),
+  DRONE_DAMAGE_UPGRADE: N('dron hasarı'), CANNON_DAMAGE_UPGRADE: N('hasar'), CANNON_DEF_UPGRADE: N('savunma'), DRIVE_DAMAGE_UPGRADE: N('hasar'), DRIVE_DEF_UPGRADE: N('savunma') };
+const IP_YUVA = { lasers: N('Lazer'), generators: N('Jeneratör'), extras: N('Ekstra'), heavy_guns: N('Roketatar'), ship_upgrades: N('Modül'), QuantumFluidCore: 'QFC',
+  cannons: N('Top'), cannon_shields: N('Kırıcı'), drives: N('Sürücü'), lenses: N('Mercek'), default: N('Donanım yuvası') };
+const IP_YER = { SHIP: N('Gemi'), PET: 'P.E.T.', DRONE: N('Dron') };
+async function ipucuYukle() {
+  const j = async n => { const r = await fetch('/oyun_gorsel/' + n); if (!r.ok) throw new Error(r.status); return r.json(); };
+  if (OG.dizin && IP.dil !== I18N.lang) {
+    IP.dil = I18N.lang;
+    try { IP.metin = await j('metinler_' + I18N.lang + '.json'); } catch (e) { IP.metin = null; }
+    if (!IP.en && I18N.lang !== 'en') { try { IP.en = await j('metinler_en.json'); } catch (e) { /* eski döküm: yalnız adlar */ } }
+  }
+  if (!IP.bilgi) { try { IP.bilgi = (await api('/api/esya_bilgi')).esyalar; } catch (e) { IP.bilgi = {}; } }
+}
+const ipMetin = lid => IP.metin?.e[lid] || IP.en?.e[lid] || null;
+const nitelikAdi = a => IP.metin?.n[a] || IP.en?.n[a] || a.replace(/_/g, ' ');
+const ipYuzde = v => (v > 0 ? '+' : '') + (Math.round(v * 1000) / 10).toLocaleString(LOC()) + '%';
+function ipDeger(v, b) {
+  if (typeof v === 'string') return b === 'e' ? T(IP_ELEMENT[v] || v) : v;
+  return { p: () => (Math.round(v * 1000) / 10).toLocaleString(LOC()) + '%', x: () => '×' + fmtN(v), sn: () => fmtDur(v), sa: () => fmtDur(v * 3600) }[b]?.() ?? fmtN(v);
+}
+// açıklamadaki yer tutucular (%HOURS%, %BOOSTERVALUE% …; "+%%BOOSTERVALUE%" = "+%" ve değer) değeriyle, yoksa "…"; <br> satır sonu,
+// öbür etiketler atılır
+const ipYerTutucu = (s, ph) => s.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
+  .replace(/%([A-Za-z_]+)%/g, (m, k) => { const v = ph && (ph[k] ?? ph[k.toUpperCase()]); return v != null && v !== '' ? String(v) : '…'; });
+
+function esyaIpucu(lid, es, firma) {
+  const mt = ipMetin(lid), b = IP.bilgi?.[lid] || {}, ph = b.ph;
+  const satir = (k, v, cls = '') => h('div', { class: 'ip-satir ' + cls }, h('span', null, k), h('b', null, v));
+  const govde = [];
+  // ipucu açıklaması kısa etki satırı; açıklamanın başıyla aynıysa (formasyonlar) yalnız açıklama
+  if (mt?.[2] && !(mt[3] && mt[3].slice(0, 30) === mt[2].slice(0, 30))) govde.push(h('div', { class: 'ip-etki' }, ipYerTutucu(mt[2], ph)));
+  if (mt?.[3]) govde.push(h('div', { class: 'ip-aciklama' }, ipYerTutucu(mt[3], ph)));
+  const degerler = (b.dg || []).map(([k, v, f]) => satir(T(IP_ETIKET[k] || k), ipDeger(v, f)));
+  for (const [a, v] of b.m || []) degerler.push(satir(nitelikAdi(a), ipYuzde(v), 'bonus'));
+  if (degerler.length) govde.push(h('div', { class: 'ip-blok' }, degerler));
+  if (b.yv) govde.push(h('div', { class: 'ip-yuvalar' }, Object.entries(b.yv).map(([k, n]) => h('span', null, T(IP_YUVA[k] || k), h('b', null, n)))));
+  for (const [y, az, t] of b.up || []) {
+    const su = es?.yukseltme || 0;
+    govde.push(h('div', { class: 'ip-blok' }, h('div', { class: 'ip-baslik' }, T('Yükseltme')),
+      satir(T('Seviye başına'), ipYuzde(y) + ' ' + T(IP_YUKSELTME[t] || t)), satir(T('En yüksek seviye'), '+' + az),
+      su ? satir(T('Şimdiki seviye'), '+' + su + ' · ' + ipYuzde(y * su), 'bonus') : null));
+  }
+  const r = es?.rng;
+  if (r?.nitelik?.length) {
+    const kesir = r.tur === 'modul';
+    govde.push(h('div', { class: 'ip-blok rng' }, h('div', { class: 'ip-baslik' }, T('Bu eşyanın nitelikleri')),
+      r.nitelik.map(([a, v]) => satir(nitelikAdi(a), ipYuzde(kesir ? v : v / 100), 'bonus')),
+      r.seviye ? satir(T('Seviye'), r.seviye) : null, r.yildiz ? satir(T('Yıldız'), '★'.repeat(r.yildiz)) : null,
+      r.hak != null ? satir(T('Yeniden çekme hakkı'), r.hak) : null));
+  }
+  const gemiler = r?.gemiler || (r?.gemi ? [r.gemi] : null) || b.gm;
+  if (gemiler?.length) govde.push(h('div', { class: 'ip-blok' }, h('div', { class: 'ip-baslik' }, r?.gemiler || r?.gemi ? T('Geçtiği gemiler') : b.dg?.some(d => d[0] === 'en_az') ? T('Daha sık çıktığı gemiler') : T('Geçtiği gemiler')),
+    h('div', { class: 'ip-gemiler' }, gemiler.map(g => h('span', null, oyunIkon(g, 22, firma, 'ship'), esyaAdi(g))))));
+  if (es?.hak != null) govde.push(satir(T('Kalan hak'), fmtN(es.hak[0]) + ' / ' + fmtN(es.hak[1])));
+  if (mt?.[4]) govde.push(h('div', { class: 'ip-not' }, icon('info'), ipYerTutucu(mt[4], ph)));
+  const alt = [b.tk ? T('Takılır: {0}', b.tk.map(x => T(IP_YER[x] || x)).join(', ')) : null, b.sat ? T('Satış: {0}', fmtN(b.sat) + ' C.') : null].filter(Boolean);
+  if (mt?.[5]) govde.push(h('div', { class: 'ip-kaynak' }, ipYerTutucu(mt[5], ph)));
+  return h('div', { class: 'ipucu' },
+    h('div', { class: 'ip-bas' }, oyunIkon(lid, 52, firma, 'box'), h('div', { style: { minWidth: 0 } },
+      h('b', null, esyaAdi(lid) + (es?.yukseltme ? ' +' + es.yukseltme : '')), mt?.[1] ? h('div', { class: 'ip-tur' }, mt[1]) : null,
+      es?.seviye ? h('div', { class: 'ip-tur' }, T('Sv {0}', es.seviye)) : null)),
+    govde.length ? govde : h('div', { class: 'ip-aciklama dim' }, lid),
+    alt.length ? h('div', { class: 'ip-alt' }, alt.join(' · ')) : null);
+}
+function ipucuKapat() { clearTimeout(IP.zaman); IP.el = null; IP.kutu?.remove(); IP.kutu = null; }
+document.addEventListener('mouseover', e => {
+  const el = e.target.closest?.('[data-loot]');
+  if (el === IP.el) return;
+  ipucuKapat();
+  if (!el || el.closest('.ipucu')) return;
+  IP.el = el;
+  for (let n = el; n && n !== document.body; n = n.parentElement) if (n.title) { n.dataset.baslik = n.title; n.removeAttribute('title'); }   // tarayıcının ad balonu yerine
+  IP.zaman = setTimeout(async () => {
+    await (IP.yukleniyor ||= ipucuYukle().finally(() => { IP.yukleniyor = null; }));
+    if (IP.el !== el || !el.isConnected) return;
+    let es = null;
+    for (let n = el; n && !es; n = n.parentElement) es = n._esya || null;
+    const k = esyaIpucu(el.dataset.loot, es, el.dataset.firma);
+    document.body.append(k);
+    IP.kutu = k;
+    const r = el.getBoundingClientRect(), w = k.offsetWidth, hh = k.offsetHeight;
+    k.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.right + 10 + w > window.innerWidth ? r.left - w - 10 : r.right + 10)) + 'px';
+    k.style.top = Math.max(8, Math.min(window.innerHeight - hh - 8, r.top)) + 'px';
+  }, 260);
+});
+document.addEventListener('mousedown', ipucuKapat, true);
+document.addEventListener('scroll', ipucuKapat, true);
 const paraYaz = (cur, n) => fmtN(n) + (cur === 'credits' || cur === 'kredi' ? ' C.' : ' U.');
 // sunucunun hata ve bilgi anahtarları (BaseKey adları, panel_kanali'nin kendi anahtarları); ham metin (boşluklu) olduğu gibi
 const OY_METIN = { not_enough_credits: N('Yeterli kredin yok.'), not_enough_uridium: N('Yeterli uridyumun yok.'), shop_item_not_found: N('Bu ürün şu an satılmıyor.'),
@@ -2327,12 +2324,14 @@ function hangarEnvanter(v, kilit, ikon, svRozet) {
   for (const e of secilen) toplam[e.satis[0]] = (toplam[e.satis[0]] || 0) + e.satis[1];
   const kutular = Object.entries(grup).sort((a, b) => esyaAdi(a[0]).localeCompare(esyaAdi(b[0]))).map(([lid, es]) => {
     const n = es.filter(e => HG.secili[e.id]).length;
-    return h('button', { class: 'hg-esya' + (n ? ' on' : ''), type: 'button', disabled: !sat && kilit,
+    const b = h('button', { class: 'hg-esya' + (n ? ' on' : ''), type: 'button', disabled: !sat && kilit,
       title: esyaAdi(lid) + (sat ? ' — ' + T('satış değeri {0}', paraYaz(es[0].satis[0], es[0].satis[1])) + ' · ' + T('seçmek için tıkla, sağ tıkla bırak') : ' — ' + T('takmak için tıkla')),
       onclick: ev => { if (!sat) return hangarTasi({ esya: es[0].id, yon: 'tak', hedef: HG.bolum, dron: HG.dron, kume: HG.bolum === 'pet' ? HG.kume : '' }, ev.currentTarget);
         const e = es.find(x => !HG.secili[x.id]); if (e) { HG.secili[e.id] = true; renderHangar(); } },
       oncontextmenu: ev => { if (!sat) return; ev.preventDefault(); const e = es.find(x => HG.secili[x.id]); if (e) { delete HG.secili[e.id]; renderHangar(); } } },
       ikon(lid, 44), svRozet(es[0]), es.length > 1 ? h('span', { class: 'hg-adet' }, (n ? n + '/' : '') + fmtN(es.length)) : n ? h('span', { class: 'hg-adet' }, '✓') : null);
+    b._esya = es[0].seviye ? { yukseltme: es[0].seviye } : null;        // eşya ipucu: yükseltme seviyesi
+    return b;
   });
   return h('div', { class: 'card' },
     h('div', { class: 'row between wrap', style: { gap: '10px' } },
@@ -2657,7 +2656,7 @@ async function muzayedeOlayTick() {
   } catch (e) { /* oyuna girilmedi */ } finally { muzayedeOlayTick.busy = false; }
 }
 
-const RENDER = { oyna: renderOyna, arkadas: renderArkadas, kayitlar: renderKayitlar, ayarlar: renderAyarlar, etkinlikler: () => renderEtkinlikler(), istemci: () => renderIstemci(),
+const RENDER = { oyna: renderOyna, arkadas: renderArkadas, kayitlar: () => renderKayitlar(), ayarlar: renderAyarlar, etkinlikler: () => renderEtkinlikler(), istemci: () => renderIstemci(),
   takvim: enterTakvim, sunucu: renderSunucu, panel: renderPanel, dunya: () => renderDunya(), magaza: renderMagaza, hangar: renderHangar, skylab: renderSkylab, muzayede: renderMuzayede };
 
 // ------------------------------------------------------------------ başlangıç

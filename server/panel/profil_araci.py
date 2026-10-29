@@ -140,6 +140,16 @@ RESETS = ('ipuclari', 'arayuz', 'oyun_ayarlari', 'aktif_gorevler', 'gecmis')
 
 def sifirla(path, parts):
     d = json.load(open(path, encoding='utf8'))
+    done = sifirla_d(d, parts)
+    tmp = path + '.tmp'
+    with open(tmp, 'w', encoding='utf8', newline='\n') as fh:
+        json.dump(d, fh, ensure_ascii=False, indent=1)
+    os.replace(tmp, path)
+    return {'sifirlanan': done}
+
+
+def sifirla_d(d, parts):
+    """Profil sözlüğünde durum sıfırlama (kayit_editoru.py taslakta da kullanır) -> sıfırlanan bölümler."""
     seed = _load('giris.json').get('tohum') or {}
     done = []
     for part in parts:
@@ -157,11 +167,7 @@ def sifirla(path, parts):
         else:
             raise ValueError('Bilinmeyen bölüm: %s', part)
         done.append(part)
-    tmp = path + '.tmp'
-    with open(tmp, 'w', encoding='utf8', newline='\n') as fh:
-        json.dump(d, fh, ensure_ascii=False, indent=1)
-    os.replace(tmp, path)
-    return {'sifirlanan': done}
+    return done
 
 
 def main(argv):

@@ -1,7 +1,7 @@
 """Kayıt yuvaları (yönetim paneli): liste ve özet, yeni kayıt, etkin yuva, ad ve not, kopyalama, silme (çöp kutusuna, geri
 alınabilir), dışa/içe aktarma, düzenleme ve yedekler.
 
-Düzen (yollar.py): save/kayitlar/<kimlik>/{profil.json, kayit.json, web_ayarlari.json, yedek/}. Silinen yuva
+Düzen (yollar.py): save/kayitlar/<kimlik>/{profil.json, kayit.json, web_ayarlari.json, duzenleme.json, yedek/}. Silinen yuva
 save/silinenler/<kimlik>_<zaman>/'a taşınır. Yedekler yedek/<tür>_YYYYmmdd_HHMMSS.json:
   oto   panel Oyna'da ve oyun sürerken alır; en yeni `yedek_sayisi` kadarı kalır
   elle  oyuncunun aldığı; kendiliğinden silinmez
@@ -9,6 +9,9 @@ save/silinenler/<kimlik>_<zaman>/'a taşınır. Yedekler yedek/<tür>_YYYYmmdd_H
 Notlar yedek/notlar.json'da. Profil oyun sunucusu açıkken değişmemeli (otomatik kayıt üstüne yazar): panel değiştiren işlemleri
 yuva kullanımdayken engeller (in_use).
 Yeni profil ayrı süreçte kurulur (profil_araci.py: tohum, pilot adı, firma, ana istasyon).
+Karakter editörü (kayit_editoru.py, ayrı süreç) duzenleme.json taslağında çalışır: taslak ilk değişiklikte açılır, Kaydet güvenlik
+yedeği alıp profile yazar, Vazgeç taslağı atar. Taslak açıldıktan sonra profil değiştiyse (oyun oynandı, yedek geri yüklendi) eski taslak
+atılır.
 """
 import json, os, re, shutil, subprocess, sys, threading, time, zipfile
 
@@ -105,10 +108,19 @@ def _map_name(mid):
         return str(mid)
 
 
+def level_bounds(level):
+    """Seviyenin ve bir sonrakinin EP eşiği (ilerleme çubuğu; son seviyede sonraki None)."""
+    level_for(0)
+    need = dict((lv, ep) for lv, ep in _LEVELS)
+    return need.get(level, 0), need.get(level + 1)
+
+
 def profile_summary(d):
     """Profilden panelin gösterdiği özet."""
     pl, g, k = d.get('pilot') or {}, d.get('gemi') or {}, d.get('konum') or {}
-    return {'pilot': pl.get('userName') or '?', 'firma': FIRMALAR.get(pl.get('factionId'), '?'), 'firma_id': pl.get('factionId'),
+    taban, sonraki = level_bounds(pl.get('level', 1))
+    return {'gemi_gorunum': g.get('typeId'), 'seviye_taban': taban, 'seviye_sonraki': sonraki, 'dron_sayisi': len(d.get('dronlar') or []),
+            'pet': (d.get('pet') or {}).get('ad'), 'premium': bool(pl.get('premium')),'pilot': pl.get('userName') or '?', 'firma': FIRMALAR.get(pl.get('factionId'), '?'), 'firma_id': pl.get('factionId'),
             'seviye': pl.get('level', 1), 'ep': pl.get('ep', 0), 'onur': pl.get('honourPoints', 0), 'kredi': pl.get('credits', 0),
             'uridyum': pl.get('uridium', 0), 'gemi': ship_name(g.get('typeId')), 'harita': _map_name(k.get('mapId', 0)),
             'oynama_sn': int(d.get('oynama_sn') or 0), 'olusturma': d.get('olusturma'),
@@ -255,7 +267,7 @@ class Kayitlar:
         out.update(id=slot, ad=m.get('ad') or slot, not_=m.get('not', ''), kayit_olusturma=m.get('olusturma'),
                    son_oynama=m.get('son_oynama'), son_kayit=time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(st.st_mtime)),
                    boyut=st.st_size, yedek_sayisi=len(self.backup_files(slot)), aktif=(slot == self.active()),
-                   kullanimda=self.in_use(slot), dunya=m.get('dunya') or 'standart')
+                   kullanimda=self.in_use(slot), dunya=m.get('dunya') or 'standart', taslak=self._draft_valid(slot))
         return out
 
     def list(self):
@@ -270,10 +282,10 @@ class Kayitlar:
         return out
 
     # ------------------------------------------------------------ yeni, ad, kopya, silme
-    def run_tool(self, *args):
-        """profil_araci.py'yi ayrı süreçte çalıştır -> çıktının JSON'u."""
+    def run_tool(self, *args, tool='profil_araci.py'):
+        """profil_araci.py'yi (ya da kayit_editoru.py'yi) ayrı süreçte çalıştır -> çıktının JSON'u."""
         kw = {'creationflags': 0x08000000} if os.name == 'nt' else {}         # CREATE_NO_WINDOW
-        r = subprocess.run([self.python, '-I', os.path.join(PANEL_DIR, 'profil_araci.py')] + list(args), capture_output=True,
+        r = subprocess.run([self.python, '-I', os.path.join(PANEL_DIR, tool)] + list(args), capture_output=True,
                            text=True, encoding='utf8', timeout=120, **kw)
         try:
             out = json.loads(r.stdout.strip().splitlines()[-1])
@@ -417,7 +429,7 @@ class Kayitlar:
                 if rel.split(os.sep)[0] == 'yedek' and not with_backups:
                     continue
                 for f in files:
-                    if f.endswith('.tmp'):
+                    if f.endswith('.tmp') or (rel == '.' and f == 'duzenleme.json'):     # editörün kaydedilmemiş taslağı
                         continue
                     z.write(os.path.join(root, f), os.path.join(slot, rel, f) if rel != '.' else os.path.join(slot, f))
         return dest
@@ -532,6 +544,86 @@ class Kayitlar:
         if getattr(self, '_loots', None) is None:
             self._loots = self.run_tool('liste')['esyalar']
         return self._loots
+
+    # ------------------------------------------------------------ karakter editörü (taslak)
+    def draft(self, slot):
+        return os.path.join(self.dir(slot), 'duzenleme.json')
+
+    def _draft_valid(self, slot):
+        """Taslak var ve profil o açıldığından beri değişmedi mi."""
+        try:
+            return os.path.isfile(self.draft(slot)) and self.meta(slot).get('duzenleme_taban') == os.stat(self.profile(slot)).st_mtime_ns
+        except OSError:
+            return False
+
+    def _ensure_draft(self, slot):
+        """Geçerli taslak yoksa profilin kopyası."""
+        with self.lock:
+            if self._draft_valid(slot):
+                return
+            validate_profile(_read_json(self.profile(slot)))
+            _copy_atomic(self.profile(slot), self.draft(slot))
+            self.set_meta(slot, duzenleme_taban=os.stat(self.profile(slot)).st_mtime_ns)
+
+    def editor_open(self, slot):
+        """Editörün görünümü: taslak varsa taslak (asıl kayda göre farkıyla), yoksa profil. Kayıt oyundaysa profil salt okunur
+        gösterilir (sunucu her 10 saniyede üstüne yazar)."""
+        if not self.exists(slot):
+            raise KayitHatasi(_('Kayıt bulunamadı.'))
+        if self.in_use(slot):
+            return dict(self.run_tool('oku', self.profile(slot), tool='kayit_editoru.py'), salt_okunur=True, atildi=False)
+        with self.lock:
+            stale = os.path.isfile(self.draft(slot)) and not self._draft_valid(slot)
+            if stale:
+                self.editor_discard(slot)
+            if self._draft_valid(slot):
+                v = self.run_tool('oku', self.draft(slot), self.profile(slot), tool='kayit_editoru.py')
+            else:
+                v = self.run_tool('oku', self.profile(slot), tool='kayit_editoru.py')
+        return dict(v, salt_okunur=False, atildi=stale)
+
+    def editor_apply(self, slot, ops):
+        """İşlemleri taslağa uygula (kayit_editoru.ISLEMLER) -> yeni görünüm."""
+        self.guard(slot, 'Düzenlemek')
+        if not isinstance(ops, list) or not ops:
+            raise KayitHatasi(_('Değişiklik yok.'))
+        with self.lock:
+            self._ensure_draft(slot)
+            v = self.run_tool('uygula', self.draft(slot), json.dumps(ops), self.profile(slot), tool='kayit_editoru.py')
+            return dict(v, salt_okunur=False, atildi=False)
+
+    def editor_commit(self, slot):
+        """Taslağı kayda yaz: önce 'once' yedeği -> yedeğin adı."""
+        self.guard(slot, 'Düzenlemek')
+        with self.lock:
+            if not self._draft_valid(slot):
+                raise KayitHatasi(_('Kaydedilecek değişiklik yok.'))
+            validate_profile(_read_json(self.draft(slot)))
+            safety = self.backup(slot, 'once', _('Karakter editöründen önce'))
+            _copy_atomic(self.draft(slot), self.profile(slot))
+            self.editor_discard(slot)
+            return safety
+
+    def editor_discard(self, slot):
+        with self.lock:
+            if os.path.isfile(self.draft(slot)):
+                os.remove(self.draft(slot))
+            m = self.meta(slot)
+            if 'duzenleme_taban' in m:
+                del m['duzenleme_taban']
+                _write_json(os.path.join(self.dir(slot), 'kayit.json'), m)
+
+    def editor_catalog(self):
+        """Editörün eşya kataloğu (kayit_editoru.py katalog; ilk istekten sonra bellekte)."""
+        if getattr(self, '_katalog', None) is None:
+            self._katalog = self.run_tool('katalog', tool='kayit_editoru.py')
+        return {'esyalar': self._katalog['esyalar'], 'kategoriler': self._katalog['kategoriler']}
+
+    def item_info(self):
+        """Eşya ipucunun değerleri (kayit_editoru.py bilgi; ilk istekten sonra bellekte): panelin Hangar, Mağaza ve editör sayfaları."""
+        if getattr(self, '_bilgi', None) is None:
+            self._bilgi = self.run_tool('bilgi', tool='kayit_editoru.py')['esyalar']
+        return self._bilgi
 
     # ------------------------------------------------------------ yedekler
     def backup_files(self, slot):

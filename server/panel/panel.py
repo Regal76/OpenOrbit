@@ -1278,6 +1278,12 @@ def h_get(path, q):
         return {'liste': KAY.list(), 'aktif': KAY.active(), 'silinenler': KAY.deleted(), 'firmalar': FIRMALAR}
     if path == '/api/kayit_profili':
         return profile_values(slot_arg(q))
+    if path == '/api/editor':                       # karakter editörü: kaydın taslağı (kayit_editoru.py)
+        return KAY.editor_open(slot_arg(q))
+    if path == '/api/editor/katalog':               # karakter editörünün eşya kataloğu
+        return KAY.editor_catalog()
+    if path == '/api/esya_bilgi':                   # eşya ipucunun değerleri (Hangar, Mağaza, karakter editörü)
+        return {'esyalar': KAY.item_info()}
     if path == '/api/yedekler':
         sid = slot_arg(q)
         return {'liste': KAY.backups(sid), 'kayit': KAY.summary(sid), 'ayarlar': CFG.all()}
@@ -1530,6 +1536,16 @@ def h_post(path, b):
         return {'id': KAY.import_file(src)}
     if path == '/api/kayitlar/duzenle':
         return {'degisen': KAY.edit(slot_arg(b), b.get('degerler') or {})}
+    # ---- karakter editörü (taslak: Kaydet profile yazar, Vazgeç atar)
+    if path == '/api/editor/uygula':
+        return KAY.editor_apply(slot_arg(b), b.get('islemler'))
+    if path == '/api/editor/kaydet':
+        sid = slot_arg(b)
+        log('karakter editörü: %s kaydedildi' % sid)
+        return {'yedek': KAY.editor_commit(sid)}
+    if path == '/api/editor/vazgec':
+        KAY.editor_discard(slot_arg(b))
+        return {}
     # ---- yedekler
     if path == '/api/yedekler/al':
         return {'dosya': KAY.backup(slot_arg(b), 'elle', b.get('not') or '')}

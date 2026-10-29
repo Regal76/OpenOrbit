@@ -895,3 +895,34 @@ button.chip:hover { border-color: var(--accent); color: #fff; box-shadow: 0 0 10
 .kahve b { color: var(--accent-2); font: 600 12.5px/1.2 var(--display); letter-spacing: .03em; }
 .kahve small { font-size: 11px; }
 .kahve-dron { width: 40px; height: 40px; flex: none; transition: transform .2s; filter: drop-shadow(0 0 6px rgba(255, 165, 74, .3)); }
+
+/* ---------------------------------------------------------------- eşya ipucu (panel.js esyaIpucu): Hangar, Mağaza, Açık Artırma, karakter editörü */
+.ipucu { position: fixed; z-index: 400; width: 340px; max-height: calc(100vh - 16px); overflow: hidden; pointer-events: none; padding: 12px 14px; display: grid; gap: 8px;
+  border: 1px solid var(--line-hi); border-radius: var(--radius); font-size: 12.5px; color: var(--steel);
+  background: linear-gradient(180deg, rgba(14, 26, 46, .98), rgba(6, 12, 24, .98)); box-shadow: var(--shadow), 0 0 0 1px rgba(64, 223, 255, .08), var(--glow);
+  animation: ip-gir .12s ease-out; }
+@keyframes ip-gir { from { opacity: 0; transform: translateY(4px); } }
+.ipucu::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); }
+.ip-bas { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.ip-bas .sprite { flex: none; padding: 4px; border-radius: 3px; border: 1px solid rgba(64, 223, 255, .22); box-sizing: content-box;
+  background: radial-gradient(circle at 50% 40%, rgba(64, 223, 255, .12), rgba(4, 9, 18, .9) 75%); }
+.ip-bas b { display: block; font: 600 15px/1.2 var(--display); letter-spacing: .03em; color: #fff; }
+.ip-tur { font: 600 10.5px var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-top: 2px; }
+.ip-etki { color: var(--amber); font-weight: 600; }
+.ip-aciklama { line-height: 1.45; color: var(--steel); white-space: pre-line; }
+.ip-blok { display: grid; gap: 3px; padding: 7px 9px; border-radius: 3px; background: rgba(4, 9, 18, .6); border: 1px solid var(--line); }
+.ip-blok.rng { border-color: rgba(155, 113, 244, .35); background: rgba(155, 113, 244, .07); }
+.ip-baslik { font: 600 10.5px var(--display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+.ip-satir { display: flex; justify-content: space-between; gap: 12px; }
+.ip-satir span { color: var(--muted); }
+.ip-satir b { color: var(--text); font-variant-numeric: tabular-nums; text-align: right; }
+.ip-satir.bonus b { color: var(--ok); }
+.ip-yuvalar { display: flex; flex-wrap: wrap; gap: 4px; }
+.ip-yuvalar span { display: inline-flex; gap: 5px; padding: 2px 7px; border-radius: 3px; background: rgba(4, 9, 18, .7); border: 1px solid var(--line); font-size: 11.5px; }
+.ip-yuvalar b { color: var(--accent); }
+.ip-gemiler { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.ip-gemiler span:not(.sprite):not(.sprite *) { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--text); }
+.ip-not { display: flex; gap: 6px; color: #c6f3ff; font-size: 12px; }
+.ip-not svg { width: 14px; height: 14px; flex: none; margin-top: 1px; color: var(--accent); }
+.ip-kaynak { color: var(--dim); font-size: 11.5px; font-style: italic; }
+.ip-alt { padding-top: 7px; border-top: 1px solid var(--line); color: var(--dim); font-size: 11.5px; }

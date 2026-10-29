@@ -5,6 +5,9 @@
 // tam g, tam y, ox, oy] (üst sol kökenli piksel; atlaslar dikdörtgen paketli, döndürme yok). Paketin boyutu ve tarihi değişmedikçe
 // (ve atlas listesi) değişmedikçe yeniden dökülmez. Atlasın sprite'ları geç bağlanıyor (Sprite.texture boş): sayfalar SpriteAtlas.GetSprites'ın kopyalarından.
 // Eşya adları da panelin dillerinde: adlar_<dil>.json (lootId -> ad; istemcinin resource_items'ındaki items_<lootId>_fullname).
+// Panelin eşya ipucunun metinleri: metinler_<dil>.json {"e": {lootId: [ad, tür, ipucu açıklaması, açıklama, not, kaynak]},
+// "n": {nitelik: ad}} (items_<lootId>_fullname/_short/_tooltip_description/_description/_hint/_sources; nitelik adları
+// items_equipment_shipupgrade_modifiertype_<nitelik>: kararsız modül, QFC ve parçacık silahı nitelikleri).
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,7 +59,7 @@ public class GorselDokumu : MonoBehaviour
     {
         klasor = Path.Combine(Paths.BepInExRootPath, "openorbit", "gorsel");
         var fi = new FileInfo(Path.Combine(Application.streamingAssetsPath, "aa", "BuildTarget", "atlas_assets_all.bundle"));
-        surum = fi.Length + "-" + fi.LastWriteTimeUtc.Ticks + "-" + string.Join(",", ATLASLAR);     // atlas listesi değişince de yeniden
+        surum = fi.Length + "-" + fi.LastWriteTimeUtc.Ticks + "-" + string.Join(",", ATLASLAR) + "-metin1";   // atlas listesi ya da döküm biçimi değişince de yeniden
         string d = Path.Combine(klasor, "dizin.json");
         if (File.Exists(d) && File.ReadAllText(d).Contains("\"surum\": \"" + surum + "\""))
         {
@@ -135,12 +138,41 @@ public class GorselDokumu : MonoBehaviour
             if (o == null)
                 continue;
             var sb = new StringBuilder();
+            var esya = new SortedDictionary<string, string[]>(StringComparer.Ordinal);
+            var nitelik = new StringBuilder();
             foreach (var kv in o.Cast<LocalizationContainer>().data)
-                if (kv.key.StartsWith("items_") && kv.key.EndsWith("_fullname"))
+            {
+                if (!kv.key.StartsWith("items_"))
+                    continue;
+                if (kv.key.EndsWith("_fullname"))
                     sb.Append(sb.Length > 0 ? ",\n" : "").Append($"  \"{Kac(kv.key[6..^9])}\": \"{Kac(kv.value)}\"");
+                if (kv.key.StartsWith(NITELIK))
+                {
+                    nitelik.Append(nitelik.Length > 0 ? ",\n" : "").Append($"  \"{Kac(kv.key[NITELIK.Length..])}\": \"{Kac(kv.value)}\"");
+                    continue;
+                }
+                for (int i = 0; i < EKLER.Length; i++)
+                    if (kv.key.EndsWith(EKLER[i]))
+                    {
+                        string loot = kv.key[6..^EKLER[i].Length];
+                        if (!esya.TryGetValue(loot, out var m))
+                            esya[loot] = m = new string[EKLER.Length];
+                        m[i] = kv.value;
+                        break;
+                    }
+            }
             File.WriteAllText(Path.Combine(klasor, "adlar_" + dil + ".json"), "{\n" + sb + "\n}\n");
+            var mb = new StringBuilder();
+            foreach (var kv in esya)
+                mb.Append(mb.Length > 0 ? ",\n" : "").Append($"  \"{Kac(kv.Key)}\": [")
+                  .Append(string.Join(", ", Array.ConvertAll(kv.Value, v => v == null ? "null" : "\"" + Kac(v) + "\""))).Append(']');
+            File.WriteAllText(Path.Combine(klasor, "metinler_" + dil + ".json"), "{\"e\": {\n" + mb + "\n},\n\"n\": {\n" + nitelik + "\n}}\n");
         }
     }
+
+    // ipucu metinleri, metinler_<dil>.json'daki sırayla; _tooltip_description _description'dan önce denenir (ikisi de _description ile biter)
+    static readonly string[] EKLER = { "_fullname", "_short", "_tooltip_description", "_description", "_hint", "_sources" };
+    const string NITELIK = "items_equipment_shipupgrade_modifiertype_";
 
     static void Yaz(Texture2D t)
     {
